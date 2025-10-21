@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Scroll, Plus, LogOut, Trash2, Play } from 'lucide-react';
+import { Scroll, Plus, LogOut, Trash2, Settings } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -52,7 +52,7 @@ function CampaignList({ username, onLogout }) {
   };
 
   const handleDeleteCampaign = async (campaignId) => {
-    if (!window.confirm('Are you sure you want to delete this campaign?')) return;
+    if (!window.confirm('Are you sure you want to delete this campaign? This will delete all associated data.')) return;
 
     try {
       await axios.delete(`${API}/campaigns/${campaignId}`);
@@ -63,8 +63,8 @@ function CampaignList({ username, onLogout }) {
     }
   };
 
-  const handleOpenCampaign = (campaignId) => {
-    navigate(`/dm-screen/${campaignId}`);
+  const handleManageCampaign = (campaignId) => {
+    navigate(`/campaign/${campaignId}`);
   };
 
   if (loading) {
@@ -195,13 +195,13 @@ function CampaignList({ username, onLogout }) {
                 <CardContent>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
                     <Button 
-                      data-testid={`open-campaign-btn-${campaign.id}`}
-                      onClick={() => handleOpenCampaign(campaign.id)}
+                      data-testid={`manage-campaign-btn-${campaign.id}`}
+                      onClick={() => handleManageCampaign(campaign.id)}
                       className="btn-primary"
                       style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                     >
-                      <Play size={16} />
-                      Open DM Screen
+                      <Settings size={16} />
+                      Manage Campaign
                     </Button>
                     <Button 
                       data-testid={`delete-campaign-btn-${campaign.id}`}

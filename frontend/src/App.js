@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import AuthPage from '@/components/AuthPage';
 import CampaignList from '@/components/CampaignList';
+import CampaignDashboard from '@/components/CampaignDashboard';
 import DMScreen from '@/components/DMScreen';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -90,10 +91,18 @@ function App() {
             } 
           />
           <Route 
+            path="/campaign/:campaignId" 
+            element={
+              isAuthenticated ? 
+                <CampaignDashboard username={username} onLogout={handleLogout} /> : 
+                <Navigate to="/auth" replace />
+            } 
+          />
+          <Route 
             path="/dm-screen/:campaignId" 
             element={
               isAuthenticated ? 
-                <DMScreen username={username} onLogout={handleLogout} /> : 
+                <DMScreen username={username} /> : 
                 <Navigate to="/auth" replace />
             } 
           />
