@@ -520,7 +520,7 @@ async def delete_location(campaign_id: str, location_id: str, username: str = De
 
 # ==================== IN-GAME NOTES ROUTES ====================
 
-@api_router.post("/campaigns/{campaign_id}/ingame-notes", response_model=InGameNote)
+@api_router.post("/campaigns/{campaign_id}/ingame-notes", response_model=InGameNote, status_code=status.HTTP_201_CREATED)
 async def create_ingame_note(campaign_id: str, note_data: InGameNoteCreate, username: str = Depends(get_current_user)):
     campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
     if not campaign:
