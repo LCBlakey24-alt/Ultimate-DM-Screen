@@ -816,6 +816,89 @@ async def generate_ai_content(request: AIGenerationRequest, username: str = Depe
         logger.error(f"AI generation error: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"AI generation failed: {str(e)}")
 
+@api_router.post("/campaigns/{campaign_id}/ingame-notes/{note_id}/process-ai")
+async def process_note_with_ai(campaign_id: str, note_id: str, username: str = Depends(get_current_user)):
+    try:
+        campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+        if not campaign:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+        
+        note = await db.ingame_notes.find_one({'id': note_id, 'campaign_id': campaign_id})
+        if not note:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+        
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="AI key not configured")
+        
+        # Get campaign context
+        players = await db.players.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        npcs = await db.npcs.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        locations = await db.locations.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        gods = await db.gods.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        
+        player_names = [p['name'] for p in players]
+        npc_names = [n['name'] for n in npcs]
+        location_names = [l['name'] for l in locations]
+        god_names = [g['name'] for g in gods]
+        
+        system_message = f"""You are an AI assistant helping organize D&D campaign notes.
+Given campaign notes from a session, extract structured information and suggest additions to existing entities or new entities to create.
+
+Campaign Context:
+- Players: {', '.join(player_names) if player_names else 'None yet'}
+- NPCs: {', '.join(npc_names) if npc_names else 'None yet'}
+- Locations: {', '.join(location_names) if location_names else 'None yet'}
+- Gods: {', '.join(god_names) if god_names else 'None yet'}
+
+Analyze the session notes and return a JSON response with this structure:
+{{
+  "new_npcs": [{{ "name": "NPC Name", "description": "Brief description", "notes": "Session context" }}],
+  "new_locations": [{{ "name": "Location Name", "type": "city/dungeon/etc", "description": "Brief description", "notes": "Session context" }}],
+  "new_gods": [{{ "name": "God Name", "domain": "Domain", "description": "Brief description" }}],
+  "npc_updates": [{{ "name": "Existing NPC Name", "additional_notes": "New information learned" }}],
+  "location_updates": [{{ "name": "Existing Location Name", "additional_notes": "New information learned" }}]
+}}
+
+Only include entities that are explicitly mentioned in the notes. Return ONLY valid JSON, no other text."""
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"process-note-{note_id}",
+            system_message=system_message
+        )
+        chat.with_model('openai', 'gpt-4o')
+        
+        user_message = UserMessage(text=f"Session Notes:\n\n{note['content']}")
+        response = await chat.send_message(user_message)
+        
+        # Parse the AI response
+        import json
+        try:
+            # Extract JSON from response
+            json_start = response.find('{')
+            json_end = response.rfind('}') + 1
+            if json_start >= 0 and json_end > json_start:
+                suggestions = json.loads(response[json_start:json_end])
+            else:
+                suggestions = {}
+        except:
+            suggestions = {}
+        
+        # Mark note as processed
+        await db.ingame_notes.update_one(
+            {'id': note_id},
+            {'$set': {'ai_processed': True}}
+        )
+        
+        return {
+            'suggestions': suggestions,
+            'message': 'AI processing complete'
+        }
+    except Exception as e:
+        logger.error(f"AI processing error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"AI processing failed: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
