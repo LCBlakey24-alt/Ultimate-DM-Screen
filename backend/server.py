@@ -611,7 +611,7 @@ async def delete_player(campaign_id: str, player_id: str, username: str = Depend
 
 # ==================== NPC ROUTES ====================
 
-@api_router.post("/campaigns/{campaign_id}/npcs", response_model=NPC)
+@api_router.post("/campaigns/{campaign_id}/npcs", response_model=NPC, status_code=status.HTTP_201_CREATED)
 async def create_npc(campaign_id: str, npc_data: NPCCreate, username: str = Depends(get_current_user)):
     campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
     if not campaign:
