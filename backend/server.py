@@ -557,7 +557,7 @@ async def delete_ingame_note(campaign_id: str, note_id: str, username: str = Dep
 
 # ==================== PLAYER ROUTES ====================
 
-@api_router.post("/campaigns/{campaign_id}/players", response_model=Player)
+@api_router.post("/campaigns/{campaign_id}/players", response_model=Player, status_code=status.HTTP_201_CREATED)
 async def create_player(campaign_id: str, player_data: PlayerCreate, username: str = Depends(get_current_user)):
     campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
     if not campaign:
