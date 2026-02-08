@@ -343,7 +343,7 @@ async def get_me(username: str = Depends(get_current_user)):
 
 # ==================== CAMPAIGN ROUTES ====================
 
-@api_router.post("/campaigns", response_model=Campaign)
+@api_router.post("/campaigns", response_model=Campaign, status_code=status.HTTP_201_CREATED)
 async def create_campaign(campaign_data: CampaignCreate, username: str = Depends(get_current_user)):
     campaign_dict = campaign_data.model_dump()
     campaign_obj = Campaign(dm_user_id=username, **campaign_dict)
