@@ -23,6 +23,9 @@ function GodsTab({ campaignId }) {
     alignment: '',
     notes: ''
   });
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiResult, setAiResult] = useState('');
 
   useEffect(() => {
     fetchGods();
