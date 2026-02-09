@@ -143,18 +143,75 @@ function CombatCreatorTab({ campaignId }) {
   const { players: filteredPlayers, npcs: filteredNPCs } = filteredEntities();
 
   return (
-    <div>
+    <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '24px' }}>
+      {/* Saved Scenarios List */}
+      <div>
+        <h3 className="medieval-heading" style={{ fontSize: '20px', color: '#d4af37', marginBottom: '16px' }}>
+          Saved Scenarios
+        </h3>
+        {scenarios.length === 0 ? (
+          <Card className="parchment-dark" style={{ padding: '20px', textAlign: 'center' }}>
+            <p style={{ fontSize: '13px', color: '#8b7355' }}>No scenarios yet</p>
+          </Card>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {scenarios.map(scenario => (
+              <Card
+                key={scenario.id}
+                data-testid={`scenario-${scenario.id}`}
+                className="card"
+                style={{
+                  cursor: 'pointer',
+                  background: selectedScenario?.id === scenario.id ? 'rgba(212, 175, 55, 0.2)' : 'rgba(45, 36, 22, 0.9)',
+                  border: selectedScenario?.id === scenario.id ? '2px solid #d4af37' : '1px solid #5a4a2f'
+                }}
+                onClick={() => loadScenario(scenario)}
+              >
+                <CardContent style={{ padding: '12px' }}>
+                  <div style={{ marginBottom: '8px' }}>
+                    <h4 style={{ color: '#d4af37', fontSize: '14px', fontWeight: '600', marginBottom: '4px' }}>
+                      {scenario.name}
+                    </h4>
+                    {scenario.description && (
+                      <p style={{ fontSize: '12px', color: '#8b7355', marginBottom: '8px' }}>
+                        {scenario.description}
+                      </p>
+                    )}
+                    <p style={{ fontSize: '11px', color: '#8b7355' }}>
+                      {scenario.combatants.length} combatants
+                    </p>
+                  </div>
+                  <Button
+                    data-testid={`delete-scenario-${scenario.id}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteScenario(scenario.id);
+                    }}
+                    className="btn-danger"
+                    style={{ width: '100%', padding: '6px', fontSize: '12px' }}
+                  >
+                    <Trash2 size={14} />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Main Creator Area */}
+      <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Swords size={28} />
-            Combat Tracker
+            Combat Creator
           </h2>
-          <p style={{ fontSize: '14px', color: '#8b7355', marginTop: '4px' }}>Round {roundNumber}</p>
+          <p style={{ fontSize: '14px', color: '#8b7355', marginTop: '4px' }}>Pre-build combat encounters for quick deployment</p>
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <Button
-            data-testid="add-to-combat-btn"
+            data-testid="toggle-add-panel-btn"
             onClick={() => setShowAddPanel(!showAddPanel)}
             className="btn-primary"
             style={{ display: 'flex', gap: '8px' }}
@@ -165,23 +222,57 @@ function CombatCreatorTab({ campaignId }) {
           {combatants.length > 0 && (
             <>
               <Button
-                data-testid="sort-initiative-btn"
-                onClick={sortByInitiative}
+                data-testid="clear-combatants-btn"
+                onClick={clearScenario}
                 className="btn-secondary"
               >
-                Sort Initiative
+                <RotateCcw size={16} />
               </Button>
               <Button
-                data-testid="reset-combat-btn"
-                onClick={resetCombat}
-                className="btn-danger"
+                data-testid="save-scenario-btn"
+                onClick={saveScenario}
+                className="btn-primary"
+                style={{ display: 'flex', gap: '8px' }}
               >
-                <RotateCcw size={16} />
+                <Save size={16} />
+                Save Scenario
               </Button>
             </>
           )}
         </div>
       </div>
+
+      {/* Scenario Name & Description */}
+      <Card className="parchment-dark" style={{ marginBottom: '24px', padding: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#d4af37', fontSize: '14px', fontWeight: '600' }}>
+              Scenario Name *
+            </label>
+            <Input
+              data-testid="scenario-name-input"
+              type="text"
+              value={scenarioName}
+              onChange={(e) => setScenarioName(e.target.value)}
+              placeholder="e.g., Goblin Ambush"
+              className="input"
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#d4af37', fontSize: '14px', fontWeight: '600' }}>
+              Description
+            </label>
+            <Input
+              data-testid="scenario-description-input"
+              type="text"
+              value={scenarioDescription}
+              onChange={(e) => setScenarioDescription(e.target.value)}
+              placeholder="Brief description of the encounter"
+              className="input"
+            />
+          </div>
+        </div>
+      </Card>
 
       {/* Add Combatants Panel */}
       {showAddPanel && (
