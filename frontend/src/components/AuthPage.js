@@ -64,25 +64,25 @@ function AuthPage({ onLogin }) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #1a1410 0%, #2d1810 100%)',
+      background: 'linear-gradient(135deg, #0a1628 0%, #0d1d33 100%)',
       padding: '20px'
     }}>
       <div className="auth-content" style={{ maxWidth: '450px', width: '100%' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '16px' }}>
-            <Sword size={40} style={{ color: '#d4af37' }} />
-            <h1 className="medieval-heading" style={{ fontSize: '42px', color: '#d4af37', margin: 0 }}>
+            <Sword size={40} style={{ color: '#ff1f8f' }} />
+            <h1 className="medieval-heading" style={{ fontSize: '42px', color: '#38bdf8', margin: 0 }}>
               DM Screen
             </h1>
-            <Shield size={40} style={{ color: '#d4af37' }} />
+            <Shield size={40} style={{ color: '#ff1f8f' }} />
           </div>
-          <p style={{ color: '#8b7355', fontSize: '16px' }}>Your Ultimate Dungeon Master Tool</p>
+          <p style={{ color: '#7dd3fc', fontSize: '16px' }}>Your Ultimate Dungeon Master Tool</p>
         </div>
 
-        <Card className="parchment-dark" style={{ border: '2px solid #5a4a2f' }}>
+        <Card className="parchment-dark" style={{ border: '2px solid #ff1f8f' }}>
           <CardContent style={{ padding: '24px' }}>
             <Tabs defaultValue="login">
-              <TabsList style={{ width: '100%', background: 'rgba(20,16,12,0.6)', marginBottom: '24px' }}>
+              <TabsList style={{ width: '100%', background: 'rgba(10,22,40,0.8)', marginBottom: '24px' }}>
                 <TabsTrigger data-testid="login-tab" value="login" style={{ flex: 1 }}>Login</TabsTrigger>
                 <TabsTrigger data-testid="register-tab" value="register" style={{ flex: 1 }}>Register</TabsTrigger>
               </TabsList>
@@ -104,7 +104,7 @@ function AuthPage({ onLogin }) {
                     />
                   </div>
                   <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#e8dcc4', fontSize: '14px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#e0f2fe', fontSize: '14px', fontWeight: '600' }}>
                       Password
                     </label>
                     <Input
@@ -132,7 +132,7 @@ function AuthPage({ onLogin }) {
               <TabsContent value="register">
                 <form onSubmit={handleRegister} data-testid="register-form">
                   <div style={{ marginBottom: '16px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#e8dcc4', fontSize: '14px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#e0f2fe', fontSize: '14px', fontWeight: '600' }}>
                       Username
                     </label>
                     <Input
@@ -146,7 +146,7 @@ function AuthPage({ onLogin }) {
                     />
                   </div>
                   <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#e8dcc4', fontSize: '14px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#e0f2fe', fontSize: '14px', fontWeight: '600' }}>
                       Password
                     </label>
                     <Input
@@ -174,7 +174,7 @@ function AuthPage({ onLogin }) {
           </CardContent>
         </Card>
 
-        <div style={{ marginTop: '24px', textAlign: 'center', color: '#8b7355', fontSize: '14px' }}>
+        <div style={{ marginTop: '24px', textAlign: 'center', color: '#7dd3fc', fontSize: '14px' }}>
           <p>Track initiatives, manage players, build worlds, and more!</p>
         </div>
       </div>
