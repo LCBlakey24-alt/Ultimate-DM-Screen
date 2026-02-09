@@ -283,7 +283,7 @@ Each turn: 3 actions + 1 reaction
                         <div className="stat-label">AC</div>
                         <div className="stat-value" style={{ fontSize: '14px' }}>{player.ac}</div>
                       </div>
-                      <div className="stat-block\" style={{ flex: 1 }}>
+                      <div className="stat-block" style={{ flex: 1 }}>
                         <div className="stat-label">STR</div>
                         <div className="stat-value" style={{ fontSize: '14px' }}>{player.stats.strength}</div>
                       </div>
