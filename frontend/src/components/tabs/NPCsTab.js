@@ -262,7 +262,7 @@ function NPCsTab({ campaignId }) {
       </div>
 
       {/* AI Assistant Panel */}
-      <div style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
+      <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
         <Card className="parchment-dark" style={{ border: '2px solid #d4af37' }}>
           <CardHeader>
             <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '8px' }}>
