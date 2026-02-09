@@ -131,7 +131,24 @@ class LocationUpdate(BaseModel):
     notable_npcs: Optional[str] = None
     notes: Optional[str] = None
 
-class InGameNote(BaseModel):
+class CombatScenario(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    campaign_id: str
+    name: str
+    description: str = ""
+    combatants: List[Dict[str, Any]] = []  # Pre-configured combatant list
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class CombatScenarioCreate(BaseModel):
+    name: str
+    description: str = ""
+    combatants: List[Dict[str, Any]] = []
+
+class CombatScenarioUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    combatants: Optional[List[Dict[str, Any]]] = None
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     campaign_id: str
