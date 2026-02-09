@@ -387,45 +387,45 @@ Each turn: 3 actions + 1 reaction
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #1a1410 0%, #2d1810 100%)',
+      background: 'linear-gradient(135deg, #0a1628 0%, #0d1d33 100%)',
       padding: '20px'
     }}>
       {/* Header */}
       <div style={{
-        background: 'rgba(20, 16, 12, 0.9)',
-        borderBottom: '2px solid #5a4a2f',
+        background: 'rgba(10, 22, 40, 0.9)',
+        borderBottom: '2px solid #ff1f8f',
         padding: '16px 24px',
         marginBottom: '20px',
         borderRadius: '12px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h1 className="medieval-heading" style={{ fontSize: '32px', color: '#d4af37', textAlign: 'left', marginBottom: '8px' }}>
+            <h1 className="medieval-heading" style={{ fontSize: '32px', color: '#38bdf8', textAlign: 'left', marginBottom: '8px' }}>
               <Sword size={32} style={{ display: 'inline', marginRight: '12px', verticalAlign: 'middle' }} />
               {campaign?.name} - DM Screen
             </h1>
             {calendar && (
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div style={{ 
-                  background: 'rgba(212, 175, 55, 0.2)', 
+                  background: 'rgba(255, 31, 143, 0.2)', 
                   padding: '8px 16px', 
                   borderRadius: '8px',
-                  border: '1px solid rgba(212, 175, 55, 0.4)'
+                  border: '1px solid rgba(255, 31, 143, 0.4)'
                 }}>
-                  <p style={{ fontSize: '14px', color: '#d4af37', fontWeight: '600' }}>
-                    📅 {calendar.custom_months[calendar.current_month - 1]?.name || 'Month'} {calendar.current_day}, Year {calendar.current_year}
+                  <p style={{ fontSize: '14px', color: '#ff1f8f', fontWeight: '600' }}>
+                    {calendar.custom_months[calendar.current_month - 1]?.name || 'Month'} {calendar.current_day}, Year {calendar.current_year}
                   </p>
                 </div>
                 {upcomingEvents.length > 0 && (
                   <div style={{ 
-                    background: upcomingEvents[0].daysUntil === 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(212, 175, 55, 0.2)', 
+                    background: upcomingEvents[0].daysUntil === 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(56, 189, 248, 0.2)', 
                     padding: '8px 16px', 
                     borderRadius: '8px',
                     border: '1px solid',
-                    borderColor: upcomingEvents[0].daysUntil === 0 ? '#22c55e' : 'rgba(212, 175, 55, 0.4)'
+                    borderColor: upcomingEvents[0].daysUntil === 0 ? '#22c55e' : 'rgba(56, 189, 248, 0.4)'
                   }}>
-                    <p style={{ fontSize: '13px', color: upcomingEvents[0].daysUntil === 0 ? '#22c55e' : '#d4af37', fontWeight: '600' }}>
-                      ⚡ {upcomingEvents[0].name}: {upcomingEvents[0].daysUntil === 0 ? 'TODAY!' : `${upcomingEvents[0].daysUntil} day(s)`}
+                    <p style={{ fontSize: '13px', color: upcomingEvents[0].daysUntil === 0 ? '#22c55e' : '#38bdf8', fontWeight: '600' }}>
+                      {upcomingEvents[0].name}: {upcomingEvents[0].daysUntil === 0 ? 'TODAY!' : `${upcomingEvents[0].daysUntil} day(s)`}
                     </p>
                   </div>
                 )}
@@ -446,14 +446,14 @@ Each turn: 3 actions + 1 reaction
         {/* Players */}
         <Card data-testid="dm-screen-players" className="parchment-dark" style={{ height: 'fit-content' }}>
           <CardHeader>
-            <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '12px' }}>
               <Users size={24} />
               Players
             </CardTitle>
           </CardHeader>
           <CardContent>
             {players.length === 0 ? (
-              <p style={{ color: '#8b7355', textAlign: 'center', padding: '20px' }}>No players added</p>
+              <p style={{ color: '#7dd3fc', textAlign: 'center', padding: '20px' }}>No players added</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {players.map(player => (
@@ -465,7 +465,7 @@ Each turn: 3 actions + 1 reaction
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                       <h3 className="gold-text" style={{ fontSize: '16px' }}>{player.name}</h3>
-                      <span style={{ fontSize: '12px', color: '#8b7355' }}>{player.character_class} {player.level}</span>
+                      <span style={{ fontSize: '12px', color: '#7dd3fc' }}>{player.character_class} {player.level}</span>
                     </div>
                     <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
                       <div className="stat-block" style={{ flex: 1 }}>
@@ -498,14 +498,14 @@ Each turn: 3 actions + 1 reaction
         {/* NPCs Quick Reference */}
         <Card data-testid="dm-screen-npcs" className="parchment-dark" style={{ height: 'fit-content' }}>
           <CardHeader>
-            <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '12px' }}>
               <Scroll size={24} />
               NPCs Quick Reference
             </CardTitle>
           </CardHeader>
           <CardContent>
             {npcs.length === 0 ? (
-              <p style={{ color: '#8b7355', textAlign: 'center', padding: '20px' }}>No NPCs added</p>
+              <p style={{ color: '#7dd3fc', textAlign: 'center', padding: '20px' }}>No NPCs added</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {npcs.slice(0, 10).map(npc => (
@@ -517,9 +517,9 @@ Each turn: 3 actions + 1 reaction
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                       <h3 className="gold-text" style={{ fontSize: '16px' }}>{npc.name}</h3>
-                      {npc.location && <span style={{ fontSize: '12px', color: '#8b7355' }}>{npc.location}</span>}
+                      {npc.location && <span style={{ fontSize: '12px', color: '#7dd3fc' }}>{npc.location}</span>}
                     </div>
-                    <p style={{ fontSize: '13px', color: '#e8dcc4', marginBottom: '8px' }}>{npc.description}</p>
+                    <p style={{ fontSize: '13px', color: '#e0f2fe', marginBottom: '8px' }}>{npc.description}</p>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <div className="stat-block" style={{ flex: 1 }}>
                         <div className="stat-label">HP</div>
@@ -540,13 +540,13 @@ Each turn: 3 actions + 1 reaction
         {/* Quick Notes */}
         <Card data-testid="dm-screen-notes" className="parchment-dark" style={{ height: 'fit-content' }}>
           <CardHeader>
-            <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '12px' }}>
               <Sparkles size={24} />
               AI Quick Notes
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p style={{ color: '#8b7355', fontSize: '13px', marginBottom: '12px', fontStyle: 'italic' }}>
+            <p style={{ color: '#7dd3fc', fontSize: '13px', marginBottom: '12px', fontStyle: 'italic' }}>
               Jot down what happens during play. AI will automatically organize it for you.
             </p>
             <div style={{ marginBottom: '12px' }}>
@@ -581,15 +581,15 @@ Each turn: 3 actions + 1 reaction
             </Button>
             <div style={{
               marginTop: '12px',
-              background: 'rgba(212, 175, 55, 0.1)',
+              background: 'rgba(255, 31, 143, 0.1)',
               padding: '12px',
               borderRadius: '6px',
-              border: '1px solid rgba(212, 175, 55, 0.3)'
+              border: '1px solid rgba(255, 31, 143, 0.3)'
             }}>
-              <p style={{ fontSize: '12px', color: '#d4af37', fontWeight: '600', marginBottom: '4px' }}>
-                ✨ Auto-Updates:
+              <p style={{ fontSize: '12px', color: '#ff1f8f', fontWeight: '600', marginBottom: '4px' }}>
+                Auto-Updates:
               </p>
-              <p style={{ color: '#e8dcc4', fontSize: '11px', lineHeight: '1.5' }}>
+              <p style={{ color: '#e0f2fe', fontSize: '11px', lineHeight: '1.5' }}>
                 AI extracts NPCs, locations, and gods mentioned in your notes and adds them automatically to their respective tabs!
               </p>
             </div>
@@ -600,7 +600,7 @@ Each turn: 3 actions + 1 reaction
         <Card data-testid="dm-screen-rules" className="parchment-dark" style={{ gridColumn: '1 / -1' }}>
           <CardHeader>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-              <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <BookOpen size={24} />
                 Rules Reference - {campaign?.system}
               </CardTitle>
@@ -645,7 +645,7 @@ Each turn: 3 actions + 1 reaction
             {/* Search Bar */}
             <div style={{ marginBottom: '16px', display: 'flex', gap: '8px' }}>
               <div style={{ position: 'relative', flex: 1 }}>
-                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#8b7355' }} />
+                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#7dd3fc' }} />
                 <Input
                   data-testid="rules-search-input"
                   type="text"
@@ -682,8 +682,8 @@ Each turn: 3 actions + 1 reaction
               />
             ) : (
               <div style={{
-                background: 'rgba(20, 16, 12, 0.6)',
-                border: '1px solid #5a4a2f',
+                background: 'rgba(10, 22, 40, 0.8)',
+                border: '1px solid #1e3a5f',
                 borderRadius: '8px',
                 padding: '20px',
                 maxHeight: '600px',
@@ -696,13 +696,13 @@ Each turn: 3 actions + 1 reaction
                   const isHighlighted = highlightedSections.includes(index);
                   
                   let style = {
-                    color: '#e8dcc4',
+                    color: '#e0f2fe',
                     fontSize: '14px',
                     lineHeight: '1.8',
                     marginBottom: '8px',
                     padding: '4px 8px',
                     borderRadius: '4px',
-                    background: isHighlighted ? 'rgba(212, 175, 55, 0.3)' : 'transparent',
+                    background: isHighlighted ? 'rgba(255, 31, 143, 0.3)' : 'transparent',
                     transition: 'background 0.3s'
                   };
 
@@ -711,7 +711,7 @@ Each turn: 3 actions + 1 reaction
                       ...style,
                       fontSize: '24px',
                       fontWeight: '700',
-                      color: '#d4af37',
+                      color: '#38bdf8',
                       marginTop: '24px',
                       marginBottom: '16px',
                       fontFamily: 'Crimson Text, serif'
@@ -721,7 +721,7 @@ Each turn: 3 actions + 1 reaction
                       ...style,
                       fontSize: '18px',
                       fontWeight: '600',
-                      color: '#d4af37',
+                      color: '#38bdf8',
                       marginTop: '16px',
                       marginBottom: '12px'
                     };
@@ -740,8 +740,8 @@ Each turn: 3 actions + 1 reaction
                       dangerouslySetInnerHTML={{
                         __html: line
                           .replace(/^###?\s/, '')
-                          .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #d4af37;">$1</strong>')
-                          .replace(/`(.*?)`/g, '<code style="background: rgba(212, 175, 55, 0.2); padding: 2px 6px; border-radius: 3px; font-family: monospace;">$1</code>')
+                          .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #ff1f8f;">$1</strong>')
+                          .replace(/`(.*?)`/g, '<code style="background: rgba(255, 31, 143, 0.2); padding: 2px 6px; border-radius: 3px; font-family: monospace;">$1</code>')
                       }}
                     />
                   );
