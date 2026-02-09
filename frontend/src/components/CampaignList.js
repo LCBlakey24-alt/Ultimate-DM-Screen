@@ -134,6 +134,25 @@ function CampaignList({ username, onLogout }) {
                       className="input"
                     />
                   </div>
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#e8dcc4', fontSize: '14px', fontWeight: '600' }}>
+                      TTRPG System
+                    </label>
+                    <select
+                      data-testid="campaign-system-select"
+                      value={newCampaign.system}
+                      onChange={(e) => setNewCampaign({ ...newCampaign, system: e.target.value })}
+                      className="input"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {ttrpgSystems.map(system => (
+                        <option key={system} value={system}>{system}</option>
+                      ))}
+                    </select>
+                    <p style={{ fontSize: '12px', color: '#8b7355', marginTop: '6px', fontStyle: 'italic' }}>
+                      AI will tailor content to your chosen system
+                    </p>
+                  </div>
                   <div style={{ marginBottom: '24px' }}>
                     <label style={{ display: 'block', marginBottom: '8px', color: '#e8dcc4', fontSize: '14px', fontWeight: '600' }}>
                       Description
