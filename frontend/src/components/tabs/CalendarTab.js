@@ -49,7 +49,15 @@ function CalendarTab({ campaignId }) {
   const [loading, setLoading] = useState(true);
   const [showEventDialog, setShowEventDialog] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
-  const [eventForm, setEventForm] = useState({ name: '', description: '', day: 1, month: 1, year: 1 });
+  const [eventForm, setEventForm] = useState({ 
+    name: '', 
+    description: '', 
+    day: 1, 
+    month: 1, 
+    year: 1,
+    is_recurring: false,
+    recurrence_type: 'none'
+  });
   const [advanceDays, setAdvanceDays] = useState(1);
   const [showCalendarBuilder, setShowCalendarBuilder] = useState(false);
   const [customMonths, setCustomMonths] = useState([{ name: 'Month 1', days: 30 }]);
