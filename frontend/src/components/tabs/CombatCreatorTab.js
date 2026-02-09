@@ -379,10 +379,10 @@ function CombatCreatorTab({ campaignId }) {
         <Card className="parchment-dark" style={{ padding: '60px 20px', textAlign: 'center' }}>
           <Swords size={64} style={{ color: '#5a4a2f', margin: '0 auto 24px' }} />
           <h3 className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37', marginBottom: '12px' }}>
-            No Active Combat
+            No Combatants Added
           </h3>
           <p style={{ color: '#8b7355', marginBottom: '24px' }}>
-            Click "Add Combatants" to begin tracking initiative
+            Add players, NPCs, and monsters to create a combat scenario
           </p>
         </Card>
       ) : (
