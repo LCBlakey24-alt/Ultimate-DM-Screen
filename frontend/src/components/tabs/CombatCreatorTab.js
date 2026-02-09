@@ -401,9 +401,9 @@ function CombatCreatorTab({ campaignId }) {
               style={{
                 minWidth: '280px',
                 maxWidth: '280px',
-                background: index === currentTurn ? 'rgba(212, 175, 55, 0.2)' : 'rgba(45, 36, 22, 0.9)',
-                border: index === currentTurn ? '3px solid #d4af37' : '1px solid #5a4a2f',
-                boxShadow: index === currentTurn ? '0 0 20px rgba(212, 175, 55, 0.4)' : '0 8px 32px rgba(0,0,0,0.4)',
+                background: 'rgba(45, 36, 22, 0.9)',
+                border: '1px solid #5a4a2f',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
                 position: 'relative'
               }}
             >
