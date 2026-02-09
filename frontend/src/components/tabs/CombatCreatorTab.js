@@ -466,4 +466,4 @@ function CombatCreatorTab({ campaignId }) {
   );
 }
 
-export default CombatTrackerTab;
+export default CombatCreatorTab;
