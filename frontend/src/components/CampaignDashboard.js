@@ -81,7 +81,20 @@ function CampaignDashboard({ username, onLogout }) {
               <h1 className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37', marginBottom: '4px' }}>
                 {campaign.name}
               </h1>
-              <p style={{ fontSize: '12px', color: '#8b7355' }}>Campaign Management</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ 
+                  fontSize: '11px', 
+                  color: '#d4af37', 
+                  background: 'rgba(212, 175, 55, 0.2)', 
+                  padding: '3px 10px', 
+                  borderRadius: '10px',
+                  border: '1px solid rgba(212, 175, 55, 0.4)',
+                  fontWeight: '600'
+                }}>
+                  {campaign.system || 'D&D 5e 2024'}
+                </span>
+                <p style={{ fontSize: '12px', color: '#8b7355' }}>Campaign Management</p>
+              </div>
             </div>
           </div>
           <Button 
