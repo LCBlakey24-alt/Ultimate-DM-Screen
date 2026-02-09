@@ -152,18 +152,30 @@ Each turn: 3 actions + 1 reaction
 
   const fetchAllData = async () => {
     try {
-      const [campaignRes, playersRes, npcsRes, initRes, settingRes] = await Promise.all([
+      const [campaignRes, playersRes, npcsRes, initRes, settingRes, calendarRes, eventsRes] = await Promise.all([
         axios.get(`${API}/campaigns/${campaignId}`),
         axios.get(`${API}/campaigns/${campaignId}/players`),
         axios.get(`${API}/campaigns/${campaignId}/npcs`),
         axios.get(`${API}/campaigns/${campaignId}/initiative`),
-        axios.get(`${API}/campaigns/${campaignId}/setting`)
+        axios.get(`${API}/campaigns/${campaignId}/setting`),
+        axios.get(`${API}/campaigns/${campaignId}/calendar`),
+        axios.get(`${API}/campaigns/${campaignId}/calendar-events`)
       ]);
       
       setCampaign(campaignRes.data);
       setPlayers(playersRes.data);
       setNPCs(npcsRes.data);
       setInitiative(initRes.data);
+      setCalendar(calendarRes.data);
+      
+      // Calculate upcoming events
+      const cal = calendarRes.data;
+      const events = eventsRes.data;
+      const upcoming = events
+        .map(event => ({ ...event, daysUntil: calculateDaysUntil(event, cal) }))
+        .filter(event => event.daysUntil >= 0 && event.daysUntil <= 7)
+        .sort((a, b) => a.daysUntil - b.daysUntil);
+      setUpcomingEvents(upcoming);
       
       // Load custom rules or default rules
       const customRules = settingRes.data?.dm_rules;
@@ -177,6 +189,22 @@ Each turn: 3 actions + 1 reaction
     } finally {
       setLoading(false);
     }
+  };
+
+  const calculateDaysUntil = (event, cal) => {
+    if (!cal) return 0;
+    
+    const currentDate = { year: cal.current_year, month: cal.current_month, day: cal.current_day };
+    const eventDate = { year: event.year, month: event.month, day: event.day };
+    
+    if (eventDate.year > currentDate.year) return 999;
+    if (eventDate.year < currentDate.year) return -1;
+    if (eventDate.month > currentDate.month) {
+      return (eventDate.month - currentDate.month) * 30 + (eventDate.day - currentDate.day);
+    }
+    if (eventDate.month < currentDate.month) return -1;
+    
+    return eventDate.day - currentDate.day;
   };
 
   const handleSaveRules = async () => {
