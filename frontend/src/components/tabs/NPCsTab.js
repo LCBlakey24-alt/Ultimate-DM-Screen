@@ -127,7 +127,7 @@ function NPCsTab({ campaignId }) {
     <div className="campaign-management-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
       <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#38bdf8' }}>NPCs & Monsters</h2>
+        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#ffffff' }}>NPCs & Monsters</h2>
         <Dialog open={showDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowDialog(open); }}>
           <DialogTrigger asChild>
             <Button data-testid="add-npc-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
@@ -137,7 +137,7 @@ function NPCsTab({ campaignId }) {
           </DialogTrigger>
           <DialogContent className="modal">
             <DialogHeader>
-              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8' }}>
+              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
                 {editingNPC ? 'Edit NPC' : 'Add NPC'}
               </DialogTitle>
             </DialogHeader>
@@ -212,7 +212,7 @@ function NPCsTab({ campaignId }) {
 
       {npcs.length === 0 ? (
         <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
-          <p style={{ color: '#7dd3fc' }}>No NPCs added yet. Add your first NPC!</p>
+          <p style={{ color: '#bae6fd' }}>No NPCs added yet. Add your first NPC!</p>
         </Card>
       ) : (
         <div style={{
@@ -223,19 +223,19 @@ function NPCsTab({ campaignId }) {
           {npcs.map(npc => (
             <Card key={npc.id} data-testid={`npc-card-${npc.id}`} className="card">
               <CardHeader>
-                <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#38bdf8', marginBottom: '4px' }}>
+                <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', marginBottom: '4px' }}>
                   {npc.name}
                 </CardTitle>
                 {npc.location && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
-                    <MapPin size={14} style={{ color: '#7dd3fc' }} />
-                    <p style={{ fontSize: '12px', color: '#7dd3fc' }}>{npc.location}</p>
+                    <MapPin size={14} style={{ color: '#bae6fd' }} />
+                    <p style={{ fontSize: '12px', color: '#bae6fd' }}>{npc.location}</p>
                   </div>
                 )}
               </CardHeader>
               <CardContent>
                 {npc.description && (
-                  <p style={{ fontSize: '14px', color: '#e0f2fe', marginBottom: '12px', lineHeight: '1.5' }}>{npc.description}</p>
+                  <p style={{ fontSize: '14px', color: '#ffffff', marginBottom: '12px', lineHeight: '1.5' }}>{npc.description}</p>
                 )}
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                   <div className="stat-block" style={{ flex: 1 }}>
@@ -248,7 +248,7 @@ function NPCsTab({ campaignId }) {
                   </div>
                 </div>
                 {npc.notes && (
-                  <p style={{ fontSize: '12px', color: '#7dd3fc', marginBottom: '12px', fontStyle: 'italic' }}>{npc.notes}</p>
+                  <p style={{ fontSize: '12px', color: '#bae6fd', marginBottom: '12px', fontStyle: 'italic' }}>{npc.notes}</p>
                 )}
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <Button data-testid={`edit-npc-btn-${npc.id}`} onClick={() => handleEdit(npc)} className="btn-secondary" style={{ flex: 1 }}>
@@ -267,15 +267,15 @@ function NPCsTab({ campaignId }) {
 
       {/* AI Assistant Panel */}
       <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
-        <Card className="parchment-dark" style={{ border: '2px solid #38bdf8' }}>
+        <Card className="parchment-dark" style={{ border: '2px solid #ffffff' }}>
           <CardHeader>
-            <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={20} />
               AI Assistant
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p style={{ fontSize: '13px', color: '#7dd3fc', marginBottom: '16px', lineHeight: '1.5' }}>
+            <p style={{ fontSize: '13px', color: '#bae6fd', marginBottom: '16px', lineHeight: '1.5' }}>
               Generate NPC personalities, backstories, motivations, and stats with AI.
             </p>
             <div style={{ marginBottom: '16px' }}>
@@ -331,7 +331,7 @@ function NPCsTab({ campaignId }) {
                   maxHeight: '400px',
                   overflow: 'auto',
                   fontSize: '13px',
-                  color: '#e0f2fe',
+                  color: '#ffffff',
                   lineHeight: '1.6',
                   whiteSpace: 'pre-wrap'
                 }}>

@@ -128,7 +128,7 @@ function GodsTab({ campaignId }) {
       {/* Main Content */}
       <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#38bdf8' }}>Gods & Deities</h2>
+        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#ffffff' }}>Gods & Deities</h2>
         <Dialog open={showDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowDialog(open); }}>
           <DialogTrigger asChild>
             <Button data-testid="add-god-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
@@ -138,7 +138,7 @@ function GodsTab({ campaignId }) {
           </DialogTrigger>
           <DialogContent className="modal" style={{ maxWidth: '600px' }}>
             <DialogHeader>
-              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8' }}>
+              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
                 {editingGod ? 'Edit God' : 'Add God'}
               </DialogTitle>
             </DialogHeader>
@@ -217,7 +217,7 @@ function GodsTab({ campaignId }) {
 
       {gods.length === 0 ? (
         <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
-          <p style={{ color: '#7dd3fc' }}>No gods added yet. Create your pantheon!</p>
+          <p style={{ color: '#bae6fd' }}>No gods added yet. Create your pantheon!</p>
         </Card>
       ) : (
         <div style={{
@@ -229,12 +229,12 @@ function GodsTab({ campaignId }) {
             <Card key={god.id} data-testid={`god-card-${god.id}`} className="card">
               <CardHeader>
                 <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
-                  <Sparkles size={24} style={{ color: '#38bdf8', marginTop: '4px' }} />
+                  <Sparkles size={24} style={{ color: '#ffffff', marginTop: '4px' }} />
                   <div style={{ flex: 1 }}>
-                    <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#38bdf8', marginBottom: '4px' }}>
+                    <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', marginBottom: '4px' }}>
                       {god.name}
                     </CardTitle>
-                    <p style={{ fontSize: '14px', color: '#7dd3fc' }}>
+                    <p style={{ fontSize: '14px', color: '#bae6fd' }}>
                       {god.domain && `${god.domain}`}
                       {god.domain && god.alignment && ' • '}
                       {god.alignment}
@@ -245,15 +245,15 @@ function GodsTab({ campaignId }) {
               <CardContent>
                 {god.symbol && (
                   <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(255, 31, 143, 0.1)', borderRadius: '6px' }}>
-                    <p style={{ fontSize: '12px', color: '#7dd3fc', marginBottom: '4px' }}>Symbol</p>
-                    <p style={{ fontSize: '14px', color: '#e0f2fe' }}>{god.symbol}</p>
+                    <p style={{ fontSize: '12px', color: '#bae6fd', marginBottom: '4px' }}>Symbol</p>
+                    <p style={{ fontSize: '14px', color: '#ffffff' }}>{god.symbol}</p>
                   </div>
                 )}
                 {god.description && (
-                  <p style={{ fontSize: '14px', color: '#e0f2fe', marginBottom: '12px', lineHeight: '1.5' }}>{god.description}</p>
+                  <p style={{ fontSize: '14px', color: '#ffffff', marginBottom: '12px', lineHeight: '1.5' }}>{god.description}</p>
                 )}
                 {god.notes && (
-                  <p style={{ fontSize: '12px', color: '#7dd3fc', marginBottom: '12px', fontStyle: 'italic' }}>{god.notes}</p>
+                  <p style={{ fontSize: '12px', color: '#bae6fd', marginBottom: '12px', fontStyle: 'italic' }}>{god.notes}</p>
                 )}
                 <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
                   <Button data-testid={`edit-god-btn-${god.id}`} onClick={() => handleEdit(god)} className="btn-secondary" style={{ flex: 1 }}>
@@ -272,15 +272,15 @@ function GodsTab({ campaignId }) {
 
       {/* AI Assistant Panel */}
       <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
-        <Card className="parchment-dark" style={{ border: '2px solid #38bdf8' }}>
+        <Card className="parchment-dark" style={{ border: '2px solid #ffffff' }}>
           <CardHeader>
-            <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={20} />
               AI Assistant
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p style={{ fontSize: '13px', color: '#7dd3fc', marginBottom: '16px', lineHeight: '1.5' }}>
+            <p style={{ fontSize: '13px', color: '#bae6fd', marginBottom: '16px', lineHeight: '1.5' }}>
               Generate god ideas, domains, descriptions, and lore with AI.
             </p>
             <div style={{ marginBottom: '16px' }}>
@@ -336,7 +336,7 @@ function GodsTab({ campaignId }) {
                   maxHeight: '400px',
                   overflow: 'auto',
                   fontSize: '13px',
-                  color: '#e0f2fe',
+                  color: '#ffffff',
                   lineHeight: '1.6',
                   whiteSpace: 'pre-wrap'
                 }}>

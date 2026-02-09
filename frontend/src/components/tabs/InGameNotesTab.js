@@ -115,8 +115,8 @@ function InGameNotesTab({ campaignId }) {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#38bdf8', marginBottom: '8px' }}>In-Game Notes</h2>
-          <p style={{ fontSize: '14px', color: '#7dd3fc' }}>Take notes during your session and let AI organize them automatically</p>
+          <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#ffffff', marginBottom: '8px' }}>In-Game Notes</h2>
+          <p style={{ fontSize: '14px', color: '#bae6fd' }}>Take notes during your session and let AI organize them automatically</p>
         </div>
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogTrigger asChild>
@@ -127,10 +127,10 @@ function InGameNotesTab({ campaignId }) {
           </DialogTrigger>
           <DialogContent className="modal" style={{ maxWidth: '700px' }}>
             <DialogHeader>
-              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8' }}>
+              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
                 Add Session Note
               </DialogTitle>
-              <DialogDescription style={{ color: '#7dd3fc', marginTop: '8px' }}>
+              <DialogDescription style={{ color: '#bae6fd', marginTop: '8px' }}>
                 Write down what happened in your session. AI will help organize it into NPCs, locations, and more.
               </DialogDescription>
             </DialogHeader>
@@ -160,7 +160,7 @@ function InGameNotesTab({ campaignId }) {
 
       {notes.length === 0 ? (
         <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
-          <p style={{ color: '#7dd3fc' }}>No session notes yet. Start taking notes during your game!</p>
+          <p style={{ color: '#bae6fd' }}>No session notes yet. Start taking notes during your game!</p>
         </Card>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -169,7 +169,7 @@ function InGameNotesTab({ campaignId }) {
               <CardContent style={{ padding: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: '12px', color: '#7dd3fc', marginBottom: '8px' }}>
+                    <p style={{ fontSize: '12px', color: '#bae6fd', marginBottom: '8px' }}>
                       {new Date(note.session_date || note.created_at).toLocaleDateString()} {new Date(note.session_date || note.created_at).toLocaleTimeString()}
                     </p>
                     {note.ai_processed && (
@@ -212,7 +212,7 @@ function InGameNotesTab({ campaignId }) {
                   </div>
                 </div>
                 <div style={{ 
-                  color: '#e0f2fe',
+                  color: '#ffffff',
                   fontSize: '14px',
                   lineHeight: '1.8',
                   whiteSpace: 'pre-wrap',
@@ -233,11 +233,11 @@ function InGameNotesTab({ campaignId }) {
       <Dialog open={showSuggestionsDialog} onOpenChange={setShowSuggestionsDialog}>
         <DialogContent className="modal" style={{ maxWidth: '800px', maxHeight: '80vh', overflow: 'auto' }}>
           <DialogHeader>
-            <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '12px' }}>
               <Sparkles size={28} />
               AI Suggestions
             </DialogTitle>
-            <DialogDescription style={{ color: '#7dd3fc', marginTop: '8px' }}>
+            <DialogDescription style={{ color: '#bae6fd', marginTop: '8px' }}>
               Review and apply suggested additions to your campaign
             </DialogDescription>
           </DialogHeader>
@@ -249,9 +249,9 @@ function InGameNotesTab({ campaignId }) {
                   <h3 className="gold-text" style={{ fontSize: '18px', marginBottom: '12px' }}>New NPCs</h3>
                   {aiSuggestions.new_npcs.map((npc, idx) => (
                     <Card key={idx} className="parchment-dark" style={{ marginBottom: '12px', padding: '16px' }}>
-                      <h4 style={{ color: '#38bdf8', fontSize: '16px', marginBottom: '8px' }}>{npc.name}</h4>
-                      <p style={{ color: '#e0f2fe', fontSize: '14px', marginBottom: '12px' }}>{npc.description}</p>
-                      {npc.notes && <p style={{ color: '#7dd3fc', fontSize: '12px', fontStyle: 'italic', marginBottom: '12px' }}>{npc.notes}</p>}
+                      <h4 style={{ color: '#ffffff', fontSize: '16px', marginBottom: '8px' }}>{npc.name}</h4>
+                      <p style={{ color: '#ffffff', fontSize: '14px', marginBottom: '12px' }}>{npc.description}</p>
+                      {npc.notes && <p style={{ color: '#bae6fd', fontSize: '12px', fontStyle: 'italic', marginBottom: '12px' }}>{npc.notes}</p>}
                       <Button
                         onClick={() => handleApplySuggestion('new_npc', npc)}
                         className="btn-primary"
@@ -270,11 +270,11 @@ function InGameNotesTab({ campaignId }) {
                   <h3 className="gold-text" style={{ fontSize: '18px', marginBottom: '12px' }}>New Locations</h3>
                   {aiSuggestions.new_locations.map((location, idx) => (
                     <Card key={idx} className="parchment-dark" style={{ marginBottom: '12px', padding: '16px' }}>
-                      <h4 style={{ color: '#38bdf8', fontSize: '16px', marginBottom: '8px' }}>
+                      <h4 style={{ color: '#ffffff', fontSize: '16px', marginBottom: '8px' }}>
                         {location.name} {location.type && `(${location.type})`}
                       </h4>
-                      <p style={{ color: '#e0f2fe', fontSize: '14px', marginBottom: '12px' }}>{location.description}</p>
-                      {location.notes && <p style={{ color: '#7dd3fc', fontSize: '12px', fontStyle: 'italic', marginBottom: '12px' }}>{location.notes}</p>}
+                      <p style={{ color: '#ffffff', fontSize: '14px', marginBottom: '12px' }}>{location.description}</p>
+                      {location.notes && <p style={{ color: '#bae6fd', fontSize: '12px', fontStyle: 'italic', marginBottom: '12px' }}>{location.notes}</p>}
                       <Button
                         onClick={() => handleApplySuggestion('new_location', location)}
                         className="btn-primary"
@@ -293,10 +293,10 @@ function InGameNotesTab({ campaignId }) {
                   <h3 className="gold-text" style={{ fontSize: '18px', marginBottom: '12px' }}>New Gods</h3>
                   {aiSuggestions.new_gods.map((god, idx) => (
                     <Card key={idx} className="parchment-dark" style={{ marginBottom: '12px', padding: '16px' }}>
-                      <h4 style={{ color: '#38bdf8', fontSize: '16px', marginBottom: '8px' }}>
+                      <h4 style={{ color: '#ffffff', fontSize: '16px', marginBottom: '8px' }}>
                         {god.name} {god.domain && `- ${god.domain}`}
                       </h4>
-                      <p style={{ color: '#e0f2fe', fontSize: '14px', marginBottom: '12px' }}>{god.description}</p>
+                      <p style={{ color: '#ffffff', fontSize: '14px', marginBottom: '12px' }}>{god.description}</p>
                       <Button
                         onClick={() => handleApplySuggestion('new_god', god)}
                         className="btn-primary"
@@ -318,19 +318,19 @@ function InGameNotesTab({ campaignId }) {
                     Suggested Updates (Manual Review Needed)
                   </h3>
                   <Card className="parchment-dark" style={{ padding: '16px' }}>
-                    <p style={{ color: '#e0f2fe', fontSize: '14px', lineHeight: '1.6' }}>
+                    <p style={{ color: '#ffffff', fontSize: '14px', lineHeight: '1.6' }}>
                       AI detected updates to existing entities. Please review and manually update:
                     </p>
                     {aiSuggestions.npc_updates?.map((update, idx) => (
                       <div key={idx} style={{ marginTop: '12px', padding: '12px', background: 'rgba(255, 31, 143, 0.1)', borderRadius: '6px' }}>
-                        <p style={{ color: '#38bdf8', fontSize: '14px', fontWeight: '600' }}>NPC: {update.name}</p>
-                        <p style={{ color: '#e0f2fe', fontSize: '13px', marginTop: '4px' }}>{update.additional_notes}</p>
+                        <p style={{ color: '#ffffff', fontSize: '14px', fontWeight: '600' }}>NPC: {update.name}</p>
+                        <p style={{ color: '#ffffff', fontSize: '13px', marginTop: '4px' }}>{update.additional_notes}</p>
                       </div>
                     ))}
                     {aiSuggestions.location_updates?.map((update, idx) => (
                       <div key={idx} style={{ marginTop: '12px', padding: '12px', background: 'rgba(255, 31, 143, 0.1)', borderRadius: '6px' }}>
-                        <p style={{ color: '#38bdf8', fontSize: '14px', fontWeight: '600' }}>Location: {update.name}</p>
-                        <p style={{ color: '#e0f2fe', fontSize: '13px', marginTop: '4px' }}>{update.additional_notes}</p>
+                        <p style={{ color: '#ffffff', fontSize: '14px', fontWeight: '600' }}>Location: {update.name}</p>
+                        <p style={{ color: '#ffffff', fontSize: '13px', marginTop: '4px' }}>{update.additional_notes}</p>
                       </div>
                     ))}
                   </Card>
@@ -343,7 +343,7 @@ function InGameNotesTab({ campaignId }) {
                (!aiSuggestions.npc_updates || aiSuggestions.npc_updates.length === 0) &&
                (!aiSuggestions.location_updates || aiSuggestions.location_updates.length === 0) && (
                 <Card className="parchment-dark" style={{ padding: '32px', textAlign: 'center' }}>
-                  <p style={{ color: '#7dd3fc' }}>No new entities detected in this note.</p>
+                  <p style={{ color: '#bae6fd' }}>No new entities detected in this note.</p>
                 </Card>
               )}
 
