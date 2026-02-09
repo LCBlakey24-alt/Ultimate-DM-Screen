@@ -398,10 +398,41 @@ Each turn: 3 actions + 1 reaction
         marginBottom: '20px',
         borderRadius: '12px'
       }}>
-        <h1 className="medieval-heading" style={{ fontSize: '32px', color: '#d4af37', textAlign: 'center' }}>
-          <Sword size={32} style={{ display: 'inline', marginRight: '12px', verticalAlign: 'middle' }} />
-          {campaign?.name} - DM Screen
-        </h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+          <div>
+            <h1 className="medieval-heading" style={{ fontSize: '32px', color: '#d4af37', textAlign: 'left', marginBottom: '8px' }}>
+              <Sword size={32} style={{ display: 'inline', marginRight: '12px', verticalAlign: 'middle' }} />
+              {campaign?.name} - DM Screen
+            </h1>
+            {calendar && (
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ 
+                  background: 'rgba(212, 175, 55, 0.2)', 
+                  padding: '8px 16px', 
+                  borderRadius: '8px',
+                  border: '1px solid rgba(212, 175, 55, 0.4)'
+                }}>
+                  <p style={{ fontSize: '14px', color: '#d4af37', fontWeight: '600' }}>
+                    📅 {calendar.custom_months[calendar.current_month - 1]?.name || 'Month'} {calendar.current_day}, Year {calendar.current_year}
+                  </p>
+                </div>
+                {upcomingEvents.length > 0 && (
+                  <div style={{ 
+                    background: upcomingEvents[0].daysUntil === 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(212, 175, 55, 0.2)', 
+                    padding: '8px 16px', 
+                    borderRadius: '8px',
+                    border: '1px solid',
+                    borderColor: upcomingEvents[0].daysUntil === 0 ? '#22c55e' : 'rgba(212, 175, 55, 0.4)'
+                  }}>
+                    <p style={{ fontSize: '13px', color: upcomingEvents[0].daysUntil === 0 ? '#22c55e' : '#d4af37', fontWeight: '600' }}>
+                      ⚡ {upcomingEvents[0].name}: {upcomingEvents[0].daysUntil === 0 ? 'TODAY!' : `${upcomingEvents[0].daysUntil} day(s)`}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Main Content Grid */}
