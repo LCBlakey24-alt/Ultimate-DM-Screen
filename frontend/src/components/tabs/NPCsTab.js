@@ -259,7 +259,6 @@ function NPCsTab({ campaignId }) {
           ))}
         </div>
       )}
-    </div>
       </div>
 
       {/* AI Assistant Panel */}
