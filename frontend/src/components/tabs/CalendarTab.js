@@ -265,7 +265,7 @@ function CalendarTab({ campaignId }) {
       {/* Main Calendar */}
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#d4af37' }}>Campaign Calendar</h2>
+          <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#38bdf8' }}>Campaign Calendar</h2>
           <div style={{ display: 'flex', gap: '8px' }}>
             <select
               data-testid="calendar-type-select"
@@ -282,10 +282,10 @@ function CalendarTab({ campaignId }) {
 
         {/* Current Date Display */}
         <Card className="parchment-dark" style={{ marginBottom: '24px', padding: '32px', textAlign: 'center' }}>
-          <h3 className="medieval-heading" style={{ fontSize: '48px', color: '#d4af37', marginBottom: '8px' }}>
+          <h3 className="medieval-heading" style={{ fontSize: '48px', color: '#ff1f8f', marginBottom: '8px' }}>
             {currentMonth?.name || 'Month'} {calendar.current_day}, {calendar.current_year}
           </h3>
-          <p style={{ fontSize: '18px', color: '#8b7355' }}>Current In-Game Date</p>
+          <p style={{ fontSize: '18px', color: '#7dd3fc' }}>Current In-Game Date</p>
           
           <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center', gap: '12px', alignItems: 'center' }}>
             <Input
@@ -297,7 +297,7 @@ function CalendarTab({ campaignId }) {
               className="input"
               style={{ width: '80px', textAlign: 'center' }}
             />
-            <span style={{ color: '#8b7355' }}>day(s)</span>
+            <span style={{ color: '#7dd3fc' }}>day(s)</span>
             <Button
               data-testid="advance-time-btn"
               onClick={handleAdvanceTime}
@@ -313,7 +313,7 @@ function CalendarTab({ campaignId }) {
         {/* All Events List */}
         <Card className="parchment-dark" style={{ padding: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h3 className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37' }}>All Events</h3>
+            <h3 className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8' }}>All Events</h3>
             <Dialog open={showEventDialog} onOpenChange={(open) => { if (!open) resetEventForm(); setShowEventDialog(open); }}>
               <DialogTrigger asChild>
                 <Button data-testid="add-event-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
@@ -323,13 +323,13 @@ function CalendarTab({ campaignId }) {
               </DialogTrigger>
               <DialogContent className="modal">
                 <DialogHeader>
-                  <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37' }}>
+                  <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8' }}>
                     {editingEvent ? 'Edit Event' : 'Add Event'}
                   </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSaveEvent} style={{ marginTop: '20px' }}>
                   <div style={{ marginBottom: '16px' }}>
-                    <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Event Name</label>
+                    <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#ff1f8f' }}>Event Name</label>
                     <Input
                       data-testid="event-name-input"
                       value={eventForm.name}
@@ -339,7 +339,7 @@ function CalendarTab({ campaignId }) {
                     />
                   </div>
                   <div style={{ marginBottom: '16px' }}>
-                    <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Description</label>
+                    <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#ff1f8f' }}>Description</label>
                     <textarea
                       data-testid="event-description-input"
                       value={eventForm.description}
@@ -349,7 +349,7 @@ function CalendarTab({ campaignId }) {
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '24px' }}>
                     <div>
-                      <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Day</label>
+                      <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#ff1f8f' }}>Day</label>
                       <Input
                         data-testid="event-day-input"
                         type="number"
@@ -361,7 +361,7 @@ function CalendarTab({ campaignId }) {
                       />
                     </div>
                     <div>
-                      <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Month</label>
+                      <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#ff1f8f' }}>Month</label>
                       <select
                         data-testid="event-month-select"
                         value={eventForm.month}
@@ -374,7 +374,7 @@ function CalendarTab({ campaignId }) {
                       </select>
                     </div>
                     <div>
-                      <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Year</label>
+                      <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#ff1f8f' }}>Year</label>
                       <Input
                         data-testid="event-year-input"
                         type="number"
@@ -396,7 +396,7 @@ function CalendarTab({ campaignId }) {
           </div>
 
           {events.length === 0 ? (
-            <p style={{ textAlign: 'center', color: '#8b7355', padding: '20px' }}>No events scheduled</p>
+            <p style={{ textAlign: 'center', color: '#7dd3fc', padding: '20px' }}>No events scheduled</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {events.sort((a, b) => {
@@ -415,27 +415,27 @@ function CalendarTab({ campaignId }) {
                     data-testid={`event-${event.id}`}
                     className="initiative-entry"
                     style={{
-                      borderLeftColor: isToday ? '#22c55e' : isPast ? '#6b7280' : '#d4af37',
+                      borderLeftColor: isToday ? '#22c55e' : isPast ? '#6b7280' : '#ff1f8f',
                       opacity: isPast ? 0.6 : 1
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
                       <div style={{ flex: 1 }}>
-                        <h4 className="gold-text" style={{ fontSize: '16px', marginBottom: '4px' }}>{event.name}</h4>
-                        <p style={{ fontSize: '13px', color: '#8b7355', marginBottom: '4px' }}>
+                        <h4 className="gold-text" style={{ fontSize: '16px', marginBottom: '4px', color: '#38bdf8' }}>{event.name}</h4>
+                        <p style={{ fontSize: '13px', color: '#7dd3fc', marginBottom: '4px' }}>
                           {monthName} {event.day}, {event.year}
                         </p>
                         {!isPast && daysUntil <= 30 && (
                           <p style={{ 
                             fontSize: '12px', 
-                            color: isToday ? '#22c55e' : '#d4af37',
+                            color: isToday ? '#22c55e' : '#ff1f8f',
                             fontWeight: '600'
                           }}>
                             {isToday ? 'TODAY!' : `In ${daysUntil} day(s)`}
                           </p>
                         )}
                         {event.description && (
-                          <p style={{ fontSize: '13px', color: '#e8dcc4', marginTop: '8px' }}>{event.description}</p>
+                          <p style={{ fontSize: '13px', color: '#e0f2fe', marginTop: '8px' }}>{event.description}</p>
                         )}
                       </div>
                       <div style={{ display: 'flex', gap: '4px' }}>
@@ -466,15 +466,15 @@ function CalendarTab({ campaignId }) {
 
       {/* Upcoming Events Sidebar */}
       <div style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
-        <Card className="parchment-dark" style={{ border: '2px solid #d4af37' }}>
+        <Card className="parchment-dark" style={{ border: '2px solid #ff1f8f' }}>
           <CardHeader>
-            <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#d4af37' }}>
+            <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#38bdf8' }}>
               Upcoming (30 days)
             </CardTitle>
           </CardHeader>
           <CardContent>
             {upcomingEvents.length === 0 ? (
-              <p style={{ fontSize: '13px', color: '#8b7355', textAlign: 'center', padding: '20px' }}>
+              <p style={{ fontSize: '13px', color: '#7dd3fc', textAlign: 'center', padding: '20px' }}>
                 No events in the next 30 days
               </p>
             ) : (
@@ -486,20 +486,20 @@ function CalendarTab({ campaignId }) {
                       key={event.id}
                       style={{
                         padding: '12px',
-                        background: event.daysUntil === 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(212, 175, 55, 0.1)',
+                        background: event.daysUntil === 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255, 31, 143, 0.1)',
                         border: '1px solid',
-                        borderColor: event.daysUntil === 0 ? '#22c55e' : '#5a4a2f',
+                        borderColor: event.daysUntil === 0 ? '#22c55e' : '#1e3a5f',
                         borderRadius: '8px'
                       }}
                     >
-                      <h5 className="gold-text" style={{ fontSize: '14px', marginBottom: '4px' }}>{event.name}</h5>
-                      <p style={{ fontSize: '12px', color: '#8b7355', marginBottom: '6px' }}>
+                      <h5 className="gold-text" style={{ fontSize: '14px', marginBottom: '4px', color: '#38bdf8' }}>{event.name}</h5>
+                      <p style={{ fontSize: '12px', color: '#7dd3fc', marginBottom: '6px' }}>
                         {monthName} {event.day}
                       </p>
                       <p style={{ 
                         fontSize: '13px', 
                         fontWeight: '700',
-                        color: event.daysUntil === 0 ? '#22c55e' : '#d4af37'
+                        color: event.daysUntil === 0 ? '#22c55e' : '#ff1f8f'
                       }}>
                         {event.daysUntil === 0 ? 'TODAY!' : `${event.daysUntil} day(s)`}
                       </p>
