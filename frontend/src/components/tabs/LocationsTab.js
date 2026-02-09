@@ -124,7 +124,7 @@ function LocationsTab({ campaignId }) {
     <div className="campaign-management-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
       <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#d4af37' }}>Locations</h2>
+        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#38bdf8' }}>Locations</h2>
         <Dialog open={showDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowDialog(open); }}>
           <DialogTrigger asChild>
             <Button data-testid="add-location-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
@@ -134,7 +134,7 @@ function LocationsTab({ campaignId }) {
           </DialogTrigger>
           <DialogContent className="modal" style={{ maxWidth: '600px' }}>
             <DialogHeader>
-              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37' }}>
+              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8' }}>
                 {editingLocation ? 'Edit Location' : 'Add Location'}
               </DialogTitle>
             </DialogHeader>
@@ -201,7 +201,7 @@ function LocationsTab({ campaignId }) {
 
       {locations.length === 0 ? (
         <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
-          <p style={{ color: '#8b7355' }}>No locations added yet. Build your world!</p>
+          <p style={{ color: '#7dd3fc' }}>No locations added yet. Build your world!</p>
         </Card>
       ) : (
         <div style={{
@@ -213,29 +213,29 @@ function LocationsTab({ campaignId }) {
             <Card key={location.id} data-testid={`location-card-${location.id}`} className="card">
               <CardHeader>
                 <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
-                  <MapPin size={24} style={{ color: '#d4af37', marginTop: '4px' }} />
+                  <MapPin size={24} style={{ color: '#38bdf8', marginTop: '4px' }} />
                   <div style={{ flex: 1 }}>
-                    <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#d4af37', marginBottom: '4px' }}>
+                    <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#38bdf8', marginBottom: '4px' }}>
                       {location.name}
                     </CardTitle>
                     {location.location_type && (
-                      <p style={{ fontSize: '14px', color: '#8b7355' }}>{location.location_type}</p>
+                      <p style={{ fontSize: '14px', color: '#7dd3fc' }}>{location.location_type}</p>
                     )}
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 {location.description && (
-                  <p style={{ fontSize: '14px', color: '#e8dcc4', marginBottom: '12px', lineHeight: '1.5' }}>{location.description}</p>
+                  <p style={{ fontSize: '14px', color: '#e0f2fe', marginBottom: '12px', lineHeight: '1.5' }}>{location.description}</p>
                 )}
                 {location.notable_npcs && (
-                  <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(212, 175, 55, 0.1)', borderRadius: '6px' }}>
-                    <p style={{ fontSize: '12px', color: '#8b7355', marginBottom: '4px' }}>Notable NPCs</p>
-                    <p style={{ fontSize: '14px', color: '#e8dcc4' }}>{location.notable_npcs}</p>
+                  <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(255, 31, 143, 0.1)', borderRadius: '6px' }}>
+                    <p style={{ fontSize: '12px', color: '#7dd3fc', marginBottom: '4px' }}>Notable NPCs</p>
+                    <p style={{ fontSize: '14px', color: '#e0f2fe' }}>{location.notable_npcs}</p>
                   </div>
                 )}
                 {location.notes && (
-                  <p style={{ fontSize: '12px', color: '#8b7355', marginBottom: '12px', fontStyle: 'italic' }}>{location.notes}</p>
+                  <p style={{ fontSize: '12px', color: '#7dd3fc', marginBottom: '12px', fontStyle: 'italic' }}>{location.notes}</p>
                 )}
                 <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
                   <Button data-testid={`edit-location-btn-${location.id}`} onClick={() => handleEdit(location)} className="btn-secondary" style={{ flex: 1 }}>
@@ -254,15 +254,15 @@ function LocationsTab({ campaignId }) {
 
       {/* AI Assistant Panel */}
       <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
-        <Card className="parchment-dark" style={{ border: '2px solid #d4af37' }}>
+        <Card className="parchment-dark" style={{ border: '2px solid #38bdf8' }}>
           <CardHeader>
-            <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={20} />
               AI Assistant
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p style={{ fontSize: '13px', color: '#8b7355', marginBottom: '16px', lineHeight: '1.5' }}>
+            <p style={{ fontSize: '13px', color: '#7dd3fc', marginBottom: '16px', lineHeight: '1.5' }}>
               Generate location descriptions, points of interest, shops, and more with AI.
             </p>
             <div style={{ marginBottom: '16px' }}>
@@ -311,14 +311,14 @@ function LocationsTab({ campaignId }) {
                   </Button>
                 </div>
                 <div style={{
-                  background: 'rgba(20, 16, 12, 0.6)',
-                  border: '1px solid #5a4a2f',
+                  background: 'rgba(10, 22, 40, 0.6)',
+                  border: '1px solid #1e3a5f',
                   borderRadius: '6px',
                   padding: '12px',
                   maxHeight: '400px',
                   overflow: 'auto',
                   fontSize: '13px',
-                  color: '#e8dcc4',
+                  color: '#e0f2fe',
                   lineHeight: '1.6',
                   whiteSpace: 'pre-wrap'
                 }}>

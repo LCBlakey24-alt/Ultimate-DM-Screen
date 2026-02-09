@@ -74,7 +74,7 @@ function CampaignSettingTab({ campaignId }) {
     <div className="campaign-management-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
       <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#d4af37' }}>Campaign Setting</h2>
+        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#38bdf8' }}>Campaign Setting</h2>
         <Button 
           data-testid="save-setting-btn"
           onClick={handleSave} 
@@ -88,7 +88,7 @@ function CampaignSettingTab({ campaignId }) {
       </div>
 
       <Card className="parchment-dark" style={{ padding: '32px' }}>
-        <p style={{ fontSize: '14px', color: '#8b7355', marginBottom: '16px', fontStyle: 'italic' }}>
+        <p style={{ fontSize: '14px', color: '#7dd3fc', marginBottom: '16px', fontStyle: 'italic' }}>
           Describe your campaign's world, setting, themes, and overall premise. This is your campaign's foundation.
         </p>
         <textarea
@@ -104,13 +104,13 @@ function CampaignSettingTab({ campaignId }) {
 
       {/* AI Assistant Panel */}
       <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
-        <Card className="parchment-dark" style={{ border: '2px solid #d4af37' }}>
+        <Card className="parchment-dark" style={{ border: '2px solid #38bdf8' }}>
           <div style={{ padding: '20px' }}>
-            <h3 className="medieval-heading" style={{ fontSize: '20px', color: '#d4af37', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 className="medieval-heading" style={{ fontSize: '20px', color: '#38bdf8', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={20} />
               AI Assistant
             </h3>
-            <p style={{ fontSize: '13px', color: '#8b7355', marginBottom: '16px', lineHeight: '1.5' }}>
+            <p style={{ fontSize: '13px', color: '#7dd3fc', marginBottom: '16px', lineHeight: '1.5' }}>
               Generate world-building ideas, setting descriptions, conflicts, and lore with AI.
             </p>
             <div style={{ marginBottom: '16px' }}>
@@ -159,14 +159,14 @@ function CampaignSettingTab({ campaignId }) {
                   </Button>
                 </div>
                 <div style={{
-                  background: 'rgba(20, 16, 12, 0.6)',
-                  border: '1px solid #5a4a2f',
+                  background: 'rgba(10, 22, 40, 0.6)',
+                  border: '1px solid #1e3a5f',
                   borderRadius: '6px',
                   padding: '12px',
                   maxHeight: '400px',
                   overflow: 'auto',
                   fontSize: '13px',
-                  color: '#e8dcc4',
+                  color: '#e0f2fe',
                   lineHeight: '1.6',
                   whiteSpace: 'pre-wrap'
                 }}>

@@ -104,7 +104,7 @@ function PlayersTab({ campaignId }) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#d4af37' }}>Players</h2>
+        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#38bdf8' }}>Players</h2>
         <Dialog open={showDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowDialog(open); }}>
           <DialogTrigger asChild>
             <Button data-testid="add-player-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
@@ -114,7 +114,7 @@ function PlayersTab({ campaignId }) {
           </DialogTrigger>
           <DialogContent className="modal" style={{ maxWidth: '700px' }}>
             <DialogHeader>
-              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37' }}>
+              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8' }}>
                 {editingPlayer ? 'Edit Player' : 'Add Player'}
               </DialogTitle>
             </DialogHeader>
@@ -187,7 +187,7 @@ function PlayersTab({ campaignId }) {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
                   {['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].map(stat => (
                     <div key={stat}>
-                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#8b7355', textTransform: 'capitalize' }}>{stat.slice(0, 3).toUpperCase()}</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', color: '#7dd3fc', textTransform: 'capitalize' }}>{stat.slice(0, 3).toUpperCase()}</label>
                       <Input
                         data-testid={`player-stat-${stat}-input`}
                         type="number"
@@ -219,7 +219,7 @@ function PlayersTab({ campaignId }) {
 
       {players.length === 0 ? (
         <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
-          <p style={{ color: '#8b7355' }}>No players added yet. Add your first player!</p>
+          <p style={{ color: '#7dd3fc' }}>No players added yet. Add your first player!</p>
         </Card>
       ) : (
         <div style={{
@@ -230,17 +230,17 @@ function PlayersTab({ campaignId }) {
           {players.map(player => (
             <Card key={player.id} data-testid={`player-card-${player.id}`} className="card">
               <CardHeader>
-                <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#d4af37', marginBottom: '4px' }}>
+                <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#38bdf8', marginBottom: '4px' }}>
                   {player.name}
                 </CardTitle>
-                <p style={{ fontSize: '14px', color: '#8b7355' }}>
+                <p style={{ fontSize: '14px', color: '#7dd3fc' }}>
                   {player.character_class} • Level {player.level}
                 </p>
               </CardHeader>
               <CardContent>
                 <div style={{ marginBottom: '12px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '12px', color: '#8b7355' }}>HP</span>
+                    <span style={{ fontSize: '12px', color: '#7dd3fc' }}>HP</span>
                     <span className="gold-text" style={{ fontSize: '14px', fontWeight: '600' }}>{player.hp}/{player.max_hp}</span>
                   </div>
                   <div className="hp-bar">
@@ -262,7 +262,7 @@ function PlayersTab({ campaignId }) {
                   </div>
                 </div>
                 {player.notes && (
-                  <p style={{ fontSize: '12px', color: '#8b7355', marginBottom: '12px', fontStyle: 'italic' }}>{player.notes}</p>
+                  <p style={{ fontSize: '12px', color: '#7dd3fc', marginBottom: '12px', fontStyle: 'italic' }}>{player.notes}</p>
                 )}
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <Button data-testid={`edit-player-btn-${player.id}`} onClick={() => handleEdit(player)} className="btn-secondary" style={{ flex: 1 }}>

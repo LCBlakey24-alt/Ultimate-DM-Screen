@@ -146,12 +146,12 @@ function CombatCreatorTab({ campaignId }) {
     <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '24px' }}>
       {/* Saved Scenarios List */}
       <div>
-        <h3 className="medieval-heading" style={{ fontSize: '20px', color: '#d4af37', marginBottom: '16px' }}>
+        <h3 className="medieval-heading" style={{ fontSize: '20px', color: '#38bdf8', marginBottom: '16px' }}>
           Saved Scenarios
         </h3>
         {scenarios.length === 0 ? (
           <Card className="parchment-dark" style={{ padding: '20px', textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', color: '#8b7355' }}>No scenarios yet</p>
+            <p style={{ fontSize: '13px', color: '#7dd3fc' }}>No scenarios yet</p>
           </Card>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -162,22 +162,22 @@ function CombatCreatorTab({ campaignId }) {
                 className="card"
                 style={{
                   cursor: 'pointer',
-                  background: selectedScenario?.id === scenario.id ? 'rgba(212, 175, 55, 0.2)' : 'rgba(45, 36, 22, 0.9)',
-                  border: selectedScenario?.id === scenario.id ? '2px solid #d4af37' : '1px solid #5a4a2f'
+                  background: selectedScenario?.id === scenario.id ? 'rgba(255, 31, 143, 0.2)' : 'rgba(13, 29, 51, 0.9)',
+                  border: selectedScenario?.id === scenario.id ? '2px solid #38bdf8' : '1px solid #1e3a5f'
                 }}
                 onClick={() => loadScenario(scenario)}
               >
                 <CardContent style={{ padding: '12px' }}>
                   <div style={{ marginBottom: '8px' }}>
-                    <h4 style={{ color: '#d4af37', fontSize: '14px', fontWeight: '600', marginBottom: '4px' }}>
+                    <h4 style={{ color: '#38bdf8', fontSize: '14px', fontWeight: '600', marginBottom: '4px' }}>
                       {scenario.name}
                     </h4>
                     {scenario.description && (
-                      <p style={{ fontSize: '12px', color: '#8b7355', marginBottom: '8px' }}>
+                      <p style={{ fontSize: '12px', color: '#7dd3fc', marginBottom: '8px' }}>
                         {scenario.description}
                       </p>
                     )}
-                    <p style={{ fontSize: '11px', color: '#8b7355' }}>
+                    <p style={{ fontSize: '11px', color: '#7dd3fc' }}>
                       {scenario.combatants.length} combatants
                     </p>
                   </div>
@@ -203,11 +203,11 @@ function CombatCreatorTab({ campaignId }) {
       <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Swords size={28} />
             Combat Creator
           </h2>
-          <p style={{ fontSize: '14px', color: '#8b7355', marginTop: '4px' }}>Pre-build combat encounters for quick deployment</p>
+          <p style={{ fontSize: '14px', color: '#7dd3fc', marginTop: '4px' }}>Pre-build combat encounters for quick deployment</p>
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <Button
@@ -246,7 +246,7 @@ function CombatCreatorTab({ campaignId }) {
       <Card className="parchment-dark" style={{ marginBottom: '24px', padding: '20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#d4af37', fontSize: '14px', fontWeight: '600' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#38bdf8', fontSize: '14px', fontWeight: '600' }}>
               Scenario Name *
             </label>
             <Input
@@ -259,7 +259,7 @@ function CombatCreatorTab({ campaignId }) {
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#d4af37', fontSize: '14px', fontWeight: '600' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#38bdf8', fontSize: '14px', fontWeight: '600' }}>
               Description
             </label>
             <Input
@@ -279,7 +279,7 @@ function CombatCreatorTab({ campaignId }) {
         <Card className="parchment-dark" style={{ marginBottom: '24px', padding: '20px' }}>
           <div style={{ marginBottom: '16px' }}>
             <div style={{ position: 'relative' }}>
-              <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#8b7355' }} />
+              <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#7dd3fc' }} />
               <Input
                 data-testid="combat-search-input"
                 type="text"
@@ -304,25 +304,25 @@ function CombatCreatorTab({ campaignId }) {
                     onClick={() => addToCombat(player, 'player')}
                     style={{
                       padding: '10px',
-                      background: 'rgba(20, 16, 12, 0.6)',
-                      border: '1px solid #5a4a2f',
+                      background: 'rgba(10, 22, 40, 0.6)',
+                      border: '1px solid #1e3a5f',
                       borderRadius: '6px',
                       marginBottom: '8px',
                       cursor: 'pointer',
                       transition: 'all 0.2s'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(212, 175, 55, 0.1)';
-                      e.currentTarget.style.borderColor = '#d4af37';
+                      e.currentTarget.style.background = 'rgba(255, 31, 143, 0.1)';
+                      e.currentTarget.style.borderColor = '#38bdf8';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(20, 16, 12, 0.6)';
-                      e.currentTarget.style.borderColor = '#5a4a2f';
+                      e.currentTarget.style.background = 'rgba(10, 22, 40, 0.6)';
+                      e.currentTarget.style.borderColor = '#1e3a5f';
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: '#e8dcc4', fontSize: '14px', fontWeight: '600' }}>{player.name}</span>
-                      <div style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#8b7355' }}>
+                      <span style={{ color: '#e0f2fe', fontSize: '14px', fontWeight: '600' }}>{player.name}</span>
+                      <div style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#7dd3fc' }}>
                         <span>HP: {player.hp}/{player.max_hp}</span>
                         <span>AC: {player.ac}</span>
                       </div>
@@ -343,25 +343,25 @@ function CombatCreatorTab({ campaignId }) {
                     onClick={() => addToCombat(npc, 'npc')}
                     style={{
                       padding: '10px',
-                      background: 'rgba(20, 16, 12, 0.6)',
-                      border: '1px solid #5a4a2f',
+                      background: 'rgba(10, 22, 40, 0.6)',
+                      border: '1px solid #1e3a5f',
                       borderRadius: '6px',
                       marginBottom: '8px',
                       cursor: 'pointer',
                       transition: 'all 0.2s'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(212, 175, 55, 0.1)';
-                      e.currentTarget.style.borderColor = '#d4af37';
+                      e.currentTarget.style.background = 'rgba(255, 31, 143, 0.1)';
+                      e.currentTarget.style.borderColor = '#38bdf8';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(20, 16, 12, 0.6)';
-                      e.currentTarget.style.borderColor = '#5a4a2f';
+                      e.currentTarget.style.background = 'rgba(10, 22, 40, 0.6)';
+                      e.currentTarget.style.borderColor = '#1e3a5f';
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: '#e8dcc4', fontSize: '14px', fontWeight: '600' }}>{npc.name}</span>
-                      <div style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#8b7355' }}>
+                      <span style={{ color: '#e0f2fe', fontSize: '14px', fontWeight: '600' }}>{npc.name}</span>
+                      <div style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#7dd3fc' }}>
                         <span>HP: {npc.hp}</span>
                         <span>AC: {npc.ac}</span>
                       </div>
@@ -377,11 +377,11 @@ function CombatCreatorTab({ campaignId }) {
       {/* Initiative Order Display */}
       {combatants.length === 0 ? (
         <Card className="parchment-dark" style={{ padding: '60px 20px', textAlign: 'center' }}>
-          <Swords size={64} style={{ color: '#5a4a2f', margin: '0 auto 24px' }} />
-          <h3 className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37', marginBottom: '12px' }}>
+          <Swords size={64} style={{ color: '#1e3a5f', margin: '0 auto 24px' }} />
+          <h3 className="medieval-heading" style={{ fontSize: '24px', color: '#38bdf8', marginBottom: '12px' }}>
             No Combatants Added
           </h3>
-          <p style={{ color: '#8b7355', marginBottom: '24px' }}>
+          <p style={{ color: '#7dd3fc', marginBottom: '24px' }}>
             Add players, NPCs, and monsters to create a combat scenario
           </p>
         </Card>
@@ -401,8 +401,8 @@ function CombatCreatorTab({ campaignId }) {
               style={{
                 minWidth: '280px',
                 maxWidth: '280px',
-                background: 'rgba(45, 36, 22, 0.9)',
-                border: '1px solid #5a4a2f',
+                background: 'rgba(13, 29, 51, 0.9)',
+                border: '1px solid #1e3a5f',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
                 position: 'relative'
               }}
@@ -410,7 +410,7 @@ function CombatCreatorTab({ campaignId }) {
               <CardHeader style={{ paddingBottom: '12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                   <div style={{ flex: 1 }}>
-                    <CardTitle className="medieval-heading" style={{ fontSize: '18px', color: '#d4af37', marginBottom: '4px' }}>
+                    <CardTitle className="medieval-heading" style={{ fontSize: '18px', color: '#38bdf8', marginBottom: '4px' }}>
                       {combatant.name}
                     </CardTitle>
                     <span style={{
@@ -437,7 +437,7 @@ function CombatCreatorTab({ campaignId }) {
               </CardHeader>
               <CardContent>
                 <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', color: '#8b7355', marginBottom: '6px' }}>Initiative</label>
+                  <label style={{ display: 'block', fontSize: '12px', color: '#7dd3fc', marginBottom: '6px' }}>Initiative</label>
                   <Input
                     data-testid={`initiative-input-${combatant.id}`}
                     type="number"
