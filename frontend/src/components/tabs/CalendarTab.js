@@ -179,7 +179,15 @@ function CalendarTab({ campaignId }) {
 
   const handleEditEvent = (event) => {
     setEditingEvent(event);
-    setEventForm({ name: event.name, description: event.description, day: event.day, month: event.month, year: event.year });
+    setEventForm({ 
+      name: event.name, 
+      description: event.description, 
+      day: event.day, 
+      month: event.month, 
+      year: event.year,
+      is_recurring: event.is_recurring || false,
+      recurrence_type: event.recurrence_type || 'none'
+    });
     setShowEventDialog(true);
   };
 
