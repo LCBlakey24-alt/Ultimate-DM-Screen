@@ -66,6 +66,9 @@ function CalendarTab({ campaignId }) {
       ]);
       setCalendar(calendarRes.data);
       setEvents(eventsRes.data);
+      if (calendarRes.data.calendar_type === 'custom') {
+        setCustomMonths(calendarRes.data.custom_months);
+      }
     } catch (error) {
       toast.error('Failed to load calendar');
     } finally {
