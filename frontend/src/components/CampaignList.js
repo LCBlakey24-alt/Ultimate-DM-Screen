@@ -15,8 +15,24 @@ function CampaignList({ username, onLogout }) {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [newCampaign, setNewCampaign] = useState({ name: '', description: '' });
+  const [newCampaign, setNewCampaign] = useState({ name: '', description: '', system: 'D&D 5e 2024' });
   const navigate = useNavigate();
+
+  const ttrpgSystems = [
+    'D&D 5e 2024',
+    'D&D 5e 2014',
+    'Pathfinder 2e',
+    'Pathfinder 1e',
+    'Call of Cthulhu 7e',
+    'Vampire: The Masquerade 5e',
+    'Shadowrun 6e',
+    'Star Wars FFG',
+    'Fate Core',
+    'Savage Worlds',
+    'Dungeon World',
+    'Blades in the Dark',
+    'Other'
+  ];
 
   useEffect(() => {
     fetchCampaigns();
