@@ -530,6 +530,140 @@ async def delete_god(campaign_id: str, god_id: str, username: str = Depends(get_
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="God not found")
     return {'message': 'God deleted successfully'}
 
+# ==================== CALENDAR ROUTES ====================
+
+@api_router.get("/campaigns/{campaign_id}/calendar", response_model=Optional[Calendar])
+async def get_calendar(campaign_id: str, username: str = Depends(get_current_user)):
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    calendar = await db.calendars.find_one({'campaign_id': campaign_id}, {'_id': 0})
+    if not calendar:
+        # Create default calendar
+        default_months = [
+            {"name": "January", "days": 31}, {"name": "February", "days": 28},
+            {"name": "March", "days": 31}, {"name": "April", "days": 30},
+            {"name": "May", "days": 31}, {"name": "June", "days": 30},
+            {"name": "July", "days": 31}, {"name": "August", "days": 31},
+            {"name": "September", "days": 30}, {"name": "October", "days": 31},
+            {"name": "November", "days": 30}, {"name": "December", "days": 31}
+        ]
+        calendar_obj = Calendar(campaign_id=campaign_id, calendar_type="gregorian", custom_months=default_months)
+        doc = calendar_obj.model_dump()
+        await db.calendars.insert_one(doc)
+        return calendar_obj
+    return calendar
+
+@api_router.put("/campaigns/{campaign_id}/calendar", response_model=Calendar)
+async def update_calendar(campaign_id: str, calendar_data: CalendarUpdate, username: str = Depends(get_current_user)):
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    update_dict = {k: v for k, v in calendar_data.model_dump().items() if v is not None}
+    result = await db.calendars.update_one(
+        {'campaign_id': campaign_id},
+        {'$set': update_dict},
+        upsert=True
+    )
+    
+    calendar = await db.calendars.find_one({'campaign_id': campaign_id}, {'_id': 0})
+    return calendar
+
+@api_router.post("/campaigns/{campaign_id}/calendar/advance")
+async def advance_calendar(campaign_id: str, days: int, username: str = Depends(get_current_user)):
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    calendar = await db.calendars.find_one({'campaign_id': campaign_id})
+    if not calendar:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Calendar not found")
+    
+    # Calculate new date
+    current_day = calendar['current_day']
+    current_month = calendar['current_month']
+    current_year = calendar['current_year']
+    months = calendar['custom_months']
+    
+    days_to_add = days
+    while days_to_add > 0:
+        month_index = current_month - 1
+        days_in_month = months[month_index]['days']
+        days_left_in_month = days_in_month - current_day
+        
+        if days_to_add <= days_left_in_month:
+            current_day += days_to_add
+            days_to_add = 0
+        else:
+            days_to_add -= (days_left_in_month + 1)
+            current_day = 1
+            current_month += 1
+            if current_month > len(months):
+                current_month = 1
+                current_year += 1
+    
+    await db.calendars.update_one(
+        {'campaign_id': campaign_id},
+        {'$set': {'current_day': current_day, 'current_month': current_month, 'current_year': current_year}}
+    )
+    
+    calendar = await db.calendars.find_one({'campaign_id': campaign_id}, {'_id': 0})
+    return calendar
+
+# ==================== CALENDAR EVENT ROUTES ====================
+
+@api_router.post("/campaigns/{campaign_id}/calendar-events", response_model=CalendarEvent)
+async def create_calendar_event(campaign_id: str, event_data: CalendarEventCreate, username: str = Depends(get_current_user)):
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    event_dict = event_data.model_dump()
+    event_obj = CalendarEvent(campaign_id=campaign_id, **event_dict)
+    doc = event_obj.model_dump()
+    await db.calendar_events.insert_one(doc)
+    return event_obj
+
+@api_router.get("/campaigns/{campaign_id}/calendar-events", response_model=List[CalendarEvent])
+async def get_calendar_events(campaign_id: str, username: str = Depends(get_current_user)):
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    events = await db.calendar_events.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(1000)
+    return events
+
+@api_router.put("/campaigns/{campaign_id}/calendar-events/{event_id}", response_model=CalendarEvent)
+async def update_calendar_event(campaign_id: str, event_id: str, event_data: CalendarEventUpdate, username: str = Depends(get_current_user)):
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    update_dict = {k: v for k, v in event_data.model_dump().items() if v is not None}
+    result = await db.calendar_events.update_one(
+        {'id': event_id, 'campaign_id': campaign_id},
+        {'$set': update_dict}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+    
+    event = await db.calendar_events.find_one({'id': event_id}, {'_id': 0})
+    return event
+
+@api_router.delete("/campaigns/{campaign_id}/calendar-events/{event_id}")
+async def delete_calendar_event(campaign_id: str, event_id: str, username: str = Depends(get_current_user)):
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    result = await db.calendar_events.delete_one({'id': event_id, 'campaign_id': campaign_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+    return {'message': 'Event deleted successfully'}
+
 # ==================== COMBAT SCENARIO ROUTES ====================
 
 @api_router.post("/campaigns/{campaign_id}/combat-scenarios", response_model=CombatScenario)
