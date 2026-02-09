@@ -158,6 +158,8 @@ class CalendarEvent(BaseModel):
     day: int
     month: int
     year: int
+    is_recurring: bool = False
+    recurrence_type: str = "none"  # none, annual, monthly, weekly
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class CalendarEventCreate(BaseModel):
@@ -166,6 +168,8 @@ class CalendarEventCreate(BaseModel):
     day: int
     month: int
     year: int
+    is_recurring: bool = False
+    recurrence_type: str = "none"
 
 class CalendarEventUpdate(BaseModel):
     name: Optional[str] = None
@@ -173,6 +177,8 @@ class CalendarEventUpdate(BaseModel):
     day: Optional[int] = None
     month: Optional[int] = None
     year: Optional[int] = None
+    is_recurring: Optional[bool] = None
+    recurrence_type: Optional[str] = None
 
 class CombatScenario(BaseModel):
     model_config = ConfigDict(extra="ignore")
