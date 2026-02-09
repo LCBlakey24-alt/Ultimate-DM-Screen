@@ -4,13 +4,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Monitor, Users, UserCircle, Map, Scroll, Sparkles, Book, Church, MapPin, FileText } from 'lucide-react';
+import { ArrowLeft, Monitor, Users, UserCircle, Map, Scroll, Sparkles, Book, Church, MapPin, FileText, Swords } from 'lucide-react';
 import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
 import GodsTab from '@/components/tabs/GodsTab';
 import NPCsTab from '@/components/tabs/NPCsTab';
 import LocationsTab from '@/components/tabs/LocationsTab';
 import PlayersTab from '@/components/tabs/PlayersTab';
 import InGameNotesTab from '@/components/tabs/InGameNotesTab';
+import CombatTrackerTab from '@/components/tabs/CombatTrackerTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
