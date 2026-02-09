@@ -71,10 +71,12 @@ class CampaignSetting(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     campaign_id: str
     content: str = ""
+    dm_rules: str = ""  # Custom DM rules reference
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class CampaignSettingUpdate(BaseModel):
-    content: str
+    content: Optional[str] = None
+    dm_rules: Optional[str] = None
 
 class God(BaseModel):
     model_config = ConfigDict(extra="ignore")
