@@ -17,6 +17,129 @@ function DMScreen({ username }) {
   const [npcs, setNPCs] = useState([]);
   const [initiative, setInitiative] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [dmRules, setDmRules] = useState('');
+  const [isEditingRules, setIsEditingRules] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [highlightedSections, setHighlightedSections] = useState([]);
+
+  const getDefaultRules = (system) => {
+    const defaultRules = {
+      'D&D 5e 2024': `# D&D 5e 2024 Quick Reference
+
+## Combat
+- Initiative: 1d20 + Dexterity modifier
+- Attack Roll: 1d20 + ability modifier + proficiency bonus
+- AC: Armor Class (target number to hit)
+- Advantage/Disadvantage: Roll 2d20, take higher/lower
+
+## Actions in Combat
+- **Action**: Attack, Cast a Spell, Dash, Disengage, Dodge, Help, Hide, Ready, Search, Use an Object
+- **Bonus Action**: Available if feature grants it
+- **Reaction**: Opportunity Attack, readied actions
+- **Movement**: Speed in feet (usually 30ft)
+
+## Conditions
+- **Blinded**: Can't see, attacks have disadvantage
+- **Charmed**: Can't attack charmer
+- **Frightened**: Disadvantage on ability checks and attacks
+- **Grappled**: Speed = 0
+- **Paralyzed**: Incapacitated, auto-fail STR/DEX saves
+- **Prone**: Disadvantage on attacks, attacks against have advantage
+- **Restrained**: Speed = 0, disadvantage on DEX saves
+- **Stunned**: Incapacitated, auto-fail STR/DEX saves
+- **Unconscious**: Incapacitated, drop everything, prone
+
+## Ability Checks
+- Skill Check: 1d20 + ability modifier + proficiency (if proficient)
+- DC: Difficulty Class (target number)
+- Common DCs: Easy 10, Medium 15, Hard 20, Very Hard 25
+
+## Saving Throws
+- 1d20 + ability modifier + proficiency (if proficient)
+- Common: DEX (traps, spells), CON (poison, concentration), WIS (charm, fear)
+
+## Rests
+- **Short Rest**: 1 hour, spend Hit Dice to recover HP
+- **Long Rest**: 8 hours, recover all HP and half of Hit Dice
+
+## Death Saves
+- 3 failures = death, 3 successes = stabilized
+- Natural 20 = regain 1 HP, Natural 1 = 2 failures`,
+
+      'Pathfinder 2e': `# Pathfinder 2e Quick Reference
+
+## Actions (3-Action Economy)
+Each turn: 3 actions + 1 reaction
+- **Strike**: Attack (1 action, -5 for 2nd, -10 for 3rd)
+- **Stride**: Move your Speed
+- **Cast a Spell**: Varies by spell
+- **Raise Shield**: +2 AC until next turn
+- **Aid**: Help ally (+1 circumstance bonus)
+
+## Combat
+- Initiative: Perception check
+- Attack: 1d20 + proficiency + ability modifier
+- AC: 10 + proficiency + DEX + armor
+- Damage: Weapon die + STR/DEX modifier
+
+## Conditions
+- **Clumsy**: Penalty to DEX-based checks
+- **Drained**: Penalty to CON-based checks
+- **Enfeebled**: Penalty to STR-based checks
+- **Flat-footed**: -2 AC
+- **Frightened**: Penalties to all checks
+- **Grabbed**: Can't move
+- **Prone**: -2 AC, harder to attack
+
+## Degrees of Success
+- Critical Success: Beat DC by 10+
+- Success: Meet or beat DC
+- Failure: Below DC
+- Critical Failure: Fail by 10+`,
+
+      'Call of Cthulhu 7e': `# Call of Cthulhu 7e Quick Reference
+
+## Skill Rolls
+- Roll 1d100, compare to skill rating
+- **Regular Success**: Roll ≤ skill
+- **Hard Success**: Roll ≤ half skill
+- **Extreme Success**: Roll ≤ one-fifth skill
+- **Critical**: Roll 01
+
+## Combat
+- Initiative: DEX order
+- Fighting: Use Fighting skill (Brawl, Firearms, etc)
+- Dodge: Use DEX to avoid attacks
+- Damage: Varies by weapon
+
+## Sanity
+- Sanity Points: Start at POW stat
+- Losing Sanity: See disturbing things, cast spells
+- **0 Sanity**: Permanent insanity
+- **Temporary Insanity**: Lose 5+ SAN in one go
+- **Indefinite Insanity**: Lose 20% of SAN
+
+## Luck
+- Spend Luck to improve rolls
+- Refreshes each session`,
+
+      'Other': `# TTRPG Quick Reference
+
+## Basic Rules
+[Customize this section for your game system]
+
+## Combat
+[Add combat rules here]
+
+## Skill Checks
+[Add skill check rules here]
+
+## Special Mechanics
+[Add system-specific mechanics here]`
+    };
+
+    return defaultRules[system] || defaultRules['Other'];
+  };
 
   useEffect(() => {
     fetchAllData();
