@@ -462,6 +462,7 @@ function CombatCreatorTab({ campaignId }) {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }
