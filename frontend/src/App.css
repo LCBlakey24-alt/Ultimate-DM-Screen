@@ -431,10 +431,54 @@ body {
   .modal {
     width: 95%;
     padding: 16px;
+    max-height: 85vh;
   }
   
   .btn-primary, .btn-secondary {
     padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  /* Stack AI assistant below main content on mobile */
+  .campaign-management-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .ai-assistant-panel {
+    position: relative !important;
+    top: 0 !important;
+  }
+
+  /* Mobile header adjustments */
+  .campaign-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+
+  /* Card grid adjustments */
+  .card-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Stat blocks */
+  .stat-block {
+    min-width: 50px;
+    padding: 6px 10px;
+  }
+
+  .stat-value {
+    font-size: 16px;
+  }
+
+  /* Initiative entries */
+  .initiative-entry {
+    padding: 10px;
+  }
+
+  /* Tabs */
+  .tab-button {
+    padding: 8px 12px;
     font-size: 14px;
   }
 }
