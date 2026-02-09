@@ -222,7 +222,11 @@ function PlayersTab({ campaignId }) {
           <p style={{ color: '#8b7355' }}>No players added yet. Add your first player!</p>
         </Card>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))',
+          gap: '20px'
+        }}>
           {players.map(player => (
             <Card key={player.id} data-testid={`player-card-${player.id}`} className="card">
               <CardHeader>
