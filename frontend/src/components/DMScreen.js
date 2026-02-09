@@ -21,6 +21,9 @@ function DMScreen({ username }) {
   const [isEditingRules, setIsEditingRules] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [highlightedSections, setHighlightedSections] = useState([]);
+  const [quickNote, setQuickNote] = useState('');
+  const [processingNote, setProcessingNote] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState(null);
 
   const getDefaultRules = (system) => {
     const defaultRules = {
