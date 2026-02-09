@@ -124,7 +124,7 @@ function GodsTab({ campaignId }) {
   if (loading) return <div className="loading-spinner"></div>;
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
+    <div className="campaign-management-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
       {/* Main Content */}
       <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
