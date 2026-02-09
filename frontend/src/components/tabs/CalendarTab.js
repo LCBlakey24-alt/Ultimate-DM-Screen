@@ -32,6 +32,14 @@ const PRESET_CALENDARS = {
       {name: "Eleint", days: 30}, {name: "Marpenoth", days: 30},
       {name: "Uktar", days: 30}, {name: "Nightal", days: 30}
     ]
+  },
+  custom: {
+    name: "Custom Calendar",
+    months: [
+      {name: "Month 1", days: 30},
+      {name: "Month 2", days: 30},
+      {name: "Month 3", days: 30}
+    ]
   }
 };
 
