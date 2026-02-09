@@ -58,11 +58,13 @@ class Campaign(BaseModel):
     dm_user_id: str
     name: str
     description: str = ""
+    system: str = "D&D 5e 2024"  # TTRPG system
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class CampaignCreate(BaseModel):
     name: str
     description: str = ""
+    system: str = "D&D 5e 2024"
 
 class CampaignSetting(BaseModel):
     model_config = ConfigDict(extra="ignore")
