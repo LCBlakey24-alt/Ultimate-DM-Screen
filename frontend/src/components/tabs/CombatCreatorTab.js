@@ -447,34 +447,14 @@ function CombatCreatorTab({ campaignId }) {
                     style={{ fontSize: '16px', fontWeight: '700', textAlign: 'center' }}
                   />
                 </div>
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', color: '#8b7355', marginBottom: '6px' }}>
-                    HP: {combatant.hp}/{combatant.maxHp}
-                  </label>
-                  <div className="hp-bar" style={{ marginBottom: '8px' }}>
-                    <div 
-                      className="hp-bar-fill" 
-                      style={{ width: `${(combatant.hp / combatant.maxHp) * 100}%` }}
-                    ></div>
-                  </div>
-                  <Input
-                    data-testid={`hp-input-${combatant.id}`}
-                    type="number"
-                    value={combatant.hp}
-                    onChange={(e) => updateHP(combatant.id, e.target.value)}
-                    className="input"
-                    min="0"
-                    max={combatant.maxHp}
-                  />
-                </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <div className="stat-block" style={{ flex: 1 }}>
                     <div className="stat-label">AC</div>
                     <div className="stat-value" style={{ fontSize: '16px' }}>{combatant.ac}</div>
                   </div>
                   <div className="stat-block" style={{ flex: 1 }}>
-                    <div className="stat-label">Order</div>
-                    <div className="stat-value" style={{ fontSize: '16px' }}>#{index + 1}</div>
+                    <div className="stat-label">HP</div>
+                    <div className="stat-value" style={{ fontSize: '16px' }}>{combatant.maxHp}</div>
                   </div>
                 </div>
               </CardContent>
