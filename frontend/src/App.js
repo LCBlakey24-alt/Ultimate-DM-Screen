@@ -8,6 +8,7 @@ import AuthPage from '@/components/AuthPage';
 import CampaignList from '@/components/CampaignList';
 import CampaignDashboard from '@/components/CampaignDashboard';
 import DMScreen from '@/components/DMScreen';
+import CombatPage from '@/components/CombatPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
