@@ -9,6 +9,8 @@ import { Sword, Users, Scroll, Search, Edit, Save, X, BookOpen, Send, Sparkles, 
 import DiceRoller from '@/components/DiceRoller';
 import CombatTracker from '@/components/CombatTracker';
 import LootGenerator from '@/components/LootGenerator';
+import MapTokenSystem from '@/components/MapTokenSystem';
+import { QuickReferenceModal } from '@/components/QuickReference';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
