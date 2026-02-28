@@ -717,6 +717,9 @@ Each turn: 3 actions + 1 reaction
           )}
         </div>
       </div>
+
+      {/* Quick Reference Modal */}
+      <QuickReferenceModal isOpen={showQuickRef} onClose={() => setShowQuickRef(false)} />
     </div>
   );
 }
