@@ -116,7 +116,8 @@ function CombatCreatorTab({ campaignId }) {
       ac: entity.ac || 10,
       conditions: [],
       tokenColor: TOKEN_COLORS[colorIdx].color,
-      tokenSize: 40
+      tokenSize: 40,
+      loot: [] // Array of {name, quantity, item_type, value, is_magical}
     };
     setCombatants([...combatants, newCombatant]);
     
