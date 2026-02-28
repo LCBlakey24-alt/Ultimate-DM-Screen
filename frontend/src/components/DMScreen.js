@@ -400,6 +400,9 @@ Each turn: 3 actions + 1 reaction
         maxWidth: '1600px',
         margin: '0 auto'
       }}>
+        {/* Dice Roller */}
+        <DiceRoller />
+
         {/* Players */}
         <div data-testid="dm-screen-players" className="glow-panel" style={{ height: 'fit-content' }}>
           <div style={{ marginBottom: '20px' }}>
