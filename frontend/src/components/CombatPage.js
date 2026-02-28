@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
+import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { 
   Sword, Users, Shield, Heart, Skull, SkipForward, RotateCcw, 
   Trash2, ChevronUp, ChevronDown, CircleDot, Grid, ZoomIn, ZoomOut, X,
-  ArrowLeft
+  ArrowLeft, Coins, Package
 } from 'lucide-react';
 import { QuickReferencePopup, QuickReferenceModal } from '@/components/QuickReference';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const CONDITIONS = [
   { id: 'blinded', label: 'Blind', color: '#64748b' },
