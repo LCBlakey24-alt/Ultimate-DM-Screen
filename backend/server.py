@@ -920,6 +920,120 @@ async def delete_location(campaign_id: str, location_id: str, username: str = De
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Location not found")
     return {'message': 'Location deleted successfully'}
 
+# ==================== PLACES OF INTEREST ROUTES ====================
+
+@api_router.post("/campaigns/{campaign_id}/locations/{location_id}/places")
+async def add_place_of_interest(
+    campaign_id: str, 
+    location_id: str, 
+    place_data: PlaceOfInterestCreate, 
+    username: str = Depends(get_current_user)
+):
+    """Add a place of interest to a location (shop, tavern, temple, etc.)"""
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    location = await db.locations.find_one({'id': location_id, 'campaign_id': campaign_id})
+    if not location:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Location not found")
+    
+    # Create new place
+    new_place = PlaceOfInterest(**place_data.model_dump())
+    place_dict = new_place.model_dump()
+    
+    # Add to location's places_of_interest array
+    places = location.get('places_of_interest', [])
+    places.append(place_dict)
+    
+    await db.locations.update_one(
+        {'id': location_id, 'campaign_id': campaign_id},
+        {'$set': {'places_of_interest': places}}
+    )
+    
+    return place_dict
+
+@api_router.get("/campaigns/{campaign_id}/locations/{location_id}/places")
+async def get_places_of_interest(
+    campaign_id: str, 
+    location_id: str, 
+    username: str = Depends(get_current_user)
+):
+    """Get all places of interest within a location"""
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    location = await db.locations.find_one({'id': location_id, 'campaign_id': campaign_id}, {'_id': 0})
+    if not location:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Location not found")
+    
+    return location.get('places_of_interest', [])
+
+@api_router.put("/campaigns/{campaign_id}/locations/{location_id}/places/{place_id}")
+async def update_place_of_interest(
+    campaign_id: str, 
+    location_id: str, 
+    place_id: str,
+    place_data: PlaceOfInterestUpdate,
+    username: str = Depends(get_current_user)
+):
+    """Update a place of interest"""
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    location = await db.locations.find_one({'id': location_id, 'campaign_id': campaign_id})
+    if not location:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Location not found")
+    
+    places = location.get('places_of_interest', [])
+    place_index = next((i for i, p in enumerate(places) if p.get('id') == place_id), None)
+    
+    if place_index is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Place not found")
+    
+    # Update the place with new data
+    update_dict = {k: v for k, v in place_data.model_dump().items() if v is not None}
+    places[place_index].update(update_dict)
+    
+    await db.locations.update_one(
+        {'id': location_id, 'campaign_id': campaign_id},
+        {'$set': {'places_of_interest': places}}
+    )
+    
+    return places[place_index]
+
+@api_router.delete("/campaigns/{campaign_id}/locations/{location_id}/places/{place_id}")
+async def delete_place_of_interest(
+    campaign_id: str, 
+    location_id: str, 
+    place_id: str,
+    username: str = Depends(get_current_user)
+):
+    """Delete a place of interest"""
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    
+    location = await db.locations.find_one({'id': location_id, 'campaign_id': campaign_id})
+    if not location:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Location not found")
+    
+    places = location.get('places_of_interest', [])
+    original_length = len(places)
+    places = [p for p in places if p.get('id') != place_id]
+    
+    if len(places) == original_length:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Place not found")
+    
+    await db.locations.update_one(
+        {'id': location_id, 'campaign_id': campaign_id},
+        {'$set': {'places_of_interest': places}}
+    )
+    
+    return {'message': 'Place deleted successfully'}
+
 # ==================== IN-GAME NOTES ROUTES ====================
 
 @api_router.post("/campaigns/{campaign_id}/ingame-notes", response_model=InGameNote, status_code=status.HTTP_201_CREATED)
