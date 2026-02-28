@@ -46,6 +46,7 @@ A comprehensive web application for tabletop role-playing game (TTRPG) Dungeon M
 - [x] Session Notes list
 - [x] End Session button
 - [x] **Dice Roller** - Animated dice roller with D4-D100, modifiers, roll history
+- [x] **Combat Tracker** - Auto-roll initiative, turn management, HP tracking, conditions
 
 ### AI Features
 - [x] Content generation for encounters, traps, NPCs, world-building
