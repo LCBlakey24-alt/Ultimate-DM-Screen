@@ -32,6 +32,8 @@ A comprehensive web application for tabletop role-playing game (TTRPG) Dungeon M
 - [x] **NPCs** - Non-player character tracking with AI generation
 - [x] **Locations** - Place management with AI generation
 - [x] **Players** - Player character tracking with D&D Beyond-style character creator
+  - Level selection (1-20) in Step 1
+  - Four stat determination methods: Standard Array, Suggested for Class, Roll Stats (4d6 drop lowest), Custom
 - [x] **Combat Creator** - Pre-plan combat encounters
 - [x] **Calendar** - In-game date tracking with events + custom calendar builder
 - [x] **In-Game Notes** - Session notes with AI auto-categorization
