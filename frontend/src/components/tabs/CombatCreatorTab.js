@@ -584,4 +584,142 @@ function CombatCreatorTab({ campaignId }) {
   );
 }
 
+// Combatant Card with Loot
+function CombatantCard({ combatant, onRemove, onUpdateInitiative, onAddLoot, onRemoveLoot }) {
+  const [showLootForm, setShowLootForm] = useState(false);
+  const [newLoot, setNewLoot] = useState({ name: '', quantity: 1, item_type: 'misc', value: '', is_magical: false });
+  const c = combatant;
+
+  const handleAddLoot = () => {
+    if (!newLoot.name.trim()) {
+      toast.error('Enter loot name');
+      return;
+    }
+    onAddLoot(newLoot);
+    setNewLoot({ name: '', quantity: 1, item_type: 'misc', value: '', is_magical: false });
+    setShowLootForm(false);
+    toast.success('Loot added!');
+  };
+
+  return (
+    <div className="card-glow" style={{ padding: '14px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '10px' }}>
+        <div>
+          <h5 style={{ color: '#ffffff', fontWeight: '700', marginBottom: '4px' }}>{c.name}</h5>
+          <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '10px', background: c.type === 'player' ? 'rgba(74, 125, 255, 0.3)' : 'rgba(239, 68, 68, 0.3)', color: c.type === 'player' ? '#4a7dff' : '#ef4444', fontWeight: '600' }}>
+            {c.type.toUpperCase()}
+          </span>
+        </div>
+        <Button onClick={onRemove} className="btn-icon" style={{ padding: '4px', color: '#ef4444' }}><X size={14} /></Button>
+      </div>
+      
+      <div style={{ marginBottom: '10px' }}>
+        <label style={{ fontSize: '11px', color: '#67e8f9', display: 'block', marginBottom: '4px' }}>Initiative</label>
+        <Input
+          type="number"
+          value={c.initiative}
+          onChange={(e) => onUpdateInitiative(e.target.value)}
+          className="input-glow"
+          style={{ fontSize: '16px', fontWeight: '700', textAlign: 'center', padding: '8px' }}
+        />
+      </div>
+      
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+        <div className="stat-block" style={{ flex: 1 }}><div className="stat-label">AC</div><div className="stat-value" style={{ fontSize: '14px' }}>{c.ac}</div></div>
+        <div className="stat-block" style={{ flex: 1 }}><div className="stat-label">HP</div><div className="stat-value" style={{ fontSize: '14px' }}>{c.maxHp}</div></div>
+      </div>
+
+      {/* Loot Section - Only for NPCs/Enemies */}
+      {c.type !== 'player' && (
+        <div style={{ borderTop: '1px solid #1e40af', paddingTop: '10px', marginTop: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <span style={{ fontSize: '11px', color: '#eab308', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Coins size={12} /> LOOT ({c.loot?.length || 0})
+            </span>
+            <button
+              onClick={() => setShowLootForm(!showLootForm)}
+              style={{ background: 'rgba(234, 179, 8, 0.2)', border: '1px solid #eab308', borderRadius: '4px', color: '#eab308', padding: '2px 6px', fontSize: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px' }}
+            >
+              <Plus size={10} /> Add
+            </button>
+          </div>
+
+          {/* Loot List */}
+          {c.loot?.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
+              {c.loot.map(loot => (
+                <div key={loot.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(234, 179, 8, 0.1)', border: '1px solid rgba(234, 179, 8, 0.3)', borderRadius: '6px', padding: '6px 8px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#fff' }}>{loot.name}</span>
+                    {loot.is_magical && <span style={{ color: '#eab308', marginLeft: '4px' }}>✨</span>}
+                    <span style={{ fontSize: '10px', color: '#64748b', marginLeft: '6px' }}>x{loot.quantity}</span>
+                    {loot.value && <span style={{ fontSize: '10px', color: '#eab308', marginLeft: '6px' }}>{loot.value}</span>}
+                  </div>
+                  <button onClick={() => onRemoveLoot(loot.id)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '2px' }}>
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add Loot Form */}
+          {showLootForm && (
+            <div style={{ background: 'rgba(10, 10, 40, 0.5)', border: '1px solid #eab308', borderRadius: '8px', padding: '10px' }}>
+              <Input
+                value={newLoot.name}
+                onChange={(e) => setNewLoot({ ...newLoot, name: e.target.value })}
+                placeholder="Item name"
+                className="input-glow"
+                style={{ fontSize: '12px', marginBottom: '6px', height: '32px' }}
+              />
+              <div style={{ display: 'flex', gap: '6px', marginBottom: '6px' }}>
+                <Input
+                  type="number"
+                  value={newLoot.quantity}
+                  onChange={(e) => setNewLoot({ ...newLoot, quantity: parseInt(e.target.value) || 1 })}
+                  placeholder="Qty"
+                  className="input-glow"
+                  style={{ fontSize: '12px', width: '60px', height: '32px' }}
+                  min="1"
+                />
+                <Input
+                  value={newLoot.value}
+                  onChange={(e) => setNewLoot({ ...newLoot, value: e.target.value })}
+                  placeholder="Value (e.g., 50 gp)"
+                  className="input-glow"
+                  style={{ fontSize: '12px', flex: 1, height: '32px' }}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                <select
+                  value={newLoot.item_type}
+                  onChange={(e) => setNewLoot({ ...newLoot, item_type: e.target.value })}
+                  className="input-glow"
+                  style={{ fontSize: '11px', padding: '4px', flex: 1, height: '32px' }}
+                >
+                  <option value="weapon">Weapon</option>
+                  <option value="armor">Armor</option>
+                  <option value="potion">Potion</option>
+                  <option value="scroll">Scroll</option>
+                  <option value="magic_item">Magic Item</option>
+                  <option value="misc">Misc</option>
+                </select>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#eab308', fontSize: '10px', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={newLoot.is_magical} onChange={(e) => setNewLoot({ ...newLoot, is_magical: e.target.checked })} style={{ accentColor: '#eab308' }} />
+                  Magic
+                </label>
+              </div>
+              <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
+                <Button onClick={handleAddLoot} className="btn-primary" style={{ flex: 1, fontSize: '11px', padding: '6px' }}>Add</Button>
+                <Button onClick={() => setShowLootForm(false)} className="btn-outline" style={{ fontSize: '11px', padding: '6px' }}>Cancel</Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default CombatCreatorTab;
