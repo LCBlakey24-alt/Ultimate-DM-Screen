@@ -33,6 +33,7 @@ function DMScreen({ username }) {
   const [calendar, setCalendar] = useState(null);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [sessionNotes, setSessionNotes] = useState([]);
+  const [showQuickRef, setShowQuickRef] = useState(false);
 
   const getDefaultRules = (system) => {
     const defaultRules = {
