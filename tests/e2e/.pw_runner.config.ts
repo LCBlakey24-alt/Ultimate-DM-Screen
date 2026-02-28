@@ -11,7 +11,7 @@ export default defineConfig({
     ['json', { outputFile: '/root/.emergent/automation_output/20260228_171722/results.json' }],
   ],
   use: {
-    baseURL: 'https://dm-quest.preview.emergentagent.com',
+    baseURL: 'https://combat-runner-6.preview.emergentagent.com',
     screenshot: 'only-on-failure',
     trace: 'off',
     headless: true,
