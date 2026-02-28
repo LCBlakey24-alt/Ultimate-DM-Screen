@@ -175,13 +175,23 @@ Write the recap now:`;
           <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#ffffff', marginBottom: '8px' }}>In-Game Notes</h2>
           <p style={{ fontSize: '14px', color: '#bae6fd' }}>Take notes during your session and let AI organize them automatically</p>
         </div>
-        <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogTrigger asChild>
-            <Button data-testid="add-ingame-note-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
-              <Plus size={18} />
-              Add Session Note
-            </Button>
-          </DialogTrigger>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <Button 
+            onClick={generateSessionRecap} 
+            disabled={generatingRecap || notes.length === 0}
+            className="btn-outline"
+            style={{ display: 'flex', gap: '8px', borderColor: '#eab308', color: '#eab308' }}
+          >
+            {generatingRecap ? <Loader size={16} className="animate-spin" /> : <FileText size={16} />}
+            Generate Recap
+          </Button>
+          <Dialog open={showDialog} onOpenChange={setShowDialog}>
+            <DialogTrigger asChild>
+              <Button data-testid="add-ingame-note-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
+                <Plus size={18} />
+                Add Session Note
+              </Button>
+            </DialogTrigger>
           <DialogContent className="modal" style={{ maxWidth: '700px' }}>
             <DialogHeader>
               <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
