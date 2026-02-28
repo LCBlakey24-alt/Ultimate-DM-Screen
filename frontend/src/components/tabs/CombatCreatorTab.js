@@ -172,6 +172,53 @@ function CombatCreatorTab({ campaignId }) {
     ));
   };
 
+  // Add monster from database
+  const addMonsterFromDB = (monster) => {
+    const colorIdx = 2; // Red for enemies
+    const newCombatant = {
+      id: `monster-${monster.name.replace(/\s+/g, '-')}-${Date.now()}`,
+      entityId: `db-${monster.name}`,
+      name: monster.name,
+      type: 'npc',
+      initiative: 0,
+      hp: monster.hp,
+      maxHp: monster.hp,
+      ac: monster.ac,
+      cr: monster.cr,
+      monsterType: monster.type,
+      abilities: monster.abilities,
+      conditions: [],
+      tokenColor: TOKEN_COLORS[colorIdx].color,
+      tokenSize: monster.size === 'Large' ? 50 : monster.size === 'Huge' ? 70 : monster.size === 'Gargantuan' ? 90 : 40,
+      loot: []
+    };
+    setCombatants([...combatants, newCombatant]);
+    
+    // Add token to map
+    if (mapImage) {
+      const newToken = {
+        id: newCombatant.id,
+        name: monster.name,
+        color: TOKEN_COLORS[colorIdx].color,
+        size: newCombatant.tokenSize,
+        x: 200 + Math.random() * 150,
+        y: 200 + Math.random() * 150,
+        isEnemy: true
+      };
+      setTokens([...tokens, newToken]);
+    }
+    
+    toast.success(`Added ${monster.name} (CR ${monster.cr})`);
+  };
+
+  // Filter monsters from database
+  const filteredMonsters = MONSTER_DATABASE.filter(m => {
+    const matchesSearch = m.name.toLowerCase().includes(monsterSearch.toLowerCase());
+    const matchesType = monsterTypeFilter === 'all' || m.type === monsterTypeFilter;
+    const matchesCR = monsterCRFilter === 'all' || m.cr === monsterCRFilter;
+    return matchesSearch && matchesType && matchesCR;
+  }).sort((a, b) => getCRValue(a.cr) - getCRValue(b.cr));
+
   const saveScenario = async () => {
     if (!scenarioName.trim()) {
       toast.error('Please enter a scenario name');
