@@ -5,13 +5,15 @@ export async function waitForAppReady(page: Page) {
 }
 
 export async function dismissToasts(page: Page) {
+  // Use first() to avoid strict mode violations when multiple toasts appear
   await page.addLocatorHandler(
-    page.locator('[data-sonner-toast], .Toastify__toast, [role="status"].toast, .MuiSnackbar-root'),
-    async () => {
-      const close = page.locator('[data-sonner-toast] [data-close], [data-sonner-toast] button[aria-label="Close"], .Toastify__close-button, .MuiSnackbar-root button');
-      await close.first().click({ timeout: 2000 }).catch(() => {});
+    page.locator('[data-sonner-toast]').first(),
+    async (toast) => {
+      // Try to click the close button within this specific toast
+      const close = toast.locator('[data-close], button[aria-label="Close"]');
+      await close.first().click({ timeout: 1000 }).catch(() => {});
     },
-    { times: 10, noWaitAfter: true }
+    { times: 20, noWaitAfter: true }
   );
 }
 
