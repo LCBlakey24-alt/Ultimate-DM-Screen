@@ -5,10 +5,11 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { 
   Sword, Users, Scroll, BookOpen, Send, Sparkles, 
-  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight
+  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package
 } from 'lucide-react';
 import DiceRoller from '@/components/DiceRoller';
 import LootGenerator from '@/components/LootGenerator';
+import PartyInventory from '@/components/PartyInventory';
 import { QuickReferenceModal } from '@/components/QuickReference';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
