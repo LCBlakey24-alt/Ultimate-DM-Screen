@@ -405,6 +405,41 @@ class PartyCurrencyUpdate(BaseModel):
     gold: Optional[int] = None
     platinum: Optional[int] = None
 
+# Custom Item Models
+class CustomItem(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    campaign_id: str
+    name: str
+    item_type: str = "weapon"
+    rarity: str = "common"
+    description: str = ""
+    properties: str = ""
+    attunement: bool = False
+    value: str = ""
+    weight: float = 0.0
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class CustomItemCreate(BaseModel):
+    name: str
+    item_type: str = "weapon"
+    rarity: str = "common"
+    description: str = ""
+    properties: str = ""
+    attunement: bool = False
+    value: str = ""
+    weight: float = 0.0
+
+class CustomItemUpdate(BaseModel):
+    name: Optional[str] = None
+    item_type: Optional[str] = None
+    rarity: Optional[str] = None
+    description: Optional[str] = None
+    properties: Optional[str] = None
+    attunement: Optional[bool] = None
+    value: Optional[str] = None
+    weight: Optional[float] = None
+
 # ==================== AUTH HELPERS ====================
 
 def hash_password(password: str) -> str:
