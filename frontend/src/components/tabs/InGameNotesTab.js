@@ -223,6 +223,7 @@ Write the recap now:`;
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {notes.length === 0 ? (
