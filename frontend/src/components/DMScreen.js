@@ -139,7 +139,7 @@ Each turn: 3 actions + 1 reaction
       setNPCs(npcsRes.data);
       setInitiative(initRes.data);
       setCalendar(calendarRes.data);
-      setSessionNotes(notesRes.data.slice(0, 20)); // Last 20 notes
+      setSessionNotes(notesRes.data.slice(0, 20));
       
       const cal = calendarRes.data;
       const events = eventsRes.data;
@@ -232,7 +232,6 @@ Each turn: 3 actions + 1 reaction
 
       const noteRes = await axios.post(`${API}/campaigns/${campaignId}/ingame-notes`, { content: quickNote });
       
-      // Add to session notes immediately
       const newNote = {
         id: noteRes.data.id,
         content: quickNote,
@@ -240,7 +239,6 @@ Each turn: 3 actions + 1 reaction
       };
       setSessionNotes(prev => [newNote, ...prev]);
 
-      // Process with AI
       try {
         const response = await axios.post(`${API}/campaigns/${campaignId}/ingame-notes/${noteRes.data.id}/process-ai`);
         await autoApplySuggestions(response.data.suggestions);
@@ -273,7 +271,6 @@ Each turn: 3 actions + 1 reaction
     
     toast.success('Session ended! All notes saved.');
     window.close();
-    // Fallback if window.close doesn't work
     setTimeout(() => navigate('/campaigns'), 500);
   };
 
@@ -332,35 +329,47 @@ Each turn: 3 actions + 1 reaction
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0a1628 0%, #0d1d33 100%)',
+      background: 'linear-gradient(180deg, #030014 0%, #0a0a2e 50%, #030014 100%)',
       padding: '20px'
     }}>
       {/* Header */}
-      <div style={{
-        background: '#1e3a5f',
-        border: '2px solid #ff1f8f',
-        padding: '16px 24px',
-        marginBottom: '20px',
-        borderRadius: '12px'
+      <div className="glow-panel" style={{
+        marginBottom: '24px',
+        padding: '20px 28px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h1 className="medieval-heading" style={{ fontSize: '32px', color: '#ffffff', textAlign: 'left', marginBottom: '8px' }}>
-              <Sword size={32} style={{ display: 'inline', marginRight: '12px', verticalAlign: 'middle', color: '#ff1f8f' }} />
+            <h1 style={{ 
+              fontSize: '28px', 
+              color: '#ffffff', 
+              marginBottom: '10px',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: '800',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <Sword size={28} style={{ color: '#22c55e' }} />
               {campaign?.name} - DM Screen
             </h1>
             {calendar && (
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <div className="clickable-box" style={{ cursor: 'default' }}>
+                <div style={{ 
+                  background: 'rgba(74, 125, 255, 0.15)',
+                  border: '1px solid #4a7dff',
+                  borderRadius: '12px',
+                  padding: '8px 16px'
+                }}>
                   <p style={{ fontSize: '14px', color: '#ffffff', fontWeight: '600' }}>
                     {calendar.custom_months[calendar.current_month - 1]?.name || 'Month'} {calendar.current_day}, Year {calendar.current_year}
                   </p>
                 </div>
                 {upcomingEvents.length > 0 && (
-                  <div className="clickable-box" style={{ 
-                    cursor: 'default',
-                    background: upcomingEvents[0].daysUntil === 0 ? 'rgba(34, 197, 94, 0.3)' : '#1e3a5f',
-                    borderColor: upcomingEvents[0].daysUntil === 0 ? '#22c55e' : '#ff1f8f'
+                  <div style={{ 
+                    background: upcomingEvents[0].daysUntil === 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(74, 125, 255, 0.15)',
+                    border: `1px solid ${upcomingEvents[0].daysUntil === 0 ? '#22c55e' : '#4a7dff'}`,
+                    borderRadius: '12px',
+                    padding: '8px 16px'
                   }}>
                     <p style={{ fontSize: '13px', color: upcomingEvents[0].daysUntil === 0 ? '#22c55e' : '#ffffff', fontWeight: '600' }}>
                       {upcomingEvents[0].name}: {upcomingEvents[0].daysUntil === 0 ? 'TODAY!' : `${upcomingEvents[0].daysUntil} day(s)`}
@@ -373,7 +382,7 @@ Each turn: 3 actions + 1 reaction
           <Button
             data-testid="end-session-btn"
             onClick={handleEndSession}
-            className="btn-danger clickable-box"
+            className="btn-secondary"
             style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
           >
             <LogOut size={18} />
@@ -385,275 +394,298 @@ Each turn: 3 actions + 1 reaction
       {/* Main Content Grid */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-        gap: '20px',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+        gap: '24px',
         maxWidth: '1600px',
         margin: '0 auto'
       }}>
         {/* Players */}
-        <Card data-testid="dm-screen-players" className="parchment-dark" style={{ height: 'fit-content' }}>
-          <CardHeader>
-            <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Users size={24} style={{ color: '#ff1f8f' }} />
+        <div data-testid="dm-screen-players" className="glow-panel" style={{ height: 'fit-content' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <h2 style={{ 
+              fontSize: '22px', 
+              color: '#ffffff',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <Users size={24} style={{ color: '#22c55e' }} />
               Players
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {players.length === 0 ? (
-              <p style={{ color: '#bae6fd', textAlign: 'center', padding: '20px' }}>No players added</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {players.map(player => (
-                  <div key={player.id} data-testid={`dm-player-${player.id}`} className="initiative-entry">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <h3 style={{ fontSize: '16px', color: '#ffffff', fontWeight: '600' }}>{player.name}</h3>
-                      <span style={{ fontSize: '12px', color: '#bae6fd' }}>{player.character_class} {player.level}</span>
+            </h2>
+          </div>
+          {players.length === 0 ? (
+            <p style={{ color: '#94a3b8', textAlign: 'center', padding: '24px' }}>No players added</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {players.map(player => (
+                <div key={player.id} data-testid={`dm-player-${player.id}`} className="card-glow" style={{ padding: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <h3 style={{ fontSize: '16px', color: '#ffffff', fontWeight: '700', fontFamily: 'Montserrat, sans-serif' }}>{player.name}</h3>
+                    <span className="system-badge" style={{ fontSize: '11px', padding: '4px 10px' }}>{player.character_class} {player.level}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
+                    <div className="stat-block" style={{ flex: 1 }}>
+                      <div className="stat-label">HP</div>
+                      <div className="stat-value" style={{ fontSize: '14px' }}>{player.hp}/{player.max_hp}</div>
                     </div>
-                    <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
-                      <div className="stat-block" style={{ flex: 1 }}>
-                        <div className="stat-label">HP</div>
-                        <div className="stat-value" style={{ fontSize: '14px' }}>{player.hp}/{player.max_hp}</div>
-                      </div>
-                      <div className="stat-block" style={{ flex: 1 }}>
-                        <div className="stat-label">AC</div>
-                        <div className="stat-value" style={{ fontSize: '14px' }}>{player.ac}</div>
-                      </div>
-                      <div className="stat-block" style={{ flex: 1 }}>
-                        <div className="stat-label">STR</div>
-                        <div className="stat-value" style={{ fontSize: '14px' }}>{player.stats.strength}</div>
-                      </div>
-                      <div className="stat-block" style={{ flex: 1 }}>
-                        <div className="stat-label">DEX</div>
-                        <div className="stat-value" style={{ fontSize: '14px' }}>{player.stats.dexterity}</div>
-                      </div>
+                    <div className="stat-block" style={{ flex: 1 }}>
+                      <div className="stat-label">AC</div>
+                      <div className="stat-value" style={{ fontSize: '14px' }}>{player.ac}</div>
                     </div>
-                    <div className="hp-bar">
-                      <div className="hp-bar-fill" style={{ width: `${(player.hp / player.max_hp) * 100}%` }}></div>
+                    <div className="stat-block" style={{ flex: 1 }}>
+                      <div className="stat-label">STR</div>
+                      <div className="stat-value" style={{ fontSize: '14px' }}>{player.stats.strength}</div>
+                    </div>
+                    <div className="stat-block" style={{ flex: 1 }}>
+                      <div className="stat-label">DEX</div>
+                      <div className="stat-value" style={{ fontSize: '14px' }}>{player.stats.dexterity}</div>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  <div className="hp-bar">
+                    <div className="hp-bar-fill" style={{ width: `${(player.hp / player.max_hp) * 100}%` }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* NPCs Quick Reference */}
-        <Card data-testid="dm-screen-npcs" className="parchment-dark" style={{ height: 'fit-content' }}>
-          <CardHeader>
-            <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Scroll size={24} style={{ color: '#ff1f8f' }} />
+        <div data-testid="dm-screen-npcs" className="glow-panel" style={{ height: 'fit-content' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <h2 style={{ 
+              fontSize: '22px', 
+              color: '#ffffff',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <Scroll size={24} style={{ color: '#22c55e' }} />
               NPCs Quick Reference
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {npcs.length === 0 ? (
-              <p style={{ color: '#bae6fd', textAlign: 'center', padding: '20px' }}>No NPCs added</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {npcs.slice(0, 10).map(npc => (
-                  <div key={npc.id} data-testid={`dm-npc-${npc.id}`} className="initiative-entry">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <h3 style={{ fontSize: '16px', color: '#ffffff', fontWeight: '600' }}>{npc.name}</h3>
-                      {npc.location && <span style={{ fontSize: '12px', color: '#bae6fd' }}>{npc.location}</span>}
+            </h2>
+          </div>
+          {npcs.length === 0 ? (
+            <p style={{ color: '#94a3b8', textAlign: 'center', padding: '24px' }}>No NPCs added</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {npcs.slice(0, 10).map(npc => (
+                <div key={npc.id} data-testid={`dm-npc-${npc.id}`} className="card-glow" style={{ padding: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <h3 style={{ fontSize: '16px', color: '#ffffff', fontWeight: '700', fontFamily: 'Montserrat, sans-serif' }}>{npc.name}</h3>
+                    {npc.location && <span style={{ fontSize: '12px', color: '#67e8f9' }}>{npc.location}</span>}
+                  </div>
+                  <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '12px', lineHeight: '1.5' }}>{npc.description}</p>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <div className="stat-block" style={{ flex: 1 }}>
+                      <div className="stat-label">HP</div>
+                      <div className="stat-value" style={{ fontSize: '14px' }}>{npc.hp}</div>
                     </div>
-                    <p style={{ fontSize: '13px', color: '#ffffff', marginBottom: '8px' }}>{npc.description}</p>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <div className="stat-block" style={{ flex: 1 }}>
-                        <div className="stat-label">HP</div>
-                        <div className="stat-value" style={{ fontSize: '14px' }}>{npc.hp}</div>
+                    <div className="stat-block" style={{ flex: 1 }}>
+                      <div className="stat-label">AC</div>
+                      <div className="stat-value" style={{ fontSize: '14px' }}>{npc.ac}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Session Notes */}
+        <div data-testid="dm-screen-notes" className="glow-panel" style={{ height: 'fit-content' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <h2 style={{ 
+              fontSize: '22px', 
+              color: '#ffffff',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <Sparkles size={24} style={{ color: '#22c55e' }} />
+              Session Notes
+            </h2>
+          </div>
+          <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '14px' }}>
+            Jot down notes during play. AI will auto-organize them!
+          </p>
+          <div style={{ marginBottom: '14px' }}>
+            <textarea
+              data-testid="quick-note-input"
+              value={quickNote}
+              onChange={(e) => setQuickNote(e.target.value)}
+              className="textarea-glow"
+              style={{ minHeight: '90px', fontSize: '14px' }}
+              placeholder="e.g., Met Eldrin the blacksmith, heading to Thornwood..."
+              disabled={processingNote}
+            />
+          </div>
+          <Button
+            data-testid="submit-quick-note-btn"
+            onClick={handleSubmitNote}
+            disabled={processingNote || !quickNote.trim()}
+            className="btn-primary"
+            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '20px' }}
+          >
+            {processingNote ? (
+              <><Loader size={16} className="loading-spinner" /> Processing...</>
+            ) : (
+              <><Send size={16} /> Add Note</>
+            )}
+          </Button>
+
+          {/* Notes List */}
+          <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <span style={{ color: '#22c55e', fontWeight: '700', fontSize: '14px', fontFamily: 'Montserrat, sans-serif' }}>Session Notes ({sessionNotes.length})</span>
+            </div>
+            {sessionNotes.length === 0 ? (
+              <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', padding: '20px' }}>No notes yet this session</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {sessionNotes.map(note => (
+                  <div key={note.id} className="card-glow" style={{ padding: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Clock size={10} />
+                          {formatNoteTime(note.created_at)}
+                        </div>
+                        <div style={{ color: '#ffffff', fontSize: '14px', lineHeight: '1.5' }}>{note.content}</div>
                       </div>
-                      <div className="stat-block" style={{ flex: 1 }}>
-                        <div className="stat-label">AC</div>
-                        <div className="stat-value" style={{ fontSize: '14px' }}>{npc.ac}</div>
-                      </div>
+                      <Button
+                        onClick={() => handleDeleteNote(note.id)}
+                        className="btn-icon"
+                        style={{ padding: '6px', color: '#ef4444', border: '1px solid #ef4444' }}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Session Notes */}
-        <Card data-testid="dm-screen-notes" className="parchment-dark" style={{ height: 'fit-content' }}>
-          <CardHeader>
-            <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Sparkles size={24} style={{ color: '#ff1f8f' }} />
-              Session Notes
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p style={{ color: '#bae6fd', fontSize: '13px', marginBottom: '12px' }}>
-              Jot down notes during play. AI will auto-organize them!
-            </p>
-            <div style={{ marginBottom: '12px' }}>
-              <textarea
-                data-testid="quick-note-input"
-                value={quickNote}
-                onChange={(e) => setQuickNote(e.target.value)}
-                className="textarea"
-                style={{ minHeight: '80px', fontSize: '14px' }}
-                placeholder="e.g., Met Eldrin the blacksmith, heading to Thornwood..."
-                disabled={processingNote}
-              />
-            </div>
-            <Button
-              data-testid="submit-quick-note-btn"
-              onClick={handleSubmitNote}
-              disabled={processingNote || !quickNote.trim()}
-              className="btn-primary"
-              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}
-            >
-              {processingNote ? (
-                <><Loader size={16} className="loading-spinner" /> Processing...</>
-              ) : (
-                <><Send size={16} /> Add Note</>
-              )}
-            </Button>
-
-            {/* Notes List */}
-            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ color: '#ff1f8f', fontWeight: '600', fontSize: '14px' }}>Session Notes ({sessionNotes.length})</span>
-              </div>
-              {sessionNotes.length === 0 ? (
-                <p style={{ color: '#bae6fd', fontSize: '13px', textAlign: 'center', padding: '16px' }}>No notes yet this session</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {sessionNotes.map(note => (
-                    <div key={note.id} className="note-item">
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                        <div style={{ flex: 1 }}>
-                          <div className="note-time">
-                            <Clock size={10} style={{ display: 'inline', marginRight: '4px' }} />
-                            {formatNoteTime(note.created_at)}
-                          </div>
-                          <div className="note-content">{note.content}</div>
-                        </div>
-                        <Button
-                          onClick={() => handleDeleteNote(note.id)}
-                          className="btn-icon"
-                          style={{ padding: '4px', color: '#ff4444' }}
-                        >
-                          <Trash2 size={14} />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Rules Reference */}
-        <Card data-testid="dm-screen-rules" className="parchment-dark" style={{ gridColumn: '1 / -1' }}>
-          <CardHeader>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-              <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <BookOpen size={24} style={{ color: '#ff1f8f' }} />
-                Rules Reference - {campaign?.system}
-              </CardTitle>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                {isEditingRules ? (
-                  <>
-                    <Button data-testid="save-rules-btn" onClick={handleSaveRules} className="btn-primary clickable-box" style={{ display: 'flex', gap: '8px' }}>
-                      <Save size={16} /> Save
-                    </Button>
-                    <Button data-testid="cancel-edit-rules-btn" onClick={() => { setIsEditingRules(false); fetchAllData(); }} className="btn-secondary clickable-box">
-                      <X size={16} />
-                    </Button>
-                  </>
-                ) : (
-                  <Button data-testid="edit-rules-btn" onClick={() => setIsEditingRules(true)} className="btn-secondary clickable-box" style={{ display: 'flex', gap: '8px' }}>
-                    <Edit size={16} /> Edit
+        <div data-testid="dm-screen-rules" className="glow-panel" style={{ gridColumn: '1 / -1' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
+            <h2 style={{ 
+              fontSize: '22px', 
+              color: '#ffffff',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <BookOpen size={24} style={{ color: '#22c55e' }} />
+              Rules Reference - {campaign?.system}
+            </h2>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              {isEditingRules ? (
+                <>
+                  <Button data-testid="save-rules-btn" onClick={handleSaveRules} className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
+                    <Save size={16} /> Save
                   </Button>
-                )}
-              </div>
+                  <Button data-testid="cancel-edit-rules-btn" onClick={() => { setIsEditingRules(false); fetchAllData(); }} className="btn-secondary">
+                    <X size={16} />
+                  </Button>
+                </>
+              ) : (
+                <Button data-testid="edit-rules-btn" onClick={() => setIsEditingRules(true)} className="btn-outline" style={{ display: 'flex', gap: '8px' }}>
+                  <Edit size={16} /> Edit
+                </Button>
+              )}
             </div>
-          </CardHeader>
-          <CardContent>
-            {/* Search Bar */}
-            <div style={{ marginBottom: '16px', display: 'flex', gap: '8px' }}>
-              <div style={{ position: 'relative', flex: 1 }}>
-                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#bae6fd' }} />
-                <Input
-                  data-testid="rules-search-input"
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  placeholder="Search rules... (press Enter)"
-                  className="input"
-                  style={{ paddingLeft: '40px' }}
-                />
-              </div>
-              <Button data-testid="search-rules-btn" onClick={handleSearch} className="btn-primary clickable-box">
-                Search
-              </Button>
-            </div>
+          </div>
 
-            {/* Rules Display/Edit */}
-            {isEditingRules ? (
-              <textarea
-                data-testid="rules-edit-textarea"
-                value={dmRules}
-                onChange={(e) => setDmRules(e.target.value)}
-                className="textarea"
-                style={{ minHeight: '500px', fontFamily: 'monospace', fontSize: '13px', lineHeight: '1.6' }}
+          {/* Search Bar */}
+          <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+            <div style={{ position: 'relative', flex: 1 }}>
+              <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+              <Input
+                data-testid="rules-search-input"
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder="Search rules... (press Enter)"
+                className="input-glow"
+                style={{ paddingLeft: '44px' }}
               />
-            ) : (
-              <div style={{
-                background: '#0a1628',
-                border: '2px solid #ff1f8f',
-                borderRadius: '8px',
-                padding: '20px',
-                maxHeight: '600px',
-                overflow: 'auto'
-              }}>
-                {dmRules.split('\n').map((line, index) => {
-                  const isHeading = line.startsWith('#');
-                  const isSubHeading = line.startsWith('##');
-                  const isListItem = line.trim().startsWith('-') || line.trim().startsWith('*');
-                  const isHighlighted = highlightedSections.includes(index);
-                  
-                  let style = {
-                    color: '#ffffff',
-                    fontSize: '14px',
-                    lineHeight: '1.8',
-                    marginBottom: '8px',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    background: isHighlighted ? 'rgba(255, 31, 143, 0.3)' : 'transparent',
-                    transition: 'background 0.3s'
-                  };
+            </div>
+            <Button data-testid="search-rules-btn" onClick={handleSearch} className="btn-primary">
+              Search
+            </Button>
+          </div>
 
-                  if (isHeading && !isSubHeading) {
-                    style = { ...style, fontSize: '24px', fontWeight: '700', color: '#ff1f8f', marginTop: '24px', marginBottom: '16px', fontFamily: 'Crimson Text, serif' };
-                  } else if (isSubHeading) {
-                    style = { ...style, fontSize: '18px', fontWeight: '600', color: '#38bdf8', marginTop: '16px', marginBottom: '12px' };
-                  } else if (isListItem) {
-                    style = { ...style, paddingLeft: '24px' };
-                  }
+          {/* Rules Display/Edit */}
+          {isEditingRules ? (
+            <textarea
+              data-testid="rules-edit-textarea"
+              value={dmRules}
+              onChange={(e) => setDmRules(e.target.value)}
+              className="textarea-glow"
+              style={{ minHeight: '500px', fontFamily: 'monospace', fontSize: '13px', lineHeight: '1.7' }}
+            />
+          ) : (
+            <div style={{
+              background: 'rgba(10, 10, 40, 0.6)',
+              border: '2px solid #1e40af',
+              borderRadius: '12px',
+              padding: '24px',
+              maxHeight: '600px',
+              overflow: 'auto'
+            }}>
+              {dmRules.split('\n').map((line, index) => {
+                const isHeading = line.startsWith('#');
+                const isSubHeading = line.startsWith('##');
+                const isListItem = line.trim().startsWith('-') || line.trim().startsWith('*');
+                const isHighlighted = highlightedSections.includes(index);
+                
+                let style = {
+                  color: '#ffffff',
+                  fontSize: '14px',
+                  lineHeight: '1.8',
+                  marginBottom: '8px',
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  background: isHighlighted ? 'rgba(34, 197, 94, 0.3)' : 'transparent',
+                  transition: 'background 0.3s'
+                };
 
-                  return (
-                    <div 
-                      key={index} 
-                      id={`rule-line-${index}`}
-                      style={style}
-                      dangerouslySetInnerHTML={{
-                        __html: line
-                          .replace(/^###?\s/, '')
-                          .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #ff1f8f;">$1</strong>')
-                          .replace(/`(.*?)`/g, '<code style="background: rgba(255, 31, 143, 0.2); padding: 2px 6px; border-radius: 3px; font-family: monospace;">$1</code>')
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                if (isHeading && !isSubHeading) {
+                  style = { ...style, fontSize: '24px', fontWeight: '800', color: '#22c55e', marginTop: '24px', marginBottom: '16px', fontFamily: 'Montserrat, sans-serif' };
+                } else if (isSubHeading) {
+                  style = { ...style, fontSize: '18px', fontWeight: '700', color: '#67e8f9', marginTop: '16px', marginBottom: '12px', fontFamily: 'Montserrat, sans-serif' };
+                } else if (isListItem) {
+                  style = { ...style, paddingLeft: '24px' };
+                }
+
+                return (
+                  <div 
+                    key={index} 
+                    id={`rule-line-${index}`}
+                    style={style}
+                    dangerouslySetInnerHTML={{
+                      __html: line
+                        .replace(/^###?\s/, '')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #22c55e;">$1</strong>')
+                        .replace(/`(.*?)`/g, '<code style="background: rgba(34, 197, 94, 0.2); padding: 2px 6px; border-radius: 4px; font-family: monospace;">$1</code>')
+                    }}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
