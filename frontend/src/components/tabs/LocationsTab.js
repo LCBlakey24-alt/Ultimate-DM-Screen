@@ -5,10 +5,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, MapPin, Sparkles, Copy, Loader } from 'lucide-react';
+import { Plus, Edit, Trash2, MapPin, Sparkles, Copy, Loader, Store, ChevronDown, ChevronUp, Building, Beer, Church, Hammer, Home, BookOpen, X } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+const PLACE_TYPES = [
+  { id: 'shop', label: 'Shop', icon: Store },
+  { id: 'tavern', label: 'Tavern/Inn', icon: Beer },
+  { id: 'temple', label: 'Temple', icon: Church },
+  { id: 'blacksmith', label: 'Blacksmith', icon: Hammer },
+  { id: 'guild', label: 'Guild Hall', icon: Building },
+  { id: 'library', label: 'Library', icon: BookOpen },
+  { id: 'residence', label: 'Residence', icon: Home },
+  { id: 'other', label: 'Other', icon: MapPin }
+];
 
 function LocationsTab({ campaignId }) {
   const [locations, setLocations] = useState([]);
@@ -25,6 +36,20 @@ function LocationsTab({ campaignId }) {
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiGenerating, setAiGenerating] = useState(false);
   const [aiResult, setAiResult] = useState('');
+  const [expandedLocations, setExpandedLocations] = useState({});
+  
+  // Places of Interest state
+  const [showPlaceDialog, setShowPlaceDialog] = useState(false);
+  const [editingPlace, setEditingPlace] = useState(null);
+  const [selectedLocationId, setSelectedLocationId] = useState(null);
+  const [placeFormData, setPlaceFormData] = useState({
+    name: '',
+    place_type: 'shop',
+    description: '',
+    owner: '',
+    services: '',
+    notes: ''
+  });
 
   useEffect(() => {
     fetchLocations();
@@ -93,6 +118,75 @@ function LocationsTab({ campaignId }) {
     setShowDialog(false);
   };
 
+  // Places of Interest handlers
+  const toggleLocationExpand = (locationId) => {
+    setExpandedLocations(prev => ({
+      ...prev,
+      [locationId]: !prev[locationId]
+    }));
+  };
+
+  const openAddPlaceDialog = (locationId) => {
+    setSelectedLocationId(locationId);
+    setEditingPlace(null);
+    setPlaceFormData({
+      name: '',
+      place_type: 'shop',
+      description: '',
+      owner: '',
+      services: '',
+      notes: ''
+    });
+    setShowPlaceDialog(true);
+  };
+
+  const openEditPlaceDialog = (locationId, place) => {
+    setSelectedLocationId(locationId);
+    setEditingPlace(place);
+    setPlaceFormData({
+      name: place.name || '',
+      place_type: place.place_type || 'shop',
+      description: place.description || '',
+      owner: place.owner || '',
+      services: place.services || '',
+      notes: place.notes || ''
+    });
+    setShowPlaceDialog(true);
+  };
+
+  const handlePlaceSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingPlace) {
+        await axios.put(`${API}/campaigns/${campaignId}/locations/${selectedLocationId}/places/${editingPlace.id}`, placeFormData);
+        toast.success('Place updated!');
+      } else {
+        await axios.post(`${API}/campaigns/${campaignId}/locations/${selectedLocationId}/places`, placeFormData);
+        toast.success('Place added!');
+      }
+      fetchLocations();
+      setShowPlaceDialog(false);
+    } catch (error) {
+      toast.error('Failed to save place');
+    }
+  };
+
+  const handleDeletePlace = async (locationId, placeId) => {
+    if (!window.confirm('Delete this place?')) return;
+    try {
+      await axios.delete(`${API}/campaigns/${campaignId}/locations/${locationId}/places/${placeId}`);
+      toast.success('Place deleted');
+      fetchLocations();
+    } catch (error) {
+      toast.error('Failed to delete place');
+    }
+  };
+
+  const getPlaceIcon = (placeType) => {
+    const type = PLACE_TYPES.find(t => t.id === placeType);
+    return type ? type.icon : MapPin;
+  };
+
   const handleAIGenerate = async () => {
     if (!aiPrompt.trim()) {
       toast.error('Please enter a prompt');
@@ -123,147 +217,386 @@ function LocationsTab({ campaignId }) {
   return (
     <div className="campaign-management-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
       <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#ffffff' }}>Locations</h2>
-        <Dialog open={showDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowDialog(open); }}>
-          <DialogTrigger asChild>
-            <Button data-testid="add-location-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
-              <Plus size={18} />
-              Add Location
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="modal" style={{ maxWidth: '600px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#ffffff' }}>Locations</h2>
+          <Dialog open={showDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowDialog(open); }}>
+            <DialogTrigger asChild>
+              <Button data-testid="add-location-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
+                <Plus size={18} />
+                Add Location
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="modal" style={{ maxWidth: '600px' }}>
+              <DialogHeader>
+                <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
+                  {editingLocation ? 'Edit Location' : 'Add Location'}
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                  <div>
+                    <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Name</label>
+                    <Input
+                      data-testid="location-name-input"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="input"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Type</label>
+                    <Input
+                      data-testid="location-type-input"
+                      value={formData.location_type}
+                      onChange={(e) => setFormData({ ...formData, location_type: e.target.value })}
+                      className="input"
+                      placeholder="City, Dungeon, Forest..."
+                    />
+                  </div>
+                </div>
+                <div style={{ marginBottom: '16px' }}>
+                  <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Description</label>
+                  <textarea
+                    data-testid="location-description-input"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="textarea"
+                    style={{ minHeight: '100px' }}
+                  />
+                </div>
+                <div style={{ marginBottom: '16px' }}>
+                  <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Notable NPCs</label>
+                  <Input
+                    data-testid="location-npcs-input"
+                    value={formData.notable_npcs}
+                    onChange={(e) => setFormData({ ...formData, notable_npcs: e.target.value })}
+                    className="input"
+                    placeholder="Key NPCs found here..."
+                  />
+                </div>
+                <div style={{ marginBottom: '24px' }}>
+                  <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Notes</label>
+                  <textarea
+                    data-testid="location-notes-input"
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    className="textarea"
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                  <Button type="button" className="btn-secondary" onClick={resetForm}>Cancel</Button>
+                  <Button data-testid="location-submit-btn" type="submit" className="btn-primary">{editingLocation ? 'Update' : 'Add'} Location</Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Place of Interest Dialog */}
+        <Dialog open={showPlaceDialog} onOpenChange={setShowPlaceDialog}>
+          <DialogContent className="modal" style={{ maxWidth: '550px' }}>
             <DialogHeader>
-              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
-                {editingLocation ? 'Edit Location' : 'Add Location'}
+              <DialogTitle className="medieval-heading" style={{ fontSize: '22px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Store size={22} style={{ color: '#22c55e' }} />
+                {editingPlace ? 'Edit Place' : 'Add Place of Interest'}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            <form onSubmit={handlePlaceSubmit} style={{ marginTop: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
                 <div>
-                  <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Name</label>
+                  <label className="gold-text" style={{ display: 'block', marginBottom: '6px', fontSize: '13px' }}>Name *</label>
                   <Input
-                    data-testid="location-name-input"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    data-testid="place-name-input"
+                    value={placeFormData.name}
+                    onChange={(e) => setPlaceFormData({ ...placeFormData, name: e.target.value })}
                     className="input"
+                    placeholder="e.g., The Rusty Tankard"
                     required
                   />
                 </div>
                 <div>
-                  <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Type</label>
-                  <Input
-                    data-testid="location-type-input"
-                    value={formData.location_type}
-                    onChange={(e) => setFormData({ ...formData, location_type: e.target.value })}
+                  <label className="gold-text" style={{ display: 'block', marginBottom: '6px', fontSize: '13px' }}>Type</label>
+                  <select
+                    data-testid="place-type-select"
+                    value={placeFormData.place_type}
+                    onChange={(e) => setPlaceFormData({ ...placeFormData, place_type: e.target.value })}
                     className="input"
-                    placeholder="City, Dungeon, Forest..."
-                  />
+                    style={{ height: '40px', width: '100%' }}
+                  >
+                    {PLACE_TYPES.map(type => (
+                      <option key={type.id} value={type.id}>{type.label}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Description</label>
-                <textarea
-                  data-testid="location-description-input"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="textarea"
-                  style={{ minHeight: '100px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '16px' }}>
-                <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Notable NPCs</label>
+              <div style={{ marginBottom: '14px' }}>
+                <label className="gold-text" style={{ display: 'block', marginBottom: '6px', fontSize: '13px' }}>Owner/Proprietor</label>
                 <Input
-                  data-testid="location-npcs-input"
-                  value={formData.notable_npcs}
-                  onChange={(e) => setFormData({ ...formData, notable_npcs: e.target.value })}
+                  data-testid="place-owner-input"
+                  value={placeFormData.owner}
+                  onChange={(e) => setPlaceFormData({ ...placeFormData, owner: e.target.value })}
                   className="input"
-                  placeholder="Key NPCs found here..."
+                  placeholder="e.g., Grumgar the Dwarf"
                 />
               </div>
-              <div style={{ marginBottom: '24px' }}>
-                <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Notes</label>
+              <div style={{ marginBottom: '14px' }}>
+                <label className="gold-text" style={{ display: 'block', marginBottom: '6px', fontSize: '13px' }}>Description</label>
                 <textarea
-                  data-testid="location-notes-input"
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  data-testid="place-description-input"
+                  value={placeFormData.description}
+                  onChange={(e) => setPlaceFormData({ ...placeFormData, description: e.target.value })}
                   className="textarea"
+                  style={{ minHeight: '80px' }}
+                  placeholder="Describe this place..."
+                />
+              </div>
+              <div style={{ marginBottom: '14px' }}>
+                <label className="gold-text" style={{ display: 'block', marginBottom: '6px', fontSize: '13px' }}>Services/Items Offered</label>
+                <textarea
+                  data-testid="place-services-input"
+                  value={placeFormData.services}
+                  onChange={(e) => setPlaceFormData({ ...placeFormData, services: e.target.value })}
+                  className="textarea"
+                  style={{ minHeight: '60px' }}
+                  placeholder="What can players buy, do, or find here?"
+                />
+              </div>
+              <div style={{ marginBottom: '20px' }}>
+                <label className="gold-text" style={{ display: 'block', marginBottom: '6px', fontSize: '13px' }}>Notes</label>
+                <textarea
+                  data-testid="place-notes-input"
+                  value={placeFormData.notes}
+                  onChange={(e) => setPlaceFormData({ ...placeFormData, notes: e.target.value })}
+                  className="textarea"
+                  placeholder="DM notes, secrets, hooks..."
                 />
               </div>
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                <Button type="button" className="btn-secondary" onClick={resetForm}>Cancel</Button>
-                <Button data-testid="location-submit-btn" type="submit" className="btn-primary">{editingLocation ? 'Update' : 'Add'} Location</Button>
+                <Button type="button" className="btn-secondary" onClick={() => setShowPlaceDialog(false)}>Cancel</Button>
+                <Button data-testid="place-submit-btn" type="submit" className="btn-primary">{editingPlace ? 'Update' : 'Add'} Place</Button>
               </div>
             </form>
           </DialogContent>
         </Dialog>
-      </div>
 
-      {locations.length === 0 ? (
-        <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
-          <p style={{ color: '#bae6fd' }}>No locations added yet. Build your world!</p>
-        </Card>
-      ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(min(320px, 100%), 1fr))',
-          gap: '20px'
-        }}>
-          {locations.map(location => (
-            <Card key={location.id} data-testid={`location-card-${location.id}`} className="card">
-              <CardHeader>
-                <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
-                  <MapPin size={24} style={{ color: '#ffffff', marginTop: '4px' }} />
-                  <div style={{ flex: 1 }}>
-                    <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', marginBottom: '4px' }}>
-                      {location.name}
-                    </CardTitle>
-                    {location.location_type && (
-                      <p style={{ fontSize: '14px', color: '#bae6fd' }}>{location.location_type}</p>
+        {locations.length === 0 ? (
+          <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
+            <p style={{ color: '#bae6fd' }}>No locations added yet. Build your world!</p>
+          </Card>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {locations.map(location => {
+              const PlaceIcon = getPlaceIcon(location.place_type);
+              const isExpanded = expandedLocations[location.id];
+              const places = location.places_of_interest || [];
+              
+              return (
+                <Card key={location.id} data-testid={`location-card-${location.id}`} className="card" style={{ overflow: 'visible' }}>
+                  <CardHeader>
+                    <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                      <MapPin size={24} style={{ color: '#22c55e', marginTop: '4px' }} />
+                      <div style={{ flex: 1 }}>
+                        <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', marginBottom: '4px' }}>
+                          {location.name}
+                        </CardTitle>
+                        {location.location_type && (
+                          <p style={{ fontSize: '14px', color: '#67e8f9' }}>{location.location_type}</p>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <Button data-testid={`edit-location-btn-${location.id}`} onClick={() => handleEdit(location)} className="btn-secondary" style={{ padding: '8px' }}>
+                          <Edit size={14} />
+                        </Button>
+                        <Button data-testid={`delete-location-btn-${location.id}`} onClick={() => handleDelete(location.id)} className="btn-danger" style={{ padding: '8px' }}>
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {location.description && (
+                      <p style={{ fontSize: '14px', color: '#ffffff', marginBottom: '12px', lineHeight: '1.5' }}>{location.description}</p>
                     )}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {location.description && (
-                  <p style={{ fontSize: '14px', color: '#ffffff', marginBottom: '12px', lineHeight: '1.5' }}>{location.description}</p>
-                )}
-                {location.notable_npcs && (
-                  <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(255, 31, 143, 0.1)', borderRadius: '6px' }}>
-                    <p style={{ fontSize: '12px', color: '#bae6fd', marginBottom: '4px' }}>Notable NPCs</p>
-                    <p style={{ fontSize: '14px', color: '#ffffff' }}>{location.notable_npcs}</p>
-                  </div>
-                )}
-                {location.notes && (
-                  <p style={{ fontSize: '12px', color: '#bae6fd', marginBottom: '12px', fontStyle: 'italic' }}>{location.notes}</p>
-                )}
-                <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                  <Button data-testid={`edit-location-btn-${location.id}`} onClick={() => handleEdit(location)} className="btn-secondary" style={{ flex: 1 }}>
-                    <Edit size={14} />
-                  </Button>
-                  <Button data-testid={`delete-location-btn-${location.id}`} onClick={() => handleDelete(location.id)} className="btn-danger">
-                    <Trash2 size={14} />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                    {location.notable_npcs && (
+                      <div style={{ marginBottom: '12px', padding: '8px', background: 'rgba(255, 31, 143, 0.1)', borderRadius: '6px' }}>
+                        <p style={{ fontSize: '12px', color: '#67e8f9', marginBottom: '4px' }}>Notable NPCs</p>
+                        <p style={{ fontSize: '14px', color: '#ffffff' }}>{location.notable_npcs}</p>
+                      </div>
+                    )}
+                    {location.notes && (
+                      <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '12px', fontStyle: 'italic' }}>{location.notes}</p>
+                    )}
+                    
+                    {/* Places of Interest Section */}
+                    <div style={{ marginTop: '16px', borderTop: '1px solid #1e40af', paddingTop: '16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <button
+                          onClick={() => toggleLocationExpand(location.id)}
+                          data-testid={`toggle-places-${location.id}`}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: 0
+                          }}
+                        >
+                          <Store size={16} style={{ color: '#22c55e' }} />
+                          <span style={{ color: '#22c55e', fontSize: '13px', fontWeight: '600' }}>
+                            PLACES OF INTEREST ({places.length})
+                          </span>
+                          {isExpanded ? <ChevronUp size={16} style={{ color: '#22c55e' }} /> : <ChevronDown size={16} style={{ color: '#22c55e' }} />}
+                        </button>
+                        <Button
+                          data-testid={`add-place-btn-${location.id}`}
+                          onClick={() => openAddPlaceDialog(location.id)}
+                          className="btn-outline"
+                          style={{ 
+                            padding: '4px 10px', 
+                            fontSize: '11px',
+                            borderColor: '#22c55e',
+                            color: '#22c55e',
+                            display: 'flex',
+                            gap: '4px',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <Plus size={12} />
+                          Add Place
+                        </Button>
+                      </div>
+                      
+                      {isExpanded && places.length > 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {places.map(place => {
+                            const TypeIcon = getPlaceIcon(place.place_type);
+                            const typeLabel = PLACE_TYPES.find(t => t.id === place.place_type)?.label || 'Place';
+                            
+                            return (
+                              <div
+                                key={place.id}
+                                data-testid={`place-card-${place.id}`}
+                                style={{
+                                  background: 'rgba(34, 197, 94, 0.08)',
+                                  border: '1px solid rgba(34, 197, 94, 0.3)',
+                                  borderRadius: '10px',
+                                  padding: '12px 14px'
+                                }}
+                              >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
+                                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                    <TypeIcon size={18} style={{ color: '#22c55e' }} />
+                                    <div>
+                                      <h5 style={{ color: '#ffffff', fontSize: '14px', fontWeight: '700', marginBottom: '2px' }}>{place.name}</h5>
+                                      <span style={{ 
+                                        fontSize: '10px', 
+                                        color: '#22c55e', 
+                                        background: 'rgba(34, 197, 94, 0.2)',
+                                        padding: '2px 8px',
+                                        borderRadius: '10px',
+                                        fontWeight: '600'
+                                      }}>
+                                        {typeLabel}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div style={{ display: 'flex', gap: '6px' }}>
+                                    <button
+                                      data-testid={`edit-place-btn-${place.id}`}
+                                      onClick={() => openEditPlaceDialog(location.id, place)}
+                                      style={{
+                                        background: 'rgba(74, 125, 255, 0.2)',
+                                        border: '1px solid #4a7dff',
+                                        borderRadius: '4px',
+                                        color: '#4a7dff',
+                                        padding: '4px 6px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                      }}
+                                    >
+                                      <Edit size={12} />
+                                    </button>
+                                    <button
+                                      data-testid={`delete-place-btn-${place.id}`}
+                                      onClick={() => handleDeletePlace(location.id, place.id)}
+                                      style={{
+                                        background: 'rgba(239, 68, 68, 0.2)',
+                                        border: '1px solid #ef4444',
+                                        borderRadius: '4px',
+                                        color: '#ef4444',
+                                        padding: '4px 6px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                      }}
+                                    >
+                                      <X size={12} />
+                                    </button>
+                                  </div>
+                                </div>
+                                
+                                {place.owner && (
+                                  <p style={{ fontSize: '12px', color: '#67e8f9', marginBottom: '4px' }}>
+                                    <strong>Owner:</strong> {place.owner}
+                                  </p>
+                                )}
+                                {place.description && (
+                                  <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px', lineHeight: '1.4' }}>
+                                    {place.description}
+                                  </p>
+                                )}
+                                {place.services && (
+                                  <div style={{ 
+                                    marginTop: '6px', 
+                                    padding: '6px 8px', 
+                                    background: 'rgba(10, 10, 40, 0.4)', 
+                                    borderRadius: '6px' 
+                                  }}>
+                                    <p style={{ fontSize: '11px', color: '#eab308', marginBottom: '2px', fontWeight: '600' }}>Services/Items</p>
+                                    <p style={{ fontSize: '11px', color: '#ffffff' }}>{place.services}</p>
+                                  </div>
+                                )}
+                                {place.notes && (
+                                  <p style={{ fontSize: '11px', color: '#64748b', marginTop: '6px', fontStyle: 'italic' }}>
+                                    {place.notes}
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      
+                      {isExpanded && places.length === 0 && (
+                        <p style={{ fontSize: '12px', color: '#64748b', fontStyle: 'italic', textAlign: 'center', padding: '12px' }}>
+                          No places added yet. Add shops, taverns, temples, and more!
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* AI Assistant Panel */}
       <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
-        <Card className="parchment-dark" style={{ border: '2px solid #ffffff' }}>
+        <Card className="parchment-dark" style={{ border: '2px solid #22c55e' }}>
           <CardHeader>
             <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={20} />
+              <Sparkles size={20} style={{ color: '#22c55e' }} />
               AI Assistant
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p style={{ fontSize: '13px', color: '#bae6fd', marginBottom: '16px', lineHeight: '1.5' }}>
-              Generate location descriptions, points of interest, shops, and more with AI.
+            <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px', lineHeight: '1.5' }}>
+              Generate location descriptions, places of interest, shops, taverns, and more with AI.
             </p>
             <div style={{ marginBottom: '16px' }}>
               <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>
@@ -275,7 +608,7 @@ function LocationsTab({ campaignId }) {
                 onChange={(e) => setAiPrompt(e.target.value)}
                 className="textarea"
                 style={{ minHeight: '100px', fontSize: '13px' }}
-                placeholder="Example: Create a bustling port city with secret underground markets and pirate connections"
+                placeholder="Example: Create a bustling port city with secret underground markets, a pirate tavern, and a temple to the sea god"
               />
             </div>
             <Button
