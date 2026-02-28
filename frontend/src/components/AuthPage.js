@@ -3,14 +3,12 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sword, Shield } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 function AuthPage({ onLogin }) {
+  const [isLogin, setIsLogin] = useState(true);
   const [loginData, setLoginData] = useState({ username: '', password: '' });
   const [registerData, setRegisterData] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -59,125 +57,261 @@ function AuthPage({ onLogin }) {
   };
 
   return (
-    <div className="auth-container" style={{
+    <div style={{
       minHeight: '100vh',
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #0a1628 0%, #0d1d33 100%)',
-      padding: '20px'
+      background: 'linear-gradient(180deg, #030014 0%, #0a0a2e 50%, #030014 100%)',
     }}>
-      <div className="auth-content" style={{ maxWidth: '450px', width: '100%' }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '16px' }}>
-            <Sword size={40} style={{ color: '#ff1f8f' }} />
-            <h1 className="medieval-heading" style={{ fontSize: '42px', color: '#ffffff', margin: 0 }}>
-              DM Screen
-            </h1>
-            <Shield size={40} style={{ color: '#ff1f8f' }} />
+      {/* Left Side - Form */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '40px 20px'
+      }}>
+        <div style={{ width: '100%', maxWidth: '420px' }}>
+          {/* Form Panel */}
+          <div className="glow-panel" style={{ padding: '40px 32px' }}>
+            {isLogin ? (
+              /* Login Form */
+              <form onSubmit={handleLogin} data-testid="login-form">
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{ 
+                    display: 'block', 
+                    marginBottom: '10px', 
+                    color: '#ffffff', 
+                    fontSize: '15px', 
+                    fontWeight: '700',
+                    fontFamily: 'Montserrat, sans-serif',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}>
+                    Username
+                  </label>
+                  <Input
+                    data-testid="login-username-input"
+                    type="text"
+                    value={loginData.username}
+                    onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+                    placeholder="Enter your username"
+                    className="input-glow"
+                    disabled={loading}
+                    style={{
+                      background: 'rgba(10, 10, 40, 0.8)',
+                      border: '2px solid #1e40af',
+                      borderRadius: '12px',
+                      color: '#ffffff',
+                      padding: '14px 18px',
+                      fontSize: '15px'
+                    }}
+                  />
+                </div>
+                <div style={{ marginBottom: '32px' }}>
+                  <label style={{ 
+                    display: 'block', 
+                    marginBottom: '10px', 
+                    color: '#ffffff', 
+                    fontSize: '15px', 
+                    fontWeight: '700',
+                    fontFamily: 'Montserrat, sans-serif',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}>
+                    Password
+                  </label>
+                  <Input
+                    data-testid="login-password-input"
+                    type="password"
+                    value={loginData.password}
+                    onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                    placeholder="Enter your password"
+                    className="input-glow"
+                    disabled={loading}
+                    style={{
+                      background: 'rgba(10, 10, 40, 0.8)',
+                      border: '2px solid #1e40af',
+                      borderRadius: '12px',
+                      color: '#ffffff',
+                      padding: '14px 18px',
+                      fontSize: '15px'
+                    }}
+                  />
+                </div>
+                <Button 
+                  data-testid="login-submit-btn"
+                  type="submit" 
+                  className="btn-primary" 
+                  style={{ 
+                    width: '100%', 
+                    marginBottom: '16px',
+                    padding: '16px 32px',
+                    fontSize: '16px'
+                  }}
+                  disabled={loading}
+                >
+                  {loading ? 'Entering...' : 'Log In'}
+                </Button>
+                <Button 
+                  data-testid="switch-to-register-btn"
+                  type="button"
+                  onClick={() => setIsLogin(false)}
+                  className="btn-secondary" 
+                  style={{ 
+                    width: '100%',
+                    padding: '16px 32px',
+                    fontSize: '16px'
+                  }}
+                  disabled={loading}
+                >
+                  Create Account
+                </Button>
+              </form>
+            ) : (
+              /* Register Form */
+              <form onSubmit={handleRegister} data-testid="register-form">
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{ 
+                    display: 'block', 
+                    marginBottom: '10px', 
+                    color: '#ffffff', 
+                    fontSize: '15px', 
+                    fontWeight: '700',
+                    fontFamily: 'Montserrat, sans-serif',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}>
+                    Username
+                  </label>
+                  <Input
+                    data-testid="register-username-input"
+                    type="text"
+                    value={registerData.username}
+                    onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
+                    placeholder="Choose a username"
+                    className="input-glow"
+                    disabled={loading}
+                    style={{
+                      background: 'rgba(10, 10, 40, 0.8)',
+                      border: '2px solid #1e40af',
+                      borderRadius: '12px',
+                      color: '#ffffff',
+                      padding: '14px 18px',
+                      fontSize: '15px'
+                    }}
+                  />
+                </div>
+                <div style={{ marginBottom: '32px' }}>
+                  <label style={{ 
+                    display: 'block', 
+                    marginBottom: '10px', 
+                    color: '#ffffff', 
+                    fontSize: '15px', 
+                    fontWeight: '700',
+                    fontFamily: 'Montserrat, sans-serif',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}>
+                    Password
+                  </label>
+                  <Input
+                    data-testid="register-password-input"
+                    type="password"
+                    value={registerData.password}
+                    onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                    placeholder="Create a password (min 6 characters)"
+                    className="input-glow"
+                    disabled={loading}
+                    style={{
+                      background: 'rgba(10, 10, 40, 0.8)',
+                      border: '2px solid #1e40af',
+                      borderRadius: '12px',
+                      color: '#ffffff',
+                      padding: '14px 18px',
+                      fontSize: '15px'
+                    }}
+                  />
+                </div>
+                <Button 
+                  data-testid="register-submit-btn"
+                  type="submit" 
+                  className="btn-primary" 
+                  style={{ 
+                    width: '100%', 
+                    marginBottom: '16px',
+                    padding: '16px 32px',
+                    fontSize: '16px'
+                  }}
+                  disabled={loading}
+                >
+                  {loading ? 'Creating Account...' : 'Create Account'}
+                </Button>
+                <Button 
+                  data-testid="switch-to-login-btn"
+                  type="button"
+                  onClick={() => setIsLogin(true)}
+                  className="btn-secondary" 
+                  style={{ 
+                    width: '100%',
+                    padding: '16px 32px',
+                    fontSize: '16px'
+                  }}
+                  disabled={loading}
+                >
+                  Back to Login
+                </Button>
+              </form>
+            )}
           </div>
-          <p style={{ color: '#bae6fd', fontSize: '16px' }}>Your Ultimate Dungeon Master Tool</p>
-        </div>
-
-        <Card className="parchment-dark" style={{ border: '2px solid #ff1f8f' }}>
-          <CardContent style={{ padding: '24px' }}>
-            <Tabs defaultValue="login">
-              <TabsList style={{ width: '100%', background: 'rgba(10,22,40,0.8)', marginBottom: '24px' }}>
-                <TabsTrigger data-testid="login-tab" value="login" style={{ flex: 1 }}>Login</TabsTrigger>
-                <TabsTrigger data-testid="register-tab" value="register" style={{ flex: 1 }}>Register</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="login">
-                <form onSubmit={handleLogin} data-testid="login-form">
-                  <div style={{ marginBottom: '16px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#ffffff', fontSize: '14px', fontWeight: '600' }}>
-                      Username
-                    </label>
-                    <Input
-                      data-testid="login-username-input"
-                      type="text"
-                      value={loginData.username}
-                      onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
-                      placeholder="Enter your username"
-                      className="input"
-                      disabled={loading}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#ffffff', fontSize: '14px', fontWeight: '600' }}>
-                      Password
-                    </label>
-                    <Input
-                      data-testid="login-password-input"
-                      type="password"
-                      value={loginData.password}
-                      onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                      placeholder="Enter your password"
-                      className="input"
-                      disabled={loading}
-                    />
-                  </div>
-                  <Button 
-                    data-testid="login-submit-btn"
-                    type="submit" 
-                    className="btn-primary" 
-                    style={{ width: '100%' }}
-                    disabled={loading}
-                  >
-                    {loading ? 'Entering...' : 'Enter the Realm'}
-                  </Button>
-                </form>
-              </TabsContent>
-
-              <TabsContent value="register">
-                <form onSubmit={handleRegister} data-testid="register-form">
-                  <div style={{ marginBottom: '16px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#ffffff', fontSize: '14px', fontWeight: '600' }}>
-                      Username
-                    </label>
-                    <Input
-                      data-testid="register-username-input"
-                      type="text"
-                      value={registerData.username}
-                      onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
-                      placeholder="Choose a username"
-                      className="input"
-                      disabled={loading}
-                    />
-                  </div>
-                  <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#ffffff', fontSize: '14px', fontWeight: '600' }}>
-                      Password
-                    </label>
-                    <Input
-                      data-testid="register-password-input"
-                      type="password"
-                      value={registerData.password}
-                      onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                      placeholder="Create a password (min 6 characters)"
-                      className="input"
-                      disabled={loading}
-                    />
-                  </div>
-                  <Button 
-                    data-testid="register-submit-btn"
-                    type="submit" 
-                    className="btn-primary" 
-                    style={{ width: '100%' }}
-                    disabled={loading}
-                  >
-                    {loading ? 'Creating Account...' : 'Begin Your Journey'}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        <div style={{ marginTop: '24px', textAlign: 'center', color: '#bae6fd', fontSize: '14px' }}>
-          <p>Track initiatives, manage players, build worlds, and more!</p>
         </div>
       </div>
+
+      {/* Right Side - Branding */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '40px 20px',
+        background: 'transparent'
+      }}>
+        {/* Rookie Quest Logo */}
+        <img 
+          src="/rookie-quest-logo.png" 
+          alt="Rookie Quest" 
+          style={{ 
+            maxWidth: '350px', 
+            width: '100%',
+            marginBottom: '24px',
+            filter: 'drop-shadow(0 0 30px rgba(255, 255, 255, 0.3))'
+          }} 
+        />
+        
+        {/* TTRPG Companion Logo */}
+        <img 
+          src="/ttrpg-companion-logo.png" 
+          alt="TTRPG Companion" 
+          style={{ 
+            maxWidth: '320px', 
+            width: '100%',
+            filter: 'drop-shadow(0 0 20px rgba(74, 125, 255, 0.4))'
+          }} 
+        />
+      </div>
+
+      {/* Mobile Layout - Show logos above form */}
+      <style>{`
+        @media (max-width: 900px) {
+          .auth-container > div:first-child {
+            order: 2;
+          }
+          .auth-container > div:last-child {
+            order: 1;
+            padding: 40px 20px 20px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
