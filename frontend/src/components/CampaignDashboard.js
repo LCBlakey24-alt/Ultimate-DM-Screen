@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, FlaskConical, Calendar } from 'lucide-react';
+import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles } from 'lucide-react';
 import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
 import GodsTab from '@/components/tabs/GodsTab';
 import NPCsTab from '@/components/tabs/NPCsTab';
@@ -13,6 +12,7 @@ import PlayersTab from '@/components/tabs/PlayersTab';
 import InGameNotesTab from '@/components/tabs/InGameNotesTab';
 import CombatCreatorTab from '@/components/tabs/CombatCreatorTab';
 import CalendarTab from '@/components/tabs/CalendarTab';
+import EncounterGeneratorTab from '@/components/tabs/EncounterGeneratorTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -54,31 +54,17 @@ function CampaignDashboard({ username, onLogout }) {
 
   if (!campaign) return null;
 
-  const TabButton = ({ value, icon: Icon, label }) => (
-    <TabsTrigger 
-      data-testid={`${value}-tab`}
-      value={value}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        padding: '12px 20px',
-        borderRadius: '12px',
-        background: activeTab === value ? 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)' : 'transparent',
-        color: activeTab === value ? '#ffffff' : '#94a3b8',
-        border: 'none',
-        fontWeight: '600',
-        fontFamily: 'Montserrat, sans-serif',
-        fontSize: '13px',
-        cursor: 'pointer',
-        transition: 'all 0.3s ease',
-        boxShadow: activeTab === value ? '0 0 20px rgba(34, 197, 94, 0.5)' : 'none'
-      }}
-    >
-      <Icon size={18} />
-      {label}
-    </TabsTrigger>
-  );
+  const tabs = [
+    { id: 'setting', icon: Book, label: 'Setting', color: '#4a7dff' },
+    { id: 'gods', icon: Church, label: 'Gods', color: '#a855f7' },
+    { id: 'npcs', icon: UserCircle, label: 'NPCs', color: '#f97316' },
+    { id: 'locations', icon: MapPin, label: 'Locations', color: '#22c55e' },
+    { id: 'players', icon: Users, label: 'Players', color: '#4a7dff' },
+    { id: 'combat-creator', icon: Swords, label: 'Combat', color: '#ef4444' },
+    { id: 'encounter-gen', icon: Sparkles, label: 'Encounter Gen', color: '#eab308' },
+    { id: 'calendar', icon: Calendar, label: 'Calendar', color: '#67e8f9' },
+    { id: 'ingame-notes', icon: FileText, label: 'Notes', color: '#94a3b8' },
+  ];
 
   return (
     <div style={{
@@ -141,61 +127,60 @@ function CampaignDashboard({ username, onLogout }) {
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px 24px' }}>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList style={{
-            background: 'rgba(10, 10, 60, 0.7)',
-            padding: '10px',
-            borderRadius: '16px',
-            border: '2px solid #1e40af',
-            display: 'flex',
-            gap: '8px',
-            marginBottom: '32px',
-            flexWrap: 'wrap',
-            boxShadow: '0 0 20px rgba(74, 125, 255, 0.15)'
-          }}>
-            <TabButton value="setting" icon={Book} label="Campaign Setting" />
-            <TabButton value="gods" icon={Church} label="Gods" />
-            <TabButton value="npcs" icon={UserCircle} label="NPCs" />
-            <TabButton value="locations" icon={MapPin} label="Locations" />
-            <TabButton value="players" icon={Users} label="Players" />
-            <TabButton value="combat-creator" icon={FlaskConical} label="Combat Creator" />
-            <TabButton value="calendar" icon={Calendar} label="Calendar" />
-            <TabButton value="ingame-notes" icon={FileText} label="In-Game Notes" />
-          </TabsList>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
+        {/* Tab Navigation - Same design as DM Screen */}
+        <div style={{ 
+          display: 'flex', 
+          gap: '6px', 
+          marginBottom: '24px', 
+          flexWrap: 'wrap', 
+          background: 'rgba(10, 10, 40, 0.5)', 
+          padding: '8px', 
+          borderRadius: '16px', 
+          border: '2px solid #1e40af' 
+        }}>
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              data-testid={`${tab.id}-tab`}
+              style={{
+                flex: '1 1 auto',
+                minWidth: '90px',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                border: activeTab === tab.id ? `2px solid ${tab.color}` : '2px solid transparent',
+                background: activeTab === tab.id ? `${tab.color}20` : 'transparent',
+                color: activeTab === tab.id ? tab.color : '#94a3b8',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: '700',
+                fontSize: '12px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                transition: 'all 0.2s'
+              }}
+            >
+              <tab.icon size={15} />
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-          <TabsContent value="setting">
-            <CampaignSettingTab campaignId={campaignId} />
-          </TabsContent>
-
-          <TabsContent value="gods">
-            <GodsTab campaignId={campaignId} />
-          </TabsContent>
-
-          <TabsContent value="npcs">
-            <NPCsTab campaignId={campaignId} />
-          </TabsContent>
-
-          <TabsContent value="locations">
-            <LocationsTab campaignId={campaignId} />
-          </TabsContent>
-
-          <TabsContent value="players">
-            <PlayersTab campaignId={campaignId} />
-          </TabsContent>
-
-          <TabsContent value="combat-creator">
-            <CombatCreatorTab campaignId={campaignId} />
-          </TabsContent>
-
-          <TabsContent value="calendar">
-            <CalendarTab campaignId={campaignId} />
-          </TabsContent>
-
-          <TabsContent value="ingame-notes">
-            <InGameNotesTab campaignId={campaignId} />
-          </TabsContent>
-        </Tabs>
+        {/* Tab Content */}
+        <div className="glow-panel" style={{ minHeight: '500px' }}>
+          {activeTab === 'setting' && <CampaignSettingTab campaignId={campaignId} />}
+          {activeTab === 'gods' && <GodsTab campaignId={campaignId} />}
+          {activeTab === 'npcs' && <NPCsTab campaignId={campaignId} />}
+          {activeTab === 'locations' && <LocationsTab campaignId={campaignId} />}
+          {activeTab === 'players' && <PlayersTab campaignId={campaignId} />}
+          {activeTab === 'combat-creator' && <CombatCreatorTab campaignId={campaignId} />}
+          {activeTab === 'encounter-gen' && <EncounterGeneratorTab campaignId={campaignId} />}
+          {activeTab === 'calendar' && <CalendarTab campaignId={campaignId} />}
+          {activeTab === 'ingame-notes' && <InGameNotesTab campaignId={campaignId} />}
+        </div>
       </div>
     </div>
   );
