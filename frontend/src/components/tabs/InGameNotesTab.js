@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
-import { Plus, Trash2, Sparkles, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { Plus, Trash2, Sparkles, CheckCircle, AlertCircle, Loader, FileText, Copy, Download } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -17,6 +17,11 @@ function InGameNotesTab({ campaignId }) {
   const [processingNote, setProcessingNote] = useState(null);
   const [aiSuggestions, setAiSuggestions] = useState(null);
   const [showSuggestionsDialog, setShowSuggestionsDialog] = useState(false);
+  
+  // Session Recap state
+  const [generatingRecap, setGeneratingRecap] = useState(false);
+  const [sessionRecap, setSessionRecap] = useState('');
+  const [showRecapDialog, setShowRecapDialog] = useState(false);
 
   useEffect(() => {
     fetchNotes();
