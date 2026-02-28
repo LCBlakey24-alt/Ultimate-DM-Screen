@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Swords, Play, SkipForward, Plus, Trash2, Heart, Shield, Skull, RotateCcw, ChevronUp, ChevronDown, Zap } from 'lucide-react';
+import { Swords, Play, SkipForward, Plus, Trash2, Heart, Shield, Skull, RotateCcw, ChevronUp, ChevronDown, Zap, BookOpen, CircleDot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { QuickReferencePopup, QuickReferenceModal, CONDITIONS_REFERENCE } from '@/components/QuickReference';
 
 const CONDITIONS = [
   { id: 'blinded', label: 'Blinded', color: '#64748b' },
@@ -27,18 +28,14 @@ function CombatTracker({ players = [], npcs = [] }) {
   const [round, setRound] = useState(1);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newCombatant, setNewCombatant] = useState({ name: '', hp: 10, ac: 10, initiative: 0, isEnemy: true });
+  const [showReference, setShowReference] = useState(false);
 
-  // Roll a d20
   const rollD20 = () => Math.floor(Math.random() * 20) + 1;
-
-  // Calculate initiative modifier from dexterity
   const getInitMod = (dex) => Math.floor((dex - 10) / 2);
 
-  // Start combat - roll initiative for everyone
   const startCombat = () => {
     const allCombatants = [];
 
-    // Add players
     players.forEach(player => {
       const dexMod = getInitMod(player.stats?.dexterity || 10);
       const roll = rollD20();
@@ -53,11 +50,11 @@ function CombatTracker({ players = [], npcs = [] }) {
         initiativeRoll: roll,
         initiativeMod: dexMod,
         conditions: [],
-        isEnemy: false
+        isEnemy: false,
+        deathSaves: { successes: 0, failures: 0 }
       });
     });
 
-    // Add NPCs as potential enemies
     npcs.forEach(npc => {
       const roll = rollD20();
       allCombatants.push({
@@ -71,13 +68,12 @@ function CombatTracker({ players = [], npcs = [] }) {
         initiativeRoll: roll,
         initiativeMod: 0,
         conditions: [],
-        isEnemy: true
+        isEnemy: true,
+        deathSaves: { successes: 0, failures: 0 }
       });
     });
 
-    // Sort by initiative (highest first)
     allCombatants.sort((a, b) => b.initiative - a.initiative);
-
     setCombatants(allCombatants);
     setCurrentTurn(0);
     setRound(1);
@@ -85,7 +81,6 @@ function CombatTracker({ players = [], npcs = [] }) {
     toast.success('Combat started! Initiative rolled for all combatants.');
   };
 
-  // Add a new combatant mid-combat
   const addCombatant = () => {
     if (!newCombatant.name.trim()) {
       toast.error('Enter a name');
@@ -104,13 +99,11 @@ function CombatTracker({ players = [], npcs = [] }) {
       initiativeRoll: roll,
       initiativeMod: parseInt(newCombatant.initiative) || 0,
       conditions: [],
-      isEnemy: newCombatant.isEnemy
+      isEnemy: newCombatant.isEnemy,
+      deathSaves: { successes: 0, failures: 0 }
     };
 
-    // Insert into correct position based on initiative
     const updated = [...combatants, newEntry].sort((a, b) => b.initiative - a.initiative);
-    
-    // Adjust current turn if needed
     const newIndex = updated.findIndex(c => c.id === newEntry.id);
     if (newIndex <= currentTurn) {
       setCurrentTurn(currentTurn + 1);
@@ -122,7 +115,6 @@ function CombatTracker({ players = [], npcs = [] }) {
     toast.success(`${newEntry.name} joined combat!`);
   };
 
-  // Next turn
   const nextTurn = () => {
     if (currentTurn >= combatants.length - 1) {
       setCurrentTurn(0);
@@ -133,18 +125,82 @@ function CombatTracker({ players = [], npcs = [] }) {
     }
   };
 
-  // Update HP
   const updateHP = (id, change) => {
     setCombatants(combatants.map(c => {
       if (c.id === id) {
         const newHp = Math.max(0, Math.min(c.maxHp, c.hp + change));
-        return { ...c, hp: newHp };
+        const wasUnconscious = c.hp <= 0;
+        const nowUnconscious = newHp <= 0;
+        
+        // Reset death saves when dropping to 0 or healing from 0
+        let newDeathSaves = c.deathSaves;
+        if (!wasUnconscious && nowUnconscious) {
+          newDeathSaves = { successes: 0, failures: 0 };
+          toast.warning(`${c.name} is unconscious! Begin death saves.`);
+        } else if (wasUnconscious && !nowUnconscious) {
+          newDeathSaves = { successes: 0, failures: 0 };
+          toast.success(`${c.name} is back up!`);
+        }
+        
+        return { ...c, hp: newHp, deathSaves: newDeathSaves };
       }
       return c;
     }));
   };
 
-  // Toggle condition
+  // Death Save functions
+  const rollDeathSave = (id) => {
+    const roll = rollD20();
+    setCombatants(combatants.map(c => {
+      if (c.id === id) {
+        let newSaves = { ...c.deathSaves };
+        
+        if (roll === 20) {
+          // Natural 20: regain 1 HP
+          toast.success(`${c.name} rolled a Natural 20! They regain 1 HP and are conscious!`);
+          return { ...c, hp: 1, deathSaves: { successes: 0, failures: 0 } };
+        } else if (roll === 1) {
+          // Natural 1: 2 failures
+          newSaves.failures = Math.min(3, newSaves.failures + 2);
+          toast.error(`${c.name} rolled a Natural 1! Two death save failures!`);
+        } else if (roll >= 10) {
+          newSaves.successes = Math.min(3, newSaves.successes + 1);
+          toast.success(`${c.name} rolled ${roll} - Success! (${newSaves.successes}/3)`);
+        } else {
+          newSaves.failures = Math.min(3, newSaves.failures + 1);
+          toast.error(`${c.name} rolled ${roll} - Failure! (${newSaves.failures}/3)`);
+        }
+        
+        // Check for stabilization or death
+        if (newSaves.successes >= 3) {
+          toast.success(`${c.name} has stabilized!`);
+        } else if (newSaves.failures >= 3) {
+          toast.error(`${c.name} has died!`);
+        }
+        
+        return { ...c, deathSaves: newSaves };
+      }
+      return c;
+    }));
+  };
+
+  const setDeathSave = (id, type, value) => {
+    setCombatants(combatants.map(c => {
+      if (c.id === id) {
+        const newSaves = { ...c.deathSaves, [type]: value };
+        
+        if (newSaves.successes >= 3) {
+          toast.success(`${c.name} has stabilized!`);
+        } else if (newSaves.failures >= 3) {
+          toast.error(`${c.name} has died!`);
+        }
+        
+        return { ...c, deathSaves: newSaves };
+      }
+      return c;
+    }));
+  };
+
   const toggleCondition = (id, conditionId) => {
     setCombatants(combatants.map(c => {
       if (c.id === id) {
@@ -160,7 +216,6 @@ function CombatTracker({ players = [], npcs = [] }) {
     }));
   };
 
-  // Remove combatant
   const removeCombatant = (id) => {
     const index = combatants.findIndex(c => c.id === id);
     setCombatants(combatants.filter(c => c.id !== id));
@@ -171,7 +226,6 @@ function CombatTracker({ players = [], npcs = [] }) {
     }
   };
 
-  // End combat
   const endCombat = () => {
     setCombatActive(false);
     setCombatants([]);
@@ -180,23 +234,44 @@ function CombatTracker({ players = [], npcs = [] }) {
     toast.success('Combat ended!');
   };
 
-  // Move combatant in initiative order
   const moveInOrder = (id, direction) => {
     const index = combatants.findIndex(c => c.id === id);
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-    
     if (newIndex < 0 || newIndex >= combatants.length) return;
     
     const updated = [...combatants];
     [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
     setCombatants(updated);
     
-    // Adjust current turn
     if (index === currentTurn) {
       setCurrentTurn(newIndex);
     } else if (newIndex === currentTurn) {
       setCurrentTurn(index);
     }
+  };
+
+  // Death Save Indicator Component
+  const DeathSaveIndicator = ({ saves, type, combatantId }) => {
+    const color = type === 'successes' ? '#22c55e' : '#ef4444';
+    return (
+      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+        {[0, 1, 2].map(i => (
+          <button
+            key={i}
+            onClick={() => setDeathSave(combatantId, type, i < saves ? i : i + 1)}
+            style={{
+              width: '16px',
+              height: '16px',
+              borderRadius: '50%',
+              border: `2px solid ${color}`,
+              background: i < saves ? color : 'transparent',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          />
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -214,24 +289,33 @@ function CombatTracker({ players = [], npcs = [] }) {
           <Swords size={22} style={{ color: '#ef4444' }} />
           Combat Tracker
         </h3>
-        {combatActive && (
-          <div style={{ 
-            background: 'rgba(239, 68, 68, 0.2)',
-            border: '1px solid #ef4444',
-            borderRadius: '20px',
-            padding: '6px 14px',
-            fontSize: '13px',
-            fontWeight: '700',
-            color: '#ef4444',
-            fontFamily: 'Montserrat, sans-serif'
-          }}>
-            Round {round}
-          </div>
-        )}
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <Button
+            onClick={() => setShowReference(true)}
+            className="btn-icon"
+            style={{ padding: '6px' }}
+            title="Quick Reference"
+          >
+            <BookOpen size={16} />
+          </Button>
+          {combatActive && (
+            <div style={{ 
+              background: 'rgba(239, 68, 68, 0.2)',
+              border: '1px solid #ef4444',
+              borderRadius: '20px',
+              padding: '6px 14px',
+              fontSize: '13px',
+              fontWeight: '700',
+              color: '#ef4444',
+              fontFamily: 'Montserrat, sans-serif'
+            }}>
+              Round {round}
+            </div>
+          )}
+        </div>
       </div>
 
       {!combatActive ? (
-        /* Pre-combat setup */
         <div>
           <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '16px', lineHeight: '1.5' }}>
             Start combat to auto-roll initiative for all players and NPCs. You can add more combatants during battle.
@@ -271,7 +355,6 @@ function CombatTracker({ players = [], npcs = [] }) {
           </Button>
         </div>
       ) : (
-        /* Active combat */
         <div>
           {/* Combat controls */}
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
@@ -359,10 +442,12 @@ function CombatTracker({ players = [], npcs = [] }) {
           )}
 
           {/* Initiative order */}
-          <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
             {combatants.map((combatant, index) => {
               const isCurrentTurn = index === currentTurn;
-              const isDead = combatant.hp <= 0;
+              const isDead = combatant.deathSaves.failures >= 3;
+              const isUnconscious = combatant.hp <= 0 && !isDead;
+              const isStabilized = combatant.deathSaves.successes >= 3 && combatant.hp <= 0;
               const hpPercent = (combatant.hp / combatant.maxHp) * 100;
               
               return (
@@ -371,8 +456,9 @@ function CombatTracker({ players = [], npcs = [] }) {
                   style={{
                     background: isCurrentTurn ? 'rgba(34, 197, 94, 0.15)' : 
                                isDead ? 'rgba(30, 30, 30, 0.5)' :
+                               isUnconscious ? 'rgba(239, 68, 68, 0.1)' :
                                'rgba(10, 10, 40, 0.4)',
-                    border: `2px solid ${isCurrentTurn ? '#22c55e' : isDead ? '#64748b' : combatant.isEnemy ? '#ef4444' : '#4a7dff'}`,
+                    border: `2px solid ${isCurrentTurn ? '#22c55e' : isDead ? '#64748b' : isUnconscious ? '#ef4444' : combatant.isEnemy ? '#ef4444' : '#4a7dff'}`,
                     borderRadius: '12px',
                     padding: '12px',
                     marginBottom: '10px',
@@ -383,7 +469,6 @@ function CombatTracker({ players = [], npcs = [] }) {
                 >
                   {/* Header row */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                    {/* Initiative */}
                     <div style={{
                       width: '36px',
                       height: '36px',
@@ -401,7 +486,6 @@ function CombatTracker({ players = [], npcs = [] }) {
                       {combatant.initiative}
                     </div>
 
-                    {/* Name and type */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ 
                         fontSize: '15px', 
@@ -414,14 +498,15 @@ function CombatTracker({ players = [], npcs = [] }) {
                       }}>
                         {combatant.name}
                         {isDead && <Skull size={14} style={{ color: '#64748b' }} />}
-                        {isCurrentTurn && <span style={{ fontSize: '11px', color: '#22c55e' }}>● ACTIVE</span>}
+                        {isStabilized && <span style={{ fontSize: '11px', color: '#eab308' }}>● STABILIZED</span>}
+                        {isUnconscious && !isStabilized && <span style={{ fontSize: '11px', color: '#ef4444' }}>● DYING</span>}
+                        {isCurrentTurn && !isUnconscious && !isDead && <span style={{ fontSize: '11px', color: '#22c55e' }}>● ACTIVE</span>}
                       </div>
                       <div style={{ fontSize: '11px', color: '#64748b' }}>
                         {combatant.isEnemy ? 'Enemy' : 'Ally'} • Roll: {combatant.initiativeRoll}{combatant.initiativeMod !== 0 ? ` + ${combatant.initiativeMod}` : ''}
                       </div>
                     </div>
 
-                    {/* AC */}
                     <div style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
@@ -435,51 +520,22 @@ function CombatTracker({ players = [], npcs = [] }) {
                       <span style={{ fontWeight: '700', color: '#ffffff', fontSize: '13px' }}>{combatant.ac}</span>
                     </div>
 
-                    {/* Order controls */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <button
-                        onClick={() => moveInOrder(combatant.id, 'up')}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          color: '#64748b',
-                          cursor: 'pointer',
-                          padding: '2px'
-                        }}
-                      >
+                      <button onClick={() => moveInOrder(combatant.id, 'up')} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', padding: '2px' }}>
                         <ChevronUp size={14} />
                       </button>
-                      <button
-                        onClick={() => moveInOrder(combatant.id, 'down')}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          color: '#64748b',
-                          cursor: 'pointer',
-                          padding: '2px'
-                        }}
-                      >
+                      <button onClick={() => moveInOrder(combatant.id, 'down')} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', padding: '2px' }}>
                         <ChevronDown size={14} />
                       </button>
                     </div>
 
-                    {/* Remove */}
-                    <button
-                      onClick={() => removeCombatant(combatant.id)}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#ef4444',
-                        cursor: 'pointer',
-                        padding: '4px'
-                      }}
-                    >
+                    <button onClick={() => removeCombatant(combatant.id)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}>
                       <Trash2 size={16} />
                     </button>
                   </div>
 
                   {/* HP Bar */}
-                  <div style={{ marginBottom: '10px' }}>
+                  <div style={{ marginBottom: isUnconscious && !isStabilized && !isDead ? '12px' : '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Heart size={14} style={{ color: hpPercent > 50 ? '#22c55e' : hpPercent > 25 ? '#eab308' : '#ef4444' }} />
@@ -488,103 +544,103 @@ function CombatTracker({ players = [], npcs = [] }) {
                         </span>
                       </div>
                       <div style={{ display: 'flex', gap: '4px' }}>
-                        <button
-                          onClick={() => updateHP(combatant.id, -1)}
-                          style={{
-                            background: 'rgba(239, 68, 68, 0.2)',
-                            border: '1px solid #ef4444',
-                            borderRadius: '6px',
-                            color: '#ef4444',
-                            padding: '2px 8px',
-                            fontSize: '14px',
-                            fontWeight: '700',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          -1
-                        </button>
-                        <button
-                          onClick={() => updateHP(combatant.id, -5)}
-                          style={{
-                            background: 'rgba(239, 68, 68, 0.2)',
-                            border: '1px solid #ef4444',
-                            borderRadius: '6px',
-                            color: '#ef4444',
-                            padding: '2px 8px',
-                            fontSize: '14px',
-                            fontWeight: '700',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          -5
-                        </button>
-                        <button
-                          onClick={() => updateHP(combatant.id, 5)}
-                          style={{
-                            background: 'rgba(34, 197, 94, 0.2)',
-                            border: '1px solid #22c55e',
-                            borderRadius: '6px',
-                            color: '#22c55e',
-                            padding: '2px 8px',
-                            fontSize: '14px',
-                            fontWeight: '700',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          +5
-                        </button>
-                        <button
-                          onClick={() => updateHP(combatant.id, 1)}
-                          style={{
-                            background: 'rgba(34, 197, 94, 0.2)',
-                            border: '1px solid #22c55e',
-                            borderRadius: '6px',
-                            color: '#22c55e',
-                            padding: '2px 8px',
-                            fontSize: '14px',
-                            fontWeight: '700',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          +1
-                        </button>
+                        <button onClick={() => updateHP(combatant.id, -1)} style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', borderRadius: '6px', color: '#ef4444', padding: '2px 8px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>-1</button>
+                        <button onClick={() => updateHP(combatant.id, -5)} style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', borderRadius: '6px', color: '#ef4444', padding: '2px 8px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>-5</button>
+                        <button onClick={() => updateHP(combatant.id, 5)} style={{ background: 'rgba(34, 197, 94, 0.2)', border: '1px solid #22c55e', borderRadius: '6px', color: '#22c55e', padding: '2px 8px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>+5</button>
+                        <button onClick={() => updateHP(combatant.id, 1)} style={{ background: 'rgba(34, 197, 94, 0.2)', border: '1px solid #22c55e', borderRadius: '6px', color: '#22c55e', padding: '2px 8px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}>+1</button>
                       </div>
                     </div>
                     <div className="hp-bar" style={{ height: '8px' }}>
-                      <div 
-                        className="hp-bar-fill" 
-                        style={{ 
-                          width: `${hpPercent}%`,
-                          background: hpPercent > 50 ? 'linear-gradient(90deg, #22c55e, #16a34a)' :
-                                     hpPercent > 25 ? 'linear-gradient(90deg, #eab308, #ca8a04)' :
-                                     'linear-gradient(90deg, #ef4444, #dc2626)'
-                        }}
-                      />
+                      <div className="hp-bar-fill" style={{ 
+                        width: `${hpPercent}%`,
+                        background: hpPercent > 50 ? 'linear-gradient(90deg, #22c55e, #16a34a)' :
+                                   hpPercent > 25 ? 'linear-gradient(90deg, #eab308, #ca8a04)' :
+                                   'linear-gradient(90deg, #ef4444, #dc2626)'
+                      }} />
                     </div>
                   </div>
+
+                  {/* Death Saves - Only show for unconscious, non-dead combatants */}
+                  {isUnconscious && !isDead && (
+                    <div style={{
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      border: '2px solid #ef4444',
+                      borderRadius: '10px',
+                      padding: '12px',
+                      marginBottom: '10px'
+                    }}>
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        marginBottom: '10px'
+                      }}>
+                        <span style={{ 
+                          color: '#ef4444', 
+                          fontWeight: '700', 
+                          fontSize: '13px',
+                          fontFamily: 'Montserrat, sans-serif',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}>
+                          <Skull size={16} />
+                          Death Saves
+                        </span>
+                        <Button
+                          onClick={() => rollDeathSave(combatant.id)}
+                          className="btn-secondary"
+                          style={{ padding: '6px 12px', fontSize: '12px' }}
+                          disabled={isStabilized}
+                        >
+                          <CircleDot size={14} style={{ marginRight: '4px' }} />
+                          Roll Save
+                        </Button>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ fontSize: '11px', color: '#22c55e', marginBottom: '6px', fontWeight: '600' }}>Successes</div>
+                          <DeathSaveIndicator 
+                            saves={combatant.deathSaves.successes} 
+                            type="successes" 
+                            combatantId={combatant.id}
+                          />
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ fontSize: '11px', color: '#ef4444', marginBottom: '6px', fontWeight: '600' }}>Failures</div>
+                          <DeathSaveIndicator 
+                            saves={combatant.deathSaves.failures} 
+                            type="failures" 
+                            combatantId={combatant.id}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Conditions */}
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     {CONDITIONS.map(condition => {
                       const isActive = combatant.conditions.includes(condition.id);
                       return (
-                        <button
-                          key={condition.id}
-                          onClick={() => toggleCondition(combatant.id, condition.id)}
-                          style={{
-                            background: isActive ? `${condition.color}30` : 'transparent',
-                            border: `1px solid ${isActive ? condition.color : '#1e40af'}`,
-                            borderRadius: '4px',
-                            padding: '2px 6px',
-                            fontSize: '10px',
-                            color: isActive ? condition.color : '#64748b',
-                            cursor: 'pointer',
-                            fontWeight: isActive ? '600' : '400',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          {condition.label}
-                        </button>
+                        <QuickReferencePopup key={condition.id} type="condition" id={condition.id} position="bottom">
+                          <button
+                            onClick={() => toggleCondition(combatant.id, condition.id)}
+                            style={{
+                              background: isActive ? `${condition.color}30` : 'transparent',
+                              border: `1px solid ${isActive ? condition.color : '#1e40af'}`,
+                              borderRadius: '4px',
+                              padding: '2px 6px',
+                              fontSize: '10px',
+                              color: isActive ? condition.color : '#64748b',
+                              cursor: 'pointer',
+                              fontWeight: isActive ? '600' : '400',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {condition.label}
+                          </button>
+                        </QuickReferencePopup>
                       );
                     })}
                   </div>
@@ -600,6 +656,9 @@ function CombatTracker({ players = [], npcs = [] }) {
           )}
         </div>
       )}
+
+      {/* Quick Reference Modal */}
+      <QuickReferenceModal isOpen={showReference} onClose={() => setShowReference(false)} />
     </div>
   );
 }
