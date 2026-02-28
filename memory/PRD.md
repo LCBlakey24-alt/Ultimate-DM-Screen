@@ -34,24 +34,42 @@ A comprehensive web application for tabletop role-playing game (TTRPG) Dungeon M
 - [x] **Players** - Player character tracking with D&D Beyond-style character creator
   - Level selection (1-20) in Step 1
   - Four stat determination methods: Standard Array, Suggested for Class, Roll Stats (4d6 drop lowest), Custom
-- [x] **Combat Creator** - Pre-plan combat encounters
+- [x] **Combat Creator** - Pre-plan combat encounters with map uploads
 - [x] **Calendar** - In-game date tracking with events + custom calendar builder
 - [x] **In-Game Notes** - Session notes with AI auto-categorization
 
-### DM Screen (Live Gameplay)
+### DM Screen (Live Gameplay Hub)
 - [x] Current date display
-- [x] Upcoming events reminder
-- [x] Players quick reference
-- [x] NPCs quick reference
-- [x] AI Quick Notes with auto-filing
-- [x] Rules Reference (searchable, editable)
-- [x] Session Notes list
-- [x] End Session button
+- [x] **Combat Launcher** - Select encounters and launch dedicated Combat Page
+- [x] **Quick Start** - Start combat with just players
+- [x] Party Overview quick reference
 - [x] **Dice Roller** - Animated dice roller with D4-D100, modifiers, roll history
-- [x] **Combat Tracker** - Auto-roll initiative, turn management, HP tracking, conditions, death saves
-- [x] **Loot Generator** - Generate treasure based on CR tier (coins, gems, art, magic items)
-- [x] **Map & Token System** - Upload maps, place draggable tokens, grid overlay
-- [x] **Quick Reference** - Hover tooltips and full modal for conditions, actions, damage types
+- [x] **Loot Generator** - Generate treasure based on CR tier
+- [x] **Party Inventory** - Shared inventory system with currency tracking
+- [x] **Session Notes** - Quick notes during gameplay
+- [x] **Quick Reference** - Modal for conditions, actions, damage types
+
+### Dedicated Combat Page (NEW)
+- [x] Two-column layout: Initiative tracker (left) | Battle Map (right)
+- [x] Auto-roll initiative for all combatants
+- [x] Turn management with Next Turn button
+- [x] HP tracking with +/- buttons (-10, -5, -1, +1, +5, +10)
+- [x] AC display on each combatant card
+- [x] Condition toggles (Blinded, Charmed, Frightened, etc.)
+- [x] Death save tracking with roll button
+- [x] Round counter
+- [x] End Combat button returns to DM Screen
+- [x] Map canvas with grid overlay
+- [x] Token rendering with HP bars
+- [x] Current turn highlighting
+
+### Party Inventory System (NEW)
+- [x] Party Treasury - Track PP, GP, EP, SP, CP with +/- buttons
+- [x] Item management - Add, edit, delete items
+- [x] Item types: Weapon, Armor, Potion, Scroll, Magic Item, Misc
+- [x] Item properties: Quantity, value, weight, magical, attunement
+- [x] Search and filter functionality
+- [x] Total weight calculation
 
 ### AI Features
 - [x] Content generation for encounters, traps, NPCs, world-building
@@ -112,7 +130,9 @@ A comprehensive web application for tabletop role-playing game (TTRPG) Dungeon M
 - [x] User authentication (register/login)
 - [x] Campaign CRUD operations
 - [x] All 8 dashboard tabs with AI integration
-- [x] DM Screen with rules reference
+- [x] DM Screen with combat launcher
+- [x] Dedicated Combat Page (initiative left, map right)
+- [x] Party Inventory with currency tracking
 - [x] Calendar with events
 - [x] Custom calendar builder UI
 - [x] D&D Beyond-style character creator
@@ -120,15 +140,14 @@ A comprehensive web application for tabletop role-playing game (TTRPG) Dungeon M
 
 ## Testing Status
 - Backend: 100% (35/35 tests passed)
-- Frontend: 100% (16/16 tests passed)
+- Frontend: 89% (8/9 combat flow tests passed)
 - Test specs: /app/tests/e2e/
 
-## Upcoming Tasks (P1-P2)
-- [ ] **Combat Tracker in DM Screen** - Live initiative tracker for gameplay
-- [ ] **Map & Token System** - Upload maps and place tokens
-- [ ] **Enhanced DM Screen** - Quick-access panels for Players, NPCs, Notes
+## Upcoming Tasks (P2)
+- [ ] **AI NPC/Location Generator** - Quick generation tool in dashboard
 
 ## Future/Backlog Tasks (P3+)
+- [ ] Enhanced Map features (fog of war, AoE templates, distance measurement)
 - [ ] Monetization (Stripe integration)
 - [ ] Enhanced Players tab (stats on hover)
 - [ ] Backend refactoring (split server.py into routers)
@@ -149,6 +168,8 @@ A comprehensive web application for tabletop role-playing game (TTRPG) Dungeon M
 - `/api/campaigns/{id}/calendar-events` (CRUD)
 - `/api/campaigns/{id}/combat-scenarios` (CRUD)
 - `/api/campaigns/{id}/ingame-notes` (CRUD)
+- `/api/campaigns/{id}/inventory` (CRUD) - NEW
+- `/api/campaigns/{id}/currency` (GET/PUT) - NEW
 - `/api/ai/generate`
 
 ## Database Schema
@@ -158,12 +179,14 @@ A comprehensive web application for tabletop role-playing game (TTRPG) Dungeon M
 - **gods, npcs, locations, players**: Campaign-linked entities
 - **calendars**: {campaign_id, type, current_day/month/year, custom_months}
 - **calendar_events**: {campaign_id, name, day, month, year, is_recurring}
-- **combat_scenarios**: {campaign_id, name, combatants}
+- **combat_scenarios**: {campaign_id, name, combatants, map_url, tokens}
 - **ingame_notes**: {campaign_id, content, ai_processed}
+- **inventory**: {campaign_id, name, quantity, item_type, description, value, weight, is_magical, attunement_required} - NEW
+- **party_currency**: {campaign_id, copper, silver, electrum, gold, platinum} - NEW
 
 ## Test Credentials
 - Users can be created via the registration form
-- Example: username: `demouser`, password: `demopass123`
+- Example: username: `testdm1`, password: `testpass123`
 
 ---
 Last Updated: February 28, 2026
