@@ -1245,6 +1245,98 @@ Only include entities that are explicitly mentioned in the notes. Return ONLY va
         logger.error(f"AI processing error: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"AI processing failed: {str(e)}")
 
+# ==================== PARTY INVENTORY ROUTES ====================
+
+@api_router.get("/campaigns/{campaign_id}/inventory")
+async def get_inventory(campaign_id: str, current_user: str = Depends(get_current_user)):
+    """Get all items in party inventory"""
+    items = await db.inventory.find(
+        {'campaign_id': campaign_id},
+        {'_id': 0}
+    ).sort('created_at', -1).to_list(None)
+    return items
+
+@api_router.post("/campaigns/{campaign_id}/inventory")
+async def add_inventory_item(
+    campaign_id: str,
+    item: InventoryItemCreate,
+    current_user: str = Depends(get_current_user)
+):
+    """Add item to party inventory"""
+    new_item = InventoryItem(
+        campaign_id=campaign_id,
+        **item.model_dump()
+    )
+    await db.inventory.insert_one(new_item.model_dump())
+    return new_item.model_dump()
+
+@api_router.put("/campaigns/{campaign_id}/inventory/{item_id}")
+async def update_inventory_item(
+    campaign_id: str,
+    item_id: str,
+    item_update: InventoryItemUpdate,
+    current_user: str = Depends(get_current_user)
+):
+    """Update inventory item"""
+    update_data = {k: v for k, v in item_update.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No fields to update")
+    
+    result = await db.inventory.update_one(
+        {'id': item_id, 'campaign_id': campaign_id},
+        {'$set': update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+    
+    updated = await db.inventory.find_one({'id': item_id}, {'_id': 0})
+    return updated
+
+@api_router.delete("/campaigns/{campaign_id}/inventory/{item_id}")
+async def delete_inventory_item(
+    campaign_id: str,
+    item_id: str,
+    current_user: str = Depends(get_current_user)
+):
+    """Remove item from inventory"""
+    result = await db.inventory.delete_one({'id': item_id, 'campaign_id': campaign_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+    return {"message": "Item deleted"}
+
+@api_router.get("/campaigns/{campaign_id}/currency")
+async def get_party_currency(campaign_id: str, current_user: str = Depends(get_current_user)):
+    """Get party currency"""
+    currency = await db.party_currency.find_one({'campaign_id': campaign_id}, {'_id': 0})
+    if not currency:
+        # Initialize currency if not exists
+        new_currency = PartyCurrency(campaign_id=campaign_id)
+        await db.party_currency.insert_one(new_currency.model_dump())
+        return new_currency.model_dump()
+    return currency
+
+@api_router.put("/campaigns/{campaign_id}/currency")
+async def update_party_currency(
+    campaign_id: str,
+    currency_update: PartyCurrencyUpdate,
+    current_user: str = Depends(get_current_user)
+):
+    """Update party currency"""
+    update_data = {k: v for k, v in currency_update.model_dump().items() if v is not None}
+    
+    existing = await db.party_currency.find_one({'campaign_id': campaign_id})
+    if not existing:
+        new_currency = PartyCurrency(campaign_id=campaign_id, **update_data)
+        await db.party_currency.insert_one(new_currency.model_dump())
+        return new_currency.model_dump()
+    
+    await db.party_currency.update_one(
+        {'campaign_id': campaign_id},
+        {'$set': update_data}
+    )
+    updated = await db.party_currency.find_one({'campaign_id': campaign_id}, {'_id': 0})
+    return updated
+
 # Include the router in the main app
 app.include_router(api_router)
 
