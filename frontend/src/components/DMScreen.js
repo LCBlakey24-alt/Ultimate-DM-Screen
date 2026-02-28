@@ -4,8 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { 
-  Sword, Users, Scroll, BookOpen, Send, Sparkles, 
-  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package
+  Sword, Users, BookOpen, Send, Sparkles, 
+  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, Shield
 } from 'lucide-react';
 import DiceRoller from '@/components/DiceRoller';
 import LootGenerator from '@/components/LootGenerator';
@@ -32,8 +32,8 @@ function DMScreen({ username }) {
   const [processingNote, setProcessingNote] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState(null);
   
-  // UI state
-  const [showTools, setShowTools] = useState('dice');
+  // Tab state - single tab for everything
+  const [activeTab, setActiveTab] = useState('combat');
 
   useEffect(() => {
     fetchAllData();
@@ -55,7 +55,7 @@ function DMScreen({ username }) {
       setNPCs(npcsRes.data);
       setScenarios(scenariosRes.data);
       setCalendar(calendarRes.data);
-      setSessionNotes(notesRes.data.slice(0, 20));
+      setSessionNotes(notesRes.data.slice(0, 30));
     } catch (error) {
       toast.error('Failed to load DM Screen data');
     } finally {
@@ -85,7 +85,6 @@ function DMScreen({ username }) {
       return;
     }
     
-    // Create a quick scenario from players
     const quickScenario = {
       id: 'quick-combat',
       name: 'Quick Combat',
@@ -140,224 +139,363 @@ function DMScreen({ username }) {
   };
 
   const handleEndSession = () => {
-    if (!window.confirm('End session?')) return;
+    if (!window.confirm('End session and return to campaigns?')) return;
     toast.success('Session ended!');
     navigate('/campaigns');
   };
 
   if (loading) return <div className="loading-screen"><div className="loading-spinner"></div></div>;
 
+  const tabs = [
+    { id: 'combat', icon: Swords, label: 'Combat', color: '#ef4444' },
+    { id: 'dice', icon: Dices, label: 'Dice', color: '#a855f7' },
+    { id: 'loot', icon: Coins, label: 'Loot Gen', color: '#eab308' },
+    { id: 'inventory', icon: Package, label: 'Inventory', color: '#22c55e' },
+    { id: 'party', icon: Users, label: 'Party', color: '#4a7dff' },
+    { id: 'notes', icon: FileText, label: 'Notes', color: '#67e8f9' },
+  ];
+
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #030014 0%, #0a0a2e 50%, #030014 100%)' }}>
       {/* Header */}
-      <div className="glow-panel" style={{ margin: '0', borderRadius: '0', padding: '16px 24px', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="glow-panel" style={{ margin: '0', borderRadius: '0', padding: '12px 24px', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <h1 style={{ fontSize: '24px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Sword size={24} style={{ color: '#22c55e' }} />
-              {campaign?.name} - DM Screen
+            <h1 style={{ fontSize: '22px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Sword size={22} style={{ color: '#22c55e' }} />
+              {campaign?.name}
             </h1>
             {calendar && (
-              <p style={{ fontSize: '13px', color: '#67e8f9', marginTop: '4px' }}>
+              <p style={{ fontSize: '12px', color: '#67e8f9', marginTop: '2px' }}>
                 {calendar.custom_months?.[calendar.current_month - 1]?.name || 'Month'} {calendar.current_day}, Year {calendar.current_year}
               </p>
             )}
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <Button onClick={() => setShowQuickRef(true)} className="btn-outline" style={{ display: 'flex', gap: '6px' }}><BookOpen size={16} /> Reference</Button>
-            <Button onClick={handleEndSession} className="btn-secondary" style={{ display: 'flex', gap: '6px' }}><LogOut size={16} /> End Session</Button>
+            <Button onClick={() => setShowQuickRef(true)} className="btn-outline" style={{ display: 'flex', gap: '6px', padding: '8px 14px', fontSize: '13px' }}>
+              <BookOpen size={14} /> Reference
+            </Button>
+            <Button onClick={handleEndSession} className="btn-secondary" style={{ display: 'flex', gap: '6px', padding: '8px 14px', fontSize: '13px' }}>
+              <LogOut size={14} /> End Session
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Main Layout - 3 Columns */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
-        
-        {/* LEFT COLUMN - Combat Launcher */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Combat Box */}
-          <div className="glow-panel" style={{ borderColor: '#ef4444' }}>
-            <h3 style={{ fontSize: '18px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Swords size={22} style={{ color: '#ef4444' }} /> Combat
-            </h3>
-            
-            {/* Encounter Selector */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '13px', fontWeight: '600' }}>
-                Select Encounter
-              </label>
-              {scenarios.length === 0 ? (
-                <div style={{ background: 'rgba(10, 10, 40, 0.6)', border: '2px dashed #1e40af', borderRadius: '10px', padding: '20px', textAlign: 'center' }}>
-                  <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '8px' }}>No encounters created</p>
-                  <p style={{ color: '#64748b', fontSize: '11px' }}>Create encounters in the Combat Creator tab</p>
+      {/* Main Content */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+        {/* Tab Navigation */}
+        <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', flexWrap: 'wrap', background: 'rgba(10, 10, 40, 0.5)', padding: '8px', borderRadius: '16px', border: '2px solid #1e40af' }}>
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              data-testid={`tab-${tab.id}`}
+              style={{
+                flex: '1 1 auto',
+                minWidth: '100px',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                border: activeTab === tab.id ? `2px solid ${tab.color}` : '2px solid transparent',
+                background: activeTab === tab.id ? `${tab.color}20` : 'transparent',
+                color: activeTab === tab.id ? tab.color : '#94a3b8',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: '700',
+                fontSize: '13px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'all 0.2s'
+              }}
+            >
+              <tab.icon size={16} />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        <div className="glow-panel" style={{ minHeight: '500px' }}>
+          {/* COMBAT TAB */}
+          {activeTab === 'combat' && (
+            <div>
+              <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Swords size={24} style={{ color: '#ef4444' }} /> Combat Control
+              </h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                {/* Encounter Selector */}
+                <div>
+                  <h3 style={{ fontSize: '14px', color: '#67e8f9', fontWeight: '700', marginBottom: '12px' }}>Select Encounter</h3>
+                  {scenarios.length === 0 ? (
+                    <div style={{ background: 'rgba(10, 10, 40, 0.6)', border: '2px dashed #1e40af', borderRadius: '12px', padding: '30px', textAlign: 'center' }}>
+                      <Swords size={32} style={{ color: '#1e40af', margin: '0 auto 12px' }} />
+                      <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '8px' }}>No encounters created</p>
+                      <p style={{ color: '#64748b', fontSize: '11px' }}>Create encounters in the Combat Creator tab of your campaign dashboard</p>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto' }}>
+                      {scenarios.map(s => (
+                        <button
+                          key={s.id}
+                          data-testid={`encounter-${s.id}`}
+                          onClick={() => setSelectedScenario(s)}
+                          style={{
+                            padding: '14px 16px',
+                            background: selectedScenario?.id === s.id ? 'rgba(239, 68, 68, 0.15)' : 'rgba(10, 10, 40, 0.6)',
+                            border: `2px solid ${selectedScenario?.id === s.id ? '#ef4444' : '#1e40af'}`,
+                            borderRadius: '12px',
+                            color: '#ffffff',
+                            textAlign: 'left',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          <div style={{ fontWeight: '700', marginBottom: '4px', fontFamily: 'Montserrat', fontSize: '14px' }}>{s.name}</div>
+                          <div style={{ fontSize: '11px', color: '#67e8f9', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                            <span>{s.combatants?.length || 0} combatants</span>
+                            {s.map_url && <span style={{ color: '#22c55e' }}>Has Map</span>}
+                            {s.combatants?.some(c => c.loot?.length > 0) && <span style={{ color: '#eab308' }}>Has Loot</span>}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto' }}>
-                  {scenarios.map(s => (
-                    <button
-                      key={s.id}
-                      data-testid={`encounter-${s.id}`}
-                      onClick={() => setSelectedScenario(s)}
-                      style={{
-                        padding: '12px 14px',
-                        background: selectedScenario?.id === s.id ? 'rgba(34, 197, 94, 0.15)' : 'rgba(10, 10, 40, 0.6)',
-                        border: `2px solid ${selectedScenario?.id === s.id ? '#22c55e' : '#1e40af'}`,
-                        borderRadius: '10px',
-                        color: '#ffffff',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
+
+                {/* Combat Actions */}
+                <div>
+                  <h3 style={{ fontSize: '14px', color: '#67e8f9', fontWeight: '700', marginBottom: '12px' }}>Launch Combat</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <Button 
+                      onClick={launchCombat} 
+                      className="btn-secondary" 
+                      data-testid="start-combat-btn"
+                      disabled={!selectedScenario}
+                      style={{ 
+                        width: '100%', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        gap: '10px',
+                        padding: '16px',
+                        fontSize: '15px',
+                        background: selectedScenario ? 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)' : undefined,
+                        boxShadow: selectedScenario ? '0 0 25px rgba(239, 68, 68, 0.4)' : undefined,
+                        opacity: selectedScenario ? 1 : 0.5
                       }}
                     >
-                      <div style={{ fontWeight: '700', marginBottom: '4px', fontFamily: 'Montserrat' }}>{s.name}</div>
-                      <div style={{ fontSize: '11px', color: '#67e8f9', display: 'flex', gap: '12px' }}>
-                        <span>{s.combatants?.length || 0} combatants</span>
-                        {s.map_url && <span style={{ color: '#22c55e' }}>Has Map</span>}
+                      <Play size={18} /> Start Combat <ArrowRight size={16} />
+                    </Button>
+                    
+                    <Button 
+                      onClick={quickStartCombat} 
+                      className="btn-outline"
+                      data-testid="quick-combat-btn"
+                      disabled={players.length === 0}
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px' }}
+                    >
+                      <Users size={16} /> Quick Start with Players ({players.length})
+                    </Button>
+                    
+                    <p style={{ fontSize: '11px', color: '#64748b', textAlign: 'center', fontStyle: 'italic', marginTop: '8px' }}>
+                      Combat opens in a dedicated full-screen view with initiative tracker and battle map
+                    </p>
+                  </div>
+                  
+                  {/* Selected Encounter Preview */}
+                  {selectedScenario && (
+                    <div style={{ marginTop: '20px', background: 'rgba(10, 10, 40, 0.5)', border: '2px solid #1e40af', borderRadius: '12px', padding: '14px' }}>
+                      <h4 style={{ fontSize: '13px', color: '#ffffff', fontWeight: '700', marginBottom: '10px' }}>{selectedScenario.name}</h4>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {selectedScenario.combatants?.slice(0, 6).map(c => (
+                          <div key={c.id} style={{ 
+                            background: c.type === 'player' ? 'rgba(74, 125, 255, 0.2)' : 'rgba(239, 68, 68, 0.2)', 
+                            border: `1px solid ${c.type === 'player' ? '#4a7dff' : '#ef4444'}`,
+                            borderRadius: '8px', 
+                            padding: '6px 10px',
+                            fontSize: '11px',
+                            color: '#fff'
+                          }}>
+                            {c.name}
+                            {c.loot?.length > 0 && <Coins size={10} style={{ marginLeft: '4px', color: '#eab308' }} />}
+                          </div>
+                        ))}
+                        {selectedScenario.combatants?.length > 6 && (
+                          <div style={{ padding: '6px 10px', fontSize: '11px', color: '#64748b' }}>
+                            +{selectedScenario.combatants.length - 6} more
+                          </div>
+                        )}
                       </div>
-                    </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* DICE TAB */}
+          {activeTab === 'dice' && (
+            <div>
+              <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Dices size={24} style={{ color: '#a855f7' }} /> Dice Roller
+              </h2>
+              <DiceRoller />
+            </div>
+          )}
+
+          {/* LOOT GENERATOR TAB */}
+          {activeTab === 'loot' && (
+            <div>
+              <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Coins size={24} style={{ color: '#eab308' }} /> Loot Generator
+              </h2>
+              <LootGenerator />
+            </div>
+          )}
+
+          {/* INVENTORY TAB */}
+          {activeTab === 'inventory' && (
+            <div>
+              <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Package size={24} style={{ color: '#22c55e' }} /> Party Inventory
+              </h2>
+              <PartyInventory campaignId={campaignId} players={players} />
+            </div>
+          )}
+
+          {/* PARTY TAB */}
+          {activeTab === 'party' && (
+            <div>
+              <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Users size={24} style={{ color: '#4a7dff' }} /> Party Overview
+              </h2>
+              
+              {players.length === 0 ? (
+                <div style={{ background: 'rgba(10, 10, 40, 0.6)', border: '2px dashed #1e40af', borderRadius: '12px', padding: '40px', textAlign: 'center' }}>
+                  <Users size={40} style={{ color: '#1e40af', margin: '0 auto 16px' }} />
+                  <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>No players in campaign</p>
+                  <p style={{ color: '#64748b', fontSize: '12px' }}>Add players in the Players tab of your campaign dashboard</p>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                  {players.map(player => (
+                    <div
+                      key={player.id}
+                      className="card-glow"
+                      style={{ padding: '16px' }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                        <div style={{ 
+                          width: '48px', height: '48px', borderRadius: '50%', 
+                          background: 'linear-gradient(135deg, #4a7dff 0%, #22c55e 100%)', 
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                          fontWeight: '800', color: '#fff', fontSize: '18px', fontFamily: 'Montserrat'
+                        }}>
+                          {player.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div style={{ color: '#ffffff', fontWeight: '700', fontSize: '16px', fontFamily: 'Montserrat' }}>{player.name}</div>
+                          <div style={{ color: '#67e8f9', fontSize: '12px' }}>
+                            {player.race || 'Unknown'} {player.class || 'Adventurer'} {player.level ? `Lv.${player.level}` : ''}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                        <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '10px', color: '#ef4444', fontWeight: '600' }}>HP</div>
+                          <div style={{ fontSize: '16px', color: '#fff', fontWeight: '700' }}>{player.hp || player.max_hp || '?'}/{player.max_hp || '?'}</div>
+                        </div>
+                        <div style={{ background: 'rgba(74, 125, 255, 0.15)', border: '1px solid #4a7dff', borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '10px', color: '#4a7dff', fontWeight: '600' }}>AC</div>
+                          <div style={{ fontSize: '16px', color: '#fff', fontWeight: '700' }}>{player.ac || '?'}</div>
+                        </div>
+                        <div style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid #22c55e', borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '10px', color: '#22c55e', fontWeight: '600' }}>INIT</div>
+                          <div style={{ fontSize: '16px', color: '#fff', fontWeight: '700' }}>
+                            {player.stats?.dexterity ? `+${Math.floor((player.stats.dexterity - 10) / 2)}` : '?'}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {player.stats && (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '4px', marginTop: '12px' }}>
+                          {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map((stat, i) => {
+                            const statKey = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'][i];
+                            const val = player.stats[statKey] || 10;
+                            const mod = Math.floor((val - 10) / 2);
+                            return (
+                              <div key={stat} style={{ textAlign: 'center', background: 'rgba(10, 10, 40, 0.5)', borderRadius: '6px', padding: '4px' }}>
+                                <div style={{ fontSize: '9px', color: '#64748b' }}>{stat}</div>
+                                <div style={{ fontSize: '12px', color: '#fff', fontWeight: '700' }}>{val}</div>
+                                <div style={{ fontSize: '9px', color: mod >= 0 ? '#22c55e' : '#ef4444' }}>{mod >= 0 ? '+' : ''}{mod}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
             </div>
+          )}
 
-            {/* Launch Combat Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <Button 
-                onClick={launchCombat} 
-                className="btn-secondary" 
-                data-testid="start-combat-btn"
-                disabled={!selectedScenario}
-                style={{ 
-                  width: '100%', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  gap: '10px',
-                  padding: '14px',
-                  fontSize: '15px',
-                  background: selectedScenario ? 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)' : undefined,
-                  boxShadow: selectedScenario ? '0 0 25px rgba(239, 68, 68, 0.4)' : undefined,
-                  opacity: selectedScenario ? 1 : 0.5
-                }}
-              >
-                <Play size={18} /> Start Combat <ArrowRight size={16} />
-              </Button>
-              <Button 
-                onClick={quickStartCombat} 
-                className="btn-outline"
-                data-testid="quick-combat-btn"
-                disabled={players.length === 0}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-              >
-                <Users size={16} /> Quick Start with Players ({players.length})
-              </Button>
-            </div>
-            
-            <p style={{ fontSize: '11px', color: '#64748b', marginTop: '12px', textAlign: 'center', fontStyle: 'italic' }}>
-              Combat opens in a dedicated full-screen view
-            </p>
-          </div>
-
-          {/* Party Overview */}
-          <div className="glow-panel">
-            <h3 style={{ fontSize: '16px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Users size={18} style={{ color: '#4a7dff' }} /> Party Overview
-            </h3>
-            {players.length === 0 ? (
-              <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', padding: '16px' }}>No players in campaign</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {players.slice(0, 6).map(player => (
-                  <div
-                    key={player.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '10px 12px',
-                      background: 'rgba(10, 10, 40, 0.5)',
-                      border: '1px solid #1e40af',
-                      borderRadius: '8px'
-                    }}
+          {/* NOTES TAB */}
+          {activeTab === 'notes' && (
+            <div>
+              <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <FileText size={24} style={{ color: '#67e8f9' }} /> Session Notes
+              </h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                {/* Add Note */}
+                <div>
+                  <h3 style={{ fontSize: '14px', color: '#67e8f9', fontWeight: '700', marginBottom: '12px' }}>Quick Note</h3>
+                  <textarea
+                    value={quickNote}
+                    onChange={(e) => setQuickNote(e.target.value)}
+                    className="textarea-glow"
+                    style={{ minHeight: '150px', marginBottom: '12px', fontSize: '13px', width: '100%' }}
+                    placeholder="Write a quick note about the session... NPCs met, events, plot points, etc."
+                  />
+                  <Button 
+                    onClick={handleSubmitNote} 
+                    disabled={processingNote || !quickNote.trim()} 
+                    className="btn-primary" 
+                    style={{ width: '100%', display: 'flex', gap: '8px', justifyContent: 'center' }}
                   >
-                    <div>
-                      <div style={{ color: '#ffffff', fontWeight: '600', fontSize: '14px' }}>{player.name}</div>
-                      <div style={{ color: '#67e8f9', fontSize: '11px' }}>{player.class || 'Adventurer'} {player.level ? `Lv.${player.level}` : ''}</div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '12px', fontSize: '12px' }}>
-                      <span style={{ color: '#ef4444' }}>HP: {player.hp || player.max_hp || '?'}</span>
-                      <span style={{ color: '#67e8f9' }}>AC: {player.ac || '?'}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* CENTER COLUMN - Tools */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Tool Tabs */}
-          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-            {[
-              { id: 'dice', icon: Dices, label: 'Dice' },
-              { id: 'loot', icon: Coins, label: 'Loot' },
-              { id: 'inventory', icon: Package, label: 'Inventory' },
-            ].map(tab => (
-              <Button
-                key={tab.id}
-                onClick={() => setShowTools(tab.id)}
-                className={showTools === tab.id ? 'btn-primary' : 'btn-outline'}
-                style={{ flex: 1, display: 'flex', gap: '6px', justifyContent: 'center', padding: '12px' }}
-              >
-                <tab.icon size={16} />
-                {tab.label}
-              </Button>
-            ))}
-          </div>
-
-          {/* Tool Content */}
-          <div style={{ flex: 1, overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
-            {showTools === 'dice' && <DiceRoller />}
-            {showTools === 'loot' && <LootGenerator />}
-            {showTools === 'inventory' && <PartyInventory campaignId={campaignId} players={players} />}
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN - Notes */}
-        <div className="glow-panel" style={{ display: 'flex', flexDirection: 'column' }}>
-          <h3 style={{ fontSize: '16px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Sparkles size={18} style={{ color: '#22c55e' }} /> Session Notes
-          </h3>
-          <textarea
-            value={quickNote}
-            onChange={(e) => setQuickNote(e.target.value)}
-            className="textarea-glow"
-            style={{ minHeight: '100px', marginBottom: '10px', fontSize: '13px' }}
-            placeholder="Quick note about the session..."
-          />
-          <Button 
-            onClick={handleSubmitNote} 
-            disabled={processingNote} 
-            className="btn-primary" 
-            style={{ width: '100%', marginBottom: '16px', display: 'flex', gap: '8px', justifyContent: 'center' }}
-          >
-            {processingNote ? <Loader size={14} className="animate-spin" /> : <Send size={14} />} Save Note
-          </Button>
-          
-          <div style={{ flex: 1, overflowY: 'auto', maxHeight: '400px' }}>
-            <h4 style={{ fontSize: '13px', color: '#67e8f9', marginBottom: '10px', fontWeight: '600' }}>Recent Notes</h4>
-            {sessionNotes.length === 0 ? (
-              <p style={{ color: '#64748b', fontSize: '12px', textAlign: 'center', padding: '20px' }}>No notes yet</p>
-            ) : (
-              sessionNotes.map(note => (
-                <div key={note.id} style={{ background: 'rgba(10,10,40,0.4)', border: '1px solid #1e40af', borderRadius: '8px', padding: '10px', marginBottom: '8px' }}>
-                  <div style={{ fontSize: '10px', color: '#64748b', marginBottom: '4px' }}>{new Date(note.created_at).toLocaleTimeString()}</div>
-                  <div style={{ color: '#fff', fontSize: '12px', lineHeight: '1.4' }}>{note.content}</div>
+                    {processingNote ? <Loader size={14} className="animate-spin" /> : <Send size={14} />} Save Note
+                  </Button>
                 </div>
-              ))
-            )}
-          </div>
+
+                {/* Notes List */}
+                <div>
+                  <h3 style={{ fontSize: '14px', color: '#67e8f9', fontWeight: '700', marginBottom: '12px' }}>Recent Notes ({sessionNotes.length})</h3>
+                  <div style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {sessionNotes.length === 0 ? (
+                      <div style={{ background: 'rgba(10, 10, 40, 0.5)', border: '2px dashed #1e40af', borderRadius: '12px', padding: '30px', textAlign: 'center' }}>
+                        <FileText size={32} style={{ color: '#1e40af', margin: '0 auto 12px' }} />
+                        <p style={{ color: '#94a3b8', fontSize: '13px' }}>No notes yet</p>
+                      </div>
+                    ) : (
+                      sessionNotes.map(note => (
+                        <div key={note.id} style={{ background: 'rgba(10, 10, 40, 0.5)', border: '1px solid #1e40af', borderRadius: '10px', padding: '12px' }}>
+                          <div style={{ fontSize: '10px', color: '#64748b', marginBottom: '6px' }}>
+                            {new Date(note.created_at).toLocaleString()}
+                          </div>
+                          <div style={{ color: '#fff', fontSize: '13px', lineHeight: '1.5' }}>{note.content}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
