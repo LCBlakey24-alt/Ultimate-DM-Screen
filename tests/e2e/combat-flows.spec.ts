@@ -12,7 +12,6 @@ import {
 
 test.describe('Combat Flow - DM Screen to Combat Page', () => {
   test.beforeEach(async ({ page }) => {
-    await dismissToasts(page);
     await hideEmergentBadge(page);
   });
 
