@@ -323,9 +323,6 @@ function DMScreen({ username }) {
             {showTools === 'inventory' && <PartyInventory campaignId={campaignId} />}
           </div>
         </div>
-            {showTools === 'loot' && <LootGenerator />}
-          </div>
-        </div>
 
         {/* RIGHT COLUMN - Notes */}
         <div className="glow-panel" style={{ display: 'flex', flexDirection: 'column' }}>
