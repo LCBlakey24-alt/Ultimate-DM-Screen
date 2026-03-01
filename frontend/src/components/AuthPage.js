@@ -296,8 +296,6 @@ function AuthPage({ onLogin }) {
           </div>
         </div>
       </div>
-
-      {/* Right Side - Branding */}
       <div style={{
         flex: 1,
         display: 'flex',
