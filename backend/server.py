@@ -1676,6 +1676,14 @@ class UnseenServantResponse(BaseModel):
 async def unseen_servant_generate(request: UnseenServantRequest, username: str = Depends(get_current_user)):
     """Unseen Servant: AI that generates and auto-saves D&D content"""
     try:
+        # Check if user can use AI features
+        can_use_ai = await check_premium_feature(username, 'ai')
+        if not can_use_ai:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="You've reached your monthly AI generation limit. Upgrade to Adventurer for unlimited access!"
+            )
+        
         # Verify campaign ownership
         campaign = await db.campaigns.find_one({'id': request.campaign_id, 'dm_user_id': username})
         if not campaign:
