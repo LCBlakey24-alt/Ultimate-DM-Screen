@@ -62,7 +62,11 @@ function AuthPage({ onLogin }) {
     setLoading(true);
     try {
       const response = await axios.post(`${API}/auth/register`, registerData);
-      toast.success('Account created! Welcome, Dungeon Master!');
+      if (referralFromUrl) {
+        toast.success('Account created! Your friend will receive 1 free month of premium!');
+      } else {
+        toast.success('Account created! Welcome, Dungeon Master!');
+      }
       onLogin(response.data.token, response.data.username);
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Registration failed');
