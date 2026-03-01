@@ -1849,6 +1849,14 @@ async def unseen_servant_generate(request: UnseenServantRequest, username: str =
 @api_router.post("/ai/generate", response_model=AIGenerationResponse)
 async def generate_ai_content(request: AIGenerationRequest, username: str = Depends(get_current_user)):
     try:
+        # Check if user can use AI features
+        can_use_ai = await check_premium_feature(username, 'ai')
+        if not can_use_ai:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="You've reached your monthly AI generation limit. Upgrade to Adventurer for unlimited access!"
+            )
+        
         # Get API key from environment
         api_key = os.environ.get('EMERGENT_LLM_KEY')
         if not api_key:
@@ -1885,10 +1893,15 @@ async def generate_ai_content(request: AIGenerationRequest, username: str = Depe
         # Get AI response
         response = await chat.send_message(user_message)
         
+        # Increment AI usage for free tier users
+        await increment_ai_usage(username)
+        
         return AIGenerationResponse(
             content=response,
             generation_type=request.generation_type
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"AI generation error: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"AI generation failed: {str(e)}")
