@@ -898,9 +898,20 @@ async def stripe_webhook(request: Request):
 
 # ==================== PROMO CODE ROUTES ====================
 
+# Admin username - only this user can access admin features
+ADMIN_USERNAME = "Trigger24"
+
+async def verify_admin(username: str):
+    """Check if user is admin"""
+    if username != ADMIN_USERNAME:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
+    return True
+
 @api_router.post("/promo-codes", status_code=status.HTTP_201_CREATED)
 async def create_promo_code(promo_data: PromoCodeCreate, username: str = Depends(get_current_user)):
-    """Create a new promo code (admin only - for now any user can create)"""
+    """Create a new promo code (admin only)"""
+    await verify_admin(username)
+    
     # Check if code already exists
     existing = await db.promo_codes.find_one({'code': promo_data.code.upper()})
     if existing:
