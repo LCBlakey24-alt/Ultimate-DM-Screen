@@ -1292,6 +1292,181 @@ async def delete_map(campaign_id: str, map_id: str, username: str = Depends(get_
 
 # ==================== AI ROUTES ====================
 
+class UnseenServantRequest(BaseModel):
+    prompt: str
+    entity_type: str  # god, npc, location, place_of_interest
+    campaign_id: str
+    location_id: Optional[str] = None  # Required if entity_type is place_of_interest
+
+class UnseenServantResponse(BaseModel):
+    success: bool
+    entity_type: str
+    entity_id: str
+    entity_name: str
+    message: str
+
+@api_router.post("/unseen-servant/generate", response_model=UnseenServantResponse)
+async def unseen_servant_generate(request: UnseenServantRequest, username: str = Depends(get_current_user)):
+    """Unseen Servant: AI that generates and auto-saves D&D content"""
+    try:
+        # Verify campaign ownership
+        campaign = await db.campaigns.find_one({'id': request.campaign_id, 'dm_user_id': username})
+        if not campaign:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+        
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="AI key not configured")
+        
+        # Define JSON schema prompts for each entity type
+        entity_prompts = {
+            'god': '''Generate a D&D deity. Respond ONLY with valid JSON in this exact format:
+{
+  "name": "deity name",
+  "domain": "primary domain (e.g., War, Knowledge, Nature)",
+  "description": "2-3 sentences describing the deity",
+  "symbol": "the deity's holy symbol",
+  "alignment": "alignment (e.g., Lawful Good, Chaotic Neutral)",
+  "notes": "additional lore or worship practices"
+}''',
+            'npc': '''Generate a D&D NPC. Respond ONLY with valid JSON in this exact format:
+{
+  "name": "NPC full name",
+  "description": "physical appearance, personality, and background in 2-3 sentences",
+  "hp": 10,
+  "ac": 10,
+  "location": "where they can be found",
+  "notes": "motivations, secrets, or plot hooks"
+}''',
+            'location': '''Generate a D&D location. Respond ONLY with valid JSON in this exact format:
+{
+  "name": "location name",
+  "location_type": "type (City, Town, Village, Dungeon, Forest, etc.)",
+  "description": "2-3 sentences describing the location",
+  "notable_npcs": "key NPCs found here",
+  "notes": "secrets, hooks, or DM notes"
+}''',
+            'place_of_interest': '''Generate a place of interest (shop, tavern, temple, etc.). Respond ONLY with valid JSON in this exact format:
+{
+  "name": "establishment name",
+  "place_type": "type (shop, tavern, temple, blacksmith, guild, library, residence, other)",
+  "description": "2-3 sentences describing the place",
+  "owner": "name of proprietor/owner",
+  "services": "what services or items are offered",
+  "notes": "secrets, rumors, or plot hooks"
+}'''
+        }
+        
+        if request.entity_type not in entity_prompts:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid entity type: {request.entity_type}")
+        
+        # Build the full prompt
+        system_message = f"You are the Unseen Servant, a magical helper for D&D Dungeon Masters. You generate content in strict JSON format only. No markdown, no explanations, just valid JSON."
+        full_prompt = f"{entity_prompts[request.entity_type]}\n\nUser request: {request.prompt}"
+        
+        # Initialize LLM
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"{username}-unseen-servant-{datetime.now(timezone.utc).timestamp()}",
+            system_message=system_message
+        )
+        chat.with_model('openai', 'gpt-4o')
+        
+        # Get AI response
+        response = await chat.send_message(UserMessage(text=full_prompt))
+        
+        # Parse JSON from response
+        import re
+        json_match = re.search(r'\{[\s\S]*\}', response)
+        if not json_match:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to parse AI response as JSON")
+        
+        entity_data = json.loads(json_match.group())
+        
+        # Save entity based on type
+        entity_id = str(uuid.uuid4())
+        entity_name = entity_data.get('name', 'Unnamed')
+        
+        if request.entity_type == 'god':
+            new_god = God(
+                id=entity_id,
+                campaign_id=request.campaign_id,
+                name=entity_data.get('name', 'Unknown Deity'),
+                domain=entity_data.get('domain', ''),
+                description=entity_data.get('description', ''),
+                symbol=entity_data.get('symbol', ''),
+                alignment=entity_data.get('alignment', ''),
+                notes=entity_data.get('notes', '')
+            )
+            await db.gods.insert_one(new_god.model_dump())
+            
+        elif request.entity_type == 'npc':
+            new_npc = NPC(
+                id=entity_id,
+                campaign_id=request.campaign_id,
+                name=entity_data.get('name', 'Unknown NPC'),
+                description=entity_data.get('description', ''),
+                hp=entity_data.get('hp', 10),
+                ac=entity_data.get('ac', 10),
+                location=entity_data.get('location', ''),
+                notes=entity_data.get('notes', '')
+            )
+            await db.npcs.insert_one(new_npc.model_dump())
+            
+        elif request.entity_type == 'location':
+            new_location = Location(
+                id=entity_id,
+                campaign_id=request.campaign_id,
+                name=entity_data.get('name', 'Unknown Location'),
+                location_type=entity_data.get('location_type', ''),
+                description=entity_data.get('description', ''),
+                notable_npcs=entity_data.get('notable_npcs', ''),
+                notes=entity_data.get('notes', ''),
+                places_of_interest=[]
+            )
+            await db.locations.insert_one(new_location.model_dump())
+            
+        elif request.entity_type == 'place_of_interest':
+            if not request.location_id:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="location_id required for place_of_interest")
+            
+            location = await db.locations.find_one({'id': request.location_id, 'campaign_id': request.campaign_id})
+            if not location:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Location not found")
+            
+            new_place = {
+                'id': entity_id,
+                'name': entity_data.get('name', 'Unknown Place'),
+                'place_type': entity_data.get('place_type', 'other'),
+                'description': entity_data.get('description', ''),
+                'owner': entity_data.get('owner', ''),
+                'services': entity_data.get('services', ''),
+                'notes': entity_data.get('notes', '')
+            }
+            
+            places = location.get('places_of_interest', [])
+            places.append(new_place)
+            
+            await db.locations.update_one(
+                {'id': request.location_id},
+                {'$set': {'places_of_interest': places}}
+            )
+        
+        return UnseenServantResponse(
+            success=True,
+            entity_type=request.entity_type,
+            entity_id=entity_id,
+            entity_name=entity_name,
+            message=f"Successfully created {request.entity_type}: {entity_name}"
+        )
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON parse error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to parse AI response")
+    except Exception as e:
+        logger.error(f"Unseen Servant error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Generation failed: {str(e)}")
+
 @api_router.post("/ai/generate", response_model=AIGenerationResponse)
 async def generate_ai_content(request: AIGenerationRequest, username: str = Depends(get_current_user)):
     try:
