@@ -106,10 +106,151 @@ function CombatCreatorTab({ campaignId }) {
       setPlayers(playersRes.data);
       setNpcs(npcsRes.data);
       setScenarios(scenariosRes.data);
+      
+      // Auto-calculate party stats for encounter generator
+      if (playersRes.data.length > 0) {
+        setPartySize(playersRes.data.length);
+        const avgLevel = Math.round(playersRes.data.reduce((sum, p) => sum + (p.level || 1), 0) / playersRes.data.length);
+        setPartyLevel(avgLevel);
+      }
     } catch (error) {
       toast.error('Failed to load data');
     } finally {
       setLoading(false);
+    }
+  };
+  
+  // Encounter Generator functions
+  const getDifficultyIcon = (diff) => {
+    switch (diff) {
+      case 'easy': return CheckCircle;
+      case 'medium': return Zap;
+      case 'hard': return AlertTriangle;
+      case 'deadly': return Skull;
+      default: return Zap;
+    }
+  };
+
+  const generateEncounter = async () => {
+    setGenerating(true);
+    
+    const prompt = `Generate a ${difficulty} difficulty ${encounterType} encounter for a D&D 5e party of ${partySize} level ${partyLevel} adventurers in a ${environment} setting.
+${customPrompt ? `Additional context: ${customPrompt}` : ''}
+
+Please provide a JSON response with this exact structure:
+{
+  "name": "Encounter name",
+  "description": "2-3 sentence description of the encounter setup and narrative",
+  "enemies": [
+    {
+      "name": "Monster name",
+      "count": 1,
+      "hp": 30,
+      "ac": 14,
+      "cr": "1",
+      "special_abilities": "Brief note on key abilities",
+      "loot": [
+        {"name": "Item name", "quantity": 1, "value": "10 gp", "item_type": "misc", "is_magical": false}
+      ]
+    }
+  ],
+  "tactics": "How the enemies will fight",
+  "terrain_features": ["List of", "terrain features"],
+  "estimated_xp": 500,
+  "difficulty_rating": "${difficulty}"
+}`;
+
+    try {
+      const res = await axios.post(`${API}/ai/generate`, {
+        prompt: prompt,
+        generation_type: 'encounter'
+      });
+      
+      let encounter;
+      try {
+        const jsonMatch = res.data.content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          encounter = JSON.parse(jsonMatch[0]);
+        } else {
+          throw new Error('No JSON found');
+        }
+      } catch (parseError) {
+        encounter = {
+          name: `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} ${environment} Encounter`,
+          description: res.data.content.substring(0, 200),
+          enemies: [{ name: 'Goblin', count: partySize, hp: 7, ac: 15, cr: '1/4', loot: [] }],
+          tactics: 'Standard combat tactics',
+          terrain_features: ['Difficult terrain', 'Cover available'],
+          estimated_xp: partyLevel * partySize * 50,
+          difficulty_rating: difficulty
+        };
+      }
+      
+      setGeneratedEncounter(encounter);
+      toast.success('Encounter generated!');
+    } catch (error) {
+      toast.error('Failed to generate encounter');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const saveGeneratedAsScenario = async () => {
+    if (!generatedEncounter) return;
+    setSavingEncounter(true);
+    
+    try {
+      const combatantsList = [];
+      const tokensList = [];
+      let tokenX = 200;
+      
+      generatedEncounter.enemies.forEach((enemy, enemyIdx) => {
+        for (let i = 0; i < enemy.count; i++) {
+          const id = `enemy-${enemyIdx}-${i}-${Date.now()}`;
+          combatantsList.push({
+            id,
+            name: enemy.count > 1 ? `${enemy.name} ${i + 1}` : enemy.name,
+            type: 'npc',
+            hp: enemy.hp,
+            maxHp: enemy.hp,
+            ac: enemy.ac,
+            initiative: 0,
+            conditions: [],
+            tokenColor: '#ef4444',
+            tokenSize: 40,
+            loot: enemy.loot || []
+          });
+          
+          tokensList.push({
+            id,
+            name: enemy.count > 1 ? `${enemy.name} ${i + 1}` : enemy.name,
+            color: '#ef4444',
+            size: 40,
+            x: tokenX,
+            y: 200 + Math.floor(i / 4) * 50,
+            isEnemy: true
+          });
+          tokenX += 50;
+        }
+      });
+      
+      const scenarioData = {
+        name: generatedEncounter.name,
+        description: generatedEncounter.description,
+        combatants: combatantsList,
+        tokens: tokensList,
+        show_grid: true,
+        grid_size: 40
+      };
+      
+      await axios.post(`${API}/campaigns/${campaignId}/combat-scenarios`, scenarioData);
+      toast.success('Saved as Combat Scenario!');
+      fetchData(); // Refresh scenarios list
+      setActiveSubTab('scenarios'); // Switch to scenarios tab
+    } catch (error) {
+      toast.error('Failed to save encounter');
+    } finally {
+      setSavingEncounter(false);
     }
   };
 
