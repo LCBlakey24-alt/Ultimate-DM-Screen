@@ -93,6 +93,20 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - [x] Responsive design
 - [x] Consistent tabbed navigation
 - [x] **Premium badge** in campaign list header
+- [x] **Quick Tips Component** - Contextual help boxes on each page
+
+### Quick Tips System (NEW)
+- [x] Reusable QuickTips component with collapsible panels
+- [x] Page-specific contextual tips:
+  - [x] **Campaign List**: Getting Started guide
+  - [x] **Campaign Dashboard**: Campaign Tips (Setting, World, AI, Combat)
+  - [x] **DM Screen**: DM Screen Tips (Monsters, Names, Tables, Notes)
+  - [x] **Combat Creator**: Combat Creator Tips (Add Combatants, Difficulty, Loot, Run Combat)
+  - [x] **World Builder**: World Builder Tips (Hierarchy, Expand, AI, Places)
+  - [x] **Pricing Page**: Subscription Tips (Free Tier, Adventurer, Promo Codes, Referrals)
+- [x] Persistent collapse/dismiss state via localStorage
+- [x] Yellow highlight styling for key actions
+- [x] Expand/collapse and dismiss buttons
 
 ## Technical Stack
 - **Frontend**: React.js, TailwindCSS, react-beautiful-dnd
