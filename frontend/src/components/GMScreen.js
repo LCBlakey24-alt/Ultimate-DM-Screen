@@ -282,9 +282,9 @@ function GMScreen({ username }) {
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
         {/* Quick Tips */}
         <QuickTips 
-          tips={TIPS.dmScreen} 
-          pageId="dmScreen" 
-          title="DM Screen Tips"
+          tips={TIPS.gmScreen} 
+          pageId="gmScreen" 
+          title="GM Screen Tips"
         />
 
         {/* Tab Navigation */}
