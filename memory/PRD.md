@@ -38,7 +38,17 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - [x] **Free tier**: 5 AI generations per month
 - [x] **Premium tier**: Unlimited AI generations
 
-### Monetization System (NEW)
+### World Builder (NEW)
+- [x] **Hierarchical world structure**: Continents → Countries/Regions → Cities/Towns → Places of Interest
+- [x] Continent types: Continent, Island/Archipelago, Plane of Existence
+- [x] Region types: Kingdom, Empire, Republic, Territory, Wilderness
+- [x] Settlement types: Capital, City, Town, Village, Outpost, Ruins, Landmark
+- [x] Place types: Shop, Tavern, Temple, Blacksmith, Guild, Library, Residence, Dungeon
+- [x] Expandable/collapsible tree view
+- [x] AI "Unseen Servant" integration for generating world elements
+- [x] Full CRUD operations for all hierarchy levels
+
+### Monetization System
 - [x] **Pricing Page** with plan comparison
 - [x] **Free Tier**: 2 campaigns, 5 AI generations/month
 - [x] **Adventurer Tier** ($3.99/month): Unlimited everything
