@@ -145,11 +145,15 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - **New Test Files**: subscription-pricing.spec.ts, test_subscription.py
 
 ## Upcoming Tasks (Priority Order)
-1. **P1: Player Builder Quality Improvements** - Enhance player creator with spells, class/race actions
-2. **P2: Enhanced Map & Token System** - Fog of war, AoE templates, distance tools
-3. **P3: Merge Combat/Encounter Gen Tabs** - Needs careful refactoring
-4. **P4: World Calendar System** - Full customization
-5. **P5: Editable Rules Reference** - User-editable content
+1. **P1: Session Recap & Player Handouts** - AI-powered "Last time on..." summaries and shareable player links
+2. **P2: Dark Mode / Theme Options** - Theme switcher for better usability
+3. **P3: Player View Mode** - Simplified player-safe campaign view for sharing
+4. **P4: Import/Export Campaign Data** - Backup campaigns to JSON/PDF
+5. **P5: Merge Combat/Encounter Gen Tabs** - Needs careful refactoring (previously failed)
+6. **P6: World Calendar System** - Full customization
+7. **P7: Editable Rules Reference** - User-editable content
+8. **P8: Sound/Ambiance Integration** - Background music triggers
+9. **P9: Mobile App / PWA** - Progressive Web App for mobile/tablet
 
 ---
 Last Updated: March 1, 2026
