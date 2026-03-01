@@ -513,6 +513,9 @@ class PromoCodeCreate(BaseModel):
 class ApplyPromoCodeRequest(BaseModel):
     code: str
 
+class ApplyReferralCodeRequest(BaseModel):
+    referral_code: str
+
 class CreateCheckoutRequest(BaseModel):
     origin_url: str
     plan: str = 'adventurer'
@@ -525,6 +528,12 @@ class SubscriptionResponse(BaseModel):
     ai_calls_used: int
     is_premium: bool
     subscription_status: str
+    # Referral info
+    referral_code: Optional[str] = None
+    referral_count: int = 0
+    free_months_earned: int = 0
+    free_months_remaining: int = 0
+    premium_expires_at: Optional[str] = None
 
 # ==================== AUTH HELPERS ====================
 
