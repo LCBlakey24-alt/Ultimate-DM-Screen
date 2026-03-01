@@ -31,12 +31,14 @@ function PricingPage({ username, onLogout }) {
 
   const fetchData = async () => {
     try {
-      const [plansRes, subRes] = await Promise.all([
+      const [plansRes, subRes, refRes] = await Promise.all([
         axios.get(`${API}/subscription/plans`),
-        axios.get(`${API}/subscription/status`)
+        axios.get(`${API}/subscription/status`),
+        axios.get(`${API}/referral/code`)
       ]);
       setPlans(plansRes.data.plans);
       setSubscription(subRes.data);
+      setReferralInfo(refRes.data);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
