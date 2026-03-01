@@ -203,6 +203,7 @@ function CampaignDashboard({ username, onLogout }) {
         {/* Tab Content */}
         <div className="glow-panel" style={{ minHeight: '500px' }}>
           {activeTab === 'setting' && <CampaignSettingTab campaignId={campaignId} />}
+          {activeTab === 'world' && <WorldBuilderTab campaignId={campaignId} />}
           {activeTab === 'gods' && <GodsTab campaignId={campaignId} />}
           {activeTab === 'npcs' && <NPCsTab campaignId={campaignId} />}
           {activeTab === 'locations' && <LocationsTab campaignId={campaignId} />}
