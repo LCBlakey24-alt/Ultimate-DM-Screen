@@ -131,7 +131,7 @@ function PricingPage({ username, onLogout }) {
     }}>
       {/* Header */}
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
           <Button 
             data-testid="back-btn"
             onClick={() => navigate('/campaigns')} 
@@ -148,6 +148,13 @@ function PricingPage({ username, onLogout }) {
             Choose Your Adventure
           </h1>
         </div>
+
+        {/* Quick Tips */}
+        <QuickTips 
+          tips={TIPS.pricing} 
+          pageId="pricing" 
+          title="Subscription Tips"
+        />
 
         {/* Current Status */}
         {subscription && (
