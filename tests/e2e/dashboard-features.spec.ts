@@ -64,8 +64,8 @@ test.describe('Campaign Dashboard Features', () => {
     await expect(page.getByTestId('ai-setting-prompt')).toBeVisible();
     await expect(page.getByTestId('generate-setting-btn')).toBeVisible();
     
-    // Verify AI Assistant panel text
-    await expect(page.getByText('AI Assistant')).toBeVisible();
+    // Verify Unseen Servant panel text (renamed from AI Assistant)
+    await expect(page.getByText('Unseen Servant')).toBeVisible();
   });
 
   test('should save campaign setting content', async ({ page }) => {
@@ -114,7 +114,8 @@ test.describe('Campaign Dashboard Features', () => {
     
     // Verify NPC tab elements
     await expect(page.getByTestId('add-npc-btn')).toBeVisible();
-    await expect(page.getByTestId('generate-npc-btn')).toBeVisible();
+    // Button renamed from generate-npc-btn to summon-npc-btn
+    await expect(page.getByTestId('summon-npc-btn')).toBeVisible();
   });
 
   test('Calendar tab displays calendar controls', async ({ page }) => {

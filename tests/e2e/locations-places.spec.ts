@@ -131,12 +131,12 @@ test.describe('Locations and Places of Interest', () => {
     await deletePlaceBtn.click();
   });
 
-  test('AI Assistant panel visible in Locations tab', async ({ page }) => {
-    // Verify AI Assistant panel is visible
-    await expect(page.getByText('AI Assistant')).toBeVisible();
+  test('Unseen Servant panel visible in Locations tab', async ({ page }) => {
+    // Verify Unseen Servant panel is visible (renamed from AI Assistant)
+    await expect(page.getByText('Unseen Servant')).toBeVisible();
     
-    // Verify AI generation controls
-    await expect(page.getByTestId('ai-location-prompt')).toBeVisible();
-    await expect(page.getByTestId('generate-location-btn')).toBeVisible();
+    // Verify generation controls with new testids
+    await expect(page.getByTestId('unseen-servant-location-prompt')).toBeVisible();
+    await expect(page.getByTestId('summon-location-btn')).toBeVisible();
   });
 });
