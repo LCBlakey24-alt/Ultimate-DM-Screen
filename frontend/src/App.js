@@ -133,6 +133,14 @@ function App() {
             path="/subscription/cancel" 
             element={<Navigate to="/pricing" replace />} 
           />
+          <Route 
+            path="/admin" 
+            element={
+              isAuthenticated ? 
+                <AdminPage username={username} /> : 
+                <Navigate to="/auth" replace />
+            } 
+          />
           <Route path="/" element={<Navigate to="/campaigns" replace />} />
         </Routes>
       </BrowserRouter>
