@@ -32,7 +32,8 @@ test.describe('Locations and Places of Interest', () => {
     
     // Verify existing location (Waterdeep) is displayed
     await expect(page.getByText('Waterdeep')).toBeVisible();
-    await expect(page.getByText('City')).toBeVisible();
+    // Location type 'City' - use exact match to avoid matching 'City of Splendors'
+    await expect(page.getByText('City', { exact: true }).first()).toBeVisible();
   });
 
   test('Expand location to see places of interest', async ({ page }) => {
