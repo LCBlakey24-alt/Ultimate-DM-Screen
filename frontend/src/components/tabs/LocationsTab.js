@@ -231,7 +231,8 @@ function LocationsTab({ campaignId }) {
         }
       }
     } catch (error) {
-      toast.error('The Unseen Servant failed to create');
+      const errorMsg = error.response?.data?.detail || 'The Unseen Servant failed to create';
+      toast.error(errorMsg);
     } finally {
       setAiGenerating(false);
     }
