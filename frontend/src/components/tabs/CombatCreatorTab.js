@@ -4,11 +4,37 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Search, Plus, X, RotateCcw, Trash2, Swords, Save, Map, Upload, Grid, Image, Play, Coins, Package, Skull, ChevronDown, ChevronUp, Users } from 'lucide-react';
+import { Search, Plus, X, RotateCcw, Trash2, Swords, Save, Map, Upload, Grid, Image, Play, Coins, Package, Skull, ChevronDown, ChevronUp, Users, Sparkles, Shield, Loader, RefreshCw, Zap, AlertTriangle, CheckCircle } from 'lucide-react';
 import { MONSTER_DATABASE, MONSTER_TYPES, CR_OPTIONS, getCRValue, getXPFromCR } from '@/data/monsterDatabase';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Combat sub-tabs
+const COMBAT_SUBTABS = [
+  { id: 'scenarios', label: 'Combat Scenarios', icon: Swords },
+  { id: 'generator', label: 'Encounter Generator', icon: Sparkles },
+];
+
+// Encounter Generator constants
+const DIFFICULTY_LEVELS = [
+  { id: 'easy', label: 'Easy', color: '#22c55e', description: 'Low risk' },
+  { id: 'medium', label: 'Medium', color: '#eab308', description: 'Moderate challenge' },
+  { id: 'hard', label: 'Hard', color: '#f97316', description: 'Dangerous' },
+  { id: 'deadly', label: 'Deadly', color: '#ef4444', description: 'High mortality risk' },
+];
+
+const ENCOUNTER_TYPES = [
+  { id: 'combat', label: 'Combat', icon: Swords },
+  { id: 'ambush', label: 'Ambush', icon: AlertTriangle },
+  { id: 'boss', label: 'Boss Fight', icon: Skull },
+  { id: 'horde', label: 'Horde', icon: Users },
+];
+
+const ENVIRONMENTS = [
+  'Forest', 'Cave', 'Dungeon', 'Castle', 'Swamp', 'Mountain', 
+  'Desert', 'Urban', 'Ruins', 'Underdark', 'Coastal', 'Arctic'
+];
 
 const TOKEN_COLORS = [
   { id: 'blue', color: '#4a7dff', label: 'Blue (Players)' },
@@ -20,6 +46,9 @@ const TOKEN_COLORS = [
 ];
 
 function CombatCreatorTab({ campaignId }) {
+  // Sub-tab state
+  const [activeSubTab, setActiveSubTab] = useState('scenarios');
+  
   const [players, setPlayers] = useState([]);
   const [npcs, setNpcs] = useState([]);
   const [scenarios, setScenarios] = useState([]);
