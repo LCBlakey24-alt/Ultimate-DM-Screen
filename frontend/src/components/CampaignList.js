@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Scroll, Plus, LogOut, Trash2, Settings, Crown, Sparkles, Shield } from 'lucide-react';
+import QuickTips, { TIPS } from '@/components/QuickTips';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -313,6 +314,13 @@ function CampaignList({ username, onLogout }) {
             </Button>
           </div>
         </div>
+
+        {/* Quick Tips */}
+        <QuickTips 
+          tips={TIPS.campaigns} 
+          pageId="campaigns" 
+          title="Getting Started"
+        />
 
         {/* Campaigns Grid */}
         {campaigns.length === 0 ? (
