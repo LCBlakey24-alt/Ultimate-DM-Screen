@@ -487,6 +487,13 @@ class SubscriptionTier(BaseModel):
     ai_calls_this_month: int = 0
     ai_calls_reset_date: Optional[str] = None
     promo_code_used: Optional[str] = None
+    # Referral system
+    referral_code: Optional[str] = None  # User's unique referral code
+    referred_by: Optional[str] = None  # Who referred this user
+    referral_count: int = 0  # How many people they've referred
+    free_months_earned: int = 0  # Months earned from referrals
+    free_months_used: int = 0  # Months already consumed
+    premium_expires_at: Optional[str] = None  # When referral premium expires
 
 class PromoCode(BaseModel):
     model_config = ConfigDict(extra="ignore")
