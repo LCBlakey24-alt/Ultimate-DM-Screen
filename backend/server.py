@@ -471,6 +471,54 @@ class CustomItemUpdate(BaseModel):
     value: Optional[str] = None
     weight: Optional[float] = None
 
+# ==================== SUBSCRIPTION MODELS ====================
+
+# Subscription pricing - affordable for users going through tough times
+SUBSCRIPTION_PLANS = {
+    'free': {'name': 'Free', 'price': 0.0, 'campaigns': 2, 'ai_calls_per_month': 5},
+    'adventurer': {'name': 'Adventurer', 'price': 3.99, 'campaigns': -1, 'ai_calls_per_month': -1},  # -1 = unlimited
+}
+
+class SubscriptionTier(BaseModel):
+    tier: str = 'free'
+    stripe_customer_id: Optional[str] = None
+    stripe_subscription_id: Optional[str] = None
+    subscription_status: str = 'active'  # active, cancelled, past_due
+    ai_calls_this_month: int = 0
+    ai_calls_reset_date: Optional[str] = None
+    promo_code_used: Optional[str] = None
+
+class PromoCode(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    code: str
+    tier_granted: str = 'adventurer'
+    uses_remaining: int = -1  # -1 = unlimited
+    expires_at: Optional[str] = None
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class PromoCodeCreate(BaseModel):
+    code: str
+    tier_granted: str = 'adventurer'
+    uses_remaining: int = -1
+    expires_at: Optional[str] = None
+
+class ApplyPromoCodeRequest(BaseModel):
+    code: str
+
+class CreateCheckoutRequest(BaseModel):
+    origin_url: str
+    plan: str = 'adventurer'
+
+class SubscriptionResponse(BaseModel):
+    tier: str
+    tier_name: str
+    campaigns_limit: int
+    ai_calls_limit: int
+    ai_calls_used: int
+    is_premium: bool
+    subscription_status: str
+
 # ==================== AUTH HELPERS ====================
 
 def hash_password(password: str) -> str:
