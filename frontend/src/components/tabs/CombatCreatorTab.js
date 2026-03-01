@@ -405,7 +405,15 @@ function CombatCreatorTab({ campaignId }) {
   const { players: filteredPlayers, npcs: filteredNPCs } = filteredEntities();
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px' }}>
+    <div>
+      {/* Quick Tips */}
+      <QuickTips 
+        tips={TIPS.combat} 
+        pageId="combat" 
+        title="Combat Creator Tips"
+      />
+      
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px' }}>
       {/* Saved Scenarios */}
       <div>
         <h3 style={{ fontSize: '18px', color: '#ffffff', marginBottom: '16px', fontFamily: 'Montserrat, sans-serif', fontWeight: '700' }}>
