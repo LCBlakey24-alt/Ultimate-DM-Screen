@@ -576,7 +576,7 @@
               ],
               "id": "a313c460d966793baa63-5d31c7a7a2f120d17082",
               "file": "dashboard-features.spec.ts",
-              "line": 120,
+              "line": 121,
               "column": 7
             },
             {
@@ -596,7 +596,7 @@
               ],
               "id": "a313c460d966793baa63-147fcdc1cd75284e8461",
               "file": "dashboard-features.spec.ts",
-              "line": 130,
+              "line": 131,
               "column": 7
             },
             {
@@ -616,7 +616,7 @@
               ],
               "id": "a313c460d966793baa63-75ab5377a2a4bd5a8027",
               "file": "dashboard-features.spec.ts",
-              "line": 137,
+              "line": 138,
               "column": 7
             }
           ]
@@ -757,7 +757,7 @@
               "column": 7
             },
             {
-              "title": "AI Assistant panel visible in Locations tab",
+              "title": "Unseen Servant panel visible in Locations tab",
               "ok": true,
               "tags": [],
               "tests": [
@@ -771,7 +771,7 @@
                   "status": "skipped"
                 }
               ],
-              "id": "8bd6174e71fdd0000a86-af53a6d4144a2125123c",
+              "id": "8bd6174e71fdd0000a86-10e2e4a8b30c223abb0e",
               "file": "locations-places.spec.ts",
               "line": 134,
               "column": 7
@@ -1289,14 +1289,191 @@
           ]
         }
       ]
+    },
+    {
+      "title": "unseen-servant.spec.ts",
+      "file": "unseen-servant.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Unseen Servant Auto-Save Features",
+          "file": "unseen-servant.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Gods tab - Unseen Servant panel is visible with correct UI",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b06bac622e1059161519-4130ac493ef028c97689",
+              "file": "unseen-servant.spec.ts",
+              "line": 22,
+              "column": 7
+            },
+            {
+              "title": "NPCs tab - Unseen Servant panel is visible with correct UI",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b06bac622e1059161519-7b34746103fc918f6944",
+              "file": "unseen-servant.spec.ts",
+              "line": 37,
+              "column": 7
+            },
+            {
+              "title": "Locations tab - Unseen Servant has Location and Place toggle",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b06bac622e1059161519-a1c145127326fb472bb3",
+              "file": "unseen-servant.spec.ts",
+              "line": 52,
+              "column": 7
+            },
+            {
+              "title": "Gods tab - Summon button shows validation error without prompt",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b06bac622e1059161519-d7fed224cbf79ea83725",
+              "file": "unseen-servant.spec.ts",
+              "line": 69,
+              "column": 7
+            },
+            {
+              "title": "NPCs tab - Summon button shows validation error without prompt",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b06bac622e1059161519-f5abfba9338848251b5c",
+              "file": "unseen-servant.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "Locations tab - Summon button shows validation error without prompt",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b06bac622e1059161519-e5c05500cee29c7f4094",
+              "file": "unseen-servant.spec.ts",
+              "line": 93,
+              "column": 7
+            },
+            {
+              "title": "Campaign Setting tab - Unseen Servant panel is visible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b06bac622e1059161519-1da0f5ecfc5db46a810f",
+              "file": "unseen-servant.spec.ts",
+              "line": 105,
+              "column": 7
+            },
+            {
+              "title": "Unseen Servant renamed from AI Assistant throughout app",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b06bac622e1059161519-1c61f83b86f85b2ae7e2",
+              "file": "unseen-servant.spec.ts",
+              "line": 115,
+              "column": 7
+            }
+          ]
+        }
+      ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-03-01T10:28:42.727Z",
-    "duration": 64.47599999999989,
+    "startTime": "2026-03-01T10:44:06.825Z",
+    "duration": 58.555999999999926,
     "expected": 0,
-    "skipped": 55,
+    "skipped": 63,
     "unexpected": 0,
     "flaky": 0
   }
