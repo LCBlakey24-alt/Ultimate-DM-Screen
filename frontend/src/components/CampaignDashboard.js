@@ -62,7 +62,6 @@ function CampaignDashboard({ username, onLogout }) {
     { id: 'locations', icon: MapPin, label: 'Locations', color: '#22c55e' },
     { id: 'players', icon: Users, label: 'Players', color: '#4a7dff' },
     { id: 'combat-creator', icon: Swords, label: 'Combat', color: '#ef4444' },
-    { id: 'encounter-gen', icon: Sparkles, label: 'Encounter Gen', color: '#eab308' },
     { id: 'items', icon: Wand2, label: 'Items', color: '#67e8f9' },
     { id: 'reference', icon: ScrollText, label: 'Reference', color: '#f97316' },
     { id: 'calendar', icon: Calendar, label: 'Calendar', color: '#a855f7' },
