@@ -26,8 +26,8 @@ test.describe('Reference Tab Features', () => {
     // Verify Items Database heading is visible
     await expect(page.getByText('D&D Items Database')).toBeVisible({ timeout: 10000 });
     
-    // Verify item count shows 3076+ items
-    await expect(page.getByText(/3,076|3076/)).toBeVisible();
+    // Verify item count shows 3076 items (use first match)
+    await expect(page.getByText(/3,076 items|3076 items/).first()).toBeVisible();
     
     // Verify search input exists
     await expect(page.getByTestId('item-search-input')).toBeVisible();
@@ -120,11 +120,11 @@ test.describe('Reference Tab Features', () => {
     // Expand XP Thresholds section
     await page.getByText('Encounter XP Thresholds').click();
     
-    // Verify XP threshold columns are visible
-    await expect(page.getByText('EASY')).toBeVisible({ timeout: 5000 });
-    await expect(page.getByText('MEDIUM')).toBeVisible();
-    await expect(page.getByText('HARD')).toBeVisible();
-    await expect(page.getByText('DEADLY')).toBeVisible();
+    // Verify XP threshold columns are visible (use role for column headers)
+    await expect(page.getByRole('columnheader', { name: 'EASY' })).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole('columnheader', { name: 'MEDIUM' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'HARD' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'DEADLY' })).toBeVisible();
   });
 
   test('Rules Reference Conditions section expands', async ({ page }) => {
