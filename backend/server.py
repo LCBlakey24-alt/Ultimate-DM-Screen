@@ -565,7 +565,9 @@ async def register(user_data: UserRegister):
         'id': str(uuid.uuid4()),
         'username': user_data.username,
         'password_hash': hash_password(user_data.password),
-        'created_at': datetime.now(timezone.utc).isoformat()
+        'created_at': datetime.now(timezone.utc).isoformat(),
+        # Initialize subscription tier as free
+        'subscription': SubscriptionTier().model_dump()
     }
     
     await db.users.insert_one(user_doc)
@@ -584,7 +586,321 @@ async def login(user_data: UserLogin):
 
 @api_router.get("/auth/me")
 async def get_me(username: str = Depends(get_current_user)):
-    return {'username': username}
+    user = await db.users.find_one({'username': username}, {'_id': 0, 'password_hash': 0})
+    return user
+
+# ==================== SUBSCRIPTION ROUTES ====================
+
+async def get_user_subscription(username: str) -> dict:
+    """Helper to get user's subscription status"""
+    user = await db.users.find_one({'username': username})
+    if not user:
+        return None
+    
+    subscription = user.get('subscription', SubscriptionTier().model_dump())
+    
+    # Reset AI calls monthly
+    reset_date = subscription.get('ai_calls_reset_date')
+    if reset_date:
+        reset_dt = datetime.fromisoformat(reset_date.replace('Z', '+00:00'))
+        if datetime.now(timezone.utc) >= reset_dt:
+            subscription['ai_calls_this_month'] = 0
+            next_reset = datetime.now(timezone.utc) + timedelta(days=30)
+            subscription['ai_calls_reset_date'] = next_reset.isoformat()
+            await db.users.update_one(
+                {'username': username},
+                {'$set': {'subscription': subscription}}
+            )
+    else:
+        next_reset = datetime.now(timezone.utc) + timedelta(days=30)
+        subscription['ai_calls_reset_date'] = next_reset.isoformat()
+        await db.users.update_one(
+            {'username': username},
+            {'$set': {'subscription': subscription}}
+        )
+    
+    return subscription
+
+async def check_premium_feature(username: str, feature: str = 'ai') -> bool:
+    """Check if user can access premium features"""
+    subscription = await get_user_subscription(username)
+    tier = subscription.get('tier', 'free')
+    plan = SUBSCRIPTION_PLANS.get(tier, SUBSCRIPTION_PLANS['free'])
+    
+    if tier == 'adventurer' and subscription.get('subscription_status') == 'active':
+        return True
+    
+    if feature == 'ai':
+        limit = plan.get('ai_calls_per_month', 5)
+        used = subscription.get('ai_calls_this_month', 0)
+        return limit == -1 or used < limit
+    
+    return False
+
+async def increment_ai_usage(username: str):
+    """Increment AI call counter for free tier users"""
+    subscription = await get_user_subscription(username)
+    if subscription.get('tier') == 'free':
+        await db.users.update_one(
+            {'username': username},
+            {'$inc': {'subscription.ai_calls_this_month': 1}}
+        )
+
+@api_router.get("/subscription/status", response_model=SubscriptionResponse)
+async def get_subscription_status(username: str = Depends(get_current_user)):
+    """Get current user's subscription status"""
+    subscription = await get_user_subscription(username)
+    tier = subscription.get('tier', 'free')
+    plan = SUBSCRIPTION_PLANS.get(tier, SUBSCRIPTION_PLANS['free'])
+    
+    return SubscriptionResponse(
+        tier=tier,
+        tier_name=plan['name'],
+        campaigns_limit=plan['campaigns'],
+        ai_calls_limit=plan['ai_calls_per_month'],
+        ai_calls_used=subscription.get('ai_calls_this_month', 0),
+        is_premium=tier != 'free',
+        subscription_status=subscription.get('subscription_status', 'active')
+    )
+
+@api_router.post("/subscription/checkout")
+async def create_checkout_session(request: CreateCheckoutRequest, http_request: Request, username: str = Depends(get_current_user)):
+    """Create Stripe checkout session for subscription"""
+    try:
+        api_key = os.environ.get('STRIPE_API_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="Stripe not configured")
+        
+        plan = SUBSCRIPTION_PLANS.get(request.plan)
+        if not plan or plan['price'] == 0:
+            raise HTTPException(status_code=400, detail="Invalid plan")
+        
+        host_url = str(http_request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        
+        stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
+        
+        # Build success/cancel URLs from frontend origin
+        success_url = f"{request.origin_url}/subscription/success?session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{request.origin_url}/subscription/cancel"
+        
+        checkout_request = CheckoutSessionRequest(
+            amount=float(plan['price']),
+            currency="usd",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "username": username,
+                "plan": request.plan,
+                "type": "subscription"
+            }
+        )
+        
+        session = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Create payment transaction record
+        transaction = {
+            'id': str(uuid.uuid4()),
+            'session_id': session.session_id,
+            'username': username,
+            'amount': plan['price'],
+            'currency': 'usd',
+            'plan': request.plan,
+            'payment_status': 'pending',
+            'created_at': datetime.now(timezone.utc).isoformat()
+        }
+        await db.payment_transactions.insert_one(transaction)
+        
+        return {"checkout_url": session.url, "session_id": session.session_id}
+        
+    except Exception as e:
+        logger.error(f"Checkout error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Checkout failed: {str(e)}")
+
+@api_router.get("/subscription/checkout/status/{session_id}")
+async def get_checkout_status(session_id: str, http_request: Request, username: str = Depends(get_current_user)):
+    """Check payment status and activate subscription if paid"""
+    try:
+        api_key = os.environ.get('STRIPE_API_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="Stripe not configured")
+        
+        host_url = str(http_request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        
+        stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
+        status = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Update transaction
+        transaction = await db.payment_transactions.find_one({'session_id': session_id})
+        
+        if status.payment_status == 'paid' and transaction and transaction.get('payment_status') != 'paid':
+            # Activate subscription
+            plan = transaction.get('plan', 'adventurer')
+            await db.users.update_one(
+                {'username': username},
+                {'$set': {
+                    'subscription.tier': plan,
+                    'subscription.subscription_status': 'active',
+                    'subscription.stripe_subscription_id': session_id
+                }}
+            )
+            
+            # Update transaction status
+            await db.payment_transactions.update_one(
+                {'session_id': session_id},
+                {'$set': {'payment_status': 'paid', 'completed_at': datetime.now(timezone.utc).isoformat()}}
+            )
+        
+        return {
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "amount": status.amount_total / 100,  # Convert from cents
+            "currency": status.currency
+        }
+        
+    except Exception as e:
+        logger.error(f"Status check error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Status check failed: {str(e)}")
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhooks"""
+    try:
+        api_key = os.environ.get('STRIPE_API_KEY')
+        body = await request.body()
+        signature = request.headers.get("Stripe-Signature")
+        
+        host_url = str(request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        
+        stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
+        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        
+        if webhook_response.payment_status == 'paid':
+            metadata = webhook_response.metadata
+            username = metadata.get('username')
+            plan = metadata.get('plan', 'adventurer')
+            
+            if username:
+                await db.users.update_one(
+                    {'username': username},
+                    {'$set': {
+                        'subscription.tier': plan,
+                        'subscription.subscription_status': 'active'
+                    }}
+                )
+                
+                await db.payment_transactions.update_one(
+                    {'session_id': webhook_response.session_id},
+                    {'$set': {'payment_status': 'paid'}}
+                )
+        
+        return {"status": "received"}
+    except Exception as e:
+        logger.error(f"Webhook error: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+# ==================== PROMO CODE ROUTES ====================
+
+@api_router.post("/promo-codes", status_code=status.HTTP_201_CREATED)
+async def create_promo_code(promo_data: PromoCodeCreate, username: str = Depends(get_current_user)):
+    """Create a new promo code (admin only - for now any user can create)"""
+    # Check if code already exists
+    existing = await db.promo_codes.find_one({'code': promo_data.code.upper()})
+    if existing:
+        raise HTTPException(status_code=400, detail="Promo code already exists")
+    
+    promo = PromoCode(
+        code=promo_data.code.upper(),
+        tier_granted=promo_data.tier_granted,
+        uses_remaining=promo_data.uses_remaining,
+        expires_at=promo_data.expires_at
+    )
+    await db.promo_codes.insert_one(promo.model_dump())
+    return {"message": "Promo code created", "code": promo.code}
+
+@api_router.post("/promo-codes/apply")
+async def apply_promo_code(request: ApplyPromoCodeRequest, username: str = Depends(get_current_user)):
+    """Apply a promo code to get free premium access"""
+    code = request.code.upper().strip()
+    
+    # Find promo code
+    promo = await db.promo_codes.find_one({'code': code})
+    if not promo:
+        raise HTTPException(status_code=404, detail="Invalid promo code")
+    
+    # Check if expired
+    if promo.get('expires_at'):
+        expires = datetime.fromisoformat(promo['expires_at'].replace('Z', '+00:00'))
+        if datetime.now(timezone.utc) > expires:
+            raise HTTPException(status_code=400, detail="Promo code has expired")
+    
+    # Check uses remaining
+    uses = promo.get('uses_remaining', -1)
+    if uses == 0:
+        raise HTTPException(status_code=400, detail="Promo code has no uses remaining")
+    
+    # Check if user already used a promo
+    user = await db.users.find_one({'username': username})
+    if user and user.get('subscription', {}).get('promo_code_used'):
+        raise HTTPException(status_code=400, detail="You have already used a promo code")
+    
+    # Apply promo code
+    tier = promo.get('tier_granted', 'adventurer')
+    await db.users.update_one(
+        {'username': username},
+        {'$set': {
+            'subscription.tier': tier,
+            'subscription.subscription_status': 'active',
+            'subscription.promo_code_used': code
+        }}
+    )
+    
+    # Decrement uses if not unlimited
+    if uses > 0:
+        await db.promo_codes.update_one(
+            {'code': code},
+            {'$inc': {'uses_remaining': -1}}
+        )
+    
+    plan = SUBSCRIPTION_PLANS.get(tier, SUBSCRIPTION_PLANS['free'])
+    return {
+        "message": f"Promo code applied! You now have {plan['name']} access.",
+        "tier": tier,
+        "tier_name": plan['name']
+    }
+
+@api_router.get("/subscription/plans")
+async def get_subscription_plans():
+    """Get available subscription plans"""
+    return {
+        'plans': [
+            {
+                'id': 'free',
+                'name': 'Free',
+                'price': 0,
+                'features': [
+                    'Up to 2 campaigns',
+                    '5 AI generations per month',
+                    'Basic DM Screen features',
+                    'Dice roller & initiative tracker'
+                ]
+            },
+            {
+                'id': 'adventurer',
+                'name': 'Adventurer',
+                'price': 3.99,
+                'features': [
+                    'Unlimited campaigns',
+                    'Unlimited AI generations',
+                    'All DM Screen features',
+                    'Priority support',
+                    'Early access to new features'
+                ]
+            }
+        ]
+    }
 
 # ==================== CAMPAIGN ROUTES ====================
 
