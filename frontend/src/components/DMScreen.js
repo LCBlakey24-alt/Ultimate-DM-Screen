@@ -416,7 +416,10 @@ function DMScreen({ username }) {
                         <div style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid #22c55e', borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
                           <div style={{ fontSize: '10px', color: '#22c55e', fontWeight: '600' }}>INIT</div>
                           <div style={{ fontSize: '16px', color: '#fff', fontWeight: '700' }}>
-                            {player.stats?.dexterity ? `+${Math.floor((player.stats.dexterity - 10) / 2)}` : '?'}
+                            {player.stats?.dexterity ? (() => {
+                              const mod = Math.floor((player.stats.dexterity - 10) / 2);
+                              return mod >= 0 ? `+${mod}` : `${mod}`;
+                            })() : '?'}
                           </div>
                         </div>
                       </div>
