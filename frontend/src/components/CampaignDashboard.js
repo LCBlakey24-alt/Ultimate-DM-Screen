@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText } from 'lucide-react';
+import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe } from 'lucide-react';
 import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
 import GodsTab from '@/components/tabs/GodsTab';
 import NPCsTab from '@/components/tabs/NPCsTab';
@@ -15,6 +15,7 @@ import CalendarTab from '@/components/tabs/CalendarTab';
 import EncounterGeneratorTab from '@/components/tabs/EncounterGeneratorTab';
 import ItemCreatorTab from '@/components/tabs/ItemCreatorTab';
 import QuickReferenceTab from '@/components/tabs/QuickReferenceTab';
+import WorldBuilderTab from '@/components/tabs/WorldBuilderTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
