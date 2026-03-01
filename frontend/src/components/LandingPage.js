@@ -546,14 +546,14 @@ function LandingPage() {
             color: '#ffffff',
             marginBottom: '24px'
           }}>
-            Ready to Level Up Your DMing?
+            Ready to Level Up Your GMing?
           </h2>
           <p style={{
             color: '#94a3b8',
             fontSize: '18px',
             marginBottom: '40px'
           }}>
-            Join thousands of DMs who are running better campaigns with Quest Keeper.
+            Join thousands of GMs who are running better campaigns with Quest Keeper.
           </p>
           <Button 
             onClick={() => navigate('/auth')}
