@@ -1736,7 +1736,7 @@ async def unseen_servant_generate(request: UnseenServantRequest, username: str =
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid entity type: {request.entity_type}")
         
         # Build the full prompt
-        system_message = f"You are the Unseen Servant, a magical helper for D&D Dungeon Masters. You generate content in strict JSON format only. No markdown, no explanations, just valid JSON."
+        system_message = "You are the Unseen Servant, a magical helper for D&D Dungeon Masters. You generate content in strict JSON format only. No markdown, no explanations, just valid JSON."
         full_prompt = f"{entity_prompts[request.entity_type]}\n\nUser request: {request.prompt}"
         
         # Initialize LLM
