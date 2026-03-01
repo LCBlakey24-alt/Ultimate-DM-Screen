@@ -583,7 +583,195 @@ Please provide a JSON response with this exact structure:
   if (loading) return <div className="loading-spinner"></div>;
   const { players: filteredPlayers, npcs: filteredNPCs } = filteredEntities();
 
-  return (
+  // Render Encounter Generator sub-tab
+  const renderEncounterGenerator = () => (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+        <Sparkles size={28} style={{ color: '#eab308' }} />
+        <div>
+          <h2 style={{ fontSize: '22px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800' }}>
+            AI Encounter Generator
+          </h2>
+          <p style={{ fontSize: '13px', color: '#67e8f9' }}>
+            Generate balanced encounters based on your party
+          </p>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        {/* Left - Settings */}
+        <div>
+          {/* Party Info */}
+          <div className="glow-panel" style={{ marginBottom: '16px', background: 'rgba(74, 125, 255, 0.1)', borderColor: '#4a7dff' }}>
+            <h3 style={{ fontSize: '14px', color: '#4a7dff', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Users size={16} /> Party Configuration
+            </h3>
+            {players.length > 0 && (
+              <p style={{ fontSize: '11px', color: '#67e8f9', marginBottom: '12px' }}>
+                Auto-detected: {players.length} players, avg level {Math.round(players.reduce((s, p) => s + (p.level || 1), 0) / players.length)}
+              </p>
+            )}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', color: '#67e8f9', marginBottom: '4px', fontWeight: '600' }}>Party Size</label>
+                <Input type="number" value={partySize} onChange={(e) => setPartySize(parseInt(e.target.value) || 1)} min="1" max="10" className="input-glow" style={{ textAlign: 'center', fontWeight: '700' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', color: '#67e8f9', marginBottom: '4px', fontWeight: '600' }}>Average Level</label>
+                <Input type="number" value={partyLevel} onChange={(e) => setPartyLevel(parseInt(e.target.value) || 1)} min="1" max="20" className="input-glow" style={{ textAlign: 'center', fontWeight: '700' }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Difficulty */}
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#67e8f9', marginBottom: '8px', fontWeight: '700' }}>Difficulty</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+              {DIFFICULTY_LEVELS.map(diff => {
+                const DiffIcon = getDifficultyIcon(diff.id);
+                return (
+                  <button key={diff.id} onClick={() => setDifficulty(diff.id)} style={{
+                    padding: '12px 8px', borderRadius: '10px',
+                    border: `2px solid ${difficulty === diff.id ? diff.color : '#1e40af'}`,
+                    background: difficulty === diff.id ? `${diff.color}20` : 'rgba(10, 10, 40, 0.5)',
+                    color: difficulty === diff.id ? diff.color : '#94a3b8',
+                    fontWeight: '700', fontSize: '12px', cursor: 'pointer',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px'
+                  }}>
+                    <DiffIcon size={18} />{diff.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Encounter Type */}
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#67e8f9', marginBottom: '8px', fontWeight: '700' }}>Encounter Type</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+              {ENCOUNTER_TYPES.map(type => (
+                <button key={type.id} onClick={() => setEncounterType(type.id)} style={{
+                  padding: '12px 8px', borderRadius: '10px',
+                  border: `2px solid ${encounterType === type.id ? '#22c55e' : '#1e40af'}`,
+                  background: encounterType === type.id ? 'rgba(34, 197, 94, 0.15)' : 'rgba(10, 10, 40, 0.5)',
+                  color: encounterType === type.id ? '#22c55e' : '#94a3b8',
+                  fontWeight: '700', fontSize: '11px', cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px'
+                }}>
+                  <type.icon size={18} />{type.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Environment */}
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#67e8f9', marginBottom: '8px', fontWeight: '700' }}>Environment</label>
+            <select value={environment} onChange={(e) => setEnvironment(e.target.value)} className="input-glow" style={{ width: '100%', padding: '12px', fontSize: '14px' }}>
+              {ENVIRONMENTS.map(env => (<option key={env} value={env}>{env}</option>))}
+            </select>
+          </div>
+
+          {/* Custom Prompt */}
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#67e8f9', marginBottom: '8px', fontWeight: '700' }}>Additional Details (Optional)</label>
+            <textarea value={customPrompt} onChange={(e) => setCustomPrompt(e.target.value)} className="textarea-glow" style={{ minHeight: '80px', fontSize: '13px' }} placeholder="E.g., 'Include undead creatures' or 'Make it a puzzle encounter'" />
+          </div>
+
+          {/* Generate Button */}
+          <Button onClick={generateEncounter} disabled={generating} className="btn-primary" style={{
+            width: '100%', padding: '16px', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+            background: 'linear-gradient(180deg, #eab308 0%, #ca8a04 100%)', color: '#000', boxShadow: '0 0 30px rgba(234, 179, 8, 0.4)'
+          }}>
+            {generating ? (<><Loader size={20} className="animate-spin" /> Generating...</>) : (<><Sparkles size={20} /> Generate Encounter</>)}
+          </Button>
+        </div>
+
+        {/* Right - Generated Encounter */}
+        <div>
+          {!generatedEncounter ? (
+            <div className="glow-panel" style={{ padding: '60px', textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <Swords size={64} style={{ color: '#1e40af', marginBottom: '20px', opacity: 0.5 }} />
+              <h3 style={{ fontSize: '18px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '700', marginBottom: '8px' }}>No Encounter Generated</h3>
+              <p style={{ color: '#94a3b8', fontSize: '13px', maxWidth: '300px' }}>Configure settings and click "Generate Encounter"</p>
+            </div>
+          ) : (
+            <div className="glow-panel" style={{ borderColor: DIFFICULTY_LEVELS.find(d => d.id === generatedEncounter.difficulty_rating)?.color || '#eab308' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
+                <div>
+                  <h3 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '6px' }}>{generatedEncounter.name}</h3>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700',
+                      background: `${DIFFICULTY_LEVELS.find(d => d.id === generatedEncounter.difficulty_rating)?.color || '#eab308'}30`,
+                      color: DIFFICULTY_LEVELS.find(d => d.id === generatedEncounter.difficulty_rating)?.color || '#eab308',
+                      border: `1px solid ${DIFFICULTY_LEVELS.find(d => d.id === generatedEncounter.difficulty_rating)?.color || '#eab308'}`
+                    }}>{(generatedEncounter.difficulty_rating || 'medium').toUpperCase()}</span>
+                    <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e' }}>~{generatedEncounter.estimated_xp || 0} XP</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <Button onClick={generateEncounter} disabled={generating} className="btn-outline" style={{ display: 'flex', gap: '6px', padding: '8px 12px' }}><RefreshCw size={14} /> Regenerate</Button>
+                  <Button onClick={saveGeneratedAsScenario} disabled={savingEncounter} className="btn-primary" style={{ display: 'flex', gap: '6px', padding: '8px 12px' }}>
+                    {savingEncounter ? <Loader size={14} className="animate-spin" /> : <Save size={14} />} Save to Combat
+                  </Button>
+                </div>
+              </div>
+
+              <p style={{ color: '#94a3b8', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px', background: 'rgba(10, 10, 40, 0.5)', padding: '14px', borderRadius: '10px', border: '1px solid #1e40af' }}>{generatedEncounter.description}</p>
+
+              <h4 style={{ fontSize: '14px', color: '#ef4444', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}><Skull size={16} /> Enemies</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+                {generatedEncounter.enemies?.map((enemy, idx) => (
+                  <div key={idx} style={{ background: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', padding: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ fontSize: '16px', color: '#ffffff', fontWeight: '700' }}>{enemy.name}</span>
+                        {enemy.count > 1 && <span style={{ background: '#ef4444', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: '700' }}>x{enemy.count}</span>}
+                      </div>
+                      <span style={{ color: '#67e8f9', fontSize: '12px', fontWeight: '600' }}>CR {enemy.cr}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '16px', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Shield size={14} style={{ color: '#4a7dff' }} /><span style={{ color: '#fff', fontSize: '13px', fontWeight: '700' }}>AC {enemy.ac}</span></div>
+                      <span style={{ color: '#ef4444', fontSize: '13px', fontWeight: '700' }}>HP {enemy.hp}</span>
+                    </div>
+                    {enemy.special_abilities && <p style={{ fontSize: '12px', color: '#94a3b8', fontStyle: 'italic' }}>{enemy.special_abilities}</p>}
+                    {enemy.loot?.length > 0 && (
+                      <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                        <span style={{ fontSize: '11px', color: '#eab308', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Coins size={12} /> Loot: {enemy.loot.map(l => `${l.name}${l.quantity > 1 ? ` x${l.quantity}` : ''}`).join(', ')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {generatedEncounter.tactics && (
+                <div style={{ marginBottom: '16px' }}>
+                  <h4 style={{ fontSize: '13px', color: '#a855f7', fontWeight: '700', marginBottom: '8px' }}>Tactics</h4>
+                  <p style={{ color: '#94a3b8', fontSize: '13px', lineHeight: '1.5' }}>{generatedEncounter.tactics}</p>
+                </div>
+              )}
+
+              {generatedEncounter.terrain_features?.length > 0 && (
+                <div>
+                  <h4 style={{ fontSize: '13px', color: '#22c55e', fontWeight: '700', marginBottom: '8px' }}>Terrain Features</h4>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {generatedEncounter.terrain_features.map((feature, idx) => (
+                      <span key={idx} style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid #22c55e', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', color: '#22c55e' }}>{feature}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render Combat Scenarios sub-tab (original content)
+  const renderCombatScenarios = () => (
     <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px' }}>
       {/* Saved Scenarios */}
       <div>
