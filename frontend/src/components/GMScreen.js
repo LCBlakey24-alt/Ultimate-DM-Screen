@@ -855,4 +855,4 @@ function GMScreen({ username }) {
   );
 }
 
-export default DMScreen;
+export default GMScreen;
