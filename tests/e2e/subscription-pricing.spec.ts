@@ -76,8 +76,8 @@ test.describe('Subscription & Pricing Features', () => {
       await hideEmergentBadge(page);
       await page.goto('/pricing', { waitUntil: 'domcontentloaded' });
       
-      // Check for current plan section
-      await expect(page.getByText(/current plan/i)).toBeVisible({ timeout: 10000 });
+      // Check for current plan section (use more specific text to avoid multiple matches)
+      await expect(page.getByText('Current Plan:')).toBeVisible({ timeout: 10000 });
     });
 
     test('should have back button that navigates to campaigns', async ({ page }) => {
