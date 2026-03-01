@@ -32,6 +32,13 @@ function DMScreen({ username }) {
   const [processingNote, setProcessingNote] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState(null);
   
+  // Name Generator state
+  const [generatedName, setGeneratedName] = useState(null);
+  const [nameRace, setNameRace] = useState('human');
+  const [nameGender, setNameGender] = useState('any');
+  const [savingNPC, setSavingNPC] = useState(false);
+  const [savedNames, setSavedNames] = useState([]);
+  
   // Tab state - single tab for everything
   const [activeTab, setActiveTab] = useState('combat');
 
