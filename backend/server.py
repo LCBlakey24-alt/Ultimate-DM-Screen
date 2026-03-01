@@ -1464,6 +1464,8 @@ async def unseen_servant_generate(request: UnseenServantRequest, username: str =
     except json.JSONDecodeError as e:
         logger.error(f"JSON parse error: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to parse AI response")
+    except HTTPException:
+        raise  # Re-raise HTTP exceptions as-is
     except Exception as e:
         logger.error(f"Unseen Servant error: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Generation failed: {str(e)}")
