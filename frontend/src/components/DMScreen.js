@@ -437,6 +437,222 @@ function DMScreen({ username }) {
             </div>
           )}
 
+          {/* NAMES GENERATOR TAB */}
+          {activeTab === 'names' && (
+            <div>
+              <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <UserPlus size={24} style={{ color: '#f97316' }} /> NPC Name Generator
+              </h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                {/* Generator Controls */}
+                <div>
+                  <div style={{ background: 'rgba(10, 10, 40, 0.6)', border: '2px solid #f97316', borderRadius: '16px', padding: '24px' }}>
+                    <h3 style={{ fontSize: '16px', color: '#f97316', fontWeight: '700', marginBottom: '20px' }}>Generate a Name</h3>
+                    
+                    {/* Race Selection */}
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', color: '#94a3b8', fontSize: '12px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Race</label>
+                      <select
+                        value={nameRace}
+                        onChange={(e) => setNameRace(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          background: 'rgba(0, 0, 0, 0.4)',
+                          border: '2px solid #374151',
+                          borderRadius: '10px',
+                          color: '#fff',
+                          fontSize: '14px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="human">Human</option>
+                        <option value="elf">Elf</option>
+                        <option value="dwarf">Dwarf</option>
+                        <option value="halfling">Halfling</option>
+                        <option value="orc">Orc / Half-Orc</option>
+                        <option value="tiefling">Tiefling</option>
+                      </select>
+                    </div>
+                    
+                    {/* Gender Selection */}
+                    <div style={{ marginBottom: '24px' }}>
+                      <label style={{ display: 'block', color: '#94a3b8', fontSize: '12px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Gender</label>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {['any', 'male', 'female'].map(g => (
+                          <button
+                            key={g}
+                            onClick={() => setNameGender(g)}
+                            style={{
+                              flex: 1,
+                              padding: '10px',
+                              background: nameGender === g ? 'rgba(249, 115, 22, 0.2)' : 'rgba(0, 0, 0, 0.3)',
+                              border: `2px solid ${nameGender === g ? '#f97316' : '#374151'}`,
+                              borderRadius: '8px',
+                              color: nameGender === g ? '#f97316' : '#94a3b8',
+                              fontSize: '13px',
+                              fontWeight: '600',
+                              cursor: 'pointer',
+                              textTransform: 'capitalize',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {g}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Generate Button */}
+                    <Button
+                      onClick={generateRandomName}
+                      className="btn-primary"
+                      data-testid="generate-name-btn"
+                      style={{
+                        width: '100%',
+                        padding: '16px',
+                        fontSize: '16px',
+                        background: 'linear-gradient(180deg, #f97316 0%, #ea580c 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '10px'
+                      }}
+                    >
+                      <Shuffle size={20} />
+                      Generate Name
+                    </Button>
+                  </div>
+                  
+                  {/* Generated Name Display */}
+                  {generatedName && (
+                    <div style={{ 
+                      marginTop: '20px',
+                      background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(234, 88, 12, 0.15) 100%)',
+                      border: '3px solid #f97316',
+                      borderRadius: '16px',
+                      padding: '24px',
+                      textAlign: 'center',
+                      animation: 'glow 2s ease-in-out'
+                    }}>
+                      <p style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Generated Name</p>
+                      <h3 style={{ 
+                        fontSize: '28px', 
+                        color: '#fff', 
+                        fontFamily: 'Montserrat', 
+                        fontWeight: '800',
+                        marginBottom: '8px',
+                        textShadow: '0 0 20px rgba(249, 115, 22, 0.5)'
+                      }}>
+                        {generatedName.fullName}
+                      </h3>
+                      <p style={{ color: '#67e8f9', fontSize: '14px', marginBottom: '20px' }}>
+                        {generatedName.gender} {generatedName.race.charAt(0).toUpperCase() + generatedName.race.slice(1)}
+                      </p>
+                      
+                      <div style={{ display: 'flex', gap: '12px' }}>
+                        <Button
+                          onClick={generateRandomName}
+                          className="btn-secondary"
+                          style={{ flex: 1 }}
+                        >
+                          <Shuffle size={16} style={{ marginRight: '6px' }} />
+                          Reroll
+                        </Button>
+                        <Button
+                          onClick={saveNameAsNPC}
+                          disabled={savingNPC}
+                          className="btn-primary"
+                          data-testid="save-as-npc-btn"
+                          style={{ 
+                            flex: 1,
+                            background: 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)'
+                          }}
+                        >
+                          {savingNPC ? (
+                            <Loader className="animate-spin" size={16} />
+                          ) : (
+                            <>
+                              <UserPlus size={16} style={{ marginRight: '6px' }} />
+                              Save as NPC
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Saved Names This Session */}
+                <div>
+                  <div style={{ background: 'rgba(10, 10, 40, 0.6)', border: '2px solid #1e40af', borderRadius: '16px', padding: '24px' }}>
+                    <h3 style={{ fontSize: '16px', color: '#22c55e', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <UserPlus size={18} />
+                      Saved This Session ({savedNames.length})
+                    </h3>
+                    
+                    {savedNames.length === 0 ? (
+                      <div style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
+                        <UserPlus size={40} style={{ margin: '0 auto 12px', opacity: 0.3 }} />
+                        <p style={{ fontSize: '14px' }}>Names you save will appear here</p>
+                        <p style={{ fontSize: '12px', marginTop: '4px' }}>They'll also be added to your campaign's NPC list</p>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '350px', overflowY: 'auto' }}>
+                        {savedNames.map((name, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              padding: '12px 16px',
+                              background: 'rgba(34, 197, 94, 0.1)',
+                              border: '2px solid #22c55e',
+                              borderRadius: '10px',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <div>
+                              <span style={{ color: '#fff', fontWeight: '700', fontSize: '15px' }}>{name.fullName}</span>
+                              <span style={{ color: '#94a3b8', fontSize: '12px', marginLeft: '10px' }}>
+                                {name.race.charAt(0).toUpperCase() + name.race.slice(1)}
+                              </span>
+                            </div>
+                            <span style={{ 
+                              background: '#22c55e', 
+                              color: '#000', 
+                              padding: '2px 8px', 
+                              borderRadius: '6px', 
+                              fontSize: '10px', 
+                              fontWeight: '700' 
+                            }}>
+                              SAVED
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Quick Tips */}
+                  <div style={{ 
+                    marginTop: '16px',
+                    background: 'rgba(74, 125, 255, 0.1)',
+                    border: '1px solid #4a7dff',
+                    borderRadius: '12px',
+                    padding: '16px'
+                  }}>
+                    <p style={{ color: '#4a7dff', fontSize: '12px', fontWeight: '600', marginBottom: '8px' }}>💡 Quick Tip</p>
+                    <p style={{ color: '#94a3b8', fontSize: '12px', lineHeight: '1.5' }}>
+                      Saved NPCs appear in your campaign's NPC tab where you can add more details like occupation, personality, and backstory!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* LOOT GENERATOR TAB */}
           {activeTab === 'loot' && (
             <div>
