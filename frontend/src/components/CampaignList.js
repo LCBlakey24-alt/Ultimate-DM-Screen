@@ -183,22 +183,24 @@ function CampaignList({ username, onLogout }) {
                 </>
               )}
             </Button>
-            {/* Admin Button */}
-            <Button
-              data-testid="admin-btn"
-              onClick={() => navigate('/admin')}
-              className="btn-outline"
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px',
-                border: '2px solid #ef4444',
-                color: '#ef4444'
-              }}
-            >
-              <Shield size={18} />
-              Admin
-            </Button>
+            {/* Admin Button - Only visible to admin */}
+            {isAdmin && (
+              <Button
+                data-testid="admin-btn"
+                onClick={() => navigate('/admin')}
+                className="btn-outline"
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px',
+                  border: '2px solid #ef4444',
+                  color: '#ef4444'
+                }}
+              >
+                <Shield size={18} />
+                Admin
+              </Button>
+            )}
             <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
               <DialogTrigger asChild>
                 <Button data-testid="create-campaign-btn" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
