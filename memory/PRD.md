@@ -1,10 +1,14 @@
-# D&D DM Screen Companion - Product Requirements Document
+# Quest Keeper - TTRPG GM Companion PRD
 
 ## Overview
-A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving as a digital "DM Screen" for managing campaigns, combat, and world-building.
+A comprehensive web application for Tabletop RPG Game Masters, serving as a digital "GM Screen" for managing campaigns, combat, and world-building. Supports multiple TTRPG systems including D&D 5e, Pathfinder, and more.
+
+## Terminology
+- **GM** (Game Master) - Universal term used throughout the app
+- **TTRPG** - Tabletop Roleplaying Game
 
 ## User Persona
-**Primary User**: Dungeon Masters (DMs) running D&D 5e campaigns who need quick access to game information, combat management, and world-building tools during sessions.
+**Primary User**: Game Masters running TTRPG campaigns who need quick access to game information, combat management, and world-building tools during sessions.
 
 ## Core Requirements
 
