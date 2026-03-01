@@ -160,6 +160,13 @@ function CampaignDashboard({ username, onLogout }) {
 
       {/* Content */}
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
+        {/* Quick Tips */}
+        <QuickTips 
+          tips={TIPS.campaignDashboard} 
+          pageId="campaignDashboard" 
+          title="Campaign Tips"
+        />
+
         {/* Tab Navigation - Same design as DM Screen */}
         <div style={{ 
           display: 'flex', 
