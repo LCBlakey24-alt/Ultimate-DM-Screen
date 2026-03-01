@@ -110,7 +110,7 @@ function CombatPage() {
   };
 
   const endCombat = () => {
-    if (!window.confirm('End combat and return to DM Screen?')) return;
+    if (!window.confirm('End combat and return to GM Screen?')) return;
     toast.success('Combat ended!');
     navigate(`/dm-screen/${campaignId}`);
   };
