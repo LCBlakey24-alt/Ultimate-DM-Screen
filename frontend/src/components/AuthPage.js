@@ -276,26 +276,26 @@ function AuthPage({ onLogin }) {
         padding: '40px 20px',
         background: 'transparent'
       }}>
-        {/* Rookie Quest Logo */}
+        {/* Rookie Quest Logo - Made bigger */}
         <img 
           src="/rookie-quest-logo.png" 
           alt="Rookie Quest" 
           style={{ 
-            maxWidth: '350px', 
+            maxWidth: '500px', 
             width: '100%',
-            marginBottom: '24px',
-            filter: 'drop-shadow(0 0 30px rgba(255, 255, 255, 0.3))'
+            marginBottom: '32px',
+            filter: 'drop-shadow(0 0 40px rgba(255, 255, 255, 0.4))'
           }} 
         />
         
-        {/* TTRPG Companion Logo */}
+        {/* TTRPG Companion Logo - Made bigger */}
         <img 
           src="/ttrpg-companion-logo.png" 
           alt="TTRPG Companion" 
           style={{ 
-            maxWidth: '320px', 
+            maxWidth: '450px', 
             width: '100%',
-            filter: 'drop-shadow(0 0 20px rgba(74, 125, 255, 0.4))'
+            filter: 'drop-shadow(0 0 25px rgba(74, 125, 255, 0.5))'
           }} 
         />
       </div>
