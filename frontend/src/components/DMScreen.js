@@ -667,6 +667,25 @@ function DMScreen({ username }) {
             </div>
           )}
 
+          {/* RANDOM TABLES TAB */}
+          {activeTab === 'tables' && (
+            <div>
+              <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Wand2 size={24} style={{ color: '#22c55e' }} /> Random Tables
+              </h2>
+              <RandomTables onSaveAsNote={(text) => {
+                const newNote = {
+                  id: Date.now().toString(),
+                  content: text,
+                  category: 'general',
+                  timestamp: new Date().toISOString()
+                };
+                setSessionNotes(prev => [...prev, newNote]);
+                toast.success('Added to session notes!');
+              }} />
+            </div>
+          )}
+
           {/* LOOT GENERATOR TAB */}
           {activeTab === 'loot' && (
             <div>
@@ -681,7 +700,7 @@ function DMScreen({ username }) {
           {activeTab === 'inventory' && (
             <div>
               <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Package size={24} style={{ color: '#22c55e' }} /> Party Inventory
+                <Package size={24} style={{ color: '#67e8f9' }} /> Party Inventory
               </h2>
               <PartyInventory campaignId={campaignId} players={players} />
             </div>
