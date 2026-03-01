@@ -1037,6 +1037,35 @@ async def get_referral_leaderboard():
         ]
     }
 
+# ==================== ADMIN ROUTES ====================
+
+@api_router.get("/admin/promo-codes")
+async def get_all_promo_codes(username: str = Depends(get_current_user)):
+    """Get all promo codes (admin)"""
+    codes = await db.promo_codes.find({}, {'_id': 0}).to_list(100)
+    
+    # Get stats
+    total_users = await db.users.count_documents({})
+    total_referrals = await db.users.aggregate([
+        {'$group': {'_id': None, 'total': {'$sum': '$subscription.referral_count'}}}
+    ]).to_list(1)
+    
+    return {
+        'codes': codes,
+        'stats': {
+            'total_users': total_users,
+            'total_referrals': total_referrals[0]['total'] if total_referrals else 0
+        }
+    }
+
+@api_router.delete("/admin/promo-codes/{code_id}")
+async def delete_promo_code(code_id: str, username: str = Depends(get_current_user)):
+    """Delete a promo code (admin)"""
+    result = await db.promo_codes.delete_one({'id': code_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Promo code not found")
+    return {"message": "Promo code deleted"}
+
 # ==================== CAMPAIGN ROUTES ====================
 
 @api_router.post("/campaigns", response_model=Campaign, status_code=status.HTTP_201_CREATED)
