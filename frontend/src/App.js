@@ -12,6 +12,7 @@ import CombatPage from '@/components/CombatPage';
 import PricingPage from '@/components/PricingPage';
 import AdminPage from '@/components/AdminPage';
 import FloatingDiceRoller from '@/components/FloatingDiceRoller';
+import LandingPage from '@/components/LandingPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
