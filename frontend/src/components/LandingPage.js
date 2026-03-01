@@ -191,7 +191,7 @@ function LandingPage() {
             lineHeight: '1.7'
           }}>
             Build worlds, run combat, generate content with AI, and manage your campaigns - 
-            all in one powerful tool designed by DMs, for DMs.
+            all in one powerful tool designed by GMs, for GMs.
           </p>
 
           {/* CTA Buttons */}
