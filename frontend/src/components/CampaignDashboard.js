@@ -16,6 +16,7 @@ import EncounterGeneratorTab from '@/components/tabs/EncounterGeneratorTab';
 import ItemCreatorTab from '@/components/tabs/ItemCreatorTab';
 import QuickReferenceTab from '@/components/tabs/QuickReferenceTab';
 import WorldBuilderTab from '@/components/tabs/WorldBuilderTab';
+import QuickTips, { TIPS } from '@/components/QuickTips';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
