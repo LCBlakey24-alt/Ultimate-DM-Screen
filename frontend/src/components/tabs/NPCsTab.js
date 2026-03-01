@@ -118,7 +118,8 @@ function NPCsTab({ campaignId }) {
         fetchNPCs();
       }
     } catch (error) {
-      toast.error('The Unseen Servant failed to create the NPC');
+      const errorMsg = error.response?.data?.detail || 'The Unseen Servant failed to create the NPC';
+      toast.error(errorMsg);
     } finally {
       setAiGenerating(false);
     }
