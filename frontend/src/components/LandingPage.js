@@ -489,7 +489,7 @@ function LandingPage() {
               color: '#ffffff',
               marginBottom: '16px'
             }}>
-              Loved by Dungeon Masters
+              Loved by Game Masters
             </h2>
           </div>
 
