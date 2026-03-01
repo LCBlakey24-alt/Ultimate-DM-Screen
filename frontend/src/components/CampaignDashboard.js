@@ -59,9 +59,10 @@ function CampaignDashboard({ username, onLogout }) {
 
   const tabs = [
     { id: 'setting', icon: Book, label: 'Setting', color: '#4a7dff' },
+    { id: 'world', icon: Globe, label: 'World', color: '#22c55e' },
     { id: 'gods', icon: Church, label: 'Gods', color: '#a855f7' },
     { id: 'npcs', icon: UserCircle, label: 'NPCs', color: '#f97316' },
-    { id: 'locations', icon: MapPin, label: 'Locations', color: '#22c55e' },
+    { id: 'locations', icon: MapPin, label: 'Locations', color: '#67e8f9' },
     { id: 'players', icon: Users, label: 'Players', color: '#4a7dff' },
     { id: 'combat-creator', icon: Swords, label: 'Combat', color: '#ef4444' },
     { id: 'encounter-gen', icon: Sparkles, label: 'Encounter Gen', color: '#eab308' },
