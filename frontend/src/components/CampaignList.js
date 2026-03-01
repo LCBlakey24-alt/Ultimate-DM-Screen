@@ -137,7 +137,34 @@ function CampaignList({ username, onLogout }) {
               <p style={{ color: '#67e8f9', fontSize: '14px' }}>Welcome back, {username}!</p>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            {/* Subscription Badge */}
+            <Button
+              data-testid="pricing-btn"
+              onClick={() => navigate('/pricing')}
+              className={subscription?.is_premium ? "btn-success" : "btn-outline"}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                background: subscription?.is_premium 
+                  ? 'linear-gradient(90deg, #22c55e, #16a34a)' 
+                  : 'transparent',
+                border: subscription?.is_premium ? 'none' : '2px solid #a855f7'
+              }}
+            >
+              {subscription?.is_premium ? (
+                <>
+                  <Crown size={18} />
+                  Adventurer
+                </>
+              ) : (
+                <>
+                  <Sparkles size={18} />
+                  Upgrade
+                </>
+              )}
+            </Button>
             <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
               <DialogTrigger asChild>
                 <Button data-testid="create-campaign-btn" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
