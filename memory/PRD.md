@@ -8,10 +8,13 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 
 ## Core Requirements
 
-### Authentication
+### Authentication & Subscription
 - [x] Username/password registration and login
 - [x] JWT-based session management
 - [x] Protected routes for authenticated content
+- [x] **Freemium subscription model** ($3.99/month Adventurer tier)
+- [x] **Promo code system** for free premium access
+- [x] Subscription status tracking per user
 
 ### Campaign Management
 - [x] Create and manage multiple campaigns
@@ -22,6 +25,8 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - [x] **Locations with Places of Interest** (shops, taverns, temples, etc.) with **Unseen Servant**
 - [x] Player character management with stat generation
 - [x] In-game notes with AI categorization
+- [x] **Free tier**: Limited to 2 campaigns
+- [x] **Premium tier**: Unlimited campaigns
 
 ### **Unseen Servant** - AI Auto-Save Feature
 - [x] Renamed from "AI Assistant" to "Unseen Servant" (D&D thematic)
@@ -30,6 +35,17 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - [x] Shows "Just Created" indicator on newly generated items
 - [x] Green glow animation on newly created cards
 - [x] Click edit button to modify generated content
+- [x] **Free tier**: 5 AI generations per month
+- [x] **Premium tier**: Unlimited AI generations
+
+### Monetization System (NEW)
+- [x] **Pricing Page** with plan comparison
+- [x] **Free Tier**: 2 campaigns, 5 AI generations/month
+- [x] **Adventurer Tier** ($3.99/month): Unlimited everything
+- [x] Stripe checkout integration
+- [x] Promo code input and validation
+- [x] Premium badge in UI header
+- [x] Feature gating for AI limits
 
 ### Combat System
 - [x] Combat Creator for preparing encounters
@@ -66,6 +82,7 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - [x] Dark fantasy theme with glow effects
 - [x] Responsive design
 - [x] Consistent tabbed navigation
+- [x] **Premium badge** in campaign list header
 
 ## Technical Stack
 - **Frontend**: React.js, TailwindCSS, react-beautiful-dnd
@@ -73,13 +90,24 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - **Database**: MongoDB
 - **AI**: Emergent LLM for content generation (via Unseen Servant)
 - **Authentication**: JWT
+- **Payments**: Stripe (via emergentintegrations)
 
 ## Key API Endpoints
 
-### Unseen Servant (NEW)
+### Subscription System (NEW)
+- `GET /api/subscription/plans` - Get available subscription plans
+- `GET /api/subscription/status` - Get current user's subscription status
+- `POST /api/subscription/checkout` - Create Stripe checkout session
+- `GET /api/subscription/checkout/status/{session_id}` - Check payment status
+- `POST /api/promo-codes` - Create promo code
+- `POST /api/promo-codes/apply` - Apply promo code for free premium
+- `POST /api/webhook/stripe` - Handle Stripe webhooks
+
+### Unseen Servant
 - `POST /api/unseen-servant/generate` - Auto-generate and save entities
   - entity_type: 'god', 'npc', 'location', 'place_of_interest'
   - Returns: entity_id, entity_name, success status
+  - **Now checks AI usage limits for free tier users**
 
 ### Places of Interest
 - `POST /api/campaigns/{id}/locations/{loc_id}/places` - Add place
@@ -88,9 +116,16 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - `DELETE /api/campaigns/{id}/locations/{loc_id}/places/{place_id}` - Delete place
 
 ## Test Status
-- **Backend**: 75/75 tests passing (100%)
-- **Frontend**: 63/63 E2E tests passing (100%)
-- **New Test Files**: unseen-servant.spec.ts, test_unseen_servant.py
+- **Backend**: 91/91 tests passing (100%)
+- **Frontend**: 77/77 E2E tests passing (100%)
+- **New Test Files**: subscription-pricing.spec.ts, test_subscription.py
+
+## Upcoming Tasks (Priority Order)
+1. **P1: Player Builder Quality Improvements** - Enhance player creator with spells, class/race actions
+2. **P2: Enhanced Map & Token System** - Fog of war, AoE templates, distance tools
+3. **P3: Merge Combat/Encounter Gen Tabs** - Needs careful refactoring
+4. **P4: World Calendar System** - Full customization
+5. **P5: Editable Rules Reference** - User-editable content
 
 ---
 Last Updated: March 1, 2026
