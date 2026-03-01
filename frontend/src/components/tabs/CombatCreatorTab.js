@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Search, Plus, X, RotateCcw, Trash2, Swords, Save, Map, Upload, Grid, Image, Play, Coins, Package, Skull, ChevronDown, ChevronUp, Users } from 'lucide-react';
 import { MONSTER_DATABASE, MONSTER_TYPES, CR_OPTIONS, getCRValue, getXPFromCR } from '@/data/monsterDatabase';
+import EncounterDifficultyCalculator from '@/components/EncounterDifficultyCalculator';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
