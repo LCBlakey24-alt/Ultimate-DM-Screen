@@ -104,7 +104,7 @@ function App() {
             } 
           />
           <Route 
-            path="/dm-screen/:campaignId" 
+            path="/gm-screen/:campaignId" 
             element={
               isAuthenticated ? 
                 <DMScreen username={username} /> : 
