@@ -1251,6 +1251,37 @@ function CombatantCard({ combatant, onRemove, onUpdateInitiative, onAddLoot, onR
       )}
     </div>
   );
+
+  return (
+    <div>
+      {/* Sub-tab Navigation */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+        {COMBAT_SUBTABS.map(tab => (
+          <Button
+            key={tab.id}
+            data-testid={`combat-subtab-${tab.id}`}
+            onClick={() => setActiveSubTab(tab.id)}
+            className={activeSubTab === tab.id ? 'btn-primary' : 'btn-outline'}
+            style={{ 
+              display: 'flex', 
+              gap: '8px', 
+              alignItems: 'center',
+              padding: '12px 20px',
+              fontSize: '14px',
+              fontWeight: '700'
+            }}
+          >
+            <tab.icon size={18} />
+            {tab.label}
+          </Button>
+        ))}
+      </div>
+
+      {/* Sub-tab Content */}
+      {activeSubTab === 'scenarios' && renderCombatScenarios()}
+      {activeSubTab === 'generator' && renderEncounterGenerator()}
+    </div>
+  );
 }
 
 export default CombatCreatorTab;
