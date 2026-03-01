@@ -113,6 +113,31 @@ function CampaignDashboard({ username, onLogout }) {
               </div>
             </div>
           </div>
+          
+          {/* Logos in Header - Between campaign name and DM Screen button */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            gap: '16px'
+          }}>
+            <img 
+              src="/rookie-quest-logo.png" 
+              alt="Rookie Quest" 
+              style={{ 
+                height: '45px',
+                filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.3))'
+              }} 
+            />
+            <img 
+              src="/ttrpg-companion-logo.png" 
+              alt="TTRPG Companion" 
+              style={{ 
+                height: '38px',
+                filter: 'drop-shadow(0 0 10px rgba(74, 125, 255, 0.4))'
+              }} 
+            />
+          </div>
+          
           <Button 
             data-testid="open-dm-screen-btn"
             onClick={handleOpenDMScreen}
@@ -132,32 +157,6 @@ function CampaignDashboard({ username, onLogout }) {
 
       {/* Content */}
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
-        {/* Centered Logo */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          gap: '24px',
-          marginBottom: '24px'
-        }}>
-          <img 
-            src="/rookie-quest-logo.png" 
-            alt="Rookie Quest" 
-            style={{ 
-              height: '60px',
-              filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))'
-            }} 
-          />
-          <img 
-            src="/ttrpg-companion-logo.png" 
-            alt="TTRPG Companion" 
-            style={{ 
-              height: '50px',
-              filter: 'drop-shadow(0 0 15px rgba(74, 125, 255, 0.4))'
-            }} 
-          />
-        </div>
-        
         {/* Tab Navigation - Same design as DM Screen */}
         <div style={{ 
           display: 'flex', 
