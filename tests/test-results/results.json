@@ -1,0 +1,1303 @@
+{
+  "config": {
+    "configFile": "/app/tests/playwright.config.ts",
+    "rootDir": "/app/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/app/tests/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/app/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "./test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "runAgents": "none",
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.58.2",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "auth-flow.spec.ts",
+      "file": "auth-flow.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Auth Flow with New Design",
+          "file": "auth-flow.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should display login page with new Rookie Quest design",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "df6b40174562c70df515-a1e86e18df3a9bd0d899",
+              "file": "auth-flow.spec.ts",
+              "line": 10,
+              "column": 7
+            },
+            {
+              "title": "should switch between login and register forms",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "df6b40174562c70df515-70145462e3ae997cede1",
+              "file": "auth-flow.spec.ts",
+              "line": 29,
+              "column": 7
+            },
+            {
+              "title": "should register a new user and redirect to campaigns",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "df6b40174562c70df515-52d0ee4e3c6013538f30",
+              "file": "auth-flow.spec.ts",
+              "line": 47,
+              "column": 7
+            },
+            {
+              "title": "should show validation error for short password",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "df6b40174562c70df515-8b0c01a0ea0e80cd3023",
+              "file": "auth-flow.spec.ts",
+              "line": 71,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "campaign-flows.spec.ts",
+      "file": "campaign-flows.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Campaign Management Flow",
+          "file": "campaign-flows.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should display campaigns page with new design elements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "33a7dcae4c01e20011eb-9b4a00c809d67b89057f",
+              "file": "campaign-flows.spec.ts",
+              "line": 36,
+              "column": 7
+            },
+            {
+              "title": "should create a new campaign",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "33a7dcae4c01e20011eb-0531d931af6f709032ab",
+              "file": "campaign-flows.spec.ts",
+              "line": 46,
+              "column": 7
+            },
+            {
+              "title": "should navigate to campaign dashboard",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "33a7dcae4c01e20011eb-e98d40e3633672b79882",
+              "file": "campaign-flows.spec.ts",
+              "line": 67,
+              "column": 7
+            },
+            {
+              "title": "should display all 8 dashboard tabs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "33a7dcae4c01e20011eb-64f5e033364fefa28bcd",
+              "file": "campaign-flows.spec.ts",
+              "line": 88,
+              "column": 7
+            },
+            {
+              "title": "should logout successfully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "33a7dcae4c01e20011eb-80970a367356ab4cee22",
+              "file": "campaign-flows.spec.ts",
+              "line": 112,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "combat-flows.spec.ts",
+      "file": "combat-flows.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Combat Flow - DM Screen to Combat Page",
+          "file": "combat-flows.spec.ts",
+          "line": 12,
+          "column": 6,
+          "specs": [
+            {
+              "title": "DM Screen shows encounter selector and Start Combat button",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5fd5ff6861503b0e20d8-7726da96edb65171e795",
+              "file": "combat-flows.spec.ts",
+              "line": 17,
+              "column": 7
+            },
+            {
+              "title": "selecting encounter enables Start Combat button",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5fd5ff6861503b0e20d8-398c50ce9d41e3515464",
+              "file": "combat-flows.spec.ts",
+              "line": 45,
+              "column": 7
+            },
+            {
+              "title": "Start Combat navigates to Combat Page",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5fd5ff6861503b0e20d8-dd42575a65af4a3c9ad4",
+              "file": "combat-flows.spec.ts",
+              "line": 60,
+              "column": 7
+            },
+            {
+              "title": "Combat Page has two-column layout with Initiative on left and Map on right",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5fd5ff6861503b0e20d8-2c53b3680bf21d9aa934",
+              "file": "combat-flows.spec.ts",
+              "line": 77,
+              "column": 7
+            },
+            {
+              "title": "Combat Page shows combatants with HP, AC, and conditions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5fd5ff6861503b0e20d8-87e8639ed79a0901324c",
+              "file": "combat-flows.spec.ts",
+              "line": 99,
+              "column": 7
+            },
+            {
+              "title": "End Combat button returns to DM Screen",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5fd5ff6861503b0e20d8-7e518ea9526370a971b3",
+              "file": "combat-flows.spec.ts",
+              "line": 124,
+              "column": 7
+            },
+            {
+              "title": "Quick Start combat with players creates combat with party members",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5fd5ff6861503b0e20d8-b9d2352ca102b1f49c58",
+              "file": "combat-flows.spec.ts",
+              "line": 140,
+              "column": 7
+            },
+            {
+              "title": "Next Turn button advances turn order",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5fd5ff6861503b0e20d8-fad06c1c0f88adc04158",
+              "file": "combat-flows.spec.ts",
+              "line": 170,
+              "column": 7
+            },
+            {
+              "title": "HP can be adjusted during combat",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5fd5ff6861503b0e20d8-560e8e008c4d4f772519",
+              "file": "combat-flows.spec.ts",
+              "line": 204,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "dashboard-features.spec.ts",
+      "file": "dashboard-features.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Campaign Dashboard Features",
+          "file": "dashboard-features.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Campaign Setting tab displays correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a313c460d966793baa63-cf828a5b4d30534826b3",
+              "file": "dashboard-features.spec.ts",
+              "line": 57,
+              "column": 7
+            },
+            {
+              "title": "should save campaign setting content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a313c460d966793baa63-90fa623d5cd11f4744d2",
+              "file": "dashboard-features.spec.ts",
+              "line": 71,
+              "column": 7
+            },
+            {
+              "title": "should navigate through all tabs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a313c460d966793baa63-9b6e8322ddb4331d34b1",
+              "file": "dashboard-features.spec.ts",
+              "line": 92,
+              "column": 7
+            },
+            {
+              "title": "NPCs tab displays add NPC functionality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a313c460d966793baa63-1518ac7c2c79d39d7f61",
+              "file": "dashboard-features.spec.ts",
+              "line": 112,
+              "column": 7
+            },
+            {
+              "title": "Calendar tab displays calendar controls",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a313c460d966793baa63-5d31c7a7a2f120d17082",
+              "file": "dashboard-features.spec.ts",
+              "line": 120,
+              "column": 7
+            },
+            {
+              "title": "Players tab displays create character button",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a313c460d966793baa63-147fcdc1cd75284e8461",
+              "file": "dashboard-features.spec.ts",
+              "line": 130,
+              "column": 7
+            },
+            {
+              "title": "Back button navigates to campaigns list",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a313c460d966793baa63-75ab5377a2a4bd5a8027",
+              "file": "dashboard-features.spec.ts",
+              "line": 137,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "locations-places.spec.ts",
+      "file": "locations-places.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Locations and Places of Interest",
+          "file": "locations-places.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Locations tab displays existing locations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8bd6174e71fdd0000a86-15aa1f0a5e46b0a66be1",
+              "file": "locations-places.spec.ts",
+              "line": 26,
+              "column": 7
+            },
+            {
+              "title": "Expand location to see places of interest",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8bd6174e71fdd0000a86-41bda66465bb2a1fa593",
+              "file": "locations-places.spec.ts",
+              "line": 39,
+              "column": 7
+            },
+            {
+              "title": "Add new location dialog opens correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8bd6174e71fdd0000a86-7eb8afee5c14c6a14261",
+              "file": "locations-places.spec.ts",
+              "line": 53,
+              "column": 7
+            },
+            {
+              "title": "Add a new location",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8bd6174e71fdd0000a86-3ee5fe8a396435917809",
+              "file": "locations-places.spec.ts",
+              "line": 64,
+              "column": 7
+            },
+            {
+              "title": "Add Place of Interest dialog opens correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8bd6174e71fdd0000a86-4e16ea9128197124fc6e",
+              "file": "locations-places.spec.ts",
+              "line": 88,
+              "column": 7
+            },
+            {
+              "title": "Add a new place of interest to location",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8bd6174e71fdd0000a86-afa84c0cb2b48b69b0a5",
+              "file": "locations-places.spec.ts",
+              "line": 103,
+              "column": 7
+            },
+            {
+              "title": "AI Assistant panel visible in Locations tab",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "8bd6174e71fdd0000a86-af53a6d4144a2125123c",
+              "file": "locations-places.spec.ts",
+              "line": 134,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "reference-features.spec.ts",
+      "file": "reference-features.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Reference Tab Features",
+          "file": "reference-features.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Reference tab loads with Items Database section",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-18a7a45a456247422a6b",
+              "file": "reference-features.spec.ts",
+              "line": 22,
+              "column": 7
+            },
+            {
+              "title": "Items Database search functionality works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-5b1e8d1283f2447f4363",
+              "file": "reference-features.spec.ts",
+              "line": 42,
+              "column": 7
+            },
+            {
+              "title": "Items Database type filter works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-430e3e7bb1fcaa2e19be",
+              "file": "reference-features.spec.ts",
+              "line": 58,
+              "column": 7
+            },
+            {
+              "title": "Items Database rarity filter works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-a714c0910b20e9732056",
+              "file": "reference-features.spec.ts",
+              "line": 69,
+              "column": 7
+            },
+            {
+              "title": "Rules Reference section is accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-81ad652d0fabdcbdde5d",
+              "file": "reference-features.spec.ts",
+              "line": 80,
+              "column": 7
+            },
+            {
+              "title": "Rules Reference shows DC tables",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-e86e5a3d7193a0c2c420",
+              "file": "reference-features.spec.ts",
+              "line": 94,
+              "column": 7
+            },
+            {
+              "title": "Rules Reference XP Thresholds section expands",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-f478f9f8c279b6491d0c",
+              "file": "reference-features.spec.ts",
+              "line": 115,
+              "column": 7
+            },
+            {
+              "title": "Rules Reference Conditions section expands",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-41a65017110a5003bae4",
+              "file": "reference-features.spec.ts",
+              "line": 130,
+              "column": 7
+            },
+            {
+              "title": "Rules Reference Cover Rules section expands",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-209e4c0518a93178d874",
+              "file": "reference-features.spec.ts",
+              "line": 146,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Login Page Logos",
+          "file": "reference-features.spec.ts",
+          "line": 165,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Login page displays Rookie Quest logo on left side above form",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-a09839c48539e0467fd3",
+              "file": "reference-features.spec.ts",
+              "line": 171,
+              "column": 7
+            },
+            {
+              "title": "Login page displays logos on right side",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-05751ca141c2caaefb37",
+              "file": "reference-features.spec.ts",
+              "line": 186,
+              "column": 7
+            },
+            {
+              "title": "Login page logos are visible and properly sized",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-c42e5ca99b1389449263",
+              "file": "reference-features.spec.ts",
+              "line": 199,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "DM Screen Party Tab - Initiative Modifier",
+          "file": "reference-features.spec.ts",
+          "line": 222,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Party tab shows initiative modifier with correct format (+ or -)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-b293cc61c777d36055a5",
+              "file": "reference-features.spec.ts",
+              "line": 240,
+              "column": 7
+            },
+            {
+              "title": "Party tab displays player stats correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "911a08e9bc581a5f9b27-c505a3114e12b501d922",
+              "file": "reference-features.spec.ts",
+              "line": 263,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "tabs-features.spec.ts",
+      "file": "tabs-features.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Dashboard Additional Tabs",
+          "file": "tabs-features.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Combat tab loads correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b6384e71713bec9d17d0-efcd32cab1ddf81e2220",
+              "file": "tabs-features.spec.ts",
+              "line": 22,
+              "column": 7
+            },
+            {
+              "title": "Combat tab has saved encounters section",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b6384e71713bec9d17d0-1dfc7cf263b01e43f312",
+              "file": "tabs-features.spec.ts",
+              "line": 37,
+              "column": 7
+            },
+            {
+              "title": "Items tab loads correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b6384e71713bec9d17d0-6733b4910b8c10dd882f",
+              "file": "tabs-features.spec.ts",
+              "line": 48,
+              "column": 7
+            },
+            {
+              "title": "Items tab shows filter buttons",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b6384e71713bec9d17d0-f78a2dfbe6142045fba3",
+              "file": "tabs-features.spec.ts",
+              "line": 66,
+              "column": 7
+            },
+            {
+              "title": "Encounter Generator tab loads correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b6384e71713bec9d17d0-528a4ae4b370f27de9c7",
+              "file": "tabs-features.spec.ts",
+              "line": 74,
+              "column": 7
+            },
+            {
+              "title": "Encounter Generator has difficulty options",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b6384e71713bec9d17d0-89c3a34135bc139d6aa8",
+              "file": "tabs-features.spec.ts",
+              "line": 91,
+              "column": 7
+            },
+            {
+              "title": "Encounter Generator has encounter type options",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b6384e71713bec9d17d0-73647a33c45dc059ad05",
+              "file": "tabs-features.spec.ts",
+              "line": 102,
+              "column": 7
+            },
+            {
+              "title": "Encounter Generator shows empty state",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b6384e71713bec9d17d0-353c1d9344f9078292dc",
+              "file": "tabs-features.spec.ts",
+              "line": 116,
+              "column": 7
+            },
+            {
+              "title": "All dashboard tabs are accessible without errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b6384e71713bec9d17d0-1773b65aac5d37e0b6b1",
+              "file": "tabs-features.spec.ts",
+              "line": 125,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-03-01T10:28:42.727Z",
+    "duration": 64.47599999999989,
+    "expected": 0,
+    "skipped": 55,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
