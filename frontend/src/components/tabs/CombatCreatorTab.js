@@ -905,6 +905,7 @@ function CombatantCard({ combatant, onRemove, onUpdateInitiative, onAddLoot, onR
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }
