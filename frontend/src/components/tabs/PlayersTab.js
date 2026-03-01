@@ -920,53 +920,155 @@ function PlayersTab({ campaignId }) {
           <p style={{ color: '#ffffff' }}>No players added yet. Create your first character!</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(320px, 100%), 1fr))', gap: '20px' }}>
-          {players.map(player => (
-            <div key={player.id} data-testid={`player-card-${player.id}`} className="card-glow">
-              <div style={{ marginBottom: '12px' }}>
-                <h3 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '700', marginBottom: '4px' }}>
-                  {player.name}
-                </h3>
-                <p style={{ fontSize: '14px', color: '#22c55e', fontWeight: '600' }}>
-                  {player.character_class} • Level {player.level}
-                </p>
-              </div>
-              <div style={{ marginBottom: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '12px', color: '#67e8f9' }}>HP</span>
-                  <span style={{ fontSize: '14px', fontWeight: '600', color: '#ffffff' }}>{player.hp}/{player.max_hp}</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(380px, 100%), 1fr))', gap: '20px' }}>
+          {players.map(player => {
+            const raceData = DND_DATA.races.find(r => r.name === player.race);
+            const classData = DND_DATA.classes.find(c => c.name === player.character_class);
+            const passivePerception = 10 + Math.floor((player.stats?.wisdom - 10) / 2);
+            const initiative = Math.floor((player.stats?.dexterity - 10) / 2);
+            const profBonus = Math.floor((player.level - 1) / 4) + 2;
+            
+            return (
+            <div key={player.id} data-testid={`player-card-${player.id}`} className="card-glow" style={{ padding: '20px' }}>
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
+                <div>
+                  <h3 style={{ fontSize: '22px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '700', marginBottom: '4px' }}>
+                    {player.name}
+                  </h3>
+                  <p style={{ fontSize: '14px', color: '#22c55e', fontWeight: '600' }}>
+                    Level {player.level} {player.race} {player.character_class}
+                  </p>
+                  {player.subclass && (
+                    <p style={{ fontSize: '12px', color: '#a855f7' }}>{player.subclass}</p>
+                  )}
                 </div>
-                <div className="hp-bar">
-                  <div className="hp-bar-fill" style={{ width: `${(player.hp / player.max_hp) * 100}%` }}></div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                <div className="stat-block" style={{ flex: 1 }}>
-                  <div className="stat-label">AC</div>
-                  <div className="stat-value">{player.ac}</div>
-                </div>
-                <div className="stat-block" style={{ flex: 1 }}>
-                  <div className="stat-label">STR</div>
-                  <div className="stat-value">{player.stats.strength}</div>
-                </div>
-                <div className="stat-block" style={{ flex: 1 }}>
-                  <div className="stat-label">DEX</div>
-                  <div className="stat-value">{player.stats.dexterity}</div>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <Button data-testid={`edit-player-btn-${player.id}`} onClick={() => handleEdit(player)} className="btn-outline" style={{ padding: '8px' }}>
+                    <Edit size={14} />
+                  </Button>
+                  <Button data-testid={`delete-player-btn-${player.id}`} onClick={() => handleDelete(player.id)} className="btn-danger" style={{ padding: '8px' }}>
+                    <Trash2 size={14} />
+                  </Button>
                 </div>
               </div>
-              {player.notes && (
-                <p style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '12px', whiteSpace: 'pre-line' }}>{player.notes}</p>
+              
+              {/* Key Combat Stats Row */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', marginBottom: '16px' }}>
+                <div style={{ background: 'rgba(74, 125, 255, 0.2)', border: '2px solid #4a7dff', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: '#4a7dff', fontWeight: '700', marginBottom: '2px' }}>AC</div>
+                  <div style={{ fontSize: '22px', color: '#ffffff', fontWeight: '800' }}>{player.ac}</div>
+                </div>
+                <div style={{ background: 'rgba(239, 68, 68, 0.2)', border: '2px solid #ef4444', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: '#ef4444', fontWeight: '700', marginBottom: '2px' }}>HP</div>
+                  <div style={{ fontSize: '22px', color: '#ffffff', fontWeight: '800' }}>{player.hp}/{player.max_hp}</div>
+                </div>
+                <div style={{ background: 'rgba(234, 179, 8, 0.2)', border: '2px solid #eab308', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: '#eab308', fontWeight: '700', marginBottom: '2px' }}>INIT</div>
+                  <div style={{ fontSize: '22px', color: '#ffffff', fontWeight: '800' }}>{initiative >= 0 ? `+${initiative}` : initiative}</div>
+                </div>
+                <div style={{ background: 'rgba(168, 85, 247, 0.2)', border: '2px solid #a855f7', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: '#a855f7', fontWeight: '700', marginBottom: '2px' }}>PASS PERC</div>
+                  <div style={{ fontSize: '22px', color: '#ffffff', fontWeight: '800' }}>{passivePerception}</div>
+                </div>
+                <div style={{ background: 'rgba(34, 197, 94, 0.2)', border: '2px solid #22c55e', borderRadius: '10px', padding: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: '#22c55e', fontWeight: '700', marginBottom: '2px' }}>PROF</div>
+                  <div style={{ fontSize: '22px', color: '#ffffff', fontWeight: '800' }}>+{profBonus}</div>
+                </div>
+              </div>
+              
+              {/* Speed & Hit Die */}
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '11px', color: '#67e8f9', fontWeight: '600' }}>Speed:</span>
+                  <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: '700' }}>{raceData?.speed || 30} ft</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '11px', color: '#67e8f9', fontWeight: '600' }}>Hit Die:</span>
+                  <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: '700' }}>d{classData?.hitDie || 8}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '11px', color: '#67e8f9', fontWeight: '600' }}>Size:</span>
+                  <span style={{ fontSize: '13px', color: '#ffffff', fontWeight: '700' }}>{raceData?.size || 'Medium'}</span>
+                </div>
+              </div>
+              
+              {/* Ability Scores */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '11px', color: '#67e8f9', fontWeight: '700', marginBottom: '8px' }}>ABILITY SCORES</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '6px' }}>
+                  {STAT_NAMES.map(stat => {
+                    const value = player.stats?.[stat] || 10;
+                    const mod = Math.floor((value - 10) / 2);
+                    return (
+                      <div key={stat} style={{ background: 'rgba(10, 10, 40, 0.6)', borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: '600' }}>{STAT_LABELS[stat]}</div>
+                        <div style={{ fontSize: '18px', color: '#ffffff', fontWeight: '800' }}>{value}</div>
+                        <div style={{ fontSize: '11px', color: mod >= 0 ? '#22c55e' : '#ef4444', fontWeight: '600' }}>
+                          {mod >= 0 ? `+${mod}` : mod}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Class Features */}
+              {classData?.features && (
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#eab308', fontWeight: '700', marginBottom: '6px' }}>CLASS FEATURES</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                    {classData.features.slice(0, 4).map((feature, idx) => (
+                      <span key={idx} style={{ 
+                        fontSize: '10px', 
+                        background: 'rgba(234, 179, 8, 0.15)', 
+                        border: '1px solid rgba(234, 179, 8, 0.4)',
+                        color: '#eab308', 
+                        padding: '3px 8px', 
+                        borderRadius: '12px' 
+                      }}>
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               )}
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <Button data-testid={`edit-player-btn-${player.id}`} onClick={() => handleEdit(player)} className="btn-outline" style={{ flex: 1 }}>
-                  <Edit size={14} />
-                </Button>
-                <Button data-testid={`delete-player-btn-${player.id}`} onClick={() => handleDelete(player.id)} className="btn-danger">
-                  <Trash2 size={14} />
-                </Button>
-              </div>
+              
+              {/* Race Traits */}
+              {raceData?.traits && (
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ fontSize: '11px', color: '#a855f7', fontWeight: '700', marginBottom: '6px' }}>RACIAL TRAITS</div>
+                  <p style={{ fontSize: '11px', color: '#c4b5fd', lineHeight: '1.4' }}>{raceData.traits}</p>
+                </div>
+              )}
+              
+              {/* Spellcasting Indicator */}
+              {classData?.spellcasting && (
+                <div style={{ 
+                  background: 'rgba(74, 125, 255, 0.1)', 
+                  border: '1px solid #4a7dff', 
+                  borderRadius: '8px', 
+                  padding: '10px',
+                  marginBottom: '12px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: '#4a7dff', fontWeight: '700' }}>⚡ Spellcaster</span>
+                    <span style={{ fontSize: '11px', color: '#67e8f9' }}>
+                      Ability: {classData.spellAbility} ({Math.floor((player.stats?.[classData.spellAbility.toLowerCase()] - 10) / 2) + profBonus >= 0 ? '+' : ''}{Math.floor((player.stats?.[classData.spellAbility.toLowerCase()] - 10) / 2) + profBonus} to hit)
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+                    Spell Save DC: {8 + profBonus + Math.floor((player.stats?.[classData.spellAbility.toLowerCase()] - 10) / 2)}
+                  </div>
+                </div>
+              )}
+              
+              {/* Notes */}
+              {player.notes && (
+                <p style={{ fontSize: '11px', color: '#94a3b8', whiteSpace: 'pre-line', borderTop: '1px solid #1e40af', paddingTop: '12px' }}>{player.notes}</p>
+              )}
             </div>
-          ))}
+          )})}
         </div>
       )}
     </div>
