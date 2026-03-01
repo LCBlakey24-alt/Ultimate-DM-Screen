@@ -60,6 +60,17 @@ function CombatCreatorTab({ campaignId }) {
   const [scenarioName, setScenarioName] = useState('');
   const [scenarioDescription, setScenarioDescription] = useState('');
   
+  // Encounter Generator state
+  const [partyLevel, setPartyLevel] = useState(1);
+  const [partySize, setPartySize] = useState(4);
+  const [difficulty, setDifficulty] = useState('medium');
+  const [encounterType, setEncounterType] = useState('combat');
+  const [environment, setEnvironment] = useState('Dungeon');
+  const [customPrompt, setCustomPrompt] = useState('');
+  const [generating, setGenerating] = useState(false);
+  const [generatedEncounter, setGeneratedEncounter] = useState(null);
+  const [savingEncounter, setSavingEncounter] = useState(false);
+  
   // Monster database state
   const [showMonsterSelector, setShowMonsterSelector] = useState(false);
   const [monsterSearch, setMonsterSearch] = useState('');
