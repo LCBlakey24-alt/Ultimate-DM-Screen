@@ -1607,7 +1607,7 @@ async def create_continent(campaign_id: str, data: dict, username: str = Depends
         'created_at': datetime.now(timezone.utc).isoformat()
     }
     await db.world_continents.insert_one(continent)
-    del continent['_id'] if '_id' in continent else None
+    continent.pop('_id', None)
     return continent
 
 @api_router.put("/campaigns/{campaign_id}/world/continent/{continent_id}")
