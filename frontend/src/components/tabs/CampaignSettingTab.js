@@ -108,9 +108,9 @@ function CampaignSettingTab({ campaignId }) {
         </div>
       </div>
 
-      {/* AI Assistant Panel */}
+      {/* Unseen Servant Panel */}
       <div style={{ position: 'sticky', top: '120px', height: 'fit-content' }}>
-        <div className="glow-panel" style={{ borderColor: '#22c55e' }}>
+        <div className="glow-panel" style={{ borderColor: '#a855f7' }}>
           <h3 style={{ 
             fontSize: '18px', 
             color: '#ffffff', 
@@ -121,18 +121,18 @@ function CampaignSettingTab({ campaignId }) {
             fontFamily: 'Montserrat, sans-serif',
             fontWeight: '700'
           }}>
-            <Sparkles size={20} style={{ color: '#22c55e' }} />
-            AI Assistant
+            <Wand2 size={20} style={{ color: '#a855f7' }} />
+            Unseen Servant
           </h3>
-          <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px', lineHeight: '1.5' }}>
-            Generate world-building ideas, setting descriptions, conflicts, and lore with AI.
+          <p style={{ fontSize: '13px', color: '#c4b5fd', marginBottom: '16px', lineHeight: '1.5' }}>
+            Generate world-building ideas, setting descriptions, conflicts, and lore. Copy to your setting or use for inspiration.
           </p>
           <div style={{ marginBottom: '16px' }}>
             <label style={{ 
               display: 'block', 
               marginBottom: '8px', 
               fontSize: '13px',
-              color: '#67e8f9',
+              color: '#a855f7',
               fontWeight: '600'
             }}>
               What do you need?
@@ -142,7 +142,7 @@ function CampaignSettingTab({ campaignId }) {
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               className="textarea-glow"
-              style={{ minHeight: '100px', fontSize: '13px' }}
+              style={{ minHeight: '100px', fontSize: '13px', borderColor: '#a855f7' }}
               placeholder="Example: Create a high-fantasy world where magic is fading and ancient technologies are being rediscovered"
             />
           </div>
@@ -151,36 +151,59 @@ function CampaignSettingTab({ campaignId }) {
             onClick={handleAIGenerate}
             disabled={aiGenerating}
             className="btn-primary"
-            style={{ width: '100%', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            style={{ 
+              width: '100%', 
+              marginBottom: '16px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '8px',
+              background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+              border: 'none'
+            }}
           >
             {aiGenerating ? (
               <>
                 <Loader size={16} className="loading-spinner" />
-                Generating...
+                Summoning...
               </>
             ) : (
               <>
-                <Sparkles size={16} />
-                Generate
+                <Wand2 size={16} />
+                Generate Ideas
               </>
             )}
           </Button>
           {aiResult && (
             <div style={{ marginTop: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label style={{ fontSize: '13px', color: '#67e8f9', fontWeight: '600' }}>Result</label>
-                <Button
-                  data-testid="copy-setting-result-btn"
-                  onClick={() => copyToClipboard(aiResult)}
-                  className="btn-icon"
-                  style={{ padding: '6px' }}
-                >
-                  <Copy size={14} />
-                </Button>
+                <label style={{ fontSize: '13px', color: '#a855f7', fontWeight: '600' }}>Result</label>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <Button
+                    data-testid="insert-setting-result-btn"
+                    onClick={() => {
+                      setContent(prev => prev ? `${prev}\n\n${aiResult}` : aiResult);
+                      toast.success('Inserted into setting!');
+                    }}
+                    className="btn-outline"
+                    style={{ padding: '6px 10px', fontSize: '11px', display: 'flex', gap: '4px', borderColor: '#22c55e', color: '#22c55e' }}
+                  >
+                    <ArrowDown size={12} />
+                    Insert
+                  </Button>
+                  <Button
+                    data-testid="copy-setting-result-btn"
+                    onClick={() => copyToClipboard(aiResult)}
+                    className="btn-icon"
+                    style={{ padding: '6px' }}
+                  >
+                    <Copy size={14} />
+                  </Button>
+                </div>
               </div>
               <div style={{
                 background: 'rgba(10, 10, 40, 0.6)',
-                border: '2px solid #1e40af',
+                border: '2px solid #7c3aed',
                 borderRadius: '10px',
                 padding: '14px',
                 maxHeight: '400px',
