@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { 
   Sword, Users, BookOpen, Send, Sparkles, 
-  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, Shield
+  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, Shield, UserPlus, Shuffle
 } from 'lucide-react';
 import DiceRoller from '@/components/DiceRoller';
 import LootGenerator from '@/components/LootGenerator';
