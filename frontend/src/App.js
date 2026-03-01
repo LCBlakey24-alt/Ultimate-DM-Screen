@@ -143,7 +143,14 @@ function App() {
                 <Navigate to="/auth" replace />
             } 
           />
-          <Route path="/" element={<Navigate to="/campaigns" replace />} />
+          <Route 
+            path="/" 
+            element={
+              isAuthenticated ? 
+                <Navigate to="/campaigns" replace /> : 
+                <LandingPage />
+            } 
+          />
         </Routes>
         {/* Floating Dice Roller - Available on all pages when logged in */}
         {isAuthenticated && <FloatingDiceRoller />}
