@@ -44,7 +44,7 @@ function CampaignDashboard({ username, onLogout }) {
     }
   };
 
-  const handleOpenDMScreen = () => {
+  const handleOpenGMScreen = () => {
     window.open(`/dm-screen/${campaignId}`, '_blank');
   };
 
@@ -117,7 +117,7 @@ function CampaignDashboard({ username, onLogout }) {
             </div>
           </div>
           
-          {/* Logos in Header - Between campaign name and DM Screen button */}
+          {/* Logos in Header - Between campaign name and GM Screen button */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center',
@@ -143,7 +143,7 @@ function CampaignDashboard({ username, onLogout }) {
           
           <Button 
             data-testid="open-dm-screen-btn"
-            onClick={handleOpenDMScreen}
+            onClick={handleOpenGMScreen}
             className="btn-primary"
             style={{ 
               display: 'flex', 
@@ -153,7 +153,7 @@ function CampaignDashboard({ username, onLogout }) {
             }}
           >
             <Monitor size={20} />
-            Open DM Screen
+            Open GM Screen
           </Button>
         </div>
       </div>
@@ -167,7 +167,7 @@ function CampaignDashboard({ username, onLogout }) {
           title="Campaign Tips"
         />
 
-        {/* Tab Navigation - Same design as DM Screen */}
+        {/* Tab Navigation - Same design as GM Screen */}
         <div style={{ 
           display: 'flex', 
           gap: '6px', 
