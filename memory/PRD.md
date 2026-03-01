@@ -16,17 +16,25 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 ### Campaign Management
 - [x] Create and manage multiple campaigns
 - [x] Campaign Dashboard with tabbed interface
-- [x] Campaign Setting tab with AI assistant
-- [x] Gods pantheon management
-- [x] NPC creation and management
-- [x] **Locations with Places of Interest** (shops, taverns, temples, etc.)
+- [x] Campaign Setting tab with **Unseen Servant** AI
+- [x] Gods pantheon management with **Unseen Servant** auto-save
+- [x] NPC creation with **Unseen Servant** auto-save
+- [x] **Locations with Places of Interest** (shops, taverns, temples, etc.) with **Unseen Servant**
 - [x] Player character management with stat generation
 - [x] In-game notes with AI categorization
+
+### **Unseen Servant** - AI Auto-Save Feature
+- [x] Renamed from "AI Assistant" to "Unseen Servant" (D&D thematic)
+- [x] Auto-generates and saves content directly to database
+- [x] Supports: Gods, NPCs, Locations, Places of Interest
+- [x] Shows "Just Created" indicator on newly generated items
+- [x] Green glow animation on newly created cards
+- [x] Click edit button to modify generated content
 
 ### Combat System
 - [x] Combat Creator for preparing encounters
 - [x] Monster Database with 2687+ creatures from D&D lore
-- [x] Initiative tracker
+- [x] Initiative tracker with correct +/- modifiers
 - [x] Combat Page with two-column layout (tracker left, map right)
 - [x] Enemy loot assignment and collection
 - [x] AI Encounter Generator
@@ -36,7 +44,7 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - [x] Dice roller with all standard D&D dice
 - [x] AI Loot Generator
 - [x] Party Inventory with drag-and-drop item assignment
-- [x] Party overview with player stats and **correct initiative modifiers**
+- [x] Party overview with player stats and **correct initiative modifiers** (+X or -X)
 - [x] Session notes with AI recap generator
 
 ### Reference System
@@ -63,34 +71,15 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - **Frontend**: React.js, TailwindCSS, react-beautiful-dnd
 - **Backend**: FastAPI (Python), Motor (async MongoDB)
 - **Database**: MongoDB
-- **AI**: Emergent LLM for content generation
+- **AI**: Emergent LLM for content generation (via Unseen Servant)
 - **Authentication**: JWT
 
-## Data Models
+## Key API Endpoints
 
-### Campaign
-```javascript
-{
-  id, dm_user_id, name, system,
-  inventory: { currency: {}, items: [] },
-  combat_scenarios: [{ combatants: [{ loot: [] }] }],
-  custom_items: []
-}
-```
-
-### Location (with Places of Interest)
-```javascript
-{
-  id, campaign_id, name, location_type,
-  description, notable_npcs, notes,
-  places_of_interest: [{
-    id, name, place_type,  // shop, tavern, temple, etc.
-    description, owner, services, notes
-  }]
-}
-```
-
-## API Endpoints
+### Unseen Servant (NEW)
+- `POST /api/unseen-servant/generate` - Auto-generate and save entities
+  - entity_type: 'god', 'npc', 'location', 'place_of_interest'
+  - Returns: entity_id, entity_name, success status
 
 ### Places of Interest
 - `POST /api/campaigns/{id}/locations/{loc_id}/places` - Add place
@@ -98,13 +87,10 @@ A comprehensive web application for Dungeons & Dragons Dungeon Masters, serving 
 - `PUT /api/campaigns/{id}/locations/{loc_id}/places/{place_id}` - Update place
 - `DELETE /api/campaigns/{id}/locations/{loc_id}/places/{place_id}` - Delete place
 
-### Items Database
-- Loaded from 3,076 items extracted from D&D backup file
-- Frontend data file: `/app/frontend/src/data/itemsDatabase.js`
-
 ## Test Status
-- **Backend**: 63/63 tests passing (100%)
-- **Frontend**: 51/51 E2E tests passing (100%)
+- **Backend**: 75/75 tests passing (100%)
+- **Frontend**: 63/63 E2E tests passing (100%)
+- **New Test Files**: unseen-servant.spec.ts, test_unseen_servant.py
 
 ---
 Last Updated: March 1, 2026
