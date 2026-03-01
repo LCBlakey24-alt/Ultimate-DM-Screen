@@ -1050,9 +1050,16 @@ async def get_referral_leaderboard():
 
 # ==================== ADMIN ROUTES ====================
 
+@api_router.get("/admin/check")
+async def check_admin_status(username: str = Depends(get_current_user)):
+    """Check if current user is admin"""
+    return {"is_admin": username == ADMIN_USERNAME}
+
 @api_router.get("/admin/promo-codes")
 async def get_all_promo_codes(username: str = Depends(get_current_user)):
-    """Get all promo codes (admin)"""
+    """Get all promo codes (admin only)"""
+    await verify_admin(username)
+    
     codes = await db.promo_codes.find({}, {'_id': 0}).to_list(100)
     
     # Get stats
@@ -1071,7 +1078,9 @@ async def get_all_promo_codes(username: str = Depends(get_current_user)):
 
 @api_router.delete("/admin/promo-codes/{code_id}")
 async def delete_promo_code(code_id: str, username: str = Depends(get_current_user)):
-    """Delete a promo code (admin)"""
+    """Delete a promo code (admin only)"""
+    await verify_admin(username)
+    
     result = await db.promo_codes.delete_one({'id': code_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Promo code not found")
