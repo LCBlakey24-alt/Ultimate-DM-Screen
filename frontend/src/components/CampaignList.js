@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Scroll, Plus, LogOut, Trash2, Settings } from 'lucide-react';
+import { Scroll, Plus, LogOut, Trash2, Settings, Crown, Sparkles } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -16,6 +16,7 @@ function CampaignList({ username, onLogout }) {
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newCampaign, setNewCampaign] = useState({ name: '', description: '', system: 'D&D 5e 2024' });
+  const [subscription, setSubscription] = useState(null);
   const navigate = useNavigate();
 
   const ttrpgSystems = [
