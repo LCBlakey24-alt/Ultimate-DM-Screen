@@ -118,7 +118,8 @@ function GodsTab({ campaignId }) {
         fetchGods(); // Refresh the list
       }
     } catch (error) {
-      toast.error('The Unseen Servant failed to manifest the deity');
+      const errorMsg = error.response?.data?.detail || 'The Unseen Servant failed to manifest the deity';
+      toast.error(errorMsg);
     } finally {
       setAiGenerating(false);
     }
