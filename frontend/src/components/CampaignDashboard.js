@@ -150,7 +150,7 @@ function CampaignDashboard({ username, onLogout }) {
               display: 'flex', 
               alignItems: 'center', 
               gap: '10px',
-              boxShadow: '0 0 25px rgba(34, 197, 94, 0.5)'
+              boxShadow: '0 0 25px rgba(20, 184, 166, 0.5)'
             }}
           >
             <Monitor size={20} />
