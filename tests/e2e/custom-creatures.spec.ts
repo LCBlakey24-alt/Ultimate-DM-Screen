@@ -32,7 +32,7 @@ test.describe('Custom Creatures - GM Screen Navigation', () => {
   });
 
   test('should navigate to GM Screen and see Creatures tab', async ({ page }) => {
-    await page.goto(`/dm-screen/${TEST_CAMPAIGN_ID}`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`/gm-screen/${TEST_CAMPAIGN_ID}`, { waitUntil: 'domcontentloaded' });
     
     // Verify Creatures tab is visible in the tab bar
     const creaturesTab = page.getByTestId('tab-creatures');
