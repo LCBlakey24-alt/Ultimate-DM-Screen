@@ -943,7 +943,7 @@ async def stripe_webhook(request: Request):
 # ==================== PROMO CODE ROUTES ====================
 
 # Admin username - only this user can access admin features
-ADMIN_USERNAME = "Trigger24"
+ADMIN_USERNAME = "RookieQuestAdmin"
 
 async def verify_admin(username: str):
     """Check if user is admin"""
