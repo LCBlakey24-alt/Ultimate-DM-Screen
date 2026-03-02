@@ -385,7 +385,7 @@ function CampaignList({ username, onLogout }) {
                     {campaign.name}
                   </h3>
                   <span className="system-badge">
-                    {campaign.system || 'D&D 5e 2024'}
+                    {campaign.system || '5e 2024 Compatible'}
                   </span>
                 </div>
                 <p style={{ 
