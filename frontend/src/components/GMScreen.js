@@ -138,6 +138,17 @@ function GMScreen({ username }) {
     });
   };
 
+  // Start Quick Combat from modal
+  const handleQuickCombatStart = (scenario) => {
+    setShowQuickCombat(false);
+    navigate(`/campaign/${campaignId}/combat`, {
+      state: {
+        scenario: scenario,
+        campaignName: campaign?.name
+      }
+    });
+  };
+
   // Note submission
   const handleSubmitNote = async () => {
     if (!quickNote.trim()) return;
