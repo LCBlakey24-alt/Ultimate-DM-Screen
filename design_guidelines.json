@@ -1,0 +1,141 @@
+{
+  "project_name": "Quest Keeper",
+  "design_philosophy": {
+    "theme": "Dark Fantasy Immersion",
+    "core_concept": "The Digital Grimoire",
+    "emotional_tone": "Mysterious, Powerful, Organized, Arcane",
+    "visual_style": "High-Contrast Dark Mode with Magical Glows",
+    "texture_strategy": "Subtle noise overlays + Glassmorphism to simulate crystal/obsidian surfaces"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Cinzel, serif",
+      "body": "Manrope, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "installation": "import '@fontsource/cinzel/400.css'; import '@fontsource/cinzel/700.css'; import '@fontsource/manrope/400.css'; import '@fontsource/manrope/600.css';",
+    "scale": {
+      "h1": "text-5xl md:text-7xl font-bold tracking-tight",
+      "h2": "text-4xl md:text-5xl font-bold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-semibold",
+      "p": "text-base md:text-lg leading-relaxed text-muted-foreground",
+      "small": "text-sm font-medium tracking-wide uppercase opacity-70"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": "#030014",
+      "foreground": "#e2e8f0",
+      "card": "rgba(10, 10, 35, 0.6)",
+      "card_foreground": "#f8fafc",
+      "popover": "#0a0a2e",
+      "popover_foreground": "#f8fafc",
+      "primary": "#7c3aed",
+      "primary_foreground": "#ffffff",
+      "secondary": "#1e293b",
+      "secondary_foreground": "#f8fafc",
+      "muted": "rgba(30, 41, 59, 0.5)",
+      "muted_foreground": "#94a3b8",
+      "accent": "#4a7dff",
+      "accent_foreground": "#ffffff",
+      "destructive": "#7f1d1d",
+      "destructive_foreground": "#fef2f2",
+      "border": "rgba(74, 125, 255, 0.2)",
+      "input": "rgba(15, 23, 42, 0.6)",
+      "ring": "#7c3aed"
+    },
+    "special_tokens": {
+      "mana_blue": "#4a7dff",
+      "blood_red": "#ef4444",
+      "necrotic_green": "#22c55e",
+      "divine_gold": "#fbbf24",
+      "void_black": "#020617"
+    }
+  },
+  "layout_strategies": {
+    "marketing_page": {
+      "grid_system": "The Tetris Grid",
+      "alignment": "Asymmetrical",
+      "spacing": "p-12 md:p-24",
+      "features": [
+        "Parallax scrolling hero",
+        "Overlapping jagged sections",
+        "Floating arcane symbols in background"
+      ]
+    },
+    "gm_screen": {
+      "grid_system": "Bento Grid (High Density)",
+      "alignment": "Strict Alignment",
+      "spacing": "p-2 gap-2",
+      "features": [
+        "Collapsible sidebars",
+        "Draggable widgets",
+        "Tabbed interface with < 100ms switch time"
+      ]
+    }
+  },
+  "component_styling": {
+    "cards": {
+      "default": "bg-card/40 backdrop-blur-md border border-border shadow-lg rounded-xl transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(124,58,237,0.2)]",
+      "interactive": "cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+    },
+    "buttons": {
+      "primary": "bg-primary hover:bg-primary/90 text-white shadow-[0_0_15px_rgba(124,58,237,0.5)] transition-all hover:shadow-[0_0_25px_rgba(124,58,237,0.7)] font-cinzel tracking-wider uppercase",
+      "secondary": "bg-secondary/50 hover:bg-secondary/80 border border-border text-foreground backdrop-blur-sm",
+      "ghost": "hover:bg-accent/10 hover:text-accent"
+    },
+    "inputs": {
+      "default": "bg-black/20 border-border focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-mono"
+    },
+    "modals": {
+      "overlay": "bg-black/80 backdrop-blur-sm",
+      "content": "bg-[#0a0a2e] border border-primary/30 shadow-[0_0_50px_rgba(0,0,0,0.5)] p-6 rounded-2xl"
+    }
+  },
+  "visual_enhancers": {
+    "glows": {
+      "strategy": "Use box-shadow and drop-shadow utilities",
+      "class": "shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+    },
+    "borders": {
+      "strategy": "Subtle 1px borders with low opacity",
+      "class": "border border-white/10"
+    },
+    "glassmorphism": {
+      "strategy": "Used for floating panels",
+      "class": "backdrop-blur-xl bg-black/40"
+    }
+  },
+  "media_assets": {
+    "images": [
+      {
+        "category": "Hero Background",
+        "url": "https://images.unsplash.com/photo-1417436183232-5748bd9f144e?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Ruins near trees with fog - Use for Landing Page Hero Background with heavy dark overlay"
+      },
+      {
+        "category": "Dice Roller",
+        "url": "https://images.unsplash.com/photo-1696197819145-dbcf7e97cbdc?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Close up metal dice - Use for Dice Roller section background"
+      },
+      {
+        "category": "Combat Texture",
+        "url": "https://images.unsplash.com/photo-1712518145481-8948886bcc23?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "description": "Foggy forest - Use for Combat Tracker subtle background"
+      }
+    ]
+  },
+  "universal_guidelines": [
+    "FORCE DARK MODE: The app must effectively be in dark mode at all times.",
+    "NO DEFAULT SCROLLBARS: Use the custom 'thin' scrollbar style.",
+    "TEXT CONTRAST: Ensure generic gray text is at least slate-400 for readability against dark backgrounds.",
+    "MICRO-INTERACTIONS: Every button press must have a scale down effect (active:scale-95).",
+    "DATA-TESTID: All interactive elements must have data-testid attributes."
+  ],
+  "instructions_to_main_agent": [
+    "REFACTOR: The 'App.css' file contains legacy custom CSS. Migrate these styles to Tailwind utility classes in the components themselves.",
+    "INSTALL FONTS: Install '@fontsource/cinzel' and '@fontsource/manrope' via npm/yarn.",
+    "CONFIG UPDATE: Update 'tailwind.config.js' to include the new colors and font families.",
+    "CLEANUP: Remove the 'glow-panel', 'medieval-heading', and other custom classes from App.css after migrating them to Tailwind."
+  ]
+}
