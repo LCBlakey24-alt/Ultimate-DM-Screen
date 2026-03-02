@@ -330,7 +330,7 @@ function AuthPage({ onLogin }) {
           style={{ 
             maxWidth: '450px', 
             width: '100%',
-            filter: 'drop-shadow(0 0 25px rgba(74, 125, 255, 0.5))'
+            filter: 'drop-shadow(0 0 30px rgba(20, 184, 166, 0.5))'
           }} 
         />
       </div>
