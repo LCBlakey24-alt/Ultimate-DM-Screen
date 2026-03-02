@@ -17,11 +17,24 @@ function AdminPage({ username }) {
   const [newCode, setNewCode] = useState({
     code: '',
     tier_granted: 'adventurer',
+    duration_days: 30,
     uses_remaining: -1
   });
   const [stats, setStats] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [isAdmin, setIsAdmin] = useState(true);
+
+  // Duration options for promo codes
+  const durationOptions = [
+    { value: 7, label: '1 Week' },
+    { value: 14, label: '2 Weeks' },
+    { value: 30, label: '1 Month' },
+    { value: 60, label: '2 Months' },
+    { value: 90, label: '3 Months' },
+    { value: 180, label: '6 Months' },
+    { value: 365, label: '1 Year' },
+    { value: -1, label: 'Lifetime (No Expiry)' }
+  ];
 
   useEffect(() => {
     checkAdminAndFetch();
