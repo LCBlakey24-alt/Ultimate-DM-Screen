@@ -519,6 +519,20 @@ class ApplyPromoCodeRequest(BaseModel):
 class ApplyReferralCodeRequest(BaseModel):
     referral_code: str
 
+class Review(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    username: str
+    rating: int  # 1-5 stars
+    comment: str
+    is_approved: bool = False  # Auto-approve 4-5 stars, admin can manage
+    is_featured: bool = False  # Shows on landing page
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class ReviewCreate(BaseModel):
+    rating: int  # 1-5
+    comment: str
+
 class CreateCheckoutRequest(BaseModel):
     origin_url: str
     plan: str = 'adventurer'
