@@ -107,7 +107,7 @@ function LandingPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img 
               src="/quest-keeper-logo.png" 
-              alt="Quest Keeper" 
+              alt="Rookie Quest Keeper" 
               style={{ height: '40px' }}
             />
           </div>
@@ -159,7 +159,7 @@ function LandingPage() {
         }} />
 
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative' }}>
-          {/* Main Rookie Quest Keeper Logo - Large & Prominent */}
+          {/* Main Rookie Rookie Quest Keeper Logo - Large & Prominent */}
           <div style={{ 
             marginBottom: '40px', 
             display: 'flex', 
@@ -169,7 +169,7 @@ function LandingPage() {
           }}>
             <img 
               src="/quest-keeper-logo.png" 
-              alt="Rookie Quest Keeper" 
+              alt="Rookie Rookie Quest Keeper" 
               style={{ 
                 height: '220px',
                 maxWidth: '90%',
@@ -288,7 +288,7 @@ function LandingPage() {
               Everything You Need to Run Epic Campaigns
             </h2>
             <p style={{ color: '#94a3b8', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
-              From world-building to combat, Quest Keeper has you covered.
+              From world-building to combat, Rookie Quest Keeper has you covered.
             </p>
           </div>
 
@@ -548,7 +548,7 @@ function LandingPage() {
                       {review.username}
                     </p>
                     <p style={{ color: '#67e8f9', fontSize: '13px' }}>
-                      Quest Keeper User
+                      Rookie Quest Keeper User
                     </p>
                   </div>
                 </div>
@@ -575,7 +575,7 @@ function LandingPage() {
             fontSize: '18px',
             marginBottom: '40px'
           }}>
-            Join thousands of GMs who are running better campaigns with Quest Keeper.
+            Join thousands of GMs who are running better campaigns with Rookie Quest Keeper.
           </p>
           <Button 
             onClick={() => navigate('/auth')}
@@ -617,7 +617,7 @@ function LandingPage() {
             marginBottom: '24px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src="/quest-keeper-logo.png" alt="Quest Keeper" style={{ height: '30px' }} />
+              <img src="/quest-keeper-logo.png" alt="Rookie Quest Keeper" style={{ height: '30px' }} />
               <span style={{ color: '#64748b', fontSize: '14px' }}>
                 A product of Rookie Quest
               </span>
@@ -640,7 +640,7 @@ function LandingPage() {
               maxWidth: '800px',
               margin: '0 auto'
             }}>
-              Quest Keeper is an independent product published by Rookie Quest and is not affiliated with, 
+              Rookie Quest Keeper is an independent product published by Rookie Quest and is not affiliated with, 
               endorsed, sponsored, or specifically approved by Wizards of the Coast LLC. 
               Dungeons & Dragons, D&D, and their respective logos are trademarks of Wizards of the Coast LLC 
               in the United States and other countries. This site may use content from the System Reference Document 5.1 

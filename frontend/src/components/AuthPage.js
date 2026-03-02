@@ -323,10 +323,10 @@ function AuthPage({ onLogin }) {
           }} 
         />
         
-        {/* Quest Keeper Logo */}
+        {/* Rookie Quest Keeper Logo */}
         <img 
           src="/quest-keeper-logo.png" 
-          alt="Quest Keeper" 
+          alt="Rookie Quest Keeper" 
           style={{ 
             maxWidth: '450px', 
             width: '100%',

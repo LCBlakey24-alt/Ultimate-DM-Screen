@@ -133,7 +133,7 @@ function CampaignDashboard({ username, onLogout }) {
             />
             <img 
               src="/quest-keeper-logo.png" 
-              alt="Quest Keeper" 
+              alt="Rookie Quest Keeper" 
               style={{ 
                 height: '38px',
                 filter: 'drop-shadow(0 0 10px rgba(74, 125, 255, 0.4))'

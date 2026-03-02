@@ -106,7 +106,7 @@ function ReviewModal({ isOpen, onClose }) {
               {existingReview ? 'Edit Your Review' : 'Leave a Review'}
             </h2>
             <p style={{ color: '#94a3b8', fontSize: '14px' }}>
-              Help other GMs discover Quest Keeper
+              Help other GMs discover Rookie Quest Keeper
             </p>
           </div>
           <button
@@ -137,7 +137,7 @@ function ReviewModal({ isOpen, onClose }) {
                 marginBottom: '12px',
                 fontSize: '14px'
               }}>
-                How would you rate Quest Keeper?
+                How would you rate Rookie Quest Keeper?
               </label>
               <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -193,7 +193,7 @@ function ReviewModal({ isOpen, onClose }) {
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="What do you love about Quest Keeper? How has it helped your campaigns?"
+                placeholder="What do you love about Rookie Quest Keeper? How has it helped your campaigns?"
                 style={{
                   width: '100%',
                   minHeight: '120px',
@@ -225,7 +225,7 @@ function ReviewModal({ isOpen, onClose }) {
                 marginBottom: '24px'
               }}>
                 <p style={{ color: '#22c55e', fontSize: '13px' }}>
-                  ⭐ Your review may be featured on our landing page to help other GMs discover Quest Keeper!
+                  ⭐ Your review may be featured on our landing page to help other GMs discover Rookie Quest Keeper!
                 </p>
               </div>
             )}
