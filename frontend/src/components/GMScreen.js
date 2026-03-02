@@ -910,6 +910,16 @@ function GMScreen({ username }) {
       </div>
 
       <QuickReferenceModal isOpen={showQuickRef} onClose={() => setShowQuickRef(false)} />
+      
+      {/* Quick Combat Modal */}
+      <QuickCombatModal
+        isOpen={showQuickCombat}
+        onClose={() => setShowQuickCombat(false)}
+        campaignId={campaignId}
+        players={players}
+        customCreatures={customCreatures}
+        onStartCombat={handleQuickCombatStart}
+      />
     </div>
   );
 }
