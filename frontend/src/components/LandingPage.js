@@ -428,7 +428,7 @@ function LandingPage() {
                 <span style={{ color: '#94a3b8' }}>/forever</span>
               </div>
               <ul style={{ margin: '0 0 32px', padding: 0, listStyle: 'none' }}>
-                {['2 Campaigns', '5 AI Generations/month', 'Full Combat System', 'DM Screen Access', 'Monster Database'].map((item, i) => (
+                {['2 Campaigns', '5 AI Generations/month', 'Full Combat System', 'GM Screen Access', 'Monster Database'].map((item, i) => (
                   <li key={i} style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
