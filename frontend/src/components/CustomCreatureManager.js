@@ -35,6 +35,11 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
     abilities: '',
     description: ''
   });
+  
+  // AI Generation state
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [generating, setGenerating] = useState(false);
+  const [justCreated, setJustCreated] = useState(null); // Track AI-created creature for highlighting
 
   useEffect(() => {
     if ((isOpen || embedded) && campaignId) {
