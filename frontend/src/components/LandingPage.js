@@ -606,21 +606,46 @@ function LandingPage() {
       }}>
         <div style={{ 
           maxWidth: '1200px', 
-          margin: '0 auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '20px'
+          margin: '0 auto'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img src="/quest-keeper-logo.png" alt="Quest Keeper" style={{ height: '30px' }} />
-            <span style={{ color: '#64748b', fontSize: '14px' }}>
-              A product of Rookie Quest
-            </span>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '20px',
+            marginBottom: '24px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <img src="/quest-keeper-logo.png" alt="Quest Keeper" style={{ height: '30px' }} />
+              <span style={{ color: '#64748b', fontSize: '14px' }}>
+                A product of Rookie Quest
+              </span>
+            </div>
+            <div style={{ color: '#64748b', fontSize: '14px' }}>
+              © 2026 Rookie Quest. All rights reserved.
+            </div>
           </div>
-          <div style={{ color: '#64748b', fontSize: '14px' }}>
-            © 2026 Quest Keeper. All rights reserved.
+          
+          {/* Legal Disclaimer */}
+          <div style={{
+            borderTop: '1px solid rgba(74, 125, 255, 0.1)',
+            paddingTop: '20px',
+            textAlign: 'center'
+          }}>
+            <p style={{ 
+              color: '#475569', 
+              fontSize: '12px', 
+              lineHeight: '1.6',
+              maxWidth: '800px',
+              margin: '0 auto'
+            }}>
+              Quest Keeper is an independent product published by Rookie Quest and is not affiliated with, 
+              endorsed, sponsored, or specifically approved by Wizards of the Coast LLC. 
+              Dungeons & Dragons, D&D, and their respective logos are trademarks of Wizards of the Coast LLC 
+              in the United States and other countries. This site may use content from the System Reference Document 5.1 
+              (SRD 5.1) licensed under the Creative Commons Attribution 4.0 International License.
+            </p>
           </div>
         </div>
       </footer>
