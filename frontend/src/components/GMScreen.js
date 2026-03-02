@@ -461,6 +461,27 @@ function GMScreen({ username }) {
             </div>
           )}
 
+          {/* CUSTOM CREATURES TAB */}
+          {activeTab === 'creatures' && (
+            <div>
+              <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <PlusCircle size={24} style={{ color: '#10b981' }} /> Custom Creatures
+              </h2>
+              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '20px' }}>
+                Create your own homebrew monsters or import creatures from CSV files. Custom creatures can be used in any encounter.
+              </p>
+              <CustomCreatureManager 
+                campaignId={campaignId}
+                isOpen={true}
+                onClose={() => {}}
+                onSelectCreature={(creature) => {
+                  toast.success(`${creature.name} added! Go to Combat tab to use it in an encounter.`);
+                }}
+                embedded={true}
+              />
+            </div>
+          )}
+
           {/* NAMES GENERATOR TAB */}
           {activeTab === 'names' && (
             <div>
