@@ -164,7 +164,7 @@ A comprehensive web application for Tabletop RPG Game Masters, serving as a digi
 
 ### Unseen Servant
 - `POST /api/unseen-servant/generate` - Auto-generate and save entities
-  - entity_type: 'god', 'npc', 'location', 'place_of_interest'
+  - entity_type: 'god', 'npc', 'location', 'place_of_interest', 'creature'
   - Returns: entity_id, entity_name, success status
   - **Now checks AI usage limits for free tier users**
 
