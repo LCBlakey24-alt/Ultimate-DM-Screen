@@ -204,6 +204,22 @@ function CampaignList({ username, onLogout }) {
                 Admin
               </Button>
             )}
+            {/* Review Button */}
+            <Button
+              data-testid="review-btn"
+              onClick={() => setShowReviewModal(true)}
+              className="btn-outline"
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                border: '2px solid #eab308',
+                color: '#eab308'
+              }}
+            >
+              <Star size={18} />
+              Leave Review
+            </Button>
             <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
               <DialogTrigger asChild>
                 <Button data-testid="create-campaign-btn" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
