@@ -20,6 +20,7 @@ function CampaignList({ username, onLogout }) {
   const [newCampaign, setNewCampaign] = useState({ name: '', description: '', system: 'D&D 5e 2024' });
   const [subscription, setSubscription] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const navigate = useNavigate();
 
   const ttrpgSystems = [
