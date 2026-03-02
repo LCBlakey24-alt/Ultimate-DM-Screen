@@ -29,7 +29,7 @@ test.describe('Dashboard Additional Tabs', () => {
     
     // Verify key elements are present
     await expect(page.getByText('Saved Encounters')).toBeVisible();
-    await expect(page.getByText('ADD COMBATANTS')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'ADD COMBATANTS' })).toBeVisible();
     // Use heading role to avoid matching 'Add a Battle Map'
     await expect(page.getByRole('heading', { name: 'Battle Map' })).toBeVisible();
   });
@@ -85,7 +85,7 @@ test.describe('Dashboard Additional Tabs', () => {
     await expect(page.getByText('Average Level')).toBeVisible();
     
     // Verify Difficulty section
-    await expect(page.getByText('Difficulty')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Difficulty' })).toBeVisible();
   });
 
   test('Encounter Generator has difficulty options', async ({ page }) => {
