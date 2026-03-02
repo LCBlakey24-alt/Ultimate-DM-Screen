@@ -2415,7 +2415,7 @@ async def generate_ai_content(request: AIGenerationRequest, username: str = Depe
         if hasattr(request, 'campaign_id') and request.campaign_id:
             campaign = await db.campaigns.find_one({'id': request.campaign_id})
             if campaign:
-                system_context = f" for {campaign.get('system', 'D&D 5e')} system"
+                system_context = f" for {campaign.get('system', '5e Compatible')} system"
         
         # Create system message based on generation type
         system_messages = {
