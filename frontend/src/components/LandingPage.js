@@ -150,7 +150,7 @@ function LandingPage() {
         paddingBottom: '80px',
         position: 'relative'
       }}>
-        {/* Background glow effects */}
+        {/* Background glow effects - with parallax */}
         <div style={{
           position: 'absolute',
           top: '20%',
@@ -159,7 +159,8 @@ function LandingPage() {
           height: '400px',
           background: 'radial-gradient(circle, rgba(20, 184, 166, 0.15) 0%, transparent 70%)',
           borderRadius: '50%',
-          filter: 'blur(60px)'
+          filter: 'blur(60px)',
+          transform: `translateY(${scrollY * 0.3}px)`
         }} />
         <div style={{
           position: 'absolute',
@@ -169,7 +170,20 @@ function LandingPage() {
           height: '350px',
           background: 'radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%)',
           borderRadius: '50%',
-          filter: 'blur(60px)'
+          filter: 'blur(60px)',
+          transform: `translateY(${scrollY * 0.2}px)`
+        }} />
+        {/* Additional parallax orb */}
+        <div style={{
+          position: 'absolute',
+          bottom: '10%',
+          left: '30%',
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(124, 58, 237, 0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(60px)',
+          transform: `translateY(${scrollY * -0.15}px)`
         }} />
 
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative' }}>
