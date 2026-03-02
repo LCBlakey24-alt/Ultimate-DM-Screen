@@ -143,7 +143,7 @@ function LandingPage() {
           left: '10%',
           width: '400px',
           height: '400px',
-          background: 'radial-gradient(circle, rgba(74, 125, 255, 0.15) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(20, 184, 166, 0.15) 0%, transparent 70%)',
           borderRadius: '50%',
           filter: 'blur(60px)'
         }} />
@@ -153,7 +153,7 @@ function LandingPage() {
           right: '10%',
           width: '350px',
           height: '350px',
-          background: 'radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%)',
           borderRadius: '50%',
           filter: 'blur(60px)'
         }} />
