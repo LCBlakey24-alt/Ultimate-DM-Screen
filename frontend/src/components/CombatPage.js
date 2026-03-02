@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 import { 
   Sword, Users, Shield, Heart, Skull, SkipForward, RotateCcw, 
   Trash2, ChevronUp, ChevronDown, CircleDot, Grid, ZoomIn, ZoomOut, X,
-  ArrowLeft, Coins, Package
+  ArrowLeft, Coins, Package, Target
 } from 'lucide-react';
 import { QuickReferencePopup, QuickReferenceModal } from '@/components/QuickReference';
+import AttackRoller from '@/components/AttackRoller';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
