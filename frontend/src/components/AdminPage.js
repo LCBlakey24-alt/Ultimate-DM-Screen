@@ -301,6 +301,27 @@ function AdminPage({ username }) {
                     }}
                   />
                 </div>
+                <div>
+                  <label style={{ display: 'block', color: '#94a3b8', marginBottom: '8px', fontSize: '14px' }}>
+                    Duration (Premium Access Length)
+                  </label>
+                  <select
+                    value={newCode.duration_days}
+                    onChange={(e) => setNewCode({ ...newCode, duration_days: parseInt(e.target.value) })}
+                    style={{
+                      width: '100%',
+                      padding: '10px 14px',
+                      borderRadius: '8px',
+                      background: 'rgba(0, 0, 0, 0.4)',
+                      border: '2px solid #374151',
+                      color: '#fff'
+                    }}
+                  >
+                    {durationOptions.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
                 <Button type="submit" className="btn-primary">Create Code</Button>
