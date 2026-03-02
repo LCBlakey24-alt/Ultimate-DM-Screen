@@ -11,7 +11,7 @@ export default defineConfig({
     ['json', { outputFile: '/root/.emergent/automation_output/20260301_140826/results.json' }],
   ],
   use: {
-    baseURL: 'https://keeper-workspace.preview.emergentagent.com',
+    baseURL: 'https://rookie-quest-test.preview.emergentagent.com',
     screenshot: 'only-on-failure',
     trace: 'off',
     headless: true,
