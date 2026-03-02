@@ -255,6 +255,9 @@ function AdminPage({ username }) {
           </div>
         </div>
 
+        {/* Promo Codes Tab Content */}
+        {activeTab === 'promos' && (
+        <>
         {/* Promo Codes Section */}
         <div style={{
           background: 'rgba(30, 30, 60, 0.5)',
