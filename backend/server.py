@@ -922,11 +922,12 @@ async def create_promo_code(promo_data: PromoCodeCreate, username: str = Depends
     promo = PromoCode(
         code=promo_data.code.upper(),
         tier_granted=promo_data.tier_granted,
+        duration_days=promo_data.duration_days,
         uses_remaining=promo_data.uses_remaining,
         expires_at=promo_data.expires_at
     )
     await db.promo_codes.insert_one(promo.model_dump())
-    return {"message": "Promo code created", "code": promo.code}
+    return {"message": "Promo code created", "code": promo.code, "duration_days": promo.duration_days}
 
 @api_router.post("/promo-codes/apply")
 async def apply_promo_code(request: ApplyPromoCodeRequest, username: str = Depends(get_current_user)):
