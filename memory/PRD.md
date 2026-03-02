@@ -13,12 +13,15 @@ A comprehensive web application for Tabletop RPG Game Masters, serving as a digi
 ## Core Requirements
 
 ### Authentication & Subscription
-- [x] Username/password registration and login
+- [x] Email-based registration and login (migrated from username)
 - [x] JWT-based session management
 - [x] Protected routes for authenticated content
 - [x] **Freemium subscription model** ($3.99/month Adventurer tier)
 - [x] **Promo code system** for free premium access
 - [x] Subscription status tracking per user
+- [x] **Forgot Password** - Email reset link via Resend
+- [x] **Password Reset** - Token-based password reset flow
+- [x] **Account Settings Page** - Profile editing, password change, account deletion
 
 ### Campaign Management
 - [x] Create and manage multiple campaigns
@@ -148,10 +151,21 @@ A comprehensive web application for Tabletop RPG Game Masters, serving as a digi
 - **Backend**: FastAPI (Python), Motor (async MongoDB)
 - **Database**: MongoDB
 - **AI**: Emergent LLM for content generation (via Unseen Servant)
-- **Authentication**: JWT
+- **Authentication**: JWT with email-based auth
 - **Payments**: Stripe (via emergentintegrations)
+- **Email**: Resend for transactional emails (password reset)
 
 ## Key API Endpoints
+
+### Account Management (NEW)
+- `POST /api/auth/register` - Register with email, username, password
+- `POST /api/auth/login` - Login with email and password
+- `POST /api/auth/forgot-password` - Request password reset email
+- `POST /api/auth/reset-password` - Reset password with token
+- `GET /api/account/profile` - Get user profile
+- `PUT /api/account/update` - Update username/email
+- `POST /api/account/change-password` - Change password
+- `DELETE /api/account/delete` - Delete user account and all data
 
 ### Subscription System (NEW)
 - `GET /api/subscription/plans` - Get available subscription plans
@@ -182,11 +196,22 @@ A comprehensive web application for Tabletop RPG Game Masters, serving as a digi
 - `POST /api/campaigns/{id}/custom-creatures/import` - Bulk import creatures from CSV
 
 ## Test Status
-- **Backend**: 106/106 tests passing (100%) - Added 15 custom creatures tests
-- **Frontend**: 90/90 E2E tests passing (100%) - Added 13 custom creatures tests
-- **New Test Files**: subscription-pricing.spec.ts, test_subscription.py, test_custom_creatures.py, custom-creatures.spec.ts
+- **Backend**: 128/128 tests passing (100%) - Added 22 account management tests
+- **Frontend**: 116/116 E2E tests passing (100%) - Added 26 account settings tests
+- **New Test Files**: test_account_management.py, account-settings.spec.ts
 
 ## Recently Implemented Features (March 2, 2026)
+
+### Account Management System ✅ (NEW)
+- Email-based login/registration (migrated from username)
+- Forgot Password flow with Resend email integration
+- Reset Password page with token validation
+- Account Settings page with:
+  - Profile editing (display name, email)
+  - Change Password with confirmation
+  - Account deletion with "DELETE" confirmation
+  - Subscription information display
+
 ### Custom Creature Creator ✅
 - Full CRUD for homebrew creatures
 - AI-powered generation via Unseen Servant
@@ -210,9 +235,11 @@ A comprehensive web application for Tabletop RPG Game Masters, serving as a digi
    - Join campaigns via invite code
    - Create/manage character sheets
    - Real-time combat sync with GM
-2. **P1: User Content Import System** - Excel/JSON file upload for bulk creature/item import
-3. **P2: Session Recap & Player Handouts** - AI "Last time on..." summaries
-4. **P3: Dark Mode / Theme Options**
+2. **P1: Finalize Attack/Damage Dice Roller** - Complete the two-step "roll to hit -> roll damage" flow
+3. **P2: User Content Import System** - Excel/JSON file upload for bulk creature/item import
+4. **P3: Session Recap & Player Handouts** - AI "Last time on..." summaries
+5. **P4: Dark Mode / Theme Options**
+6. **P5: Refactor server.py** - Break monolithic backend into separate routers
 
 ## Future Tasks
 - P4: Player View Mode | P5: Import/Export Campaign | P6-P10: Various enhancements
