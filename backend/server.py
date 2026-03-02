@@ -642,6 +642,11 @@ async def register(user_data: UserRegister):
     # Create subscription with referral code
     subscription = SubscriptionTier(referral_code=referral_code, referred_by=referred_by)
     
+    # Auto-upgrade admin user to premium
+    if user_data.username == ADMIN_USERNAME:
+        subscription.tier = "premium"
+        subscription.premium_expires_at = None  # Never expires for admin
+    
     user_doc = {
         'id': str(uuid.uuid4()),
         'username': user_data.username,
