@@ -14,7 +14,7 @@ async function loginUser(page: Page) {
 
 // Helper to navigate to GM Screen Creatures tab
 async function navigateToCreaturesTab(page: Page) {
-  await page.goto(`/dm-screen/${TEST_CAMPAIGN_ID}`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`/gm-screen/${TEST_CAMPAIGN_ID}`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByTestId('tab-creatures')).toBeVisible({ timeout: 15000 });
   await page.getByTestId('tab-creatures').click();
   // Wait for the custom creature manager to be visible
