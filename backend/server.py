@@ -501,13 +501,15 @@ class PromoCode(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     code: str
     tier_granted: str = 'adventurer'
+    duration_days: int = 30  # How many days of premium the code grants (default 30 days = 1 month)
     uses_remaining: int = -1  # -1 = unlimited
-    expires_at: Optional[str] = None
+    expires_at: Optional[str] = None  # When the code itself expires (not the premium it grants)
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class PromoCodeCreate(BaseModel):
     code: str
     tier_granted: str = 'adventurer'
+    duration_days: int = 30  # Days of premium access granted
     uses_remaining: int = -1
     expires_at: Optional[str] = None
 
