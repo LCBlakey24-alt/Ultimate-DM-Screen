@@ -107,6 +107,38 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
     setShowForm(true);
   };
 
+  // AI Generation with Unseen Servant
+  const handleAIGenerate = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error('Please describe the creature you want to create');
+      return;
+    }
+
+    setGenerating(true);
+    try {
+      const response = await axios.post(`${API}/api/unseen-servant/generate`, {
+        prompt: aiPrompt,
+        entity_type: 'creature',
+        campaign_id: campaignId
+      });
+
+      if (response.data.success) {
+        toast.success(`Created ${response.data.entity_name}!`);
+        setJustCreated(response.data.entity_id);
+        setAiPrompt('');
+        fetchCreatures();
+        
+        // Clear highlight after 5 seconds
+        setTimeout(() => setJustCreated(null), 5000);
+      }
+    } catch (error) {
+      const errorMsg = error.response?.data?.detail || 'Failed to generate creature';
+      toast.error(errorMsg);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   const handleImportCSV = (e) => {
     const file = e.target.files[0];
     if (!file) return;
