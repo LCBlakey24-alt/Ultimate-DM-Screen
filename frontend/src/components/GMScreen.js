@@ -277,9 +277,9 @@ function GMScreen({ username }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             {/* Logos */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src="/ttrpg-companion-logo.png" alt="Rookie Quest" style={{ height: '28px' }} />
+              <img src="/rookie-quest-logo.png" alt="Rookie Quest" style={{ height: '28px' }} />
               <div style={{ width: '1px', height: '24px', background: 'rgba(20, 184, 166, 0.3)' }} />
-              <img src="/quest-keeper-logo.png" alt="Rookie Quest Keeper" style={{ height: '32px' }} />
+              <img src="/rqk-mini-logo.png" alt="RQK" style={{ height: '32px' }} />
             </div>
             <div style={{ width: '1px', height: '30px', background: 'rgba(255,255,255,0.1)' }} />
             <div>

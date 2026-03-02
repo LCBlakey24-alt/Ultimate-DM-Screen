@@ -114,14 +114,14 @@ function LandingPage() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <img 
-              src="/ttrpg-companion-logo.png" 
+              src="/rookie-quest-logo.png" 
               alt="Rookie Quest" 
               style={{ height: '32px' }}
             />
             <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.2)' }} />
             <img 
-              src="/quest-keeper-logo.png" 
-              alt="Rookie Quest Keeper" 
+              src="/rqk-mini-logo.png" 
+              alt="RQK" 
               style={{ height: '36px' }}
             />
           </div>
@@ -195,7 +195,7 @@ function LandingPage() {
             alignItems: 'center'
           }}>
             <img 
-              src="/ttrpg-companion-logo.png" 
+              src="/rookie-quest-logo.png" 
               alt="Rookie Quest" 
               style={{ 
                 height: '80px',
@@ -224,7 +224,7 @@ function LandingPage() {
             width: '100%'
           }}>
             <img 
-              src="/quest-keeper-logo.png" 
+              src="/rookie-quest-keeper-logo.png" 
               alt="Rookie Quest Keeper" 
               style={{ 
                 height: '220px',

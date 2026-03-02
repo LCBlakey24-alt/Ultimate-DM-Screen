@@ -325,7 +325,7 @@ function AuthPage({ onLogin }) {
         
         {/* Rookie Quest Keeper Logo */}
         <img 
-          src="/quest-keeper-logo.png" 
+          src="/rookie-quest-keeper-logo.png" 
           alt="Rookie Quest Keeper" 
           style={{ 
             maxWidth: '450px', 

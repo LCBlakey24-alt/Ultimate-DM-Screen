@@ -124,7 +124,7 @@ function CampaignDashboard({ username, onLogout }) {
             gap: '16px'
           }}>
             <img 
-              src="/ttrpg-companion-logo.png" 
+              src="/rookie-quest-logo.png" 
               alt="Rookie Quest" 
               style={{ 
                 height: '40px',
@@ -133,8 +133,8 @@ function CampaignDashboard({ username, onLogout }) {
             />
             <div style={{ width: '1px', height: '30px', background: 'rgba(20, 184, 166, 0.3)' }} />
             <img 
-              src="/quest-keeper-logo.png" 
-              alt="Rookie Quest Keeper" 
+              src="/rqk-mini-logo.png" 
+              alt="RQK" 
               style={{ 
                 height: '38px',
                 filter: 'drop-shadow(0 0 15px rgba(20, 184, 166, 0.4))'
