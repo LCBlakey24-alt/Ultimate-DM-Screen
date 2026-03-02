@@ -19,7 +19,7 @@ const CR_OPTIONS = [
   '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'
 ];
 
-function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose }) {
+function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, embedded = false }) {
   const [creatures, setCreatures] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -37,10 +37,10 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose }
   });
 
   useEffect(() => {
-    if (isOpen && campaignId) {
+    if ((isOpen || embedded) && campaignId) {
       fetchCreatures();
     }
-  }, [isOpen, campaignId]);
+  }, [isOpen, embedded, campaignId]);
 
   const fetchCreatures = async () => {
     try {
