@@ -36,6 +36,8 @@ function GMScreen({ username }) {
   const [quickNote, setQuickNote] = useState('');
   const [processingNote, setProcessingNote] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState(null);
+  const [showQuickCombat, setShowQuickCombat] = useState(false);
+  const [customCreatures, setCustomCreatures] = useState([]);
   
   // Name Generator state
   const [generatedName, setGeneratedName] = useState(null);
