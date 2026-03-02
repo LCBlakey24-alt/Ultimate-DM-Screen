@@ -274,16 +274,25 @@ function GMScreen({ username }) {
       {/* Header */}
       <div className="glow-panel" style={{ margin: '0', borderRadius: '0', padding: '12px 24px', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <div>
-            <h1 style={{ fontSize: '22px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Sword size={22} style={{ color: '#22c55e' }} />
-              {campaign?.name}
-            </h1>
-            {calendar && (
-              <p style={{ fontSize: '12px', color: '#67e8f9', marginTop: '2px' }}>
-                {calendar.custom_months?.[calendar.current_month - 1]?.name || 'Month'} {calendar.current_day}, Year {calendar.current_year}
-              </p>
-            )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {/* Logos */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <img src="/ttrpg-companion-logo.png" alt="Rookie Quest" style={{ height: '28px' }} />
+              <div style={{ width: '1px', height: '24px', background: 'rgba(20, 184, 166, 0.3)' }} />
+              <img src="/quest-keeper-logo.png" alt="Rookie Quest Keeper" style={{ height: '32px' }} />
+            </div>
+            <div style={{ width: '1px', height: '30px', background: 'rgba(255,255,255,0.1)' }} />
+            <div>
+              <h1 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Sword size={20} style={{ color: '#14b8a6' }} />
+                {campaign?.name}
+              </h1>
+              {calendar && (
+                <p style={{ fontSize: '11px', color: '#14b8a6', marginTop: '2px' }}>
+                  {calendar.custom_months?.[calendar.current_month - 1]?.name || 'Month'} {calendar.current_day}, Year {calendar.current_year}
+                </p>
+              )}
+            </div>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
             <Button onClick={() => setShowQuickRef(true)} className="btn-outline" style={{ display: 'flex', gap: '6px', padding: '8px 14px', fontSize: '13px' }}>
