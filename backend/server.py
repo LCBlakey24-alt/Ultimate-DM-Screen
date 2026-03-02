@@ -2318,7 +2318,7 @@ async def delete_map(campaign_id: str, map_id: str, username: str = Depends(get_
 
 class UnseenServantRequest(BaseModel):
     prompt: str
-    entity_type: str  # god, npc, location, place_of_interest
+    entity_type: str  # god, npc, location, place_of_interest, creature
     campaign_id: str
     location_id: Optional[str] = None  # Required if entity_type is place_of_interest
 
