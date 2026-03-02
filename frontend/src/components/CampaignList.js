@@ -92,7 +92,7 @@ function CampaignList({ username, onLogout }) {
       const response = await axios.post(`${API}/campaigns`, newCampaign);
       toast.success('Campaign created!');
       setCampaigns([...campaigns, response.data]);
-      setNewCampaign({ name: '', description: '', system: 'D&D 5e 2024' });
+      setNewCampaign({ name: '', description: '', system: '5e 2024 Compatible' });
       setShowCreateDialog(false);
     } catch (error) {
       toast.error('Failed to create campaign');
