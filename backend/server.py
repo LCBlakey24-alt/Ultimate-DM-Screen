@@ -2386,6 +2386,18 @@ async def unseen_servant_generate(request: UnseenServantRequest, username: str =
   "owner": "name of proprietor/owner",
   "services": "what services or items are offered",
   "notes": "secrets, rumors, or plot hooks"
+}''',
+            'creature': '''Generate a custom creature/monster for D&D 5e. Respond ONLY with valid JSON in this exact format:
+{
+  "name": "creature name",
+  "cr": "challenge rating (0, 1/8, 1/4, 1/2, or 1-30)",
+  "hp": 45,
+  "ac": 14,
+  "type": "creature type (aberration, beast, celestial, construct, dragon, elemental, fey, fiend, giant, humanoid, monstrosity, ooze, plant, undead)",
+  "size": "size (Tiny, Small, Medium, Large, Huge, Gargantuan)",
+  "speed": "movement speeds (e.g., 30 ft., fly 60 ft.)",
+  "abilities": "key abilities, attacks, and special features (e.g., Multiattack, Bite 2d6+4, Fire Breath 8d6)",
+  "description": "2-3 sentences describing appearance, behavior, and lore"
 }'''
         }
         
