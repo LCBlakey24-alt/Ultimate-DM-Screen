@@ -244,6 +244,7 @@ function GMScreen({ username }) {
     { id: 'combat', icon: Swords, label: 'Combat', color: '#ef4444' },
     { id: 'dice', icon: Dices, label: 'Dice', color: '#a855f7' },
     { id: 'monsters', icon: Skull, label: 'Monsters', color: '#dc2626' },
+    { id: 'creatures', icon: PlusCircle, label: 'Creatures', color: '#10b981' },
     { id: 'names', icon: UserPlus, label: 'Names', color: '#f97316' },
     { id: 'tables', icon: Wand2, label: 'Tables', color: '#22c55e' },
     { id: 'loot', icon: Coins, label: 'Loot Gen', color: '#eab308' },
