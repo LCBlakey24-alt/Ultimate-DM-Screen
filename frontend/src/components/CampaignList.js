@@ -429,6 +429,12 @@ function CampaignList({ username, onLogout }) {
           </div>
         )}
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={showReviewModal} 
+        onClose={() => setShowReviewModal(false)} 
+      />
     </div>
   );
 }
