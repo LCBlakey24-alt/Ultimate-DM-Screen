@@ -148,18 +148,38 @@ function LandingPage() {
         }} />
 
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative' }}>
-          {/* Logos */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '24px', marginBottom: '32px' }}>
-            <img 
-              src="/rookie-quest-logo.png" 
-              alt="Rookie Quest" 
-              style={{ height: '80px', filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.3))' }}
-            />
-            <span style={{ color: '#4a7dff', fontSize: '24px' }}>presents</span>
+          {/* Rookie Quest Presents */}
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginBottom: '8px' }}>
+              <img 
+                src="/rookie-quest-logo.png" 
+                alt="Rookie Quest" 
+                style={{ height: '50px', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))' }}
+              />
+              <span style={{ 
+                color: '#94a3b8', 
+                fontSize: '18px',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: '500',
+                letterSpacing: '2px',
+                textTransform: 'uppercase'
+              }}>
+                presents
+              </span>
+            </div>
+          </div>
+
+          {/* Main Quest Keeper Logo - Large & Prominent */}
+          <div style={{ marginBottom: '40px' }}>
             <img 
               src="/quest-keeper-logo.png" 
               alt="Quest Keeper" 
-              style={{ height: '70px', filter: 'drop-shadow(0 0 20px rgba(74, 125, 255, 0.5))' }}
+              style={{ 
+                height: '180px',
+                maxWidth: '90%',
+                filter: 'drop-shadow(0 0 40px rgba(74, 125, 255, 0.6))',
+                animation: 'float 3s ease-in-out infinite'
+              }}
             />
           </div>
 
