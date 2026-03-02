@@ -1164,6 +1164,87 @@ async def delete_review(review_id: str, username: str = Depends(get_current_user
         raise HTTPException(status_code=404, detail="Review not found")
     return {"message": "Review deleted"}
 
+# ============== CUSTOM CREATURES ==============
+
+@api_router.get("/campaigns/{campaign_id}/custom-creatures")
+async def get_custom_creatures(campaign_id: str, username: str = Depends(get_current_user)):
+    """Get all custom creatures for a campaign"""
+    creatures = await db.custom_creatures.find(
+        {'campaign_id': campaign_id},
+        {'_id': 0}
+    ).sort('name', 1).to_list(500)
+    return creatures
+
+@api_router.post("/campaigns/{campaign_id}/custom-creatures")
+async def create_custom_creature(campaign_id: str, creature_data: CustomCreatureCreate, username: str = Depends(get_current_user)):
+    """Create a new custom creature"""
+    creature = CustomCreature(
+        campaign_id=campaign_id,
+        name=creature_data.name,
+        cr=creature_data.cr,
+        hp=creature_data.hp,
+        ac=creature_data.ac,
+        type=creature_data.type,
+        size=creature_data.size,
+        speed=creature_data.speed,
+        abilities=creature_data.abilities,
+        description=creature_data.description,
+        created_by=username
+    )
+    await db.custom_creatures.insert_one(creature.model_dump())
+    return {"message": "Custom creature created!", "creature": creature.model_dump()}
+
+@api_router.put("/campaigns/{campaign_id}/custom-creatures/{creature_id}")
+async def update_custom_creature(campaign_id: str, creature_id: str, creature_data: CustomCreatureCreate, username: str = Depends(get_current_user)):
+    """Update a custom creature"""
+    result = await db.custom_creatures.update_one(
+        {'id': creature_id, 'campaign_id': campaign_id},
+        {'$set': {
+            'name': creature_data.name,
+            'cr': creature_data.cr,
+            'hp': creature_data.hp,
+            'ac': creature_data.ac,
+            'type': creature_data.type,
+            'size': creature_data.size,
+            'speed': creature_data.speed,
+            'abilities': creature_data.abilities,
+            'description': creature_data.description
+        }}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Creature not found")
+    return {"message": "Creature updated!"}
+
+@api_router.delete("/campaigns/{campaign_id}/custom-creatures/{creature_id}")
+async def delete_custom_creature(campaign_id: str, creature_id: str, username: str = Depends(get_current_user)):
+    """Delete a custom creature"""
+    result = await db.custom_creatures.delete_one({'id': creature_id, 'campaign_id': campaign_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Creature not found")
+    return {"message": "Creature deleted!"}
+
+@api_router.post("/campaigns/{campaign_id}/custom-creatures/import")
+async def import_custom_creatures(campaign_id: str, creatures: list[CustomCreatureCreate], username: str = Depends(get_current_user)):
+    """Import multiple custom creatures from CSV/JSON data"""
+    imported = []
+    for creature_data in creatures:
+        creature = CustomCreature(
+            campaign_id=campaign_id,
+            name=creature_data.name,
+            cr=creature_data.cr,
+            hp=creature_data.hp,
+            ac=creature_data.ac,
+            type=creature_data.type,
+            size=creature_data.size,
+            speed=creature_data.speed,
+            abilities=creature_data.abilities,
+            description=creature_data.description,
+            created_by=username
+        )
+        await db.custom_creatures.insert_one(creature.model_dump())
+        imported.append(creature.name)
+    return {"message": f"Imported {len(imported)} creatures!", "imported": imported}
+
 @api_router.get("/subscription/plans")
 async def get_subscription_plans():
     """Get available subscription plans"""
