@@ -327,6 +327,97 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
         <span style={{ color: '#64748b' }}>Example: "Goblin Chief","2",45,15,"humanoid","Small","30 ft.","Multiattack","A goblin leader"</span>
       </div>
 
+      {/* Unseen Servant AI Generator */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%)',
+        border: '2px solid #a855f7',
+        borderRadius: '16px',
+        padding: '20px',
+        marginBottom: '20px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+          <Wand2 size={24} color="#a855f7" />
+          <h3 style={{ color: '#a855f7', fontSize: '18px', fontWeight: '700', fontFamily: 'Montserrat, sans-serif' }}>
+            Unseen Servant
+          </h3>
+          <Sparkles size={16} color="#a855f7" style={{ opacity: 0.7 }} />
+        </div>
+        <p style={{ color: '#c4b5fd', fontSize: '13px', marginBottom: '16px' }}>
+          Describe a creature concept and let the AI generate a complete stat block for you!
+        </p>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <textarea
+            value={aiPrompt}
+            onChange={(e) => setAiPrompt(e.target.value)}
+            placeholder="Example: A corrupted forest guardian made of twisted vines and thorns, CR 4, with poison attacks..."
+            data-testid="ai-creature-prompt"
+            style={{
+              flex: '1 1 300px',
+              minHeight: '80px',
+              padding: '12px',
+              borderRadius: '10px',
+              background: 'rgba(0, 0, 0, 0.4)',
+              border: '2px solid #6b21a8',
+              color: '#fff',
+              fontSize: '14px',
+              resize: 'vertical'
+            }}
+          />
+          <Button
+            onClick={handleAIGenerate}
+            disabled={generating || !aiPrompt.trim()}
+            data-testid="generate-creature-btn"
+            style={{
+              background: generating ? '#6b21a8' : 'linear-gradient(180deg, #a855f7 0%, #7c3aed 100%)',
+              border: 'none',
+              padding: '16px 24px',
+              borderRadius: '12px',
+              color: '#fff',
+              fontWeight: '700',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              cursor: generating ? 'wait' : 'pointer',
+              opacity: (!aiPrompt.trim() || generating) ? 0.6 : 1,
+              boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)',
+              transition: 'all 0.2s'
+            }}
+          >
+            {generating ? (
+              <>
+                <Loader size={18} className="animate-spin" /> Conjuring...
+              </>
+            ) : (
+              <>
+                <Wand2 size={18} /> Generate Creature
+              </>
+            )}
+          </Button>
+        </div>
+        <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <span style={{ color: '#9333ea', fontSize: '11px', fontWeight: '600' }}>Try:</span>
+          {['Undead dragon wyrmling', 'Goblin shaman with fire magic', 'Giant ice spider', 'Corrupted treant'].map((suggestion, i) => (
+            <button
+              key={i}
+              onClick={() => setAiPrompt(suggestion)}
+              style={{
+                background: 'rgba(147, 51, 234, 0.2)',
+                border: '1px solid #9333ea',
+                borderRadius: '20px',
+                padding: '4px 10px',
+                color: '#c4b5fd',
+                fontSize: '11px',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              {suggestion}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Create/Edit Form */}
       {showForm && (
         <div style={{
