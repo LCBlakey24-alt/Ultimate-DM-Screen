@@ -104,11 +104,17 @@ function LandingPage() {
           justifyContent: 'space-between', 
           alignItems: 'center' 
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <img 
+              src="/ttrpg-companion-logo.png" 
+              alt="Rookie Quest" 
+              style={{ height: '32px' }}
+            />
+            <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.2)' }} />
             <img 
               src="/quest-keeper-logo.png" 
               alt="Rookie Quest Keeper" 
-              style={{ height: '40px' }}
+              style={{ height: '36px' }}
             />
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
