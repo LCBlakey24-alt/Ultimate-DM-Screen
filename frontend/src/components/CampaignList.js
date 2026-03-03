@@ -308,10 +308,25 @@ function CampaignList({ username, onLogout }) {
                       onChange={(e) => setNewCampaign({ ...newCampaign, description: e.target.value })}
                       placeholder="Describe your campaign..."
                       className="textarea-glow"
-                      style={{ minHeight: '100px' }}
+                      style={{ 
+                        minHeight: '100px',
+                        maxHeight: '120px',
+                        resize: 'vertical',
+                        display: 'block',
+                        width: '100%'
+                      }}
                     />
                   </div>
-                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    gap: '12px', 
+                    justifyContent: 'flex-end',
+                    marginTop: '24px',
+                    paddingTop: '16px',
+                    borderTop: '1px solid rgba(30, 64, 175, 0.3)',
+                    position: 'relative',
+                    zIndex: 10
+                  }}>
                     <Button 
                       type="button" 
                       className="btn-outline"
