@@ -72,7 +72,7 @@ function EncounterGeneratorTab({ campaignId }) {
   const generateEncounter = async () => {
     setGenerating(true);
     
-    const prompt = `Generate a ${difficulty} difficulty ${encounterType} encounter for a D&D 5e party of ${partySize} level ${partyLevel} adventurers in a ${environment} setting.
+    const prompt = `Generate a ${difficulty} difficulty ${encounterType} encounter for a fantasy TTRPG party of ${partySize} level ${partyLevel} adventurers in a ${environment} setting.
 ${customPrompt ? `Additional context: ${customPrompt}` : ''}
 
 Please provide a JSON response with this exact structure:

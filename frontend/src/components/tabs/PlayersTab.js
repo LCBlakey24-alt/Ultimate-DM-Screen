@@ -10,7 +10,7 @@ import { Plus, Edit, Trash2, ChevronRight, ChevronLeft, Check, User, Dices, Rota
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// D&D 5e 2024 Data
+// Fantasy TTRPG 5e 2024 Data
 const DND_DATA = {
   races: [
     // SRD-Safe Races Only

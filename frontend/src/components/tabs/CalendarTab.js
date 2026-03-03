@@ -23,7 +23,7 @@ const PRESET_CALENDARS = {
     ]
   },
   forgotten_realms: {
-    name: "Forgotten Realms (D&D)",
+    name: "Forgotten Realms Calendar",
     months: [
       {name: "Hammer", days: 30}, {name: "Alturiak", days: 30},
       {name: "Ches", days: 30}, {name: "Tarsakh", days: 30},

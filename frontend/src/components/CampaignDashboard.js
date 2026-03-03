@@ -112,7 +112,7 @@ function CampaignDashboard({ username, onLogout }) {
               </h1>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <span className="system-badge">
-                  {campaign.system || 'D&D 5e 2024'}
+                  {campaign.system || '5e 2024'}
                 </span>
                 <span style={{ fontSize: '13px', color: '#94a3b8' }}>Campaign Command Center</span>
               </div>

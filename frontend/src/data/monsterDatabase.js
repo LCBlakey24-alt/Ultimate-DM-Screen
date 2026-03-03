@@ -1,4 +1,4 @@
-// D&D 5e Monster Database - Comprehensive list of monsters with stats
+// Fantasy TTRPG 5e Monster Database - Comprehensive list of monsters with stats
 // Source: SRD 5.1 (Open Gaming License)
 
 export const MONSTER_DATABASE = [

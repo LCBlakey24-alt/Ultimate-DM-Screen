@@ -245,7 +245,7 @@ function LandingPage() {
             marginBottom: '24px',
             lineHeight: '1.2'
           }}>
-            Run Better D&D Sessions{' '}
+            Run Better Tabletop Sessions{' '}
             <span className="rainbow-text" style={{ fontWeight: '800' }}>
               in Less Time
             </span>
@@ -1019,11 +1019,9 @@ function LandingPage() {
               maxWidth: '800px',
               margin: '0 auto'
             }}>
-              Rookie Quest Keeper is an independent product published by Rookie Quest and is not affiliated with, 
-              endorsed, sponsored, or specifically approved by Wizards of the Coast LLC. 
-              Dungeons & Dragons, D&D, and their respective logos are trademarks of Wizards of the Coast LLC 
-              in the United States and other countries. This site may use content from the System Reference Document 5.1 
-              (SRD 5.1) licensed under the Creative Commons Attribution 4.0 International License.
+              Rookie Quest Keeper is an independent product published by Rookie Quest. 
+              This tool is designed to be compatible with multiple tabletop roleplaying game systems. 
+              Content may be used in accordance with applicable open gaming licenses and system reference documents.
             </p>
           </div>
         </div>

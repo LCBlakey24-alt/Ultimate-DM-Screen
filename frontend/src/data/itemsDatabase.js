@@ -1,4 +1,4 @@
-// D&D 5e Items Database - Auto-generated from FightClub5 backup
+// Fantasy TTRPG 5e Items Database - Curated item collection
 // Total items: 3076
 
 export const ITEMS_DATABASE = [

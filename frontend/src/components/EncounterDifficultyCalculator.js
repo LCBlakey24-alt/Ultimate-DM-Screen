@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Skull, AlertTriangle, CheckCircle, Info } from 'lucide-react';
 
-// XP Thresholds by Level (from D&D 5e DMG)
+// XP Thresholds by Level (from TTRPG 5e system)
 const XP_THRESHOLDS = {
   1: { easy: 25, medium: 50, hard: 75, deadly: 100 },
   2: { easy: 50, medium: 100, hard: 150, deadly: 200 },

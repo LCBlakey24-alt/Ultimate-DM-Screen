@@ -128,7 +128,7 @@ function ItemCreatorTab({ campaignId }) {
 
   const generateItemWithAI = async () => {
     setGenerating(true);
-    const prompt = `Generate a unique D&D 5e ${newItem.rarity} ${ITEM_TYPES.find(t => t.id === newItem.item_type)?.label || 'item'} for a fantasy campaign.
+    const prompt = `Generate a unique fantasy ${newItem.rarity} ${ITEM_TYPES.find(t => t.id === newItem.item_type)?.label || 'item'} for a tabletop RPG campaign.
 
 Respond with JSON only:
 {

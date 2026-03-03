@@ -2536,7 +2536,7 @@ class UnseenServantResponse(BaseModel):
 
 @api_router.post("/unseen-servant/generate", response_model=UnseenServantResponse)
 async def unseen_servant_generate(request: UnseenServantRequest, username: str = Depends(get_current_user)):
-    """Unseen Servant: AI that generates and auto-saves D&D content"""
+    """Unseen Servant: AI that generates and auto-saves fantasy TTRPG content"""
     try:
         # Check if user can use AI features
         can_use_ai = await check_premium_feature(username, 'ai')
@@ -2557,7 +2557,7 @@ async def unseen_servant_generate(request: UnseenServantRequest, username: str =
         
         # Define JSON schema prompts for each entity type
         entity_prompts = {
-            'god': '''Generate a D&D deity. Respond ONLY with valid JSON in this exact format:
+            'god': '''Generate a fantasy deity. Respond ONLY with valid JSON in this exact format:
 {
   "name": "deity name",
   "domain": "primary domain (e.g., War, Knowledge, Nature)",
@@ -2566,7 +2566,7 @@ async def unseen_servant_generate(request: UnseenServantRequest, username: str =
   "alignment": "alignment (e.g., Lawful Good, Chaotic Neutral)",
   "notes": "additional lore or worship practices"
 }''',
-            'npc': '''Generate a D&D NPC. Respond ONLY with valid JSON in this exact format:
+            'npc': '''Generate a fantasy NPC. Respond ONLY with valid JSON in this exact format:
 {
   "name": "NPC full name",
   "description": "physical appearance, personality, and background in 2-3 sentences",
@@ -2575,13 +2575,13 @@ async def unseen_servant_generate(request: UnseenServantRequest, username: str =
   "location": "where they can be found",
   "notes": "motivations, secrets, or plot hooks"
 }''',
-            'location': '''Generate a D&D location. Respond ONLY with valid JSON in this exact format:
+            'location': '''Generate a fantasy location. Respond ONLY with valid JSON in this exact format:
 {
   "name": "location name",
   "location_type": "type (City, Town, Village, Dungeon, Forest, etc.)",
   "description": "2-3 sentences describing the location",
   "notable_npcs": "key NPCs found here",
-  "notes": "secrets, hooks, or DM notes"
+  "notes": "secrets, hooks, or GM notes"
 }''',
             'place_of_interest': '''Generate a place of interest (shop, tavern, temple, etc.). Respond ONLY with valid JSON in this exact format:
 {
@@ -2592,7 +2592,7 @@ async def unseen_servant_generate(request: UnseenServantRequest, username: str =
   "services": "what services or items are offered",
   "notes": "secrets, rumors, or plot hooks"
 }''',
-            'creature': '''Generate a custom creature/monster for D&D 5e. Respond ONLY with valid JSON in this exact format:
+            'creature': '''Generate a custom creature/monster for a fantasy TTRPG. Respond ONLY with valid JSON in this exact format:
 {
   "name": "creature name",
   "cr": "challenge rating (0, 1/8, 1/4, 1/2, or 1-30)",
@@ -2610,7 +2610,7 @@ async def unseen_servant_generate(request: UnseenServantRequest, username: str =
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid entity type: {request.entity_type}")
         
         # Build the full prompt
-        system_message = "You are the Unseen Servant, a magical helper for D&D Dungeon Masters. You generate content in strict JSON format only. No markdown, no explanations, just valid JSON."
+        system_message = "You are the Unseen Servant, a magical helper for tabletop RPG Game Masters. You generate content in strict JSON format only. No markdown, no explanations, just valid JSON."
         full_prompt = f"{entity_prompts[request.entity_type]}\n\nUser request: {request.prompt}"
         
         # Initialize LLM
@@ -2823,7 +2823,7 @@ async def process_note_with_ai(campaign_id: str, note_id: str, username: str = D
         location_names = [l['name'] for l in locations]
         god_names = [g['name'] for g in gods]
         
-        system_message = f"""You are an AI assistant helping organize D&D campaign notes.
+        system_message = f"""You are an AI assistant helping organize tabletop RPG campaign notes.
 Given campaign notes from a session, extract structured information and suggest additions to existing entities or new entities to create.
 
 Campaign Context:

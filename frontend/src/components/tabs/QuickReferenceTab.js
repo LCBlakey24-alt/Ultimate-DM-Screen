@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Search, Shield, Swords, Scroll, Coins, Target, Award, ChevronDown, ChevronUp, Zap, Heart, Dices } from 'lucide-react';
 import { ITEMS_DATABASE, ITEM_TYPES, RARITY_OPTIONS } from '@/data/itemsDatabase';
 
-// D&D 5e Difficulty Classes
+// TTRPG 5e Difficulty Classes
 const DIFFICULTY_CLASSES = [
   { dc: 5, difficulty: 'Very Easy', description: 'Almost anyone can succeed' },
   { dc: 10, difficulty: 'Easy', description: 'A typical person has a 50% chance' },
@@ -122,7 +122,7 @@ function QuickReferenceTab({ campaignId }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <h2 style={{ fontSize: '24px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '12px' }}>
               <Swords size={28} style={{ color: '#eab308' }} />
-              D&D Items Database
+              Fantasy Items Database
             </h2>
             <span style={{ color: '#67e8f9', fontSize: '14px' }}>
               {ITEMS_DATABASE.length.toLocaleString()} items

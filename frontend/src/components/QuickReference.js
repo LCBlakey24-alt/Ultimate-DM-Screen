@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, BookOpen } from 'lucide-react';
 
-// D&D 5e Conditions Reference
+// TTRPG 5e Conditions Reference
 export const CONDITIONS_REFERENCE = {
   blinded: {
     name: 'Blinded',
