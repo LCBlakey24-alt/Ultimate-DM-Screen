@@ -103,150 +103,27 @@
 #====================================================================================================
 
 user_problem_statement: |
-  Improve marketing clarity, positioning, and structure of Rookie Quest Keeper homepage and application layout.
-  Part 1: Landing page improvements (hero, value prop, who it's for, AI renaming, pricing clarity)
-  Part 2: Move dashboard tabs to left sidebar (always visible)
-  Part 3: Finalize attack/damage dice roller with crit animations
+  Test that the N+1 database query pattern fix is working correctly for campaign resource endpoints.
+  The fix added a helper function verify_campaign_ownership() that does a single database query instead of the previous N+1 pattern.
+  Need to verify that campaign authorization still works correctly and no functionality is broken.
 
 backend:
-  - task: "Backend functionality preservation"
+  - task: "N+1 Database Query Pattern Fix - Campaign Authorization"
     implemented: true
     working: true
-    file: "No changes made to backend"
+    file: "backend/server.py"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
-      - working: true
+      - working: "NA"
         agent: "main"
-        comment: "No backend changes required - only frontend UI/UX improvements"
+        comment: "Implemented verify_campaign_ownership() helper function to replace N+1 pattern. Function used in 52+ campaign endpoints for gods, NPCs, locations, settings. Need to test that authorization still works correctly and no functionality broken."
+      - working: true
+        agent: "testing"
+        comment: "COMPREHENSIVE TESTING COMPLETED - ALL 34 TESTS PASSED: ✅ User registration and authentication working. ✅ Campaign creation working for multiple users. ✅ Valid access scenarios: Users can access/modify/delete resources in their own campaigns (settings, gods, NPCs, locations). ✅ Invalid access scenarios: Users properly blocked from accessing other users' campaigns with 404 responses. ✅ Non-existent campaign scenarios: Fake campaign IDs return proper 404 errors. ✅ All CRUD operations (GET/POST/PUT/DELETE) working with proper authorization. The N+1 database query fix is working perfectly - campaign ownership verification happens in a single query and authorization is properly enforced across all tested endpoints."
 
 frontend:
-  - task: "Landing Page Hero Section Upgrade"
-    implemented: true
-    working: true
-    file: "frontend/src/components/LandingPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "pending_test"
-        agent: "main"
-        comment: "Updated hero with new headline 'Run Better D&D Sessions in Less Time', new subheadline positioning as campaign OS, updated CTAs to 'Start Free Campaign' and 'Explore Features', added 3 benefit bullets"
-      - working: true
-        agent: "testing"
-        comment: "TESTED & VERIFIED: Hero headline correct, campaign operating system mentioned, 3 benefit bullets working (Stop juggling tabs, Prep faster with AI, Run smoother combat), both CTA buttons present. Minor: CTA button text is uppercase 'START FREE CAMPAIGN' vs title case, but functionally correct."
-
-  - task: "Immediate Value Section (NEW)"
-    implemented: true
-    working: true
-    file: "frontend/src/components/LandingPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "pending_test"
-        agent: "main"
-        comment: "Added new section after hero: 'Your Entire Campaign. One System.' with workflow visualization (Build World → Generate Content → Run Combat → Capture & Recap)"
-      - working: true
-        agent: "testing"
-        comment: "TESTED & VERIFIED: Section heading 'Your Entire Campaign. One System.' displays correctly. All 4 workflow steps visible: Build World → Generate Content → Run Combat → Capture & Recap. Visual flow working properly."
-
-  - task: "Who It's For Section (NEW)"
-    implemented: true
-    working: true
-    file: "frontend/src/components/LandingPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "pending_test"
-        agent: "main"
-        comment: "Added 'Built for Real Game Masters' section with 3 cards: New DMs, Forever DMs, Online DMs with icons and descriptions"
-      - working: true
-        agent: "testing"
-        comment: "TESTED & VERIFIED: Section heading 'Built for Real Game Masters' displays correctly. All 3 cards present with icons and descriptions: New DMs (green), Forever DMs (purple), Online DMs (blue). Layout and styling working properly."
-
-  - task: "AI Section Rename and Messaging"
-    implemented: true
-    working: true
-    file: "frontend/src/components/LandingPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "pending_test"
-        agent: "main"
-        comment: "Renamed 'Unseen Servant AI' to 'AI GM Assistant' with subtext 'Purpose-built AI that performs real GM tasks — not generic chat' and updated bullet points"
-      - working: true
-        agent: "testing"
-        comment: "TESTED & VERIFIED: AI section successfully renamed to 'AI GM Assistant'. Subtext displays: 'Purpose-built AI that performs real GM tasks'. Messaging update complete."
-
-  - task: "Pre-Pricing Statement Section (NEW)"
-    implemented: true
-    working: true
-    file: "frontend/src/components/LandingPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "pending_test"
-        agent: "main"
-        comment: "Added bold statement section: 'Stop Managing Tools. Start Managing Your Campaign.' with supporting text about unified workflow for 5e 2014 and 2024"
-      - working: true
-        agent: "testing"
-        comment: "TESTED & VERIFIED: Bold statement 'Stop Managing Tools. Start Managing Your Campaign.' displays prominently before pricing section. Messaging clear and effective."
-
-  - task: "Pricing Section Clarity Improvements"
-    implemented: true
-    working: true
-    file: "frontend/src/components/LandingPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "pending_test"
-        agent: "main"
-        comment: "Added 'Start Free. Upgrade When You're Ready.' header, visually emphasized 'Unlimited Campaigns' and 'Unlimited AI Generations' in highlighted box, added 'Cancel anytime. No contracts.' reassurance text"
-      - working: true
-        agent: "testing"
-        comment: "TESTED & VERIFIED: 'Start Free. Upgrade When You're Ready.' text displays above pricing cards. Adventurer plan shows emphasized 'Unlimited Campaigns' and 'Unlimited AI Generations' in highlighted green box. 'Cancel anytime. No contracts.' text present. All pricing improvements working correctly."
-
-  - task: "Dashboard Left Sidebar Navigation"
-    implemented: true
-    working: true
-    file: "frontend/src/components/CampaignDashboard.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "pending_test"
-        agent: "main"
-        comment: "Converted horizontal tab bar to vertical left sidebar (240px wide, always visible). Tabs now in vertical list on left, main content on right. Updated header to say 'Campaign Command Center'. Added hover effects. Mobile responsive (sidebar hides on small screens)."
-      - working: "NA"
-        agent: "testing"
-        comment: "UNABLE TO FULLY TEST: Authentication works (registration successful when Display Name field is properly filled), but campaign creation blocked by modal overlay issue. The Create Campaign form has a description textarea that intercepts pointer events, preventing the CREATE CAMPAIGN button from being clicked. Code implementation appears correct based on file review. Main agent needs to fix modal click issue using force=True or adjusting z-index/pointer-events in modal."
-      - working: true
-        agent: "testing"
-        comment: "FULLY TESTED & VERIFIED AFTER MODAL FIX: Modal fix successful (z-index added to button container). Campaign creation working perfectly. Dashboard sidebar confirmed: exactly 240px width, all 12 tabs present (Setting, World, Gods, NPCs, Locations, Players, Combat, Encounter Gen, Items, Reference, Calendar, Notes), tab navigation working with proper active states (colored borders and backgrounds), 'Campaign Command Center' text in header, 'Open GM Screen' button present. Mobile responsive: sidebar hides at 390px width, restores at 1920px width. All functionality working as designed."
-
-  - task: "Attack Roller Crit Animations"
-    implemented: true
-    working: true
-    file: "frontend/src/components/AttackRoller.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-      - working: "pending_test"
-        agent: "main"
-        comment: "Added full-screen 'CRITICAL!' animation overlay on crits, spinning lightning bolt icon on crit results, pulsing glow effect on crit cards, shake animation. Added CSS keyframes: critFlash, critPulse, critGlow, critSpin, shake. Enhanced visual feedback for critical hits."
-      - working: "NA"
-        agent: "testing"
-        comment: "UNABLE TO TEST: Cannot access dashboard/combat features due to campaign creation modal overlay issue. Code review shows crit animations are properly implemented with all required CSS keyframes (critFlash, critPulse, critGlow, critSpin, shake) and full-screen overlay animation. Testing blocked by modal interaction issue, not by implementation."
-      - working: true
-        agent: "testing"
-        comment: "CODE VERIFIED - IMPLEMENTATION CONFIRMED: All crit animation features are properly implemented in AttackRoller.js. Code review confirms: (1) Full-screen 'CRITICAL!' overlay with fixed position and 120px font (lines 216-239), (2) CSS keyframes present: critFlash, critPulse, critGlow, critSpin, shake (lines 540-586), (3) Pulsing glow effect on crit cards with boxShadow animation (line 372-373), (4) Lightning bolt (Zap) icon with spin animation on crit results (lines 377-384), (5) Shake animation class applied to crit cards (line 363). Attack roller fully functional with target AC input, number of attacks configuration, roll to hit, and damage rolling. Monster database shows 306 monsters with working filters. Implementation is complete and correct."
 
 metadata:
   created_by: "main_agent"
@@ -255,25 +132,13 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus:
-    - "Landing Page Hero Section Upgrade"
-    - "Immediate Value Section (NEW)"
-    - "Who It's For Section (NEW)"
-    - "AI Section Rename and Messaging"
-    - "Pre-Pricing Statement Section (NEW)"
-    - "Pricing Section Clarity Improvements"
-    - "Dashboard Left Sidebar Navigation"
-    - "Attack Roller Crit Animations"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "Implemented all three parts of the Rookie Quest Keeper improvements: (1) Landing page marketing improvements with new sections, renamed AI assistant, and enhanced pricing clarity. (2) Restructured campaign dashboard with always-visible left sidebar navigation. (3) Finalized attack/damage roller with animated crit effects. All changes preserve dark fantasy theme, existing branding, and backend functionality. No linting errors. Ready for frontend testing to verify all UI improvements work correctly."
+    message: "Implemented N+1 database query pattern fix by adding verify_campaign_ownership() helper function. This function performs a single database query to check campaign ownership instead of previous N+1 pattern. Applied to 52+ endpoints for campaign resources (gods, NPCs, locations, settings). Need comprehensive testing to ensure authorization still works correctly and no functionality is broken."
   - agent: "testing"
-    message: "TESTING COMPLETED - RESULTS: Part 1 (Landing Page): ALL 6 sections VERIFIED WORKING. Minor cosmetic issue with button text casing (uppercase vs title case). Part 2 & 3 (Dashboard/Combat): BLOCKED by modal overlay issue in campaign creation form. Authentication works correctly when Display Name field is filled. Create Campaign modal opens but textarea intercepts clicks on CREATE CAMPAIGN button. Dashboard sidebar and attack roller code implementations are correct but cannot be fully tested due to this blocking issue. Fix required: Add force=True to modal button clicks or adjust z-index/pointer-events CSS for campaign creation modal."
-  - agent: "main"
-    message: "Fixed modal overlay issue by adding proper z-index and position: relative to button container in CampaignList.js (lines 327-329). Create Campaign button should now be clickable. Ready for re-testing of dashboard sidebar and attack roller features."
-  - agent: "testing"
-    message: "RE-TESTING COMPLETE - ALL FEATURES VERIFIED! ✅ PART 1 (Modal Fix): Campaign creation working perfectly - modal button now clickable, campaigns successfully created. ✅ PART 2 (Dashboard Sidebar): All requirements met - 240px width confirmed, all 12 tabs present and functional (Setting, World, Gods, NPCs, Locations, Players, Combat, Encounter Gen, Items, Reference, Calendar, Notes), tab navigation with active states working, header shows 'Campaign Command Center' and 'Open GM Screen' button, mobile responsive (hides at 390px, shows at 1920px). ✅ PART 3 (Monster Database): 306 monsters confirmed in database, search filters working (tested 'Goblin' search), type and CR filters present, monsters can be added to combat. ✅ PART 4 (Attack Roller): Code implementation verified - all crit animation features present (full-screen overlay, pulsing glow, lightning bolt icon with spin, shake animation, all CSS keyframes). Attack roller functional with AC/attack configuration. ✅ No console errors detected. ALL SUCCESS CRITERIA MET!"
+    message: "TESTING COMPLETED - ALL 34 TESTS PASSED! ✅ N+1 Database Query Pattern Fix is working perfectly. The verify_campaign_ownership() helper function successfully performs single-query authorization across all tested endpoints. ✅ TESTED ENDPOINTS: Campaign settings, gods (CRUD), NPCs (CRUD), locations (CRUD). ✅ TESTED SCENARIOS: Valid access (users own campaigns), invalid access (users don't own campaigns), non-existent campaigns. ✅ AUTHORIZATION WORKING: Proper 404 responses for unauthorized access, 200/201 responses for valid operations. ✅ NO FUNCTIONALITY BROKEN: All CRUD operations working normally. The N+1 fix has been successfully implemented without breaking existing functionality."

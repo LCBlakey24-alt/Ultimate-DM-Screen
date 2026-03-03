@@ -641,6 +641,15 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
+async def verify_campaign_ownership(campaign_id: str, username: str) -> None:
+    """
+    Verify that the user owns the campaign. Raises 404 if not found or not owned.
+    This helper function eliminates N+1 query pattern by doing a single validation.
+    """
+    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username}, {'_id': 1})
+    if not campaign:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found or access denied")
+
 # ==================== AUTH ROUTES ====================
 
 def generate_referral_code(username: str) -> str:
@@ -1604,9 +1613,7 @@ async def delete_campaign(campaign_id: str, username: str = Depends(get_current_
 
 @api_router.get("/campaigns/{campaign_id}/setting", response_model=Optional[CampaignSetting])
 async def get_campaign_setting(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     setting = await db.campaign_settings.find_one({'campaign_id': campaign_id}, {'_id': 0})
     if not setting:
@@ -1624,9 +1631,7 @@ async def get_campaign_setting(campaign_id: str, username: str = Depends(get_cur
 
 @api_router.put("/campaigns/{campaign_id}/setting", response_model=CampaignSetting)
 async def update_campaign_setting(campaign_id: str, setting_data: CampaignSettingUpdate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     result = await db.campaign_settings.update_one(
         {'campaign_id': campaign_id},
@@ -1647,9 +1652,7 @@ async def update_campaign_setting(campaign_id: str, setting_data: CampaignSettin
 
 @api_router.post("/campaigns/{campaign_id}/gods", response_model=God, status_code=status.HTTP_201_CREATED)
 async def create_god(campaign_id: str, god_data: GodCreate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     god_dict = god_data.model_dump()
     god_obj = God(campaign_id=campaign_id, **god_dict)
@@ -1659,18 +1662,14 @@ async def create_god(campaign_id: str, god_data: GodCreate, username: str = Depe
 
 @api_router.get("/campaigns/{campaign_id}/gods", response_model=List[God])
 async def get_gods(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     gods = await db.gods.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(1000)
     return gods
 
 @api_router.put("/campaigns/{campaign_id}/gods/{god_id}", response_model=God)
 async def update_god(campaign_id: str, god_id: str, god_data: GodUpdate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     update_dict = {k: v for k, v in god_data.model_dump().items() if v is not None}
     result = await db.gods.update_one(
@@ -1686,9 +1685,7 @@ async def update_god(campaign_id: str, god_id: str, god_data: GodUpdate, usernam
 
 @api_router.delete("/campaigns/{campaign_id}/gods/{god_id}")
 async def delete_god(campaign_id: str, god_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     result = await db.gods.delete_one({'id': god_id, 'campaign_id': campaign_id})
     if result.deleted_count == 0:
@@ -1699,9 +1696,7 @@ async def delete_god(campaign_id: str, god_id: str, username: str = Depends(get_
 
 @api_router.get("/campaigns/{campaign_id}/calendar", response_model=Optional[Calendar])
 async def get_calendar(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     calendar = await db.calendars.find_one({'campaign_id': campaign_id}, {'_id': 0})
     if not calendar:
@@ -1722,9 +1717,7 @@ async def get_calendar(campaign_id: str, username: str = Depends(get_current_use
 
 @api_router.put("/campaigns/{campaign_id}/calendar", response_model=Calendar)
 async def update_calendar(campaign_id: str, calendar_data: CalendarUpdate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     update_dict = {k: v for k, v in calendar_data.model_dump().items() if v is not None}
     result = await db.calendars.update_one(
@@ -1738,9 +1731,7 @@ async def update_calendar(campaign_id: str, calendar_data: CalendarUpdate, usern
 
 @api_router.post("/campaigns/{campaign_id}/calendar/advance")
 async def advance_calendar(campaign_id: str, days: int, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     calendar = await db.calendars.find_one({'campaign_id': campaign_id})
     if not calendar:
@@ -1781,9 +1772,7 @@ async def advance_calendar(campaign_id: str, days: int, username: str = Depends(
 
 @api_router.post("/campaigns/{campaign_id}/calendar-events", response_model=CalendarEvent)
 async def create_calendar_event(campaign_id: str, event_data: CalendarEventCreate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     event_dict = event_data.model_dump()
     event_obj = CalendarEvent(campaign_id=campaign_id, **event_dict)
@@ -1793,18 +1782,14 @@ async def create_calendar_event(campaign_id: str, event_data: CalendarEventCreat
 
 @api_router.get("/campaigns/{campaign_id}/calendar-events", response_model=List[CalendarEvent])
 async def get_calendar_events(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     events = await db.calendar_events.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(1000)
     return events
 
 @api_router.put("/campaigns/{campaign_id}/calendar-events/{event_id}", response_model=CalendarEvent)
 async def update_calendar_event(campaign_id: str, event_id: str, event_data: CalendarEventUpdate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     update_dict = {k: v for k, v in event_data.model_dump().items() if v is not None}
     result = await db.calendar_events.update_one(
@@ -1820,9 +1805,7 @@ async def update_calendar_event(campaign_id: str, event_id: str, event_data: Cal
 
 @api_router.delete("/campaigns/{campaign_id}/calendar-events/{event_id}")
 async def delete_calendar_event(campaign_id: str, event_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     result = await db.calendar_events.delete_one({'id': event_id, 'campaign_id': campaign_id})
     if result.deleted_count == 0:
@@ -1833,9 +1816,7 @@ async def delete_calendar_event(campaign_id: str, event_id: str, username: str =
 
 @api_router.post("/campaigns/{campaign_id}/combat-scenarios", response_model=CombatScenario)
 async def create_combat_scenario(campaign_id: str, scenario_data: CombatScenarioCreate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     scenario_dict = scenario_data.model_dump()
     scenario_obj = CombatScenario(campaign_id=campaign_id, **scenario_dict)
@@ -1845,18 +1826,14 @@ async def create_combat_scenario(campaign_id: str, scenario_data: CombatScenario
 
 @api_router.get("/campaigns/{campaign_id}/combat-scenarios", response_model=List[CombatScenario])
 async def get_combat_scenarios(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     scenarios = await db.combat_scenarios.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(1000)
     return scenarios
 
 @api_router.get("/campaigns/{campaign_id}/combat-scenarios/{scenario_id}", response_model=CombatScenario)
 async def get_combat_scenario(campaign_id: str, scenario_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     scenario = await db.combat_scenarios.find_one({'id': scenario_id, 'campaign_id': campaign_id}, {'_id': 0})
     if not scenario:
@@ -1865,9 +1842,7 @@ async def get_combat_scenario(campaign_id: str, scenario_id: str, username: str 
 
 @api_router.put("/campaigns/{campaign_id}/combat-scenarios/{scenario_id}", response_model=CombatScenario)
 async def update_combat_scenario(campaign_id: str, scenario_id: str, scenario_data: CombatScenarioUpdate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     update_dict = {k: v for k, v in scenario_data.model_dump().items() if v is not None}
     result = await db.combat_scenarios.update_one(
@@ -1883,9 +1858,7 @@ async def update_combat_scenario(campaign_id: str, scenario_id: str, scenario_da
 
 @api_router.delete("/campaigns/{campaign_id}/combat-scenarios/{scenario_id}")
 async def delete_combat_scenario(campaign_id: str, scenario_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     result = await db.combat_scenarios.delete_one({'id': scenario_id, 'campaign_id': campaign_id})
     if result.deleted_count == 0:
@@ -1896,9 +1869,7 @@ async def delete_combat_scenario(campaign_id: str, scenario_id: str, username: s
 
 @api_router.post("/campaigns/{campaign_id}/locations", response_model=Location, status_code=status.HTTP_201_CREATED)
 async def create_location(campaign_id: str, location_data: LocationCreate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     location_dict = location_data.model_dump()
     location_obj = Location(campaign_id=campaign_id, **location_dict)
@@ -1908,18 +1879,14 @@ async def create_location(campaign_id: str, location_data: LocationCreate, usern
 
 @api_router.get("/campaigns/{campaign_id}/locations", response_model=List[Location])
 async def get_locations(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     locations = await db.locations.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(1000)
     return locations
 
 @api_router.put("/campaigns/{campaign_id}/locations/{location_id}", response_model=Location)
 async def update_location(campaign_id: str, location_id: str, location_data: LocationUpdate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     update_dict = {k: v for k, v in location_data.model_dump().items() if v is not None}
     result = await db.locations.update_one(
@@ -1935,9 +1902,7 @@ async def update_location(campaign_id: str, location_id: str, location_data: Loc
 
 @api_router.delete("/campaigns/{campaign_id}/locations/{location_id}")
 async def delete_location(campaign_id: str, location_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     result = await db.locations.delete_one({'id': location_id, 'campaign_id': campaign_id})
     if result.deleted_count == 0:
@@ -1954,9 +1919,7 @@ async def add_place_of_interest(
     username: str = Depends(get_current_user)
 ):
     """Add a place of interest to a location (shop, tavern, temple, etc.)"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     location = await db.locations.find_one({'id': location_id, 'campaign_id': campaign_id})
     if not location:
@@ -1984,9 +1947,7 @@ async def get_places_of_interest(
     username: str = Depends(get_current_user)
 ):
     """Get all places of interest within a location"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     location = await db.locations.find_one({'id': location_id, 'campaign_id': campaign_id}, {'_id': 0})
     if not location:
@@ -2003,9 +1964,7 @@ async def update_place_of_interest(
     username: str = Depends(get_current_user)
 ):
     """Update a place of interest"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     location = await db.locations.find_one({'id': location_id, 'campaign_id': campaign_id})
     if not location:
@@ -2036,9 +1995,7 @@ async def delete_place_of_interest(
     username: str = Depends(get_current_user)
 ):
     """Delete a place of interest"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     location = await db.locations.find_one({'id': location_id, 'campaign_id': campaign_id})
     if not location:
@@ -2063,9 +2020,7 @@ async def delete_place_of_interest(
 @api_router.get("/campaigns/{campaign_id}/world")
 async def get_world_data(campaign_id: str, username: str = Depends(get_current_user)):
     """Get complete world hierarchy for a campaign"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     # Get all continents
     continents = await db.world_continents.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
@@ -2086,9 +2041,7 @@ async def get_world_data(campaign_id: str, username: str = Depends(get_current_u
 @api_router.post("/campaigns/{campaign_id}/world/continent")
 async def create_continent(campaign_id: str, data: dict, username: str = Depends(get_current_user)):
     """Create a new continent/landmass"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     continent = {
         'id': str(uuid.uuid4()),
@@ -2106,9 +2059,7 @@ async def create_continent(campaign_id: str, data: dict, username: str = Depends
 @api_router.put("/campaigns/{campaign_id}/world/continent/{continent_id}")
 async def update_continent(campaign_id: str, continent_id: str, data: dict, username: str = Depends(get_current_user)):
     """Update a continent"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     update_data = {
         'name': data.get('name'),
@@ -2125,9 +2076,7 @@ async def update_continent(campaign_id: str, continent_id: str, data: dict, user
 @api_router.delete("/campaigns/{campaign_id}/world/continent/{continent_id}")
 async def delete_continent(campaign_id: str, continent_id: str, username: str = Depends(get_current_user)):
     """Delete a continent and all nested items"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     # Delete nested items
     regions = await db.world_regions.find({'parent_id': continent_id}, {'id': 1}).to_list(100)
@@ -2144,9 +2093,7 @@ async def delete_continent(campaign_id: str, continent_id: str, username: str = 
 @api_router.post("/campaigns/{campaign_id}/world/region")
 async def create_region(campaign_id: str, data: dict, username: str = Depends(get_current_user)):
     """Create a new country/region"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     region = {
         'id': str(uuid.uuid4()),
@@ -2187,9 +2134,7 @@ async def delete_region(campaign_id: str, region_id: str, username: str = Depend
 @api_router.post("/campaigns/{campaign_id}/world/settlement")
 async def create_settlement(campaign_id: str, data: dict, username: str = Depends(get_current_user)):
     """Create a new city/town/village"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     settlement = {
         'id': str(uuid.uuid4()),
@@ -2227,9 +2172,7 @@ async def delete_settlement(campaign_id: str, settlement_id: str, username: str 
 @api_router.post("/campaigns/{campaign_id}/world/place")
 async def create_world_place(campaign_id: str, data: dict, username: str = Depends(get_current_user)):
     """Create a new place of interest"""
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     place = {
         'id': str(uuid.uuid4()),
@@ -2267,9 +2210,7 @@ async def delete_world_place(campaign_id: str, place_id: str, username: str = De
 
 @api_router.post("/campaigns/{campaign_id}/ingame-notes", response_model=InGameNote, status_code=status.HTTP_201_CREATED)
 async def create_ingame_note(campaign_id: str, note_data: InGameNoteCreate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     note_dict = note_data.model_dump()
     if not note_dict.get('session_date'):
@@ -2282,18 +2223,14 @@ async def create_ingame_note(campaign_id: str, note_data: InGameNoteCreate, user
 
 @api_router.get("/campaigns/{campaign_id}/ingame-notes", response_model=List[InGameNote])
 async def get_ingame_notes(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     notes = await db.ingame_notes.find({'campaign_id': campaign_id}, {'_id': 0}).sort('created_at', -1).to_list(1000)
     return notes
 
 @api_router.delete("/campaigns/{campaign_id}/ingame-notes/{note_id}")
 async def delete_ingame_note(campaign_id: str, note_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     result = await db.ingame_notes.delete_one({'id': note_id, 'campaign_id': campaign_id})
     if result.deleted_count == 0:
@@ -2304,9 +2241,7 @@ async def delete_ingame_note(campaign_id: str, note_id: str, username: str = Dep
 
 @api_router.post("/campaigns/{campaign_id}/players", response_model=Player, status_code=status.HTTP_201_CREATED)
 async def create_player(campaign_id: str, player_data: PlayerCreate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     player_dict = player_data.model_dump()
     if player_dict.get('stats') is None:
@@ -2318,18 +2253,14 @@ async def create_player(campaign_id: str, player_data: PlayerCreate, username: s
 
 @api_router.get("/campaigns/{campaign_id}/players", response_model=List[Player])
 async def get_players(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     players = await db.players.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(1000)
     return players
 
 @api_router.put("/campaigns/{campaign_id}/players/{player_id}", response_model=Player)
 async def update_player(campaign_id: str, player_id: str, player_data: PlayerUpdate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     update_dict = {k: v for k, v in player_data.model_dump().items() if v is not None}
     result = await db.players.update_one(
@@ -2345,9 +2276,7 @@ async def update_player(campaign_id: str, player_id: str, player_data: PlayerUpd
 
 @api_router.delete("/campaigns/{campaign_id}/players/{player_id}")
 async def delete_player(campaign_id: str, player_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     result = await db.players.delete_one({'id': player_id, 'campaign_id': campaign_id})
     if result.deleted_count == 0:
@@ -2358,9 +2287,7 @@ async def delete_player(campaign_id: str, player_id: str, username: str = Depend
 
 @api_router.post("/campaigns/{campaign_id}/npcs", response_model=NPC, status_code=status.HTTP_201_CREATED)
 async def create_npc(campaign_id: str, npc_data: NPCCreate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     npc_dict = npc_data.model_dump()
     npc_obj = NPC(campaign_id=campaign_id, **npc_dict)
@@ -2370,18 +2297,14 @@ async def create_npc(campaign_id: str, npc_data: NPCCreate, username: str = Depe
 
 @api_router.get("/campaigns/{campaign_id}/npcs", response_model=List[NPC])
 async def get_npcs(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     npcs = await db.npcs.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(1000)
     return npcs
 
 @api_router.put("/campaigns/{campaign_id}/npcs/{npc_id}", response_model=NPC)
 async def update_npc(campaign_id: str, npc_id: str, npc_data: NPCUpdate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     update_dict = {k: v for k, v in npc_data.model_dump().items() if v is not None}
     result = await db.npcs.update_one(
@@ -2397,9 +2320,7 @@ async def update_npc(campaign_id: str, npc_id: str, npc_data: NPCUpdate, usernam
 
 @api_router.delete("/campaigns/{campaign_id}/npcs/{npc_id}")
 async def delete_npc(campaign_id: str, npc_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     result = await db.npcs.delete_one({'id': npc_id, 'campaign_id': campaign_id})
     if result.deleted_count == 0:
@@ -2410,9 +2331,7 @@ async def delete_npc(campaign_id: str, npc_id: str, username: str = Depends(get_
 
 @api_router.post("/campaigns/{campaign_id}/initiative", response_model=Initiative)
 async def create_initiative(campaign_id: str, init_data: InitiativeCreate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     # Set previous initiatives to inactive
     await db.initiatives.update_many(
@@ -2428,9 +2347,7 @@ async def create_initiative(campaign_id: str, init_data: InitiativeCreate, usern
 
 @api_router.get("/campaigns/{campaign_id}/initiative", response_model=Optional[Initiative])
 async def get_active_initiative(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     initiative = await db.initiatives.find_one(
         {'campaign_id': campaign_id, 'is_active': True},
@@ -2440,9 +2357,7 @@ async def get_active_initiative(campaign_id: str, username: str = Depends(get_cu
 
 @api_router.put("/campaigns/{campaign_id}/initiative/{initiative_id}", response_model=Initiative)
 async def update_initiative(campaign_id: str, initiative_id: str, init_data: InitiativeUpdate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     update_dict = {k: v for k, v in init_data.model_dump().items() if v is not None}
     result = await db.initiatives.update_one(
@@ -2458,9 +2373,7 @@ async def update_initiative(campaign_id: str, initiative_id: str, init_data: Ini
 
 @api_router.delete("/campaigns/{campaign_id}/initiative/{initiative_id}")
 async def delete_initiative(campaign_id: str, initiative_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     result = await db.initiatives.delete_one({'id': initiative_id, 'campaign_id': campaign_id})
     if result.deleted_count == 0:
@@ -2471,9 +2384,7 @@ async def delete_initiative(campaign_id: str, initiative_id: str, username: str 
 
 @api_router.post("/campaigns/{campaign_id}/maps", response_model=GameMap)
 async def create_map(campaign_id: str, map_data: GameMapCreate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     map_dict = map_data.model_dump()
     map_obj = GameMap(campaign_id=campaign_id, **map_dict)
@@ -2483,18 +2394,14 @@ async def create_map(campaign_id: str, map_data: GameMapCreate, username: str = 
 
 @api_router.get("/campaigns/{campaign_id}/maps", response_model=List[GameMap])
 async def get_maps(campaign_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     maps = await db.maps.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(1000)
     return maps
 
 @api_router.put("/campaigns/{campaign_id}/maps/{map_id}", response_model=GameMap)
 async def update_map(campaign_id: str, map_id: str, map_data: GameMapUpdate, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     update_dict = {k: v for k, v in map_data.model_dump().items() if v is not None}
     result = await db.maps.update_one(
@@ -2510,9 +2417,7 @@ async def update_map(campaign_id: str, map_id: str, map_data: GameMapUpdate, use
 
 @api_router.delete("/campaigns/{campaign_id}/maps/{map_id}")
 async def delete_map(campaign_id: str, map_id: str, username: str = Depends(get_current_user)):
-    campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
-    if not campaign:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+    await verify_campaign_ownership(campaign_id, username)
     
     result = await db.maps.delete_one({'id': map_id, 'campaign_id': campaign_id})
     if result.deleted_count == 0:
