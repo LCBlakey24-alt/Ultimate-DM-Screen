@@ -1,6 +1,37 @@
 // Fantasy TTRPG 5e Items Database - Curated item collection
 // Total items: 3059
 
+// Item type constants extracted from database
+export const ITEM_TYPES = [
+  'Ammunition',
+  'Explosive',
+  'Heavy Armor',
+  'Light Armor',
+  'Medium Armor',
+  'Melee Weapon',
+  'Misc',
+  'Potion',
+  'Ranged Weapon',
+  'Rod',
+  'Scroll',
+  'Shield',
+  'Staff',
+  'Treasure/Art',
+  'Wand',
+  'Wondrous Item'
+];
+
+// Rarity options extracted from database
+export const RARITY_OPTIONS = [
+  'Common',
+  'Uncommon',
+  'Rare',
+  'Very Rare',
+  'Legendary',
+  'Artifact'
+];
+
+
 export const ITEMS_DATABASE = [
 {
     "name": "A necklace string of small pink pearls",
