@@ -21,17 +21,6 @@ const PRESET_CALENDARS = {
       {name: "September", days: 30}, {name: "October", days: 31},
       {name: "November", days: 30}, {name: "December", days: 31}
     ]
-  },
-  forgotten_realms: {
-    name: "Forgotten Realms Calendar",
-    months: [
-      {name: "Hammer", days: 30}, {name: "Alturiak", days: 30},
-      {name: "Ches", days: 30}, {name: "Tarsakh", days: 30},
-      {name: "Mirtul", days: 30}, {name: "Kythorn", days: 30},
-      {name: "Flamerule", days: 30}, {name: "Eleasis", days: 30},
-      {name: "Eleint", days: 30}, {name: "Marpenoth", days: 30},
-      {name: "Uktar", days: 30}, {name: "Nightal", days: 30}
-    ]
   }
 };
 
@@ -242,7 +231,6 @@ function CalendarTab({ campaignId }) {
               style={{ width: 'auto', cursor: 'pointer' }}
             >
               <option value="gregorian">Gregorian</option>
-              <option value="forgotten_realms">Forgotten Realms</option>
               <option value="custom">Custom Calendar</option>
             </select>
             <Button
