@@ -4,7 +4,8 @@ import axios from 'axios';
 import { 
   Sword, Users, Map, Sparkles, Dices, BookOpen, Crown, 
   ChevronRight, Star, Shield, Wand2, Globe, Scroll,
-  ArrowRight, Check, Play
+  ArrowRight, Check, Play, Zap, Clock, Target, TrendingUp,
+  Brain, ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -57,14 +58,14 @@ function LandingPage() {
       title: "Combat Manager",
       description: "Run epic battles with our initiative tracker, monster database, and interactive battle maps.",
       color: "#ef4444",
-      details: ["300+ monster statblocks", "Drag-and-drop tokens", "Encounter difficulty calculator"]
+      details: ["2687+ monster statblocks", "Attack & damage roller", "Encounter difficulty calculator"]
     },
     {
       icon: Sparkles,
-      title: "Unseen Servant AI",
-      description: "Generate NPCs, gods, locations, and lore instantly with our AI assistant - all auto-saved to your campaign.",
+      title: "AI GM Assistant",
+      description: "Purpose-built AI that performs real GM tasks — not generic chat.",
       color: "#a855f7",
-      details: ["One-click generation", "Auto-saves to campaign", "Context-aware content"]
+      details: ["Structured encounter generation", "Item creation with rarity context", "Note-to-entity extraction", "Session recap writing"]
     },
     {
       icon: Dices,
@@ -144,7 +145,7 @@ function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Hero Section - UPGRADED */}
       <section style={{ 
         paddingTop: '140px', 
         paddingBottom: '80px',
@@ -173,7 +174,6 @@ function LandingPage() {
           filter: 'blur(60px)',
           transform: `translateY(${scrollY * 0.2}px)`
         }} />
-        {/* Additional parallax orb */}
         <div style={{
           position: 'absolute',
           bottom: '10%',
@@ -236,7 +236,7 @@ function LandingPage() {
             />
           </div>
 
-          {/* Tagline with Rainbow Text */}
+          {/* NEW Headline */}
           <h1 style={{
             fontSize: 'clamp(2.5rem, 5vw, 4rem)',
             fontFamily: 'Montserrat, sans-serif',
@@ -245,27 +245,26 @@ function LandingPage() {
             marginBottom: '24px',
             lineHeight: '1.2'
           }}>
-            Your Ultimate{' '}
-            <span className="rainbow-text" style={{ 
-              fontWeight: '800'
-            }}>
-              GM Companion
+            Run Better D&D Sessions{' '}
+            <span className="rainbow-text" style={{ fontWeight: '800' }}>
+              in Less Time
             </span>
           </h1>
 
+          {/* NEW Subheadline */}
           <p style={{
             fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
             color: '#94a3b8',
-            maxWidth: '700px',
+            maxWidth: '800px',
             margin: '0 auto 40px',
             lineHeight: '1.7'
           }}>
-            Build worlds, run combat, generate content with AI, and manage your campaigns - 
-            all in one powerful tool designed by GMs, for GMs.
+            Rookie Quest Keeper is the all-in-one <strong style={{ color: '#14b8a6' }}>campaign operating system</strong> for 5e Game Masters — 
+            combining worldbuilding, AI content generation, combat control, and live session tools in one unified platform.
           </p>
 
-          {/* CTA Buttons */}
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          {/* CTA Buttons - UPDATED */}
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '32px' }}>
             <Button 
               onClick={() => navigate('/auth')}
               className="btn-primary"
@@ -294,13 +293,33 @@ function LandingPage() {
                 gap: '10px'
               }}
             >
-              See Features <ChevronRight size={20} />
+              Explore Features <ChevronRight size={20} />
             </Button>
           </div>
 
-          {/* Social proof - Only show stars if we have reviews */}
+          {/* NEW: Three Benefit Bullets */}
           <div style={{ 
-            marginTop: '48px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            gap: '32px',
+            flexWrap: 'wrap',
+            marginBottom: '24px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#22c55e', fontSize: '15px', fontWeight: '600' }}>
+              <Zap size={18} /> Stop juggling tabs
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#a855f7', fontSize: '15px', fontWeight: '600' }}>
+              <Brain size={18} /> Prep faster with AI
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ef4444', fontSize: '15px', fontWeight: '600' }}>
+              <Target size={18} /> Run smoother combat
+            </div>
+          </div>
+
+          {/* Social proof */}
+          <div style={{ 
+            marginTop: '32px', 
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center',
@@ -327,8 +346,215 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" style={{ padding: '80px 24px', position: 'relative' }}>
+      {/* NEW: Immediate Value Section */}
+      <section style={{ 
+        padding: '80px 24px', 
+        background: 'rgba(10, 10, 46, 0.3)',
+        borderTop: '2px solid rgba(20, 184, 166, 0.2)',
+        borderBottom: '2px solid rgba(20, 184, 166, 0.2)'
+      }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <h2 style={{
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: '800',
+              color: '#ffffff',
+              marginBottom: '20px'
+            }}>
+              Your Entire Campaign. <span style={{ color: '#14b8a6' }}>One System.</span>
+            </h2>
+            <p style={{
+              color: '#94a3b8',
+              fontSize: '18px',
+              lineHeight: '1.8',
+              maxWidth: '800px',
+              margin: '0 auto'
+            }}>
+              Most GMs juggle notes, PDFs, initiative trackers, spreadsheets, and AI chats across multiple tools. 
+              Rookie Quest Keeper connects <strong style={{ color: '#fff' }}>prep and play</strong> into one seamless workflow — 
+              so your ideas, combat, and content stay organized and ready.
+            </p>
+          </div>
+
+          {/* Visual Flow */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            gap: '16px',
+            flexWrap: 'wrap'
+          }}>
+            {[
+              { icon: Globe, label: 'Build World', color: '#22c55e' },
+              { icon: Sparkles, label: 'Generate Content', color: '#a855f7' },
+              { icon: Sword, label: 'Run Combat', color: '#ef4444' },
+              { icon: BookOpen, label: 'Capture & Recap', color: '#4a7dff' }
+            ].map((step, idx, arr) => (
+              <React.Fragment key={idx}>
+                <div style={{
+                  padding: '24px 32px',
+                  background: `linear-gradient(135deg, ${step.color}20 0%, ${step.color}10 100%)`,
+                  border: `2px solid ${step.color}`,
+                  borderRadius: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  minWidth: '180px'
+                }}>
+                  <step.icon size={28} color={step.color} />
+                  <span style={{ color: '#fff', fontWeight: '700', fontSize: '16px' }}>
+                    {step.label}
+                  </span>
+                </div>
+                {idx < arr.length - 1 && (
+                  <ChevronRight size={24} color="#475569" style={{ flexShrink: 0 }} />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: Who It's For Section */}
+      <section style={{ padding: '80px 24px', position: 'relative' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <h2 style={{
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: '800',
+              color: '#ffffff',
+              marginBottom: '16px'
+            }}>
+              Built for <span className="rainbow-text">Real Game Masters</span>
+            </h2>
+          </div>
+
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: '32px' 
+          }}>
+            {/* New DMs */}
+            <div style={{
+              padding: '40px',
+              background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(10, 10, 46, 0.8) 100%)',
+              border: '2px solid #22c55e',
+              borderRadius: '24px',
+              textAlign: 'center'
+            }}>
+              <div style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                background: 'rgba(34, 197, 94, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px'
+              }}>
+                <BookOpen size={40} color="#22c55e" />
+              </div>
+              <h3 style={{
+                fontSize: '24px',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: '700',
+                color: '#22c55e',
+                marginBottom: '16px'
+              }}>
+                New DMs
+              </h3>
+              <p style={{
+                color: '#94a3b8',
+                fontSize: '16px',
+                lineHeight: '1.7'
+              }}>
+                Overwhelmed by prep? Use structured tools that guide your campaign from session zero to finale.
+              </p>
+            </div>
+
+            {/* Forever DMs */}
+            <div style={{
+              padding: '40px',
+              background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(10, 10, 46, 0.8) 100%)',
+              border: '2px solid #a855f7',
+              borderRadius: '24px',
+              textAlign: 'center'
+            }}>
+              <div style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                background: 'rgba(168, 85, 247, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px'
+              }}>
+                <Crown size={40} color="#a855f7" />
+              </div>
+              <h3 style={{
+                fontSize: '24px',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: '700',
+                color: '#a855f7',
+                marginBottom: '16px'
+              }}>
+                Forever DMs
+              </h3>
+              <p style={{
+                color: '#94a3b8',
+                fontSize: '16px',
+                lineHeight: '1.7'
+              }}>
+                Running long campaigns? Keep NPCs, locations, combat, and notes connected across months of play.
+              </p>
+            </div>
+
+            {/* Online DMs */}
+            <div style={{
+              padding: '40px',
+              background: 'linear-gradient(135deg, rgba(74, 125, 255, 0.1) 0%, rgba(10, 10, 46, 0.8) 100%)',
+              border: '2px solid #4a7dff',
+              borderRadius: '24px',
+              textAlign: 'center'
+            }}>
+              <div style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                background: 'rgba(74, 125, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px'
+              }}>
+                <Globe size={40} color="#4a7dff" />
+              </div>
+              <h3 style={{
+                fontSize: '24px',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: '700',
+                color: '#4a7dff',
+                marginBottom: '16px'
+              }}>
+                Online DMs
+              </h3>
+              <p style={{
+                color: '#94a3b8',
+                fontSize: '16px',
+                lineHeight: '1.7'
+              }}>
+                Stop switching between Discord, VTTs, PDFs, and scattered notes. Centralize everything in one command center.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section - UPDATED AI Section */}
+      <section id="features" style={{ padding: '80px 24px', position: 'relative', background: 'rgba(10, 10, 46, 0.2)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <h2 style={{
@@ -388,6 +614,18 @@ function LandingPage() {
                 }}>
                   {feature.title}
                 </h3>
+                {/* AI GM Assistant gets special subtext */}
+                {feature.title === 'AI GM Assistant' && (
+                  <p style={{
+                    color: '#a855f7',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    marginBottom: '8px',
+                    fontStyle: 'italic'
+                  }}>
+                    Purpose-built AI that performs real GM tasks — not generic chat.
+                  </p>
+                )}
                 <p style={{
                   color: '#94a3b8',
                   fontSize: '15px',
@@ -416,10 +654,54 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Preview */}
+      {/* NEW: Pre-Pricing Statement Section */}
+      <section style={{ 
+        padding: '80px 24px', 
+        background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%)',
+        borderTop: '2px solid rgba(20, 184, 166, 0.3)',
+        borderBottom: '2px solid rgba(124, 58, 237, 0.3)',
+        textAlign: 'center'
+      }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: 'clamp(2rem, 4vw, 3rem)',
+            fontFamily: 'Montserrat, sans-serif',
+            fontWeight: '800',
+            color: '#ffffff',
+            marginBottom: '24px',
+            lineHeight: '1.3'
+          }}>
+            Stop Managing Tools. <br />
+            <span style={{ color: '#14b8a6' }}>Start Managing Your Campaign.</span>
+          </h2>
+          <p style={{
+            color: '#94a3b8',
+            fontSize: '20px',
+            lineHeight: '1.8',
+            maxWidth: '700px',
+            margin: '0 auto'
+          }}>
+            Rookie Quest Keeper replaces fragmented GM workflows with one connected campaign hub — 
+            built specifically for <strong style={{ color: '#fff' }}>5e 2014 and 2024</strong>.
+          </p>
+        </div>
+      </section>
+
+      {/* Pricing Section - ENHANCED */}
       <section style={{ padding: '80px 24px', background: 'rgba(10, 10, 46, 0.3)' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            {/* NEW: Start Free text */}
+            <p style={{
+              color: '#22c55e',
+              fontSize: '16px',
+              fontWeight: '700',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              marginBottom: '12px'
+            }}>
+              Start Free. Upgrade When You're Ready.
+            </p>
             <h2 style={{
               fontSize: 'clamp(2rem, 4vw, 3rem)',
               fontFamily: 'Montserrat, sans-serif',
@@ -430,7 +712,7 @@ function LandingPage() {
               Simple, Transparent Pricing
             </h2>
             <p style={{ color: '#94a3b8', fontSize: '18px' }}>
-              Start free, upgrade when you're ready.
+              No credit card required. Free forever tier available.
             </p>
           </div>
 
@@ -482,7 +764,7 @@ function LandingPage() {
               </Button>
             </div>
 
-            {/* Premium Tier */}
+            {/* Premium Tier - ENHANCED */}
             <div style={{
               padding: '40px',
               background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(74, 125, 255, 0.1) 100%)',
@@ -520,8 +802,40 @@ function LandingPage() {
                 <span style={{ fontSize: '48px', color: '#ffffff', fontWeight: '800' }}>$3.99</span>
                 <span style={{ color: '#94a3b8' }}>/month</span>
               </div>
+              
+              {/* EMPHASIZED unlimited features */}
+              <div style={{
+                padding: '16px',
+                background: 'rgba(34, 197, 94, 0.1)',
+                border: '2px solid #22c55e',
+                borderRadius: '12px',
+                marginBottom: '20px'
+              }}>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '10px',
+                  color: '#22c55e',
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  marginBottom: '8px'
+                }}>
+                  <TrendingUp size={20} /> Unlimited Campaigns
+                </div>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '10px',
+                  color: '#22c55e',
+                  fontSize: '18px',
+                  fontWeight: '700'
+                }}>
+                  <Sparkles size={20} /> Unlimited AI Generations
+                </div>
+              </div>
+
               <ul style={{ margin: '0 0 32px', padding: 0, listStyle: 'none' }}>
-                {['Unlimited Campaigns', 'Unlimited AI Generations', 'Priority Support', 'Early Access Features', 'Everything in Free'].map((item, i) => (
+                {['Priority Support', 'Early Access Features', 'Everything in Free'].map((item, i) => (
                   <li key={i} style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
@@ -534,17 +848,29 @@ function LandingPage() {
                   </li>
                 ))}
               </ul>
+              
               <Button 
                 onClick={() => navigate('/auth')}
                 className="btn-primary"
                 style={{ 
                   width: '100%', 
                   padding: '14px',
-                  background: 'linear-gradient(90deg, #22c55e, #16a34a)'
+                  background: 'linear-gradient(90deg, #22c55e, #16a34a)',
+                  marginBottom: '12px'
                 }}
               >
                 Start Adventurer Trial
               </Button>
+              
+              {/* NEW: Reassurance text */}
+              <p style={{
+                color: '#94a3b8',
+                fontSize: '13px',
+                textAlign: 'center',
+                marginTop: '12px'
+              }}>
+                Cancel anytime. No contracts.
+              </p>
             </div>
           </div>
         </div>

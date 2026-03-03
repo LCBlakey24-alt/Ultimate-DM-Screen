@@ -77,6 +77,8 @@ function CampaignDashboard({ username, onLogout }) {
     <div style={{
       minHeight: '100vh',
       background: 'linear-gradient(180deg, #030014 0%, #0a0a2e 50%, #030014 100%)',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
       {/* Header */}
       <div style={{
@@ -89,7 +91,7 @@ function CampaignDashboard({ username, onLogout }) {
         backdropFilter: 'blur(10px)',
         boxShadow: '0 0 30px rgba(74, 125, 255, 0.2)'
       }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div style={{ maxWidth: '100%', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <Button 
               data-testid="back-to-campaigns-btn"
@@ -112,12 +114,12 @@ function CampaignDashboard({ username, onLogout }) {
                 <span className="system-badge">
                   {campaign.system || 'D&D 5e 2024'}
                 </span>
-                <span style={{ fontSize: '13px', color: '#94a3b8' }}>Campaign Management</span>
+                <span style={{ fontSize: '13px', color: '#94a3b8' }}>Campaign Command Center</span>
               </div>
             </div>
           </div>
           
-          {/* Logos in Header - Between campaign name and GM Screen button */}
+          {/* Logos in Header */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center',
@@ -159,72 +161,115 @@ function CampaignDashboard({ username, onLogout }) {
         </div>
       </div>
 
-      {/* Content */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
-        {/* Quick Tips */}
-        <QuickTips 
-          tips={TIPS.campaignDashboard} 
-          pageId="campaignDashboard" 
-          title="Campaign Tips"
-        />
-
-        {/* Tab Navigation - Same design as GM Screen */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '6px', 
-          marginBottom: '24px', 
-          flexWrap: 'wrap', 
-          background: 'rgba(10, 10, 40, 0.5)', 
-          padding: '8px', 
-          borderRadius: '16px', 
-          border: '2px solid #1e40af' 
+      {/* Main Layout with Left Sidebar */}
+      <div style={{ 
+        display: 'flex', 
+        flex: 1,
+        overflow: 'hidden'
+      }}>
+        {/* LEFT SIDEBAR - Always Visible */}
+        <div style={{
+          width: '240px',
+          minWidth: '240px',
+          background: 'rgba(10, 10, 40, 0.8)',
+          borderRight: '2px solid #1e40af',
+          padding: '20px 12px',
+          overflowY: 'auto',
+          boxShadow: '4px 0 20px rgba(0, 0, 0, 0.3)'
         }}>
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              data-testid={`${tab.id}-tab`}
-              style={{
-                flex: '1 1 auto',
-                minWidth: '90px',
-                padding: '12px 14px',
-                borderRadius: '12px',
-                border: activeTab === tab.id ? `2px solid ${tab.color}` : '2px solid transparent',
-                background: activeTab === tab.id ? `${tab.color}20` : 'transparent',
-                color: activeTab === tab.id ? tab.color : '#94a3b8',
-                fontFamily: 'Montserrat, sans-serif',
-                fontWeight: '700',
-                fontSize: '12px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                transition: 'all 0.2s'
-              }}
-            >
-              <tab.icon size={15} />
-              {tab.label}
-            </button>
-          ))}
+          <h3 style={{
+            color: '#94a3b8',
+            fontSize: '11px',
+            fontWeight: '700',
+            letterSpacing: '1.5px',
+            textTransform: 'uppercase',
+            marginBottom: '16px',
+            paddingLeft: '12px'
+          }}>
+            Campaign Tools
+          </h3>
+          
+          {/* Sidebar Navigation Tabs */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                data-testid={`${tab.id}-tab`}
+                style={{
+                  padding: '14px 16px',
+                  borderRadius: '12px',
+                  border: activeTab === tab.id ? `2px solid ${tab.color}` : '2px solid transparent',
+                  background: activeTab === tab.id ? `${tab.color}20` : 'transparent',
+                  color: activeTab === tab.id ? tab.color : '#94a3b8',
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontWeight: '700',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  transition: 'all 0.2s',
+                  textAlign: 'left',
+                  width: '100%'
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== tab.id) {
+                    e.currentTarget.style.background = 'rgba(30, 64, 175, 0.3)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== tab.id) {
+                    e.currentTarget.style.background = 'transparent';
+                  }
+                }}
+              >
+                <tab.icon size={18} />
+                <span style={{ flex: 1 }}>{tab.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Tab Content */}
-        <div className="glow-panel" style={{ minHeight: '500px' }}>
-          {activeTab === 'setting' && <CampaignSettingTab campaignId={campaignId} />}
-          {activeTab === 'world' && <WorldBuilderTab campaignId={campaignId} />}
-          {activeTab === 'gods' && <GodsTab campaignId={campaignId} />}
-          {activeTab === 'npcs' && <NPCsTab campaignId={campaignId} />}
-          {activeTab === 'locations' && <LocationsTab campaignId={campaignId} />}
-          {activeTab === 'players' && <PlayersTab campaignId={campaignId} />}
-          {activeTab === 'combat-creator' && <CombatCreatorTab campaignId={campaignId} />}
-          {activeTab === 'encounter-gen' && <EncounterGeneratorTab campaignId={campaignId} />}
-          {activeTab === 'items' && <ItemCreatorTab campaignId={campaignId} />}
-          {activeTab === 'reference' && <QuickReferenceTab campaignId={campaignId} />}
-          {activeTab === 'calendar' && <CalendarTab campaignId={campaignId} />}
-          {activeTab === 'ingame-notes' && <InGameNotesTab campaignId={campaignId} />}
+        {/* MAIN CONTENT AREA */}
+        <div style={{ 
+          flex: 1, 
+          overflowY: 'auto',
+          padding: '24px'
+        }}>
+          {/* Quick Tips */}
+          <QuickTips 
+            tips={TIPS.campaignDashboard} 
+            pageId="campaignDashboard" 
+            title="Campaign Tips"
+          />
+
+          {/* Tab Content */}
+          <div className="glow-panel" style={{ minHeight: '500px' }}>
+            {activeTab === 'setting' && <CampaignSettingTab campaignId={campaignId} />}
+            {activeTab === 'world' && <WorldBuilderTab campaignId={campaignId} />}
+            {activeTab === 'gods' && <GodsTab campaignId={campaignId} />}
+            {activeTab === 'npcs' && <NPCsTab campaignId={campaignId} />}
+            {activeTab === 'locations' && <LocationsTab campaignId={campaignId} />}
+            {activeTab === 'players' && <PlayersTab campaignId={campaignId} />}
+            {activeTab === 'combat-creator' && <CombatCreatorTab campaignId={campaignId} />}
+            {activeTab === 'encounter-gen' && <EncounterGeneratorTab campaignId={campaignId} />}
+            {activeTab === 'items' && <ItemCreatorTab campaignId={campaignId} />}
+            {activeTab === 'reference' && <QuickReferenceTab campaignId={campaignId} />}
+            {activeTab === 'calendar' && <CalendarTab campaignId={campaignId} />}
+            {activeTab === 'ingame-notes' && <InGameNotesTab campaignId={campaignId} />}
+          </div>
         </div>
       </div>
+
+      {/* Responsive Mobile Styles */}
+      <style>{`
+        @media (max-width: 768px) {
+          div[style*="width: 240px"] {
+            display: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

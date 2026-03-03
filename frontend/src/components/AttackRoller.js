@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sword, Target, Sparkles, Dices, X, Check, Shield } from 'lucide-react';
+import { Sword, Target, Sparkles, Dices, X, Check, Shield, Zap } from 'lucide-react';
 
 // Parse dice notation from ability text
 function parseDiceFromText(text) {
@@ -93,8 +93,18 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
   const [damageResults, setDamageResults] = useState(null);
   const [numAttacks, setNumAttacks] = useState(1);
   const [selectedAttack, setSelectedAttack] = useState(null);
+  const [critAnimation, setCritAnimation] = useState(false);
   
   const attacks = parseAttacks(creature);
+
+  // Trigger crit animation
+  useEffect(() => {
+    if (attackResults && attackResults.some(r => r.isCrit)) {
+      setCritAnimation(true);
+      const timer = setTimeout(() => setCritAnimation(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [attackResults]);
 
   const rollToHit = () => {
     if (!targetAC || !selectedAttack) return;
@@ -200,6 +210,34 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
           <X size={20} color="#64748b" />
         </button>
       </div>
+
+      {/* Crit Animation Overlay */}
+      {critAnimation && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: 'none',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          animation: 'critFlash 1s ease-out'
+        }}>
+          <div style={{
+            fontSize: '120px',
+            fontWeight: '800',
+            color: '#eab308',
+            textShadow: '0 0 40px #eab308, 0 0 80px #eab308',
+            animation: 'critPulse 1s ease-out',
+            fontFamily: 'Montserrat, sans-serif'
+          }}>
+            CRITICAL!
+          </div>
+        </div>
+      )}
 
       {/* Attack Selection */}
       {attacks.length > 0 ? (
@@ -322,15 +360,29 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
                   <div
                     key={idx}
                     data-testid={`attack-result-${idx}`}
+                    className={result.isCrit ? 'crit-shake' : ''}
                     style={{
                       padding: '10px 14px',
                       background: result.isCrit ? 'rgba(234, 179, 8, 0.2)' : result.hits ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
                       border: `2px solid ${result.isCrit ? '#eab308' : result.hits ? '#22c55e' : '#ef4444'}`,
                       borderRadius: '10px',
                       textAlign: 'center',
-                      minWidth: '80px'
+                      minWidth: '80px',
+                      position: 'relative',
+                      boxShadow: result.isCrit ? '0 0 30px rgba(234, 179, 8, 0.6)' : 'none',
+                      animation: result.isCrit ? 'critGlow 0.5s ease-in-out infinite alternate' : 'none'
                     }}
                   >
+                    {result.isCrit && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '-8px',
+                        right: '-8px',
+                        animation: 'critSpin 2s linear infinite'
+                      }}>
+                        <Zap size={20} color="#eab308" fill="#eab308" />
+                      </div>
+                    )}
                     <div style={{ 
                       fontSize: '20px', 
                       fontWeight: '800', 
@@ -482,6 +534,57 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
           )}
         </>
       )}
+      
+      {/* CSS Animations for Crit Effects */}
+      <style>{`
+        @keyframes critFlash {
+          0%, 100% { opacity: 0; }
+          10%, 90% { opacity: 1; }
+          50% { 
+            opacity: 1;
+            background: radial-gradient(circle, rgba(234, 179, 8, 0.3) 0%, transparent 70%);
+          }
+        }
+        
+        @keyframes critPulse {
+          0% { 
+            transform: scale(0.5);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.2);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes critGlow {
+          0% {
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
+          }
+          100% {
+            box-shadow: 0 0 40px rgba(234, 179, 8, 0.8);
+          }
+        }
+        
+        @keyframes critSpin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        .crit-shake {
+          animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+      `}</style>
     </div>
   );
 }
