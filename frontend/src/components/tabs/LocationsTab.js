@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, MapPin, Loader, Store, ChevronDown, ChevronUp, Building, Beer, Church, Hammer, Home, BookOpen, X, Wand2, Check } from 'lucide-react';
+import { Plus, Edit, Trash2, MapPin, Loader, Store, ChevronDown, ChevronUp, Building, Beer, Church, Hammer, Home, BookOpen, X, Wand2, Check, Search } from 'lucide-react';
+import EmptyState from '@/components/EmptyState';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -44,6 +46,8 @@ function LocationsTab({ campaignId }) {
   const [showPlaceDialog, setShowPlaceDialog] = useState(false);
   const [editingPlace, setEditingPlace] = useState(null);
   const [selectedLocationId, setSelectedLocationId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [deletingLocation, setDeletingLocation] = useState(null);
   const [placeFormData, setPlaceFormData] = useState({
     name: '',
     place_type: 'shop',
@@ -98,15 +102,31 @@ function LocationsTab({ campaignId }) {
   };
 
   const handleDelete = async (locationId) => {
-    if (!window.confirm('Delete this location?')) return;
-    try {
-      await axios.delete(`${API}/campaigns/${campaignId}/locations/${locationId}`);
-      toast.success('Location deleted');
-      fetchLocations();
-    } catch (error) {
-      toast.error('Failed to delete location');
+    if (deletingLocation === locationId) {
+      try {
+        const loc = locations.find(l => l.id === locationId);
+        await axios.delete(`${API}/campaigns/${campaignId}/locations/${locationId}`);
+        toast.success(`${loc?.name || 'Location'} removed`, {
+          description: 'Location has been deleted'
+        });
+        fetchLocations();
+      } catch (error) {
+        toast.error('Failed to delete location');
+      } finally {
+        setDeletingLocation(null);
+      }
+    } else {
+      setDeletingLocation(locationId);
+      setTimeout(() => setDeletingLocation(null), 5000);
     }
   };
+
+  // Filter locations by search
+  const filteredLocations = locations.filter(loc =>
+    loc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    loc.location_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    loc.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const resetForm = () => {
     setFormData({
@@ -238,13 +258,129 @@ function LocationsTab({ campaignId }) {
     }
   };
 
-  if (loading) return <div className="loading-spinner"></div>;
+  // Loading state
+  if (loading) {
+    return (
+      <div>
+        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#ffffff', marginBottom: '24px' }}>Locations</h2>
+        <LoadingSkeleton type="grid" count={3} />
+      </div>
+    );
+  }
+
+  // Empty state
+  if (locations.length === 0) {
+    return (
+      <div className="campaign-management-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
+        <EmptyState
+          icon={MapPin}
+          title="No Locations Yet"
+          description="Build your world by adding locations. Create cities, dungeons, forests, and more. Use the Unseen Servant AI to generate them instantly."
+          actionLabel="Create Your First Location"
+          onAction={() => setShowDialog(true)}
+          color="#22c55e"
+        />
+        
+        {/* Unseen Servant Panel - still show for empty state */}
+        <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
+          <Card className="parchment-dark" style={{ border: '2px solid #22c55e' }}>
+            <CardHeader>
+              <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Wand2 size={20} style={{ color: '#22c55e' }} />
+                Unseen Servant
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p style={{ fontSize: '13px', color: '#86efac', marginBottom: '16px', lineHeight: '1.5' }}>
+                Describe a location and the Unseen Servant will create it for your world.
+              </p>
+              <div style={{ marginBottom: '16px' }}>
+                <textarea
+                  data-testid="unseen-servant-location-prompt"
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  className="textarea"
+                  style={{ minHeight: '100px', fontSize: '13px', borderColor: '#22c55e' }}
+                  placeholder="Example: A haunted castle on a cliff overlooking a dark forest"
+                />
+              </div>
+              <Button
+                data-testid="summon-location-btn"
+                onClick={handleUnseenServant}
+                disabled={aiGenerating}
+                className="btn-primary"
+                style={{ 
+                  width: '100%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  gap: '8px',
+                  background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                  border: 'none'
+                }}
+              >
+                {aiGenerating ? (
+                  <>
+                    <Loader size={16} className="animate-spin" />
+                    Summoning...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 size={16} />
+                    Summon Location
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Dialog for manual creation */}
+        <Dialog open={showDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowDialog(open); }}>
+          <DialogContent className="modal" style={{ maxWidth: '600px' }}>
+            <DialogHeader>
+              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
+                Add Location
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Name</label>
+                <Input
+                  data-testid="location-name-input"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="input"
+                  required
+                />
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Description</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="textarea"
+                  style={{ minHeight: '100px' }}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <Button type="button" className="btn-secondary" onClick={resetForm}>Cancel</Button>
+                <Button type="submit" className="btn-primary">Add Location</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
 
   return (
     <div className="campaign-management-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#ffffff' }}>Locations</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+          <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#ffffff' }}>
+            Locations <span style={{ fontSize: '18px', color: '#94a3b8' }}>({filteredLocations.length})</span>
+          </h2>
           <Dialog open={showDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowDialog(open); }}>
             <DialogTrigger asChild>
               <Button data-testid="add-location-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
@@ -318,6 +454,45 @@ function LocationsTab({ campaignId }) {
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Search Bar */}
+        {locations.length > 3 && (
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{ position: 'relative' }}>
+              <Search 
+                size={18} 
+                style={{ 
+                  position: 'absolute', 
+                  left: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)', 
+                  color: '#94a3b8' 
+                }} 
+              />
+              <Input
+                placeholder="Search locations by name, type, or description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input"
+                style={{ paddingLeft: '40px' }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* No results from search */}
+        {filteredLocations.length === 0 && searchTerm && (
+          <div style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
+            <p>No locations found matching "{searchTerm}"</p>
+            <Button 
+              onClick={() => setSearchTerm('')}
+              className="btn-outline"
+              style={{ marginTop: '12px' }}
+            >
+              Clear Search
+            </Button>
+          </div>
+        )}
 
         {/* Place of Interest Dialog */}
         <Dialog open={showPlaceDialog} onOpenChange={setShowPlaceDialog}>
@@ -406,13 +581,13 @@ function LocationsTab({ campaignId }) {
           </DialogContent>
         </Dialog>
 
-        {locations.length === 0 ? (
+        {filteredLocations.length === 0 && !searchTerm ? (
           <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
             <p style={{ color: '#bae6fd' }}>No locations added yet. Build your world!</p>
           </Card>
-        ) : (
+        ) : filteredLocations.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {locations.map(location => {
+            {filteredLocations.map(location => {
               const isExpanded = expandedLocations[location.id];
               const places = location.places_of_interest || [];
               const isNewlyCreated = lastGenerated?.entity_id === location.id;
@@ -448,9 +623,40 @@ function LocationsTab({ campaignId }) {
                         <Button data-testid={`edit-location-btn-${location.id}`} onClick={() => handleEdit(location)} className="btn-secondary" style={{ padding: '8px' }}>
                           <Edit size={14} />
                         </Button>
-                        <Button data-testid={`delete-location-btn-${location.id}`} onClick={() => handleDelete(location.id)} className="btn-danger" style={{ padding: '8px' }}>
-                          <Trash2 size={14} />
-                        </Button>
+                        
+                        {/* Delete with confirmation */}
+                        {deletingLocation === location.id ? (
+                          <div style={{ 
+                            display: 'flex', 
+                            gap: '4px', 
+                            alignItems: 'center',
+                            padding: '4px 8px',
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            borderRadius: '8px',
+                            border: '1px solid #ef4444'
+                          }}>
+                            <span style={{ fontSize: '11px', color: '#fff', whiteSpace: 'nowrap' }}>Delete?</span>
+                            <Button
+                              data-testid={`confirm-delete-location-${location.id}`}
+                              onClick={() => handleDelete(location.id)}
+                              className="btn-icon"
+                              style={{ background: '#ef4444', minHeight: '28px', minWidth: '28px', padding: '4px' }}
+                            >
+                              <Check size={12} />
+                            </Button>
+                            <Button
+                              onClick={() => setDeletingLocation(null)}
+                              className="btn-icon"
+                              style={{ minHeight: '28px', minWidth: '28px', padding: '4px' }}
+                            >
+                              <X size={12} />
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button data-testid={`delete-location-btn-${location.id}`} onClick={() => handleDelete(location.id)} className="btn-danger" style={{ padding: '8px' }}>
+                            <Trash2 size={14} />
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </CardHeader>

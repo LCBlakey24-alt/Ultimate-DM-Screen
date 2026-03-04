@@ -15,6 +15,7 @@ from datetime import datetime, timezone, timedelta
 import bcrypt
 import jwt
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 import base64
 import asyncio
@@ -2965,7 +2966,7 @@ async def get_inventory(campaign_id: str, current_user: str = Depends(get_curren
     items = await db.inventory.find(
         {'campaign_id': campaign_id},
         {'_id': 0}
-    ).sort('created_at', -1).to_list(None)
+    ).sort('created_at', -1).to_list(500)  # Limit to 500 items per campaign
     return items
 
 @api_router.post("/campaigns/{campaign_id}/inventory")
@@ -3057,7 +3058,7 @@ async def get_custom_items(campaign_id: str, current_user: str = Depends(get_cur
     items = await db.custom_items.find(
         {'campaign_id': campaign_id},
         {'_id': 0}
-    ).sort('created_at', -1).to_list(None)
+    ).sort('created_at', -1).to_list(500)  # Limit to 500 custom items
     return items
 
 @api_router.post("/campaigns/{campaign_id}/custom-items")
@@ -3152,8 +3153,8 @@ async def parse_session_notes(
         )
     
     # Fetch existing campaign entities to help AI match them
-    npcs = await db.npcs.find({'campaign_id': campaign_id}, {'_id': 0, 'id': 1, 'name': 1}).to_list(None)
-    locations = await db.locations.find({'campaign_id': campaign_id}, {'_id': 0, 'id': 1, 'name': 1}).to_list(None)
+    npcs = await db.npcs.find({'campaign_id': campaign_id}, {'_id': 0, 'id': 1, 'name': 1}).to_list(200)  # Limit for AI context
+    locations = await db.locations.find({'campaign_id': campaign_id}, {'_id': 0, 'id': 1, 'name': 1}).to_list(200)
     
     npc_names = [npc['name'] for npc in npcs]
     location_names = [loc['name'] for loc in locations]
@@ -3334,7 +3335,7 @@ async def get_user_characters(username: str = Depends(get_current_user)):
     characters = await db.player_characters.find(
         {'user_id': username},
         {'_id': 0}
-    ).sort('created_at', -1).to_list(None)
+    ).sort('created_at', -1).to_list(100)  # Limit to 100 characters per user
     return characters
 
 @api_router.post("/characters", response_model=dict)
@@ -3591,7 +3592,7 @@ async def get_campaign_players(
     characters = await db.player_characters.find(
         {'campaign_id': campaign_id},
         {'_id': 0}
-    ).to_list(None)
+    ).to_list(50)  # Limit to 50 players per campaign
     
     return {
         "count": len(characters),
@@ -3702,6 +3703,67 @@ Use point buy values (8-15 before racial modifiers, total around 72 points)."""
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to generate character: {str(e)}"
+        )
+
+class PortraitGenerateRequest(BaseModel):
+    name: str
+    race: str
+    character_class: str
+    gender: str = "neutral"
+    appearance: str = ""
+
+@api_router.post("/ai/generate-portrait")
+async def ai_generate_portrait(
+    request: PortraitGenerateRequest,
+    username: str = Depends(get_current_user)
+):
+    """
+    AI Portrait Generator: Create a character portrait image.
+    Returns base64 encoded image data.
+    """
+    # Build portrait prompt
+    appearance_desc = request.appearance if request.appearance else "fantasy adventurer"
+    
+    portrait_prompt = f"""Fantasy character portrait, RPG style digital art:
+A {request.gender} {request.race} {request.character_class} named {request.name}.
+{appearance_desc}
+High quality fantasy illustration, detailed face, dramatic lighting, 
+medieval fantasy style, painterly, heroic pose, portrait framing.
+No text, no watermarks, professional fantasy art."""
+
+    try:
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AI service not configured"
+            )
+        
+        image_gen = OpenAIImageGeneration(api_key=llm_key)
+        images = await image_gen.generate_images(
+            prompt=portrait_prompt,
+            model="gpt-image-1",
+            number_of_images=1
+        )
+        
+        if images and len(images) > 0:
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            return {
+                "success": True,
+                "image_base64": image_base64,
+                "message": f"Portrait of {request.name} created!"
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="No image was generated"
+            )
+            
+    except Exception as e:
+        logger.error(f"Portrait generation failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate portrait: {str(e)}"
         )
 
 # Include the router in the main app

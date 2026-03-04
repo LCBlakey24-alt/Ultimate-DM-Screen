@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { ArrowLeft, User, Sparkles, Loader, Wand2, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, User, Sparkles, Loader, Wand2, ChevronDown, ChevronUp, Image, UserCircle } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -48,6 +48,11 @@ function CharacterBuilder() {
   const [aiGenerating, setAiGenerating] = useState(false);
   const [showAiPanel, setShowAiPanel] = useState(true);
   const [aiGenerated, setAiGenerated] = useState(false);
+  
+  // Portrait generation state
+  const [portraitGenerating, setPortraitGenerating] = useState(false);
+  const [portraitImage, setPortraitImage] = useState(null);
+  const [gender, setGender] = useState('neutral');
   
   const [characterData, setCharacterData] = useState({
     name: '',
@@ -127,6 +132,41 @@ function CharacterBuilder() {
       });
     } finally {
       setAiGenerating(false);
+    }
+  };
+
+  // Generate character portrait
+  const handleGeneratePortrait = async () => {
+    if (!characterData.name.trim()) {
+      toast.error('Name required', {
+        description: 'Please enter a character name first'
+      });
+      return;
+    }
+
+    setPortraitGenerating(true);
+    try {
+      const response = await axios.post(`${API}/ai/generate-portrait`, {
+        name: characterData.name,
+        race: characterData.race,
+        character_class: characterData.character_class,
+        gender: gender,
+        appearance: characterData.backstory ? characterData.backstory.substring(0, 200) : ''
+      });
+
+      if (response.data.success && response.data.image_base64) {
+        setPortraitImage(`data:image/png;base64,${response.data.image_base64}`);
+        toast.success('Portrait generated!', {
+          description: response.data.message,
+          duration: 4000
+        });
+      }
+    } catch (error) {
+      toast.error('Portrait generation failed', {
+        description: error.response?.data?.detail || 'Please try again'
+      });
+    } finally {
+      setPortraitGenerating(false);
     }
   };
 
@@ -632,46 +672,162 @@ function CharacterBuilder() {
           </Card>
         )}
 
-        {/* Step 4: Backstory */}
+        {/* Step 4: Backstory & Portrait */}
         {step === 4 && (
-          <Card className="glow-card">
-            <CardHeader>
-              <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
-                Backstory
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
-                  Tell Your Character's Story
-                </label>
-                <textarea
-                  value={characterData.backstory}
-                  onChange={(e) => handleChange('backstory', e.target.value)}
-                  placeholder="Where did your character come from? What drives them? What are they searching for?"
-                  className="textarea"
-                  style={{ minHeight: '200px' }}
-                />
-              </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px' }}>
+            <Card className="glow-card">
+              <CardHeader>
+                <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
+                  Backstory
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
+                    Tell Your Character's Story
+                  </label>
+                  <textarea
+                    value={characterData.backstory}
+                    onChange={(e) => handleChange('backstory', e.target.value)}
+                    placeholder="Where did your character come from? What drives them? What are they searching for?"
+                    className="textarea"
+                    style={{ minHeight: '200px' }}
+                  />
+                </div>
 
-              <div style={{
-                marginTop: '20px',
-                padding: '16px',
-                background: 'rgba(34, 197, 94, 0.1)',
-                border: '1px solid #22c55e',
-                borderRadius: '12px'
-              }}>
-                <h4 style={{ color: '#22c55e', fontSize: '14px', fontWeight: '700', marginBottom: '8px' }}>
-                  Character Summary
-                </h4>
-                <p style={{ color: '#e2e8f0', fontSize: '14px', lineHeight: '1.6' }}>
-                  <strong>{characterData.name || 'Your Character'}</strong> - Level {characterData.level} {characterData.race} {characterData.character_class}
-                  <br />
-                  Background: {characterData.background} | Alignment: {characterData.alignment}
+                <div style={{
+                  marginTop: '20px',
+                  padding: '16px',
+                  background: 'rgba(34, 197, 94, 0.1)',
+                  border: '1px solid #22c55e',
+                  borderRadius: '12px'
+                }}>
+                  <h4 style={{ color: '#22c55e', fontSize: '14px', fontWeight: '700', marginBottom: '8px' }}>
+                    Character Summary
+                  </h4>
+                  <p style={{ color: '#e2e8f0', fontSize: '14px', lineHeight: '1.6' }}>
+                    <strong>{characterData.name || 'Your Character'}</strong> - Level {characterData.level} {characterData.race} {characterData.character_class}
+                    <br />
+                    Background: {characterData.background} | Alignment: {characterData.alignment}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Portrait Generation Panel */}
+            <Card className="glow-card" style={{ height: 'fit-content' }}>
+              <CardHeader>
+                <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Image size={20} style={{ color: '#a855f7' }} />
+                  Character Portrait
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* Portrait Display */}
+                <div style={{
+                  width: '100%',
+                  aspectRatio: '1',
+                  background: 'rgba(30, 64, 175, 0.1)',
+                  border: '2px dashed #1e40af',
+                  borderRadius: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '16px',
+                  overflow: 'hidden'
+                }}>
+                  {portraitImage ? (
+                    <img 
+                      src={portraitImage} 
+                      alt={`Portrait of ${characterData.name}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '14px' }}
+                    />
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                      <UserCircle size={64} color="#4a7dff" style={{ opacity: 0.5, marginBottom: '12px' }} />
+                      <p style={{ color: '#94a3b8', fontSize: '13px' }}>
+                        Generate an AI portrait for your character
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Gender Selection */}
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#a78bfa', fontSize: '13px', fontWeight: '600' }}>
+                    Character Appearance
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {['male', 'female', 'neutral'].map((g) => (
+                      <button
+                        key={g}
+                        onClick={() => setGender(g)}
+                        style={{
+                          flex: 1,
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          border: gender === g ? '2px solid #a855f7' : '1px solid #374151',
+                          background: gender === g ? 'rgba(168, 85, 247, 0.2)' : 'transparent',
+                          color: gender === g ? '#a855f7' : '#94a3b8',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          textTransform: 'capitalize'
+                        }}
+                      >
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Generate Button */}
+                <Button
+                  onClick={handleGeneratePortrait}
+                  disabled={portraitGenerating || !characterData.name.trim()}
+                  data-testid="generate-portrait-btn"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    background: portraitGenerating 
+                      ? 'rgba(168, 85, 247, 0.5)' 
+                      : 'linear-gradient(135deg, #a855f7, #8b5cf6)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontWeight: '700',
+                    cursor: portraitGenerating || !characterData.name.trim() ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  {portraitGenerating ? (
+                    <>
+                      <Loader className="spin" size={18} />
+                      Painting Portrait...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={18} />
+                      Generate Portrait
+                    </>
+                  )}
+                </Button>
+
+                <p style={{ 
+                  marginTop: '12px', 
+                  color: '#94a3b8', 
+                  fontSize: '11px', 
+                  textAlign: 'center' 
+                }}>
+                  AI will create a fantasy portrait based on your character's race, class, and description
                 </p>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {/* Navigation Buttons */}
