@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
@@ -10,6 +10,75 @@ import {
 import { Button } from '@/components/ui/button';
 
 const API = process.env.REACT_APP_BACKEND_URL;
+
+// Custom hook for intersection observer animations
+function useInView(options = {}) {
+  const ref = useRef(null);
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsInView(true);
+        // Once animated, stop observing
+        if (ref.current) observer.unobserve(ref.current);
+      }
+    }, { threshold: 0.1, ...options });
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return [ref, isInView];
+}
+
+// Animated wrapper component
+const AnimateOnScroll = ({ children, animation = 'fadeUp', delay = 0, className = '' }) => {
+  const [ref, isInView] = useInView();
+  
+  const animations = {
+    fadeUp: {
+      initial: { opacity: 0, transform: 'translateY(40px)' },
+      animate: { opacity: 1, transform: 'translateY(0)' }
+    },
+    fadeIn: {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 }
+    },
+    fadeLeft: {
+      initial: { opacity: 0, transform: 'translateX(-40px)' },
+      animate: { opacity: 1, transform: 'translateX(0)' }
+    },
+    fadeRight: {
+      initial: { opacity: 0, transform: 'translateX(40px)' },
+      animate: { opacity: 1, transform: 'translateX(0)' }
+    },
+    scaleUp: {
+      initial: { opacity: 0, transform: 'scale(0.9)' },
+      animate: { opacity: 1, transform: 'scale(1)' }
+    },
+    slideUp: {
+      initial: { opacity: 0, transform: 'translateY(60px)' },
+      animate: { opacity: 1, transform: 'translateY(0)' }
+    }
+  };
+
+  const anim = animations[animation] || animations.fadeUp;
+  
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        ...anim.initial,
+        ...(isInView ? anim.animate : {}),
+        transition: `all 0.7s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -473,6 +542,7 @@ function LandingPage() {
           }} />
 
           {/* NEW Headline */}
+          <AnimateOnScroll animation="fadeUp" delay={0.2}>
           <h1 style={{
             fontSize: 'clamp(2.5rem, 5vw, 4rem)',
             fontFamily: 'Montserrat, sans-serif',
@@ -486,8 +556,10 @@ function LandingPage() {
               in Less Time
             </span>
           </h1>
+          </AnimateOnScroll>
 
           {/* NEW Subheadline */}
+          <AnimateOnScroll animation="fadeUp" delay={0.35}>
           <p style={{
             fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
             color: '#94a3b8',
@@ -498,8 +570,10 @@ function LandingPage() {
             Rookie Quest Keeper is the all-in-one <strong style={{ color: '#22D3EE' }}>campaign operating system</strong> for 5e Game Masters — 
             combining worldbuilding, AI content generation, combat control, and live session tools in one unified platform.
           </p>
+          </AnimateOnScroll>
 
           {/* CTA Buttons - UPDATED */}
+          <AnimateOnScroll animation="fadeUp" delay={0.5}>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '32px' }}>
             <Button 
               onClick={() => navigate('/auth')}
@@ -532,8 +606,10 @@ function LandingPage() {
               Explore Features <ChevronRight size={20} />
             </Button>
           </div>
+          </AnimateOnScroll>
 
           {/* NEW: Three Benefit Bullets */}
+          <AnimateOnScroll animation="fadeUp" delay={0.65}>
           <div style={{ 
             display: 'flex', 
             justifyContent: 'center', 
@@ -552,6 +628,7 @@ function LandingPage() {
               <Target size={18} /> Run smoother combat
             </div>
           </div>
+          </AnimateOnScroll>
 
           {/* Social proof */}
           <div style={{ 
@@ -655,6 +732,7 @@ function LandingPage() {
       {/* NEW: Screenshot Showcase Section */}
       <section style={{ padding: '80px 24px', position: 'relative', background: 'rgba(10, 10, 46, 0.3)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <AnimateOnScroll animation="fadeUp">
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{
               fontSize: 'clamp(2rem, 4vw, 3rem)',
@@ -669,8 +747,10 @@ function LandingPage() {
               A quick look at how our tools help you run amazing games
             </p>
           </div>
+          </AnimateOnScroll>
 
           {/* Screenshot Tabs */}
+          <AnimateOnScroll animation="fadeUp" delay={0.2}>
           <div style={{ marginBottom: '32px' }}>
             <div style={{
               display: 'flex',
@@ -709,8 +789,10 @@ function LandingPage() {
               ))}
             </div>
           </div>
+          </AnimateOnScroll>
 
           {/* Screenshot Display */}
+          <AnimateOnScroll animation="scaleUp" delay={0.4}>
           <div style={{
             position: 'relative',
             borderRadius: '20px',
@@ -807,8 +889,10 @@ function LandingPage() {
               )}
             </div>
           </div>
+          </AnimateOnScroll>
 
           {/* CTA below showcase */}
+          <AnimateOnScroll animation="fadeUp" delay={0.5}>
           <div style={{ textAlign: 'center', marginTop: '40px' }}>
             <Button
               onClick={() => navigate('/auth')}
@@ -828,12 +912,14 @@ function LandingPage() {
               Try It Free <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline' }} />
             </Button>
           </div>
+          </AnimateOnScroll>
         </div>
       </section>
 
       {/* NEW: Who It's For Section */}
       <section style={{ padding: '80px 24px', position: 'relative' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <AnimateOnScroll animation="fadeUp">
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <h2 style={{
               fontSize: 'clamp(2rem, 4vw, 3rem)',
@@ -965,6 +1051,7 @@ function LandingPage() {
               </p>
             </div>
           </div>
+          </AnimateOnScroll>
         </div>
       </section>
 
@@ -1097,10 +1184,12 @@ function LandingPage() {
             alignItems: 'center'
           }}>
             {/* ROOK Mascot */}
+            <AnimateOnScroll animation="fadeRight">
             <div style={{ textAlign: 'center' }}>
               <img 
                 src="/rook-mascot.png" 
                 alt="ROOK AI Assistant"
+                className="animate-float"
                 style={{
                   width: '100%',
                   maxWidth: '350px',
@@ -1108,8 +1197,10 @@ function LandingPage() {
                 }}
               />
             </div>
+            </AnimateOnScroll>
             
             {/* ROOK Info */}
+            <AnimateOnScroll animation="fadeLeft" delay={0.2}>
             <div>
               <div style={{ marginBottom: '24px' }}>
                 <span style={{
@@ -1228,6 +1319,7 @@ function LandingPage() {
                 ))}
               </div>
             </div>
+            </AnimateOnScroll>
           </div>
         </div>
       </section>
@@ -1240,6 +1332,7 @@ function LandingPage() {
         borderBottom: '2px solid rgba(124, 58, 237, 0.3)',
         textAlign: 'center'
       }}>
+        <AnimateOnScroll animation="fadeUp">
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <h2 style={{
             fontSize: 'clamp(2rem, 4vw, 3rem)',
@@ -1263,6 +1356,7 @@ function LandingPage() {
             built specifically for <strong style={{ color: '#fff' }}>5e 2014 and 2024</strong>.
           </p>
         </div>
+        </AnimateOnScroll>
       </section>
 
       {/* Pricing Section - ENHANCED */}
