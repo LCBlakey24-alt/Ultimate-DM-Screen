@@ -6,10 +6,13 @@ import { Button } from '@/components/ui/button';
 import { 
   Sword, Users, Shield, Heart, Skull, SkipForward, RotateCcw, 
   Trash2, ChevronUp, ChevronDown, CircleDot, Grid, ZoomIn, ZoomOut, X,
-  ArrowLeft, Coins, Package, Target
+  ArrowLeft, Coins, Package, Target, UserPlus, Sparkles
 } from 'lucide-react';
 import { QuickReferencePopup, QuickReferenceModal } from '@/components/QuickReference';
 import AttackRoller from '@/components/AttackRoller';
+import CreatureAbilityCard from '@/components/CreatureAbilityCard';
+import NPCCombatRecruiter from '@/components/NPCCombatRecruiter';
+import { SimpleToken } from '@/components/CombatTokenGenerator';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -47,6 +50,8 @@ function CombatPage() {
   const [collectedLoot, setCollectedLoot] = useState([]);
   const [showLootPanel, setShowLootPanel] = useState(false);
   const [attackingCreature, setAttackingCreature] = useState(null);
+  const [showNPCRecruiter, setShowNPCRecruiter] = useState(false);
+  const [expandedAbilities, setExpandedAbilities] = useState({});
   
   // Map state
   const [mapImage, setMapImage] = useState(null);
@@ -259,6 +264,40 @@ function CombatPage() {
     
     if (idx === currentTurn) setCurrentTurn(newIdx);
     else if (newIdx === currentTurn) setCurrentTurn(idx);
+  };
+
+  // Add NPC/Creature to combat mid-battle
+  const addCombatant = (newCombatant) => {
+    const updated = [...combatants, newCombatant].sort((a, b) => b.initiative - a.initiative);
+    const newIndex = updated.findIndex(c => c.id === newCombatant.id);
+    
+    // Adjust currentTurn if new combatant is inserted before current
+    if (newIndex <= currentTurn) {
+      setCurrentTurn(prev => prev + 1);
+    }
+    
+    setCombatants(updated);
+    
+    // Add token to map
+    const tokenX = 100 + (tokens.length * 60) % 600;
+    const tokenY = 100 + Math.floor(tokens.length / 10) * 60;
+    setTokens(prev => [...prev, {
+      id: newCombatant.id,
+      name: newCombatant.name,
+      x: tokenX,
+      y: tokenY,
+      size: 50,
+      color: newCombatant.isEnemy ? '#ef4444' : '#22c55e',
+      isEnemy: newCombatant.isEnemy
+    }]);
+  };
+
+  // Toggle ability card expansion for a combatant
+  const toggleAbilities = (id) => {
+    setExpandedAbilities(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
   };
 
   // Token dragging
@@ -597,6 +636,17 @@ function CombatPage() {
                     })}
                   </div>
 
+                  {/* Creature Abilities - Clickable actions with dice */}
+                  {c.type !== 'player' && c.abilities && (
+                    <CreatureAbilityCard 
+                      creature={c}
+                      compact={true}
+                      onRollResult={(result) => {
+                        toast.success(`${result.ability}: ${result.totalDamage} damage!`);
+                      }}
+                    />
+                  )}
+
                   {/* Attack Button - Show for enemies that are alive */}
                   {c.type !== 'player' && c.hp > 0 && (
                     <button
@@ -673,6 +723,15 @@ function CombatPage() {
                 </div>
               );
             })}
+          </div>
+          
+          {/* Add NPCs/Creatures to Combat */}
+          <div style={{ marginTop: '16px' }}>
+            <NPCCombatRecruiter 
+              campaignId={campaignId}
+              existingCombatantIds={combatants.map(c => c.id)}
+              onAddNPC={addCombatant}
+            />
           </div>
         </div>
 

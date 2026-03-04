@@ -70,6 +70,10 @@ export function generateTestUsername(): string {
 // Test campaign and scenario constants - Stress Test Campaign
 export const TEST_CAMPAIGN_ID = '1e6a6d0d-ad88-4b8a-9cc5-a1672119343c';
 export const TEST_SCENARIO_ID = '7bd4be2a-2821-4daf-97d7-af5ddbe34968';
+// Scenario with abilities - Shadow Wolf Hunt
+export const TEST_ABILITIES_SCENARIO_ID = 'd719e646-688f-482f-a97a-8d02d80f2807';
+// Custom creature with abilities
+export const TEST_CUSTOM_CREATURE_ID = '7bc77fba-92ff-47bc-83dc-cf3e5ac1703a';
 
 // Updated test user with email - Stress Test User
 export const TEST_USER = { 

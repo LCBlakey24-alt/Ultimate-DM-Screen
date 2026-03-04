@@ -4029,6 +4029,134 @@ No text, no watermarks, professional fantasy art."""
             detail=f"Failed to generate portrait: {str(e)}"
         )
 
+# ==================== COMBAT TOKEN GENERATION ====================
+
+class TokenGenerateRequest(BaseModel):
+    entity_id: str
+    entity_name: str
+    entity_type: str = "enemy"  # player, ally, enemy
+    campaign_id: str
+    prompt: Optional[str] = None
+
+@api_router.post("/ai/generate-token")
+async def ai_generate_token(
+    request: TokenGenerateRequest,
+    username: str = Depends(get_current_user)
+):
+    """
+    AI Token Generator: Create a circular battle map token for a creature.
+    Stores the token in DB and returns URL.
+    """
+    # Build token prompt
+    token_prompt = request.prompt or f"""Circular fantasy RPG battle map token portrait of {request.entity_name}, 
+    {request.entity_type} creature, dramatic lighting, detailed, dark fantasy style, 
+    facing forward, head and shoulders only, suitable for tabletop RPG battle map token,
+    circular frame, high contrast, no background, professional fantasy game art."""
+
+    try:
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AI service not configured"
+            )
+        
+        image_gen = OpenAIImageGeneration(api_key=llm_key)
+        images = await image_gen.generate_images(
+            prompt=token_prompt,
+            model="gpt-image-1",
+            number_of_images=1
+        )
+        
+        if images and len(images) > 0:
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            
+            # Store token in database
+            token_doc = {
+                'id': str(uuid.uuid4()),
+                'entity_id': request.entity_id,
+                'entity_name': request.entity_name,
+                'entity_type': request.entity_type,
+                'campaign_id': request.campaign_id,
+                'image_base64': image_base64,
+                'created_at': datetime.now(timezone.utc).isoformat(),
+                'created_by': username
+            }
+            
+            # Upsert - update if exists, insert if not
+            await db.combat_tokens.update_one(
+                {'entity_id': request.entity_id, 'campaign_id': request.campaign_id},
+                {'$set': token_doc},
+                upsert=True
+            )
+            
+            return {
+                "success": True,
+                "image_url": f"data:image/png;base64,{image_base64}",
+                "entity_id": request.entity_id,
+                "message": f"Token created for {request.entity_name}!"
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="No image was generated"
+            )
+            
+    except Exception as e:
+        logger.error(f"Token generation failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate token: {str(e)}"
+        )
+
+@api_router.get("/campaigns/{campaign_id}/tokens")
+async def get_campaign_tokens(
+    campaign_id: str,
+    username: str = Depends(get_current_user)
+):
+    """Get all combat tokens for a campaign"""
+    tokens = await db.combat_tokens.find(
+        {'campaign_id': campaign_id},
+        {'_id': 0, 'image_base64': 0}  # Don't return full base64 in list
+    ).to_list(200)
+    
+    # Return tokens with image URLs
+    result = []
+    for token in tokens:
+        token_data = await db.combat_tokens.find_one(
+            {'id': token['id']},
+            {'_id': 0}
+        )
+        if token_data and token_data.get('image_base64'):
+            token['image_url'] = f"data:image/png;base64,{token_data['image_base64']}"
+        result.append(token)
+    
+    return result
+
+@api_router.get("/campaigns/{campaign_id}/tokens/{entity_id}")
+async def get_entity_token(
+    campaign_id: str,
+    entity_id: str,
+    username: str = Depends(get_current_user)
+):
+    """Get a specific combat token"""
+    token = await db.combat_tokens.find_one(
+        {'entity_id': entity_id, 'campaign_id': campaign_id},
+        {'_id': 0}
+    )
+    
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Token not found"
+        )
+    
+    if token.get('image_base64'):
+        token['image_url'] = f"data:image/png;base64,{token['image_base64']}"
+        del token['image_base64']  # Don't expose raw base64
+    
+    return token
+
 # Include the router in the main app
 app.include_router(api_router)
 
