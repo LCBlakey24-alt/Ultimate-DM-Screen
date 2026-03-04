@@ -1720,6 +1720,47 @@ async def get_referral_code(username: str = Depends(get_current_user)):
         'share_url': f'?ref={referral_code}'
     }
 
+class CustomReferralCodeRequest(BaseModel):
+    new_code: str
+
+@api_router.put("/referral/code")
+async def customize_referral_code(
+    request: CustomReferralCodeRequest,
+    username: str = Depends(get_current_user)
+):
+    """Customize user's referral code"""
+    import re
+    
+    new_code = request.new_code.strip().upper()
+    
+    # Validation
+    if len(new_code) < 3:
+        raise HTTPException(status_code=400, detail="Code must be at least 3 characters")
+    if len(new_code) > 20:
+        raise HTTPException(status_code=400, detail="Code must be 20 characters or less")
+    if not re.match(r'^[A-Z0-9_-]+$', new_code):
+        raise HTTPException(status_code=400, detail="Code can only contain letters, numbers, underscores, and hyphens")
+    
+    # Check if code already taken by another user
+    existing = await db.users.find_one({
+        'subscription.referral_code': new_code,
+        'username': {'$ne': username}
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="This code is already taken")
+    
+    # Update user's referral code
+    await db.users.update_one(
+        {'username': username},
+        {'$set': {'subscription.referral_code': new_code}}
+    )
+    
+    return {
+        'success': True,
+        'referral_code': new_code,
+        'message': f'Referral code updated to {new_code}'
+    }
+
 @api_router.get("/referral/leaderboard")
 async def get_referral_leaderboard():
     """Get top referrers"""
