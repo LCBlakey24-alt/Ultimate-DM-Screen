@@ -141,9 +141,9 @@ function CampaignList({ username, onLogout }) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <img 
-              src="/rookie-quest-logo.png" 
-              alt="Rookie Quest" 
-              style={{ height: '60px', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))' }} 
+              src="/rqk-logo-mascot.png" 
+              alt="Rookie Quest Keeper" 
+              style={{ height: '50px', filter: 'drop-shadow(0 0 15px rgba(34, 211, 238, 0.3))' }} 
             />
             <div>
               <h1 style={{ 
@@ -155,7 +155,7 @@ function CampaignList({ username, onLogout }) {
               }}>
                 Your Campaigns
               </h1>
-              <p style={{ color: '#67e8f9', fontSize: '14px' }}>Welcome back, {username}!</p>
+              <p style={{ color: '#22D3EE', fontSize: '14px' }}>Welcome back, {username}!</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>

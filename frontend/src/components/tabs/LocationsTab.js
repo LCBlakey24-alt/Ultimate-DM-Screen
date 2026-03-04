@@ -209,7 +209,7 @@ function LocationsTab({ campaignId }) {
     return type ? type.icon : MapPin;
   };
 
-  // Unseen Servant - Auto-generate and save
+  // ROOK - Auto-generate and save
   const handleUnseenServant = async () => {
     if (!aiPrompt.trim()) {
       toast.error('Please describe what you want to create');
@@ -234,7 +234,7 @@ function LocationsTab({ campaignId }) {
         requestData.location_id = selectedLocationForPlace;
       }
       
-      const response = await axios.post(`${API}/unseen-servant/generate`, requestData);
+      const response = await axios.post(`${API}/rook/generate`, requestData);
       
       if (response.data.success) {
         const message = generationType === 'place' 
@@ -251,7 +251,7 @@ function LocationsTab({ campaignId }) {
         }
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.detail || 'The Unseen Servant failed to create';
+      const errorMsg = error.response?.data?.detail || 'The ROOK failed to create';
       toast.error(errorMsg);
     } finally {
       setAiGenerating(false);
@@ -275,28 +275,28 @@ function LocationsTab({ campaignId }) {
         <EmptyState
           icon={MapPin}
           title="No Locations Yet"
-          description="Build your world by adding locations. Create cities, dungeons, forests, and more. Use the Unseen Servant AI to generate them instantly."
+          description="Build your world by adding locations. Create cities, dungeons, forests, and more. Use the ROOK AI to generate them instantly."
           actionLabel="Create Your First Location"
           onAction={() => setShowDialog(true)}
           color="#22c55e"
         />
         
-        {/* Unseen Servant Panel - still show for empty state */}
+        {/* ROOK Panel - still show for empty state */}
         <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
           <Card className="parchment-dark" style={{ border: '2px solid #22c55e' }}>
             <CardHeader>
               <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Wand2 size={20} style={{ color: '#22c55e' }} />
-                Unseen Servant
+                ROOK
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p style={{ fontSize: '13px', color: '#86efac', marginBottom: '16px', lineHeight: '1.5' }}>
-                Describe a location and the Unseen Servant will create it for your world.
+                Describe a location and the ROOK will create it for your world.
               </p>
               <div style={{ marginBottom: '16px' }}>
                 <textarea
-                  data-testid="unseen-servant-location-prompt"
+                  data-testid="rook-location-prompt"
                   value={aiPrompt}
                   onChange={(e) => setAiPrompt(e.target.value)}
                   className="textarea"
@@ -836,13 +836,13 @@ function LocationsTab({ campaignId }) {
         )}
       </div>
 
-      {/* Unseen Servant Panel */}
+      {/* ROOK Panel */}
       <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
         <Card className="parchment-dark" style={{ border: '2px solid #22c55e' }}>
           <CardHeader>
             <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Wand2 size={20} style={{ color: '#22c55e' }} />
-              Unseen Servant
+              ROOK
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -926,7 +926,7 @@ function LocationsTab({ campaignId }) {
                 {generationType === 'place' ? 'Describe the place' : 'Describe the location'}
               </label>
               <textarea
-                data-testid="unseen-servant-location-prompt"
+                data-testid="rook-location-prompt"
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
                 className="textarea"

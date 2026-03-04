@@ -429,7 +429,7 @@ function CharacterBuilder() {
                       fontWeight: '700',
                       fontFamily: 'Montserrat, sans-serif'
                     }}>
-                      Unseen Servant
+                      ROOK
                     </h3>
                     <p style={{ color: '#9CA3AF', fontSize: '13px' }}>
                       Describe your character idea

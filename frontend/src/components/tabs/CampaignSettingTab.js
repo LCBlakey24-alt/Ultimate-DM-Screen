@@ -124,7 +124,7 @@ function CampaignSettingTab({ campaignId }) {
         </div>
       </div>
 
-      {/* Unseen Servant Panel */}
+      {/* ROOK Panel */}
       <div style={{ position: 'sticky', top: '120px', height: 'fit-content' }}>
         <div className="glow-panel" style={{ borderColor: '#a855f7' }}>
           <h3 style={{ 
@@ -138,7 +138,7 @@ function CampaignSettingTab({ campaignId }) {
             fontWeight: '700'
           }}>
             <Wand2 size={20} style={{ color: '#a855f7' }} />
-            Unseen Servant
+            ROOK
           </h3>
           <p style={{ fontSize: '13px', color: '#c4b5fd', marginBottom: '16px', lineHeight: '1.5' }}>
             Generate world-building ideas, setting descriptions, conflicts, and lore. Copy to your setting or use for inspiration.

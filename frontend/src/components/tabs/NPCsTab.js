@@ -109,7 +109,7 @@ function NPCsTab({ campaignId }) {
     setShowDialog(false);
   };
 
-  // Unseen Servant - Auto-generate and save
+  // ROOK - Auto-generate and save
   const handleUnseenServant = async () => {
     if (!aiPrompt.trim()) {
       toast.error('Please describe the NPC you want');
@@ -118,7 +118,7 @@ function NPCsTab({ campaignId }) {
     setAiGenerating(true);
     setLastGenerated(null);
     try {
-      const response = await axios.post(`${API}/unseen-servant/generate`, {
+      const response = await axios.post(`${API}/rook/generate`, {
         prompt: aiPrompt,
         entity_type: 'npc',
         campaign_id: campaignId
@@ -131,7 +131,7 @@ function NPCsTab({ campaignId }) {
         fetchNPCs();
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.detail || 'The Unseen Servant failed to create the NPC';
+      const errorMsg = error.response?.data?.detail || 'The ROOK failed to create the NPC';
       toast.error(errorMsg);
     } finally {
       setAiGenerating(false);
@@ -162,28 +162,28 @@ function NPCsTab({ campaignId }) {
         <EmptyState
           icon={User}
           title="No NPCs Yet"
-          description="Create your first NPC to populate your world. Add characters manually or use the Unseen Servant AI to generate them automatically."
+          description="Create your first NPC to populate your world. Add characters manually or use the ROOK AI to generate them automatically."
           actionLabel="Create Your First NPC"
           onAction={() => setShowDialog(true)}
           color="#f97316"
         />
         
-        {/* Unseen Servant Panel - still show for empty state */}
+        {/* ROOK Panel - still show for empty state */}
         <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
           <Card className="parchment-dark" style={{ border: '2px solid #f97316' }}>
             <CardHeader>
               <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Wand2 size={20} style={{ color: '#f97316' }} />
-                Unseen Servant
+                ROOK
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p style={{ fontSize: '13px', color: '#fed7aa', marginBottom: '16px', lineHeight: '1.5' }}>
-                Describe a character and the Unseen Servant will create and save them to your NPCs automatically.
+                Describe a character and the ROOK will create and save them to your NPCs automatically.
               </p>
               <div style={{ marginBottom: '16px' }}>
                 <textarea
-                  data-testid="unseen-servant-npc-prompt"
+                  data-testid="rook-npc-prompt"
                   value={aiPrompt}
                   onChange={(e) => setAiPrompt(e.target.value)}
                   className="textarea"
@@ -500,25 +500,25 @@ function NPCsTab({ campaignId }) {
       )}
       </div>
 
-      {/* Unseen Servant Panel */}
+      {/* ROOK Panel */}
       <div className="ai-assistant-panel" style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
         <Card className="parchment-dark" style={{ border: '2px solid #f97316' }}>
           <CardHeader>
             <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Wand2 size={20} style={{ color: '#f97316' }} />
-              Unseen Servant
+              ROOK
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p style={{ fontSize: '13px', color: '#fed7aa', marginBottom: '16px', lineHeight: '1.5' }}>
-              Describe a character and the Unseen Servant will create and save them to your NPCs automatically.
+              Describe a character and the ROOK will create and save them to your NPCs automatically.
             </p>
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#f97316', fontWeight: '600' }}>
                 Describe your NPC
               </label>
               <textarea
-                data-testid="unseen-servant-npc-prompt"
+                data-testid="rook-npc-prompt"
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
                 className="textarea"

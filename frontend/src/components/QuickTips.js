@@ -150,7 +150,7 @@ export const TIPS = {
   campaignDashboard: [
     { highlight: 'Setting:', text: 'Define your world\'s tone, theme, and core details.' },
     { highlight: 'World Tab:', text: 'Build your world hierarchy - Continents → Countries → Cities → Places.' },
-    { highlight: 'Unseen Servant:', text: 'Use the AI wand icon to auto-generate and save NPCs, Gods, and Locations!' },
+    { highlight: 'ROOK:', text: 'Use the AI wand icon to auto-generate and save NPCs, Gods, and Locations!' },
     { highlight: 'Combat Tab:', text: 'Prepare encounters and see difficulty ratings before your session.' },
   ],
   gmScreen: [
@@ -168,7 +168,7 @@ export const TIPS = {
   worldBuilder: [
     { highlight: 'Hierarchy:', text: 'Build from big to small - Continents → Countries → Cities → Places.' },
     { highlight: 'Click to Expand:', text: 'Click any location to see what\'s inside it.' },
-    { highlight: 'AI Generation:', text: 'Use the Unseen Servant to auto-generate locations with descriptions!' },
+    { highlight: 'AI Generation:', text: 'Use the ROOK to auto-generate locations with descriptions!' },
     { highlight: 'Places of Interest:', text: 'Add taverns, shops, temples, and dungeons inside your cities.' },
   ],
   pricing: [
@@ -184,7 +184,7 @@ export const TIPS = {
   ],
   npcs: [
     { highlight: 'Create NPCs:', text: 'Add shopkeepers, villains, allies, and more.' },
-    { highlight: 'Unseen Servant:', text: 'Click the wand to AI-generate a complete NPC instantly!' },
+    { highlight: 'ROOK:', text: 'Click the wand to AI-generate a complete NPC instantly!' },
     { highlight: 'Name Generator:', text: 'Use the GM Screen\'s Names tab to generate names on the fly.' },
   ],
   locations: [

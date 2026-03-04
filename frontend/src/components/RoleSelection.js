@@ -24,8 +24,8 @@ function RoleSelection({ username, onLogout }) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <img 
-            src="/rookie-quest-logo.png" 
-            alt="Rookie Quest" 
+            src="/rqk-logo-mascot.png" 
+            alt="Rookie Quest Keeper" 
             style={{ height: '40px' }}
           />
         </div>

@@ -107,7 +107,7 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
     setShowForm(true);
   };
 
-  // AI Generation with Unseen Servant
+  // AI Generation with ROOK
   const handleAIGenerate = async () => {
     if (!aiPrompt.trim()) {
       toast.error('Please describe the creature you want to create');
@@ -116,7 +116,7 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
 
     setGenerating(true);
     try {
-      const response = await axios.post(`${API}/api/unseen-servant/generate`, {
+      const response = await axios.post(`${API}/api/rook/generate`, {
         prompt: aiPrompt,
         entity_type: 'creature',
         campaign_id: campaignId
@@ -327,7 +327,7 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
         <span style={{ color: '#64748b' }}>Example: "Goblin Chief","2",45,15,"humanoid","Small","30 ft.","Multiattack","A goblin leader"</span>
       </div>
 
-      {/* Unseen Servant AI Generator */}
+      {/* ROOK AI Generator */}
       <div style={{
         background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%)',
         border: '2px solid #a855f7',
@@ -338,7 +338,7 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
           <Wand2 size={24} color="#a855f7" />
           <h3 style={{ color: '#a855f7', fontSize: '18px', fontWeight: '700', fontFamily: 'Montserrat, sans-serif' }}>
-            Unseen Servant
+            ROOK
           </h3>
           <Sparkles size={16} color="#a855f7" style={{ opacity: 0.7 }} />
         </div>
@@ -572,7 +572,7 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
                   fontSize: '11px',
                   fontWeight: '600'
                 }}>
-                  <Sparkles size={12} /> Just Created by Unseen Servant
+                  <Sparkles size={12} /> Just Created by ROOK
                 </div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>

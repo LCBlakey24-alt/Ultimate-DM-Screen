@@ -2817,9 +2817,11 @@ class UnseenServantResponse(BaseModel):
     entity_name: str
     message: str
 
-@api_router.post("/unseen-servant/generate", response_model=UnseenServantResponse)
-async def unseen_servant_generate(request: UnseenServantRequest, username: str = Depends(get_current_user)):
-    """Unseen Servant: AI that generates and auto-saves fantasy TTRPG content"""
+# ROOK AI endpoint (renamed from Unseen Servant)
+@api_router.post("/rook/generate", response_model=UnseenServantResponse)
+@api_router.post("/unseen-servant/generate", response_model=UnseenServantResponse)  # Backwards compatibility
+async def rook_generate(request: UnseenServantRequest, username: str = Depends(get_current_user)):
+    """ROOK AI: Generates and auto-saves fantasy TTRPG content"""
     try:
         # Check if user can use AI features
         can_use_ai = await check_premium_feature(username, 'ai')

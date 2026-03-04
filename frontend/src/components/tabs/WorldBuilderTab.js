@@ -168,7 +168,7 @@ function WorldBuilderTab({ campaignId }) {
 
     setAiGenerating(true);
     try {
-      const response = await axios.post(`${API}/unseen-servant/generate`, {
+      const response = await axios.post(`${API}/rook/generate`, {
         prompt: aiPrompt,
         entity_type: `world_${dialogType}`,
         campaign_id: campaignId,
@@ -183,7 +183,7 @@ function WorldBuilderTab({ campaignId }) {
         fetchWorldData();
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.detail || 'The Unseen Servant failed';
+      const errorMsg = error.response?.data?.detail || 'The ROOK failed';
       toast.error(errorMsg);
     } finally {
       setAiGenerating(false);
@@ -570,7 +570,7 @@ function WorldBuilderTab({ campaignId }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
               <Wand2 size={18} color="#22c55e" />
-              <span style={{ color: '#22c55e', fontWeight: '600' }}>Unseen Servant</span>
+              <span style={{ color: '#22c55e', fontWeight: '600' }}>ROOK</span>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               <Input

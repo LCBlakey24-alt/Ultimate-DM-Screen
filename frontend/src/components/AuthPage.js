@@ -152,25 +152,14 @@ function AuthPage({ onLogin }) {
         maxWidth: '1200px',
         gap: '40px'
       }}>
-        {/* Rookie Quest Company Logo */}
+        {/* Rookie Quest Keeper Logo with Mascot */}
         <img 
-          src="/rookie-quest-logo.png" 
-          alt="Rookie Quest" 
-          style={{ 
-            maxWidth: '200px', 
-            width: '100%',
-            filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))'
-          }} 
-        />
-
-        {/* Rookie Quest Keeper Logo */}
-        <img 
-          src="/rookie-quest-keeper-logo.png" 
+          src="/rqk-logo-mascot.png" 
           alt="Rookie Quest Keeper" 
           style={{ 
-            maxWidth: '450px', 
+            maxWidth: '400px', 
             width: '100%',
-            filter: 'drop-shadow(0 0 30px rgba(20, 184, 166, 0.5))'
+            filter: 'drop-shadow(0 0 30px rgba(34, 211, 238, 0.4))'
           }} 
         />
 

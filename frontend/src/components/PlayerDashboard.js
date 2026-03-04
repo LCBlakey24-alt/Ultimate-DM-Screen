@@ -130,6 +130,11 @@ function PlayerDashboard({ username, onLogout }) {
           >
             <ArrowLeft size={20} />
           </Button>
+          <img 
+            src="/rqk-logo-mascot.png" 
+            alt="Rookie Quest Keeper" 
+            style={{ height: '36px' }}
+          />
           <div>
             <h1 style={{
               fontSize: '24px',

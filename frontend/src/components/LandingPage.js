@@ -52,7 +52,7 @@ function LandingPage() {
       title: "World Builder",
       description: "Build immersive worlds with a hierarchical system: Continents, Countries, Cities, and Places of Interest.",
       color: "#22D3EE",
-      details: ["Nested location hierarchy", "AI-generated descriptions", "Custom place types"]
+      details: ["Nested location hierarchy", "Generate with ROOK AI", "Custom place types"]
     },
     {
       icon: Sword,
@@ -63,10 +63,10 @@ function LandingPage() {
     },
     {
       icon: Sparkles,
-      title: "AI GM Assistant",
-      description: "Purpose-built AI that performs real GM tasks — not generic chat.",
-      color: "#7C3AED",
-      details: ["Structured encounter generation", "Item creation with rarity context", "Note-to-entity extraction", "Session recap writing"]
+      title: "ROOK AI Assistant",
+      description: "Your intelligent Game Master companion. ROOK handles the heavy lifting so you can focus on storytelling.",
+      color: "#3B82F6",
+      details: ["Generate NPCs & Locations", "Session recap writing", "Smart note parsing", "Encounter creation"]
     },
     {
       icon: Dices,
@@ -105,7 +105,7 @@ function LandingPage() {
         padding: '16px 24px',
         background: 'rgba(11, 15, 25, 0.95)',
         backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(124, 58, 237, 0.2)'
+        borderBottom: '1px solid rgba(59, 130, 246, 0.2)'
       }}>
         <div style={{ 
           maxWidth: '1200px', 
@@ -114,17 +114,11 @@ function LandingPage() {
           justifyContent: 'space-between', 
           alignItems: 'center' 
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img 
-              src="/rookie-quest-logo.png" 
-              alt="Rookie Quest" 
-              style={{ height: '32px' }}
-            />
-            <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.2)' }} />
-            <img 
-              src="/rqk-mini-logo.png" 
-              alt="RQK" 
-              style={{ height: '36px' }}
+              src="/rqk-logo-mascot.png" 
+              alt="Rookie Quest Keeper" 
+              style={{ height: '42px' }}
             />
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
@@ -188,35 +182,7 @@ function LandingPage() {
         }} />
 
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative' }}>
-          {/* Rookie Quest Company Logo - Top */}
-          <div style={{ 
-            marginBottom: '20px', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center'
-          }}>
-            <img 
-              src="/rookie-quest-logo.png" 
-              alt="Rookie Quest" 
-              style={{ 
-                height: '80px',
-                objectFit: 'contain',
-                filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.3))',
-              }}
-            />
-          </div>
-          
-          <p style={{
-            color: '#94a3b8',
-            fontSize: '14px',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            marginBottom: '16px'
-          }}>
-            Presents
-          </p>
-
-          {/* Main Rookie Quest Keeper Logo - Large & Prominent */}
+          {/* Main RQK Logo with Mascot - Large & Prominent */}
           <div style={{ 
             marginBottom: '40px', 
             display: 'flex', 
@@ -225,13 +191,13 @@ function LandingPage() {
             width: '100%'
           }}>
             <img 
-              src="/rookie-quest-keeper-logo.png" 
+              src="/rqk-logo-mascot.png" 
               alt="Rookie Quest Keeper" 
               style={{ 
-                height: '220px',
+                height: '180px',
                 maxWidth: '90%',
                 objectFit: 'contain',
-                filter: 'drop-shadow(0 0 40px rgba(124, 58, 237, 0.5))',
+                filter: 'drop-shadow(0 0 40px rgba(34, 211, 238, 0.4))',
                 animation: 'float 3s ease-in-out infinite'
               }}
             />
@@ -834,6 +800,169 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Meet ROOK Section */}
+      <section style={{ 
+        padding: '100px 24px', 
+        background: 'linear-gradient(180deg, #0B0F19 0%, #0a1628 50%, #0B0F19 100%)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Background glow */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '600px',
+          height: '600px',
+          background: 'radial-gradient(circle, rgba(34, 211, 238, 0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          pointerEvents: 'none'
+        }} />
+        
+        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '1fr 1fr', 
+            gap: '60px', 
+            alignItems: 'center'
+          }}>
+            {/* ROOK Mascot */}
+            <div style={{ textAlign: 'center' }}>
+              <img 
+                src="/rook-mascot.png" 
+                alt="ROOK AI Assistant"
+                style={{
+                  width: '100%',
+                  maxWidth: '350px',
+                  filter: 'drop-shadow(0 0 40px rgba(34, 211, 238, 0.3))'
+                }}
+              />
+            </div>
+            
+            {/* ROOK Info */}
+            <div>
+              <div style={{ marginBottom: '24px' }}>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  background: 'rgba(34, 211, 238, 0.15)',
+                  borderRadius: '20px',
+                  color: '#22D3EE',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  marginBottom: '16px'
+                }}>
+                  <Sparkles size={16} />
+                  AI ASSISTANT
+                </span>
+              </div>
+              
+              <h2 style={{
+                fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: '800',
+                color: '#ffffff',
+                marginBottom: '16px',
+                lineHeight: '1.2'
+              }}>
+                Meet <span style={{ color: '#22D3EE' }}>ROOK</span>
+              </h2>
+              
+              <p style={{
+                color: '#22D3EE',
+                fontSize: '20px',
+                fontWeight: '600',
+                marginBottom: '24px',
+                fontStyle: 'italic'
+              }}>
+                Your AI Game Master Assistant
+              </p>
+              
+              {/* R.O.O.K Acronym */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '12px',
+                marginBottom: '32px'
+              }}>
+                {[
+                  { letter: 'R', word: 'Roleplaying' },
+                  { letter: 'O', word: 'Organization' },
+                  { letter: 'O', word: 'Operations' },
+                  { letter: 'K', word: 'Keeper' }
+                ].map((item, i) => (
+                  <div key={i} style={{
+                    textAlign: 'center',
+                    padding: '16px 8px',
+                    background: 'rgba(34, 211, 238, 0.1)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(34, 211, 238, 0.2)'
+                  }}>
+                    <div style={{
+                      fontSize: '28px',
+                      fontWeight: '800',
+                      color: '#22D3EE',
+                      fontFamily: 'Montserrat, sans-serif'
+                    }}>
+                      {item.letter}
+                    </div>
+                    <div style={{
+                      fontSize: '11px',
+                      color: '#94a3b8',
+                      marginTop: '4px'
+                    }}>
+                      {item.word}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <p style={{
+                color: '#94a3b8',
+                fontSize: '17px',
+                lineHeight: '1.8',
+                marginBottom: '32px'
+              }}>
+                ROOK is the intelligent assistant built into Rookie Quest Keeper. 
+                It helps Game Masters <strong style={{ color: '#fff' }}>generate worlds</strong>, 
+                <strong style={{ color: '#fff' }}> build NPCs</strong>, 
+                <strong style={{ color: '#fff' }}> summarize sessions</strong>, and 
+                <strong style={{ color: '#fff' }}> manage campaigns</strong> with ease.
+              </p>
+              
+              {/* ROOK Features */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                {[
+                  'Generate with ROOK',
+                  'ROOK Worldbuilder',
+                  'ROOK Recap',
+                  'Ask ROOK'
+                ].map((feature, i) => (
+                  <span key={i} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '10px 16px',
+                    background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
+                    borderRadius: '24px',
+                    color: '#22D3EE',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    border: '1px solid rgba(34, 211, 238, 0.3)'
+                  }}>
+                    <img src="/rook-mascot.png" alt="" style={{ width: '18px', height: '18px' }} />
+                    {feature}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* NEW: Pre-Pricing Statement Section */}
       <section style={{ 
         padding: '80px 24px', 
@@ -1176,7 +1305,7 @@ function LandingPage() {
             marginBottom: '24px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src="/quest-keeper-logo.png" alt="Rookie Quest Keeper" style={{ height: '30px' }} />
+              <img src="/rqk-logo-text.png" alt="Rookie Quest Keeper" style={{ height: '24px' }} />
               <span style={{ color: '#64748b', fontSize: '14px' }}>
                 A product of Rookie Quest
               </span>

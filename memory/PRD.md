@@ -3,6 +3,31 @@
 ## Overview
 A comprehensive web application for Tabletop RPG Game Masters, serving as a digital "GM Screen" for managing campaigns, combat, and world-building. Supports multiple TTRPG systems including D&D 5e, Pathfinder, and more.
 
+## Brand Structure (Updated March 4, 2026)
+
+### Three-Layer Brand Hierarchy
+1. **Rookie Quest** - Parent brand/company
+2. **Rookie Quest Keeper (RQK)** - Main web platform and campaign management system
+3. **ROOK** - Built-in AI assistant
+
+### Logo Assets
+- `/public/rqk-logo-mascot.png` - Primary logo with ROOK mascot (navigation, hero)
+- `/public/rqk-logo-text.png` - Text-only logo (footer)
+- `/public/rook-mascot.png` - ROOK mascot icon (AI features, buttons)
+
+### ROOK AI Branding
+**R.O.O.K** = Roleplaying Organization Operations Keeper
+- "Your AI Game Master Assistant"
+- Button labels: "Generate with ROOK", "ROOK Worldbuilder", "ROOK Recap", "Ask ROOK"
+- Color: Cyan/Blue tones (#22D3EE, #3B82F6)
+
+### Color Palette
+- Background: #0B0F1A
+- Primary Blue: #3B82F6
+- Cyan Accent: #22D3EE
+- Purple Accent: #A855F7
+- White Text: #FFFFFF
+
 ## Player Mode Experience ✅ (Updated - March 4, 2026)
 
 ### Role Selection Page

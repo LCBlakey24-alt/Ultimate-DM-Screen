@@ -275,20 +275,18 @@ function GMScreen({ username }) {
       <div className="glow-panel" style={{ margin: '0', borderRadius: '0', padding: '12px 24px', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            {/* Logos */}
+            {/* Logo */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src="/rookie-quest-logo.png" alt="Rookie Quest" style={{ height: '28px' }} />
-              <div style={{ width: '1px', height: '24px', background: 'rgba(20, 184, 166, 0.3)' }} />
-              <img src="/rqk-mini-logo.png" alt="RQK" style={{ height: '32px' }} />
+              <img src="/rqk-logo-mascot.png" alt="Rookie Quest Keeper" style={{ height: '38px' }} />
             </div>
             <div style={{ width: '1px', height: '30px', background: 'rgba(255,255,255,0.1)' }} />
             <div>
               <h1 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Sword size={20} style={{ color: '#14b8a6' }} />
+                <Sword size={20} style={{ color: '#22D3EE' }} />
                 {campaign?.name}
               </h1>
               {calendar && (
-                <p style={{ fontSize: '11px', color: '#14b8a6', marginTop: '2px' }}>
+                <p style={{ fontSize: '11px', color: '#22D3EE', marginTop: '2px' }}>
                   {calendar.custom_months?.[calendar.current_month - 1]?.name || 'Month'} {calendar.current_day}, Year {calendar.current_year}
                 </p>
               )}

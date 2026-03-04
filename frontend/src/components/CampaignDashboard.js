@@ -166,20 +166,11 @@ function CampaignDashboard({ username, onLogout }) {
           }}
           className="desktop-logos">
             <img 
-              src="/rookie-quest-logo.png" 
-              alt="Rookie Quest" 
+              src="/rqk-logo-mascot.png" 
+              alt="Rookie Quest Keeper" 
               style={{ 
-                height: '32px',
-                filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.3))'
-              }} 
-            />
-            <div style={{ width: '1px', height: '24px', background: 'rgba(20, 184, 166, 0.3)' }} />
-            <img 
-              src="/rqk-mini-logo.png" 
-              alt="RQK" 
-              style={{ 
-                height: '30px',
-                filter: 'drop-shadow(0 0 15px rgba(20, 184, 166, 0.4))'
+                height: '40px',
+                filter: 'drop-shadow(0 0 10px rgba(34, 211, 238, 0.3))'
               }} 
             />
           </div>

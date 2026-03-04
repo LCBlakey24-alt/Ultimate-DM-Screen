@@ -127,7 +127,7 @@ function GodsTab({ campaignId }) {
     setShowDialog(false);
   };
 
-  // Unseen Servant - Auto-generate and save
+  // ROOK - Auto-generate and save
   const handleUnseenServant = async () => {
     if (!aiPrompt.trim()) {
       toast.error('Please describe the deity', {
@@ -138,7 +138,7 @@ function GodsTab({ campaignId }) {
     setAiGenerating(true);
     setLastGenerated(null);
     try {
-      const response = await axios.post(`${API}/unseen-servant/generate`, {
+      const response = await axios.post(`${API}/rook/generate`, {
         prompt: aiPrompt,
         entity_type: 'god',
         campaign_id: campaignId
@@ -154,7 +154,7 @@ function GodsTab({ campaignId }) {
         fetchGods(); // Refresh the list
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.detail || 'The Unseen Servant failed to manifest the deity';
+      const errorMsg = error.response?.data?.detail || 'The ROOK failed to manifest the deity';
       toast.error('AI generation failed', {
         description: errorMsg
       });
@@ -187,7 +187,7 @@ function GodsTab({ campaignId }) {
         <EmptyState
           icon={Church}
           title="No Gods Yet"
-          description="Create your first deity to populate your pantheon. Add gods manually or use the Unseen Servant AI to generate them automatically."
+          description="Create your first deity to populate your pantheon. Add gods manually or use the ROOK AI to generate them automatically."
           actionLabel="Create Your First God"
           onAction={() => setShowDialog(true)}
           color="#a855f7"
@@ -527,18 +527,18 @@ function GodsTab({ campaignId }) {
         </div>
       </div>
 
-      {/* Unseen Servant Sidebar */}
+      {/* ROOK Sidebar */}
       <div>
         <Card className="glow-card" style={{ position: 'sticky', top: '100px' }}>
           <CardHeader>
             <CardTitle className="medieval-heading" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#a855f7' }}>
               <Wand2 size={24} />
-              Unseen Servant
+              ROOK
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '16px', lineHeight: '1.5' }}>
-              Describe a deity and the Unseen Servant will manifest it in your pantheon automatically.
+              Describe a deity and the ROOK will manifest it in your pantheon automatically.
             </p>
             
             <div style={{ marginBottom: '16px' }}>
