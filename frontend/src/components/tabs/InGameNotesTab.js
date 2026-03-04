@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Plus, Trash2, Sparkles, CheckCircle, AlertCircle, Loader, FileText, Copy, Download } from 'lucide-react';
+import SmartNoteParser from '@/components/SmartNoteParser';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -227,11 +228,20 @@ Write the recap now:`;
       </div>
 
       {notes.length === 0 ? (
-        <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
-          <p style={{ color: '#bae6fd' }}>No session notes yet. Start taking notes during your game!</p>
-        </Card>
+        <>
+          <SmartNoteParser 
+            campaignId={campaignId} 
+            noteText={newNote}
+            onUpdateApplied={() => fetchNotes()}
+          />
+          <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
+            <p style={{ color: '#bae6fd' }}>No session notes yet. Start taking notes during your game!</p>
+          </Card>
+        </>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '24px' }}>
+          {/* Notes List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {notes.map(note => (
             <Card key={note.id} data-testid={`ingame-note-card-${note.id}`} className="card">
               <CardContent style={{ padding: '20px' }}>
@@ -294,6 +304,16 @@ Write the recap now:`;
               </CardContent>
             </Card>
           ))}
+          </div>
+          
+          {/* Smart Note Parser Sidebar */}
+          <div style={{ position: 'sticky', top: '100px' }}>
+            <SmartNoteParser 
+              campaignId={campaignId} 
+              noteText={newNote}
+              onUpdateApplied={() => fetchNotes()}
+            />
+          </div>
         </div>
       )}
 

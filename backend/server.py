@@ -2933,6 +2933,227 @@ async def delete_custom_item(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
     return {"message": "Item deleted"}
 
+# ==================== SMART NOTE PARSING ROUTES ====================
+
+class SmartNoteParseRequest(BaseModel):
+    note_text: str
+    campaign_id: str
+
+class EntityMention(BaseModel):
+    entity_type: str  # "npc", "location", "item", "quest"
+    name: str
+    existing_id: Optional[str] = None  # If entity already exists
+    suggested_notes: str = ""
+    suggested_location: Optional[str] = None
+    confidence: str = "high"  # high, medium, low
+
+class TimeChange(BaseModel):
+    type: str  # "long_rest", "short_rest", "hours", "days"
+    amount: int = 0  # hours or days
+    description: str
+
+class SmartNoteParseResponse(BaseModel):
+    success: bool
+    entities_mentioned: List[EntityMention]
+    time_changes: List[TimeChange]
+    calendar_update_suggested: bool = False
+    new_calendar_date: Optional[str] = None
+
+@api_router.post("/campaigns/{campaign_id}/notes/parse", response_model=SmartNoteParseResponse)
+async def parse_session_notes(
+    campaign_id: str, 
+    request: SmartNoteParseRequest,
+    username: str = Depends(get_current_user)
+):
+    """
+    Smart Note Parsing: Extract entities, events, and time changes from session notes.
+    Uses AI to automatically suggest updates to NPCs, locations, calendar, etc.
+    """
+    await verify_campaign_ownership(campaign_id, username)
+    
+    note_text = request.note_text
+    
+    if not note_text or len(note_text.strip()) < 10:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Note text too short. Please provide at least 10 characters."
+        )
+    
+    # Fetch existing campaign entities to help AI match them
+    npcs = await db.npcs.find({'campaign_id': campaign_id}, {'_id': 0, 'id': 1, 'name': 1}).to_list(None)
+    locations = await db.locations.find({'campaign_id': campaign_id}, {'_id': 0, 'id': 1, 'name': 1}).to_list(None)
+    
+    npc_names = [npc['name'] for npc in npcs]
+    location_names = [loc['name'] for loc in locations]
+    
+    # Build AI prompt
+    system_message = """You are a tabletop RPG Game Master assistant that extracts structured information from session notes.
+
+Your task: Analyze the session notes and extract:
+1. NPCs mentioned (with what happened to them)
+2. Locations visited or mentioned
+3. Time that has passed (long rests, short rests, days, hours)
+4. Important events
+
+IMPORTANT: Match entity names to existing entities when possible (case-insensitive).
+
+Respond in valid JSON format only. No markdown, no explanations."""
+
+    user_prompt = f"""Session Notes:
+{note_text}
+
+Known NPCs in this campaign: {', '.join(npc_names) if npc_names else 'None yet'}
+Known Locations in this campaign: {', '.join(location_names) if location_names else 'None yet'}
+
+Extract and return JSON in this EXACT format:
+{{
+  "entities": [
+    {{
+      "type": "npc" or "location",
+      "name": "Exact name from notes",
+      "existing_name": "Matching name from known entities (or null if new)",
+      "notes": "What happened involving this entity",
+      "location": "Where this entity is (optional)"
+    }}
+  ],
+  "time_changes": [
+    {{
+      "type": "long_rest" or "short_rest" or "hours" or "days",
+      "amount": 8 (for hours) or 1 (for days),
+      "description": "Human readable description"
+    }}
+  ]
+}}"""
+
+    try:
+        # Use emergentintegrations LLM
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AI service not configured"
+            )
+        
+        chat = LlmChat(api_key=llm_key, model="gpt-5.2")
+        response = chat.send_message(
+            system_prompt=system_message,
+            messages=[UserMessage(role="user", content=user_prompt)],
+            max_tokens=1500,
+            temperature=0.3  # Lower temperature for more consistent parsing
+        )
+        
+        # Parse the response
+        response_text = response.message.content.strip()
+        
+        # Remove markdown code blocks if present
+        if response_text.startswith('```'):
+            response_text = response_text.split('```')[1]
+            if response_text.startswith('json'):
+                response_text = response_text[4:]
+            response_text = response_text.strip()
+        
+        parsed_data = json.loads(response_text)
+        
+        # Map to response model
+        entities_mentioned = []
+        for entity in parsed_data.get('entities', []):
+            entity_type = entity.get('type', '').lower()
+            name = entity.get('name', '')
+            existing_name = entity.get('existing_name')
+            notes = entity.get('notes', '')
+            location = entity.get('location')
+            
+            # Find existing entity ID
+            existing_id = None
+            if existing_name:
+                if entity_type == 'npc':
+                    for npc in npcs:
+                        if npc['name'].lower() == existing_name.lower():
+                            existing_id = npc['id']
+                            name = npc['name']  # Use exact existing name
+                            break
+                elif entity_type == 'location':
+                    for loc in locations:
+                        if loc['name'].lower() == existing_name.lower():
+                            existing_id = loc['id']
+                            name = loc['name']
+                            break
+            
+            entities_mentioned.append(EntityMention(
+                entity_type=entity_type,
+                name=name,
+                existing_id=existing_id,
+                suggested_notes=notes,
+                suggested_location=location,
+                confidence="high" if existing_id else "medium"
+            ))
+        
+        # Process time changes
+        time_changes_list = []
+        total_hours = 0
+        
+        for time_change in parsed_data.get('time_changes', []):
+            tc_type = time_change.get('type', '').lower()
+            amount = time_change.get('amount', 0)
+            description = time_change.get('description', '')
+            
+            # Calculate hours
+            if tc_type == 'long_rest':
+                total_hours += 8
+                amount = 8
+            elif tc_type == 'short_rest':
+                total_hours += 1
+                amount = 1
+            elif tc_type == 'hours':
+                total_hours += amount
+            elif tc_type == 'days':
+                total_hours += (amount * 24)
+            
+            time_changes_list.append(TimeChange(
+                type=tc_type,
+                amount=amount,
+                description=description
+            ))
+        
+        # Calculate new calendar date if time passed
+        new_calendar_date = None
+        calendar_update_suggested = total_hours > 0
+        
+        if calendar_update_suggested:
+            # Fetch current calendar
+            calendar = await db.calendar.find_one({'campaign_id': campaign_id}, {'_id': 0})
+            if calendar:
+                current_date_str = calendar.get('current_date', '')
+                if current_date_str:
+                    try:
+                        from datetime import datetime as dt
+                        current_date = dt.fromisoformat(current_date_str.replace('Z', '+00:00'))
+                        new_date = current_date + timedelta(hours=total_hours)
+                        new_calendar_date = new_date.isoformat()
+                    except:
+                        pass
+        
+        return SmartNoteParseResponse(
+            success=True,
+            entities_mentioned=entities_mentioned,
+            time_changes=time_changes_list,
+            calendar_update_suggested=calendar_update_suggested,
+            new_calendar_date=new_calendar_date
+        )
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse AI response as JSON: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"AI returned invalid format. Please try again."
+        )
+    except Exception as e:
+        logger.error(f"Smart note parsing failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to parse notes: {str(e)}"
+        )
+
 # Include the router in the main app
 app.include_router(api_router)
 
