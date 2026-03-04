@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { RQKLogoInline } from '@/components/ui/RQKLogo';
 import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X } from 'lucide-react';
 import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
 import GodsTab from '@/components/tabs/GodsTab';
@@ -165,14 +166,7 @@ function CampaignDashboard({ username, onLogout }) {
             gap: '12px'
           }}
           className="desktop-logos">
-            <img 
-              src="/rqk-logo-mascot.png" 
-              alt="Rookie Quest Keeper" 
-              style={{ 
-                height: '40px',
-                filter: 'drop-shadow(0 0 10px rgba(34, 211, 238, 0.3))'
-              }} 
-            />
+            <RQKLogoInline size="small" />
           </div>
           
           <Button 

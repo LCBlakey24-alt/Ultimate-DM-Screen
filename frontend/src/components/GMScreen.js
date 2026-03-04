@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { RQKLogoInline } from '@/components/ui/RQKLogo';
 import { 
   Sword, Users, BookOpen, Send, Sparkles, 
   Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, Shield, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap
@@ -276,9 +277,7 @@ function GMScreen({ username }) {
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             {/* Logo */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src="/rqk-logo-mascot.png" alt="Rookie Quest Keeper" style={{ height: '38px' }} />
-            </div>
+            <RQKLogoInline size="small" />
             <div style={{ width: '1px', height: '30px', background: 'rgba(255,255,255,0.1)' }} />
             <div>
               <h1 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>

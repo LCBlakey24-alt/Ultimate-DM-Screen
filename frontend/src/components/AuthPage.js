@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { RQKLogo } from '@/components/ui/RQKLogo';
 import { Gift, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -152,16 +153,19 @@ function AuthPage({ onLogin }) {
         maxWidth: '1200px',
         gap: '40px'
       }}>
-        {/* Rookie Quest Keeper Logo with Mascot */}
+        {/* ROOK Mascot */}
         <img 
-          src="/rqk-logo-mascot.png" 
-          alt="Rookie Quest Keeper" 
+          src="/rook-mascot.png" 
+          alt="ROOK" 
+          className="animate-float"
           style={{ 
-            maxWidth: '400px', 
-            width: '100%',
+            height: '120px',
             filter: 'drop-shadow(0 0 30px rgba(34, 211, 238, 0.4))'
           }} 
         />
+
+        {/* Grand ROOKIE QUEST KEEPER Logo */}
+        <RQKLogo size="large" showTagline={true} />
 
         {/* Auth Card */}
         <div className="glow-panel" style={{

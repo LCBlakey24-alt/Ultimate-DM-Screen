@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { RQKLogoInline } from '@/components/ui/RQKLogo';
 import { Crown, User, Swords, BookOpen, Users, Sparkles, Settings, LogOut } from 'lucide-react';
 
 function RoleSelection({ username, onLogout }) {
@@ -23,11 +24,7 @@ function RoleSelection({ username, onLogout }) {
         borderBottom: '1px solid #1F2937'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <img 
-            src="/rqk-logo-mascot.png" 
-            alt="Rookie Quest Keeper" 
-            style={{ height: '40px' }}
-          />
+          <RQKLogoInline size="small" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ color: '#9CA3AF', fontSize: '14px' }}>

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { RQKLogoInline } from '@/components/ui/RQKLogo';
 import { Scroll, Plus, LogOut, Trash2, Settings, Crown, Sparkles, Shield, Star, User } from 'lucide-react';
 import QuickTips, { TIPS } from '@/components/QuickTips';
 import ReviewModal from '@/components/ReviewModal';
@@ -140,14 +141,11 @@ function CampaignList({ username, onLogout }) {
           gap: '20px' 
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <img 
-              src="/rqk-logo-mascot.png" 
-              alt="Rookie Quest Keeper" 
-              style={{ height: '50px', filter: 'drop-shadow(0 0 15px rgba(34, 211, 238, 0.3))' }} 
-            />
+            <RQKLogoInline size="default" />
+            <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)' }} />
             <div>
               <h1 style={{ 
-                fontSize: '28px', 
+                fontSize: '24px', 
                 color: '#ffffff', 
                 marginBottom: '4px',
                 fontFamily: 'Montserrat, sans-serif',

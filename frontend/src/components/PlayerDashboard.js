@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { RQKLogoInline } from '@/components/ui/RQKLogo';
 import { 
   Plus, User, ArrowLeft, Settings, LogOut, Swords, Shield, Heart,
   Sparkles, Link, Loader, ChevronRight, Users, BookOpen, FileText
@@ -130,21 +131,18 @@ function PlayerDashboard({ username, onLogout }) {
           >
             <ArrowLeft size={20} />
           </Button>
-          <img 
-            src="/rqk-logo-mascot.png" 
-            alt="Rookie Quest Keeper" 
-            style={{ height: '36px' }}
-          />
+          <RQKLogoInline size="small" />
+          <div style={{ width: '1px', height: '30px', background: 'rgba(255,255,255,0.1)' }} />
           <div>
             <h1 style={{
-              fontSize: '24px',
+              fontSize: '20px',
               fontFamily: 'Montserrat, sans-serif',
               fontWeight: '800',
               color: '#ffffff'
             }}>
               Player Hub
             </h1>
-            <p style={{ color: '#9CA3AF', fontSize: '13px' }}>
+            <p style={{ color: '#9CA3AF', fontSize: '12px' }}>
               Manage your characters and campaigns
             </p>
           </div>

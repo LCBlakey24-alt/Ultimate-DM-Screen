@@ -8,6 +8,7 @@ import {
   Brain, ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import RookDemo from '@/components/RookDemo';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -83,7 +84,7 @@ const AnimateOnScroll = ({ children, animation = 'fadeUp', delay = 0, className 
 function LandingPage() {
   const navigate = useNavigate();
   const [activeFeature, setActiveFeature] = useState(0);
-  const [activeScreenshot, setActiveScreenshot] = useState('gm');
+  const [activeScreenshot, setActiveScreenshot] = useState('demo');
   const [reviews, setReviews] = useState([]);
   const [scrollY, setScrollY] = useState(0);
 
@@ -759,6 +760,7 @@ function LandingPage() {
               flexWrap: 'wrap'
             }}>
               {[
+                { id: 'demo', label: '✨ Live Demo', color: '#EC4899' },
                 { id: 'gm', label: 'GM Dashboard', color: '#7C3AED' },
                 { id: 'world', label: 'World Builder', color: '#22D3EE' },
                 { id: 'player', label: 'Player Hub', color: '#10B981' },
@@ -836,6 +838,36 @@ function LandingPage() {
               position: 'relative',
               overflow: 'hidden'
             }}>
+              {activeScreenshot === 'demo' && (
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '40px',
+                  background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(34, 211, 238, 0.05) 100%)'
+                }}>
+                  <div style={{
+                    marginBottom: '24px',
+                    textAlign: 'center'
+                  }}>
+                    <h3 style={{
+                      color: '#ffffff',
+                      fontSize: '24px',
+                      fontFamily: 'Montserrat, sans-serif',
+                      fontWeight: '700',
+                      marginBottom: '8px'
+                    }}>
+                      Watch ROOK in Action
+                    </h3>
+                    <p style={{ color: '#94a3b8', fontSize: '14px' }}>
+                      See how ROOK generates NPCs with a single prompt
+                    </p>
+                  </div>
+                  <RookDemo />
+                </div>
+              )}
+
               {activeScreenshot === 'gm' && (
                 <img 
                   src="/screenshots/npcs.png" 
