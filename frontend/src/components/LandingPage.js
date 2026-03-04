@@ -516,74 +516,59 @@ function LandingPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              position: 'relative'
+              position: 'relative',
+              overflow: 'hidden'
             }}>
               {activeScreenshot === 'gm' && (
-                <div style={{ width: '100%', height: '500px', background: 'linear-gradient(135deg, #1a1a2e 0%, #0f0f23 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '40px' }}>
-                  <Crown size={80} color="#7C3AED" style={{ marginBottom: '24px', opacity: 0.8 }} />
-                  <h3 style={{ color: '#ffffff', fontSize: '28px', fontFamily: 'Montserrat, sans-serif', fontWeight: '700', marginBottom: '16px' }}>Campaign Management</h3>
-                  <p style={{ color: '#94a3b8', fontSize: '16px', textAlign: 'center', maxWidth: '500px', lineHeight: '1.6' }}>
-                    Create and manage unlimited campaigns. Access all your world-building tools, NPCs, locations, combat systems, and AI assistants from one central dashboard.
-                  </p>
-                  <div style={{ display: 'flex', gap: '16px', marginTop: '24px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    {['World Builder', 'Combat System', 'NPC Manager', 'AI Assistant'].map((feature) => (
-                      <span key={feature} style={{ padding: '8px 16px', background: 'rgba(124, 58, 237, 0.2)', borderRadius: '20px', color: '#C4B5FD', fontSize: '13px' }}>
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <img 
+                  src="/screenshots/npcs.png" 
+                  alt="GM Dashboard - NPC Management"
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto',
+                    objectFit: 'cover',
+                    objectPosition: 'top center'
+                  }}
+                />
               )}
 
               {activeScreenshot === 'world' && (
-                <div style={{ width: '100%', height: '500px', background: 'linear-gradient(135deg, #0a1628 0%, #0f0f23 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '40px' }}>
-                  <Globe size={80} color="#22D3EE" style={{ marginBottom: '24px', opacity: 0.8 }} />
-                  <h3 style={{ color: '#ffffff', fontSize: '28px', fontFamily: 'Montserrat, sans-serif', fontWeight: '700', marginBottom: '16px' }}>Hierarchical World Builder</h3>
-                  <p style={{ color: '#94a3b8', fontSize: '16px', textAlign: 'center', maxWidth: '500px', lineHeight: '1.6' }}>
-                    Build immersive worlds with a nested structure: Continents → Countries → Cities → Places of Interest. Let AI generate descriptions and lore for any location.
-                  </p>
-                  <div style={{ display: 'flex', gap: '16px', marginTop: '24px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    {['Continents', 'Countries', 'Cities', 'Places', 'AI Lore'].map((feature) => (
-                      <span key={feature} style={{ padding: '8px 16px', background: 'rgba(34, 211, 238, 0.2)', borderRadius: '20px', color: '#A7F3D0', fontSize: '13px' }}>
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <img 
+                  src="/screenshots/world-builder.png" 
+                  alt="World Builder - Locations"
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto',
+                    objectFit: 'cover',
+                    objectPosition: 'top center'
+                  }}
+                />
               )}
 
               {activeScreenshot === 'player' && (
-                <div style={{ width: '100%', height: '500px', background: 'linear-gradient(135deg, #0a2818 0%, #0f0f23 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '40px' }}>
-                  <Users size={80} color="#10B981" style={{ marginBottom: '24px', opacity: 0.8 }} />
-                  <h3 style={{ color: '#ffffff', fontSize: '28px', fontFamily: 'Montserrat, sans-serif', fontWeight: '700', marginBottom: '16px' }}>Player Hub</h3>
-                  <p style={{ color: '#94a3b8', fontSize: '16px', textAlign: 'center', maxWidth: '500px', lineHeight: '1.6' }}>
-                    Players create characters with AI assistance, join campaigns with invite codes, and receive automatic session recaps from their GM. Everything synced in real-time.
-                  </p>
-                  <div style={{ display: 'flex', gap: '16px', marginTop: '24px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    {['Character Builder', 'AI Portraits', 'Stat Roller', 'Session Sync'].map((feature) => (
-                      <span key={feature} style={{ padding: '8px 16px', background: 'rgba(16, 185, 129, 0.2)', borderRadius: '20px', color: '#6EE7B7', fontSize: '13px' }}>
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <img 
+                  src="/screenshots/player-hub.png" 
+                  alt="Player Hub"
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto',
+                    objectFit: 'cover',
+                    objectPosition: 'top center'
+                  }}
+                />
               )}
 
               {activeScreenshot === 'notes' && (
-                <div style={{ width: '100%', height: '500px', background: 'linear-gradient(135deg, #1a1a0a 0%, #0f0f23 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '40px' }}>
-                  <Scroll size={80} color="#EAB308" style={{ marginBottom: '24px', opacity: 0.8 }} />
-                  <h3 style={{ color: '#ffffff', fontSize: '28px', fontFamily: 'Montserrat, sans-serif', fontWeight: '700', marginBottom: '16px' }}>Session Notes & Recaps</h3>
-                  <p style={{ color: '#94a3b8', fontSize: '16px', textAlign: 'center', maxWidth: '500px', lineHeight: '1.6' }}>
-                    Take notes during sessions and let AI generate dramatic narrative recaps. Recaps automatically sync to all players so everyone stays on the same page.
-                  </p>
-                  <div style={{ display: 'flex', gap: '16px', marginTop: '24px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    {['In-Game Notes', 'AI Recaps', 'Auto-Sync', 'Player Notes'].map((feature) => (
-                      <span key={feature} style={{ padding: '8px 16px', background: 'rgba(234, 179, 8, 0.2)', borderRadius: '20px', color: '#FDE68A', fontSize: '13px' }}>
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <img 
+                  src="/screenshots/session-notes.png" 
+                  alt="Session Notes"
+                  style={{ 
+                    width: '100%', 
+                    height: 'auto',
+                    objectFit: 'cover',
+                    objectPosition: 'top center'
+                  }}
+                />
               )}
             </div>
           </div>
