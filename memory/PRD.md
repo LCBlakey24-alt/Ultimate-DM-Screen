@@ -18,10 +18,14 @@ After login, users choose between "Game Master" or "Player" modes with distinct 
 - 4-step wizard: Concept → Race & Class → Abilities → Details
 - Step 1: AI "Unseen Servant" panel with quick ideas + Basic Info form
 - Step 2: Race selection with stat bonuses, Class grid with hit dice/primary stats
-- Step 3: Visual ability score adjusters with +/- buttons and modifier display
+- Step 3: **Multiple stat generation methods**:
+  - **Custom** - Point buy with +/- buttons
+  - **Standard Array** - Classic 15, 14, 13, 12, 10, 8
+  - **Recommended** - Optimized stats for selected class
+  - **Roll Dice** - 4d6 drop lowest with animated dice rolling, shows individual dice, "Re-roll All" button
 - Step 4: Alignment grid, Backstory, Portrait generation
 - Progress indicators with completion checkmarks
-- Live HP/AC calculation based on stats
+- Live HP/AC/Total Points calculation based on stats
 
 ### Backend Endpoints Added
 - `GET /api/player/campaigns` - Get campaigns user has joined

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
   ArrowLeft, ArrowRight, User, Sparkles, Loader, Wand2, 
-  Check, Shield, Heart, Swords, BookOpen, Image
+  Check, Shield, Heart, Swords, BookOpen, Image, Dices
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -21,6 +21,25 @@ const AI_SUGGESTIONS = [
   "A druid protecting their homeland",
   "A charming bard collecting tales"
 ];
+
+// Standard Array
+const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
+
+// Recommended stats by class
+const RECOMMENDED_STATS = {
+  'Barbarian': { strength: 16, dexterity: 14, constitution: 15, intelligence: 8, wisdom: 10, charisma: 12 },
+  'Bard': { strength: 8, dexterity: 14, constitution: 12, intelligence: 13, wisdom: 10, charisma: 16 },
+  'Cleric': { strength: 14, dexterity: 10, constitution: 13, intelligence: 8, wisdom: 16, charisma: 12 },
+  'Druid': { strength: 8, dexterity: 14, constitution: 13, intelligence: 12, wisdom: 16, charisma: 10 },
+  'Fighter': { strength: 16, dexterity: 14, constitution: 15, intelligence: 10, wisdom: 12, charisma: 8 },
+  'Monk': { strength: 10, dexterity: 16, constitution: 14, intelligence: 8, wisdom: 15, charisma: 12 },
+  'Paladin': { strength: 16, dexterity: 10, constitution: 14, intelligence: 8, wisdom: 12, charisma: 15 },
+  'Ranger': { strength: 12, dexterity: 16, constitution: 14, intelligence: 10, wisdom: 15, charisma: 8 },
+  'Rogue': { strength: 10, dexterity: 16, constitution: 14, intelligence: 13, wisdom: 12, charisma: 8 },
+  'Sorcerer': { strength: 8, dexterity: 14, constitution: 13, intelligence: 10, wisdom: 12, charisma: 16 },
+  'Warlock': { strength: 8, dexterity: 14, constitution: 14, intelligence: 12, wisdom: 10, charisma: 16 },
+  'Wizard': { strength: 8, dexterity: 14, constitution: 13, intelligence: 16, wisdom: 12, charisma: 10 }
+};
 
 // 5e Data
 const RACES = [
@@ -75,6 +94,12 @@ function CharacterBuilder() {
   const [portraitGenerating, setPortraitGenerating] = useState(false);
   const [portraitImage, setPortraitImage] = useState(null);
   const [gender, setGender] = useState('neutral');
+  
+  // Stat generation state
+  const [statMethod, setStatMethod] = useState('custom');
+  const [isRolling, setIsRolling] = useState(false);
+  const [rolledStats, setRolledStats] = useState({});
+  const [diceAnimation, setDiceAnimation] = useState(null);
   
   const [characterData, setCharacterData] = useState({
     name: '',
@@ -175,6 +200,89 @@ function CharacterBuilder() {
     } finally {
       setPortraitGenerating(false);
     }
+  };
+
+  // Roll 4d6 drop lowest
+  const roll4d6DropLowest = () => {
+    const rolls = Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1);
+    rolls.sort((a, b) => b - a);
+    return {
+      total: rolls[0] + rolls[1] + rolls[2],
+      rolls: rolls
+    };
+  };
+
+  // Apply Standard Array
+  const applyStandardArray = () => {
+    setStatMethod('standard');
+    const stats = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+    const sortedArray = [...STANDARD_ARRAY];
+    
+    setCharacterData(prev => ({
+      ...prev,
+      strength: sortedArray[0],
+      dexterity: sortedArray[1],
+      constitution: sortedArray[2],
+      intelligence: sortedArray[3],
+      wisdom: sortedArray[4],
+      charisma: sortedArray[5]
+    }));
+    
+    toast.success('Standard Array Applied', {
+      description: 'Assign these values as you like using Custom mode'
+    });
+  };
+
+  // Apply Recommended Stats for class
+  const applyRecommended = () => {
+    setStatMethod('recommended');
+    const recommended = RECOMMENDED_STATS[characterData.character_class];
+    
+    if (recommended) {
+      setCharacterData(prev => ({
+        ...prev,
+        ...recommended
+      }));
+      toast.success(`Optimized for ${characterData.character_class}`, {
+        description: 'Stats set for best performance'
+      });
+    }
+  };
+
+  // Roll all stats with animation
+  const rollAllStats = async () => {
+    setStatMethod('rolled');
+    setIsRolling(true);
+    
+    const stats = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+    const newStats = {};
+    const newRolled = {};
+    
+    for (let i = 0; i < stats.length; i++) {
+      const stat = stats[i];
+      
+      // Show dice animation for this stat
+      setDiceAnimation(stat);
+      
+      // Wait for animation
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      const result = roll4d6DropLowest();
+      newStats[stat] = result.total;
+      newRolled[stat] = result.rolls;
+      
+      // Update state progressively
+      setCharacterData(prev => ({ ...prev, [stat]: result.total }));
+      setRolledStats(prev => ({ ...prev, [stat]: result.rolls }));
+    }
+    
+    setDiceAnimation(null);
+    setIsRolling(false);
+    
+    const total = Object.values(newStats).reduce((a, b) => a + b, 0);
+    toast.success('Dice Rolled!', {
+      description: `Total: ${total} points`
+    });
   };
 
   const calculateModifier = (score) => {
@@ -575,109 +683,284 @@ function CharacterBuilder() {
 
         {/* Step 3: Ability Scores */}
         {step === 3 && (
-          <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
-            <CardContent style={{ padding: '24px' }}>
-              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '24px' }}>
-                Ability Scores
-              </h3>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                {[
-                  { key: 'strength', label: 'STR', icon: Swords },
-                  { key: 'dexterity', label: 'DEX', icon: ArrowRight },
-                  { key: 'constitution', label: 'CON', icon: Heart },
-                  { key: 'intelligence', label: 'INT', icon: BookOpen },
-                  { key: 'wisdom', label: 'WIS', icon: User },
-                  { key: 'charisma', label: 'CHA', icon: Sparkles }
-                ].map(stat => (
-                  <div 
-                    key={stat.key}
-                    style={{
-                      background: '#1F2937',
-                      borderRadius: '12px',
-                      padding: '20px',
-                      textAlign: 'center'
-                    }}
-                  >
-                    <stat.icon size={24} style={{ color: getClassColor(), marginBottom: '8px' }} />
-                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '600', marginBottom: '8px' }}>
-                      {stat.label}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                      <button
-                        onClick={() => handleChange(stat.key, Math.max(3, characterData[stat.key] - 1))}
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          borderRadius: '8px',
-                          background: '#374151',
-                          border: 'none',
-                          color: '#fff',
-                          fontSize: '18px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        −
-                      </button>
-                      <span style={{ 
-                        color: '#fff', 
-                        fontSize: '28px', 
-                        fontWeight: '800',
-                        minWidth: '40px'
+          <div>
+            {/* Stat Generation Method Selector */}
+            <Card style={{ 
+              background: '#111827', 
+              border: '1px solid #1F2937', 
+              borderRadius: '16px',
+              marginBottom: '20px'
+            }}>
+              <CardContent style={{ padding: '20px' }}>
+                <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '16px' }}>
+                  How would you like to generate stats?
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                  {[
+                    { id: 'custom', label: 'Custom', desc: 'Point Buy', color: '#9CA3AF' },
+                    { id: 'standard', label: 'Standard', desc: '15,14,13,12,10,8', color: '#22D3EE' },
+                    { id: 'recommended', label: 'Recommended', desc: `Best for ${characterData.character_class}`, color: '#10B981' },
+                    { id: 'rolled', label: 'Roll Dice', desc: '4d6 drop lowest', color: '#F59E0B' }
+                  ].map(method => (
+                    <button
+                      key={method.id}
+                      onClick={() => {
+                        if (method.id === 'standard') applyStandardArray();
+                        else if (method.id === 'recommended') applyRecommended();
+                        else if (method.id === 'rolled') rollAllStats();
+                        else setStatMethod('custom');
+                      }}
+                      disabled={isRolling}
+                      style={{
+                        padding: '16px 12px',
+                        background: statMethod === method.id ? `${method.color}20` : '#1F2937',
+                        border: statMethod === method.id ? `2px solid ${method.color}` : '1px solid #374151',
+                        borderRadius: '12px',
+                        cursor: isRolling ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.2s',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {method.id === 'rolled' && (
+                        <Dices size={24} style={{ color: method.color, marginBottom: '8px' }} />
+                      )}
+                      <div style={{ 
+                        color: statMethod === method.id ? method.color : '#fff', 
+                        fontWeight: '700', 
+                        fontSize: '14px',
+                        marginBottom: '4px'
                       }}>
-                        {characterData[stat.key]}
-                      </span>
-                      <button
-                        onClick={() => handleChange(stat.key, Math.min(20, characterData[stat.key] + 1))}
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          borderRadius: '8px',
-                          background: '#374151',
-                          border: 'none',
-                          color: '#fff',
-                          fontSize: '18px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        +
-                      </button>
-                    </div>
-                    <div style={{ color: getClassColor(), fontSize: '14px', fontWeight: '700', marginTop: '8px' }}>
-                      {calculateModifier(characterData[stat.key])}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                        {method.label}
+                      </div>
+                      <div style={{ color: '#6B7280', fontSize: '11px' }}>
+                        {method.desc}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Quick Stats Summary */}
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                gap: '24px', 
-                marginTop: '24px',
-                padding: '16px',
-                background: 'rgba(124, 58, 237, 0.1)',
-                borderRadius: '12px'
-              }}>
-                <div style={{ textAlign: 'center' }}>
-                  <Heart size={20} style={{ color: '#EF4444', marginBottom: '4px' }} />
-                  <div style={{ color: '#EF4444', fontSize: '20px', fontWeight: '700' }}>
-                    {parseInt(CLASSES.find(c => c.name === characterData.character_class)?.hitDie?.slice(1) || 8) + 
-                     Math.floor((characterData.constitution - 10) / 2)}
-                  </div>
-                  <div style={{ color: '#9CA3AF', fontSize: '11px' }}>HP</div>
+            {/* Ability Scores Grid */}
+            <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
+              <CardContent style={{ padding: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700' }}>
+                    Ability Scores
+                  </h3>
+                  {statMethod === 'rolled' && (
+                    <Button
+                      onClick={rollAllStats}
+                      disabled={isRolling}
+                      style={{
+                        padding: '8px 16px',
+                        background: 'linear-gradient(135deg, #F59E0B, #EF4444)',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: '#fff',
+                        fontWeight: '600',
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        cursor: isRolling ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      <Dices size={16} className={isRolling ? 'spin' : ''} />
+                      {isRolling ? 'Rolling...' : 'Re-roll All'}
+                    </Button>
+                  )}
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                  <Shield size={20} style={{ color: '#22D3EE', marginBottom: '4px' }} />
-                  <div style={{ color: '#22D3EE', fontSize: '20px', fontWeight: '700' }}>
-                    {10 + Math.floor((characterData.dexterity - 10) / 2)}
-                  </div>
-                  <div style={{ color: '#9CA3AF', fontSize: '11px' }}>AC</div>
+              
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                  {[
+                    { key: 'strength', label: 'STR', icon: Swords, color: '#EF4444' },
+                    { key: 'dexterity', label: 'DEX', icon: ArrowRight, color: '#22D3EE' },
+                    { key: 'constitution', label: 'CON', icon: Heart, color: '#F59E0B' },
+                    { key: 'intelligence', label: 'INT', icon: BookOpen, color: '#8B5CF6' },
+                    { key: 'wisdom', label: 'WIS', icon: User, color: '#10B981' },
+                    { key: 'charisma', label: 'CHA', icon: Sparkles, color: '#EC4899' }
+                  ].map(stat => (
+                    <div 
+                      key={stat.key}
+                      style={{
+                        background: diceAnimation === stat.key 
+                          ? 'rgba(245, 158, 11, 0.2)' 
+                          : '#1F2937',
+                        borderRadius: '12px',
+                        padding: '20px',
+                        textAlign: 'center',
+                        border: diceAnimation === stat.key 
+                          ? '2px solid #F59E0B' 
+                          : '1px solid #374151',
+                        transition: 'all 0.3s',
+                        animation: diceAnimation === stat.key ? 'glow-pulse 0.5s ease-in-out' : 'none'
+                      }}
+                    >
+                      <stat.icon size={24} style={{ color: stat.color, marginBottom: '8px' }} />
+                      <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '600', marginBottom: '8px' }}>
+                        {stat.label}
+                      </div>
+                      
+                      {/* Dice rolling animation */}
+                      {diceAnimation === stat.key ? (
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          height: '50px'
+                        }}>
+                          <div style={{
+                            fontSize: '32px',
+                            animation: 'spin 0.3s linear infinite'
+                          }}>
+                            🎲
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Show rolled dice if in rolled mode */}
+                          {statMethod === 'rolled' && rolledStats[stat.key] && (
+                            <div style={{ 
+                              display: 'flex', 
+                              justifyContent: 'center', 
+                              gap: '4px', 
+                              marginBottom: '8px' 
+                            }}>
+                              {rolledStats[stat.key].map((die, i) => (
+                                <span 
+                                  key={i}
+                                  style={{
+                                    width: '24px',
+                                    height: '24px',
+                                    background: i === 3 ? '#374151' : stat.color + '30',
+                                    border: i === 3 ? '1px solid #4B5563' : `1px solid ${stat.color}`,
+                                    borderRadius: '4px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '12px',
+                                    fontWeight: '700',
+                                    color: i === 3 ? '#6B7280' : stat.color,
+                                    textDecoration: i === 3 ? 'line-through' : 'none'
+                                  }}
+                                >
+                                  {die}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {/* Custom mode: show +/- buttons */}
+                          {statMethod === 'custom' ? (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                              <button
+                                onClick={() => handleChange(stat.key, Math.max(3, characterData[stat.key] - 1))}
+                                style={{
+                                  width: '32px',
+                                  height: '32px',
+                                  borderRadius: '8px',
+                                  background: '#374151',
+                                  border: 'none',
+                                  color: '#fff',
+                                  fontSize: '18px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                −
+                              </button>
+                              <span style={{ 
+                                color: '#fff', 
+                                fontSize: '28px', 
+                                fontWeight: '800',
+                                minWidth: '40px'
+                              }}>
+                                {characterData[stat.key]}
+                              </span>
+                              <button
+                                onClick={() => handleChange(stat.key, Math.min(20, characterData[stat.key] + 1))}
+                                style={{
+                                  width: '32px',
+                                  height: '32px',
+                                  borderRadius: '8px',
+                                  background: '#374151',
+                                  border: 'none',
+                                  color: '#fff',
+                                  fontSize: '18px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                +
+                              </button>
+                            </div>
+                          ) : (
+                            // Other modes: just show the value
+                            <span style={{ 
+                              color: '#fff', 
+                              fontSize: '32px', 
+                              fontWeight: '800',
+                              display: 'block'
+                            }}>
+                              {characterData[stat.key]}
+                            </span>
+                          )}
+                        </>
+                      )}
+                      
+                      <div style={{ 
+                        color: stat.color, 
+                        fontSize: '14px', 
+                        fontWeight: '700', 
+                        marginTop: '8px',
+                        padding: '4px 8px',
+                        background: stat.color + '20',
+                        borderRadius: '4px',
+                        display: 'inline-block'
+                      }}>
+                        {calculateModifier(characterData[stat.key])}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+
+                {/* Quick Stats Summary */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  gap: '32px', 
+                  marginTop: '24px',
+                  padding: '20px',
+                  background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(34, 211, 238, 0.1))',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(124, 58, 237, 0.2)'
+                }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <Heart size={24} style={{ color: '#EF4444', marginBottom: '4px' }} />
+                    <div style={{ color: '#EF4444', fontSize: '24px', fontWeight: '800' }}>
+                      {parseInt(CLASSES.find(c => c.name === characterData.character_class)?.hitDie?.slice(1) || 8) + 
+                       Math.floor((characterData.constitution - 10) / 2)}
+                    </div>
+                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '600' }}>Hit Points</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <Shield size={24} style={{ color: '#22D3EE', marginBottom: '4px' }} />
+                    <div style={{ color: '#22D3EE', fontSize: '24px', fontWeight: '800' }}>
+                      {10 + Math.floor((characterData.dexterity - 10) / 2)}
+                    </div>
+                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '600' }}>Armor Class</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <Sparkles size={24} style={{ color: '#F59E0B', marginBottom: '4px' }} />
+                    <div style={{ color: '#F59E0B', fontSize: '24px', fontWeight: '800' }}>
+                      {characterData.strength + characterData.dexterity + characterData.constitution + 
+                       characterData.intelligence + characterData.wisdom + characterData.charisma}
+                    </div>
+                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '600' }}>Total Points</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {/* Step 4: Details & Portrait */}
