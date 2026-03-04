@@ -8,14 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   Plus, User, ArrowLeft, Settings, LogOut, Swords, Shield, Heart,
-  Sparkles, Link, Loader, ChevronRight, Users, BookOpen
+  Sparkles, Link, Loader, ChevronRight, Users, BookOpen, FileText
 } from 'lucide-react';
+import PlayerNotesTab from './tabs/PlayerNotesTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 function PlayerDashboard({ username, onLogout }) {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('characters');
   const [characters, setCharacters] = useState([]);
   const [joinedCampaigns, setJoinedCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -160,59 +162,124 @@ function PlayerDashboard({ username, onLogout }) {
 
       {/* Main Content */}
       <div style={{ padding: '32px 24px', maxWidth: '1200px', margin: '0 auto' }}>
-        {/* Quick Actions */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '16px',
-          marginBottom: '40px'
+        {/* Tab Navigation */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '32px',
+          borderBottom: '1px solid #1F2937',
+          paddingBottom: '16px'
         }}>
-          <Button
-            onClick={() => navigate('/characters/new')}
-            data-testid="create-character-btn"
+          <button
+            onClick={() => setActiveTab('characters')}
+            data-testid="tab-characters"
             style={{
-              padding: '20px',
-              background: 'linear-gradient(135deg, #22D3EE 0%, #10B981 100%)',
-              border: 'none',
-              borderRadius: '14px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
+              padding: '12px 24px',
+              background: activeTab === 'characters' 
+                ? 'linear-gradient(135deg, #22D3EE 0%, #10B981 100%)' 
+                : 'transparent',
+              border: activeTab === 'characters' 
+                ? 'none' 
+                : '1px solid #374151',
+              borderRadius: '10px',
               color: '#ffffff',
-              fontWeight: '700',
-              fontSize: '16px',
+              fontWeight: '600',
+              fontSize: '14px',
               fontFamily: 'Montserrat, sans-serif',
               cursor: 'pointer',
-              boxShadow: '0 4px 20px rgba(34, 211, 238, 0.4)'
-            }}
-          >
-            <Plus size={24} />
-            Create New Character
-          </Button>
-          
-          <Button
-            onClick={() => setShowJoinDialog(true)}
-            data-testid="join-campaign-btn"
-            style={{
-              padding: '20px',
-              background: 'linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%)',
-              border: 'none',
-              borderRadius: '14px',
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
-              color: '#ffffff',
-              fontWeight: '700',
-              fontSize: '16px',
-              fontFamily: 'Montserrat, sans-serif',
-              cursor: 'pointer',
-              boxShadow: '0 4px 20px rgba(124, 58, 237, 0.4)'
+              gap: '8px',
+              transition: 'all 0.2s'
             }}
           >
-            <Link size={24} />
-            Join Campaign
-          </Button>
+            <User size={18} />
+            Characters
+          </button>
+          <button
+            onClick={() => setActiveTab('notes')}
+            data-testid="tab-notes"
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'notes' 
+                ? 'linear-gradient(135deg, #EAB308 0%, #CA8A04 100%)' 
+                : 'transparent',
+              border: activeTab === 'notes' 
+                ? 'none' 
+                : '1px solid #374151',
+              borderRadius: '10px',
+              color: '#ffffff',
+              fontWeight: '600',
+              fontSize: '14px',
+              fontFamily: 'Montserrat, sans-serif',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <FileText size={18} />
+            Notes
+          </button>
         </div>
+
+        {/* Tab Content */}
+        {activeTab === 'characters' && (
+          <>
+            {/* Quick Actions */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+              gap: '16px',
+              marginBottom: '40px'
+            }}>
+              <Button
+                onClick={() => navigate('/characters/new')}
+                data-testid="create-character-btn"
+                style={{
+                  padding: '20px',
+                  background: 'linear-gradient(135deg, #22D3EE 0%, #10B981 100%)',
+                  border: 'none',
+                  borderRadius: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '16px',
+                  fontFamily: 'Montserrat, sans-serif',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 20px rgba(34, 211, 238, 0.4)'
+                }}
+              >
+                <Plus size={24} />
+                Create New Character
+              </Button>
+              
+              <Button
+                onClick={() => setShowJoinDialog(true)}
+                data-testid="join-campaign-btn"
+                style={{
+                  padding: '20px',
+                  background: 'linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%)',
+                  border: 'none',
+                  borderRadius: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  color: '#ffffff',
+                  fontWeight: '700',
+                  fontSize: '16px',
+                  fontFamily: 'Montserrat, sans-serif',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 20px rgba(124, 58, 237, 0.4)'
+                }}
+              >
+                <Link size={24} />
+                Join Campaign
+              </Button>
+            </div>
 
         {/* My Characters Section */}
         <section style={{ marginBottom: '48px' }}>
@@ -525,6 +592,13 @@ function PlayerDashboard({ username, onLogout }) {
             </div>
           )}
         </section>
+        </>
+        )}
+
+        {/* Notes Tab Content */}
+        {activeTab === 'notes' && (
+          <PlayerNotesTab campaigns={joinedCampaigns} />
+        )}
       </div>
 
       {/* Join Campaign Dialog */}

@@ -124,28 +124,18 @@ function InGameNotesTab({ campaignId }) {
     
     setGeneratingRecap(true);
     
-    const notesText = notes.map(n => `[${new Date(n.created_at).toLocaleString()}] ${n.content}`).join('\n\n');
-    
-    const prompt = `You are a fantasy storyteller. Based on these tabletop RPG session notes, create an engaging narrative recap that could be read aloud at the start of the next session. Write it in second person ("You") addressing the party.
-
-Session Notes:
-${notesText}
-
-Create a vivid, dramatic recap (2-4 paragraphs) that:
-- Summarizes key events in narrative form
-- Mentions important NPCs, locations, and discoveries
-- Ends with a hook or question to build anticipation
-- Uses evocative fantasy language
-
-Write the recap now:`;
-
     try {
-      const res = await axios.post(`${API}/ai/generate`, { prompt, generation_type: 'recap' });
-      setSessionRecap(res.data.content);
+      // Call the new backend endpoint that generates and syncs to players
+      const res = await axios.post(`${API}/campaigns/${campaignId}/session-recaps`);
+      setSessionRecap(res.data.recap);
       setShowRecapDialog(true);
-      toast.success('Session recap generated!');
+      toast.success(`Recap generated and synced to ${res.data.players_synced} players!`);
     } catch (error) {
-      toast.error('Failed to generate recap');
+      if (error.response?.status === 402) {
+        toast.error('AI limit reached', { description: 'Upgrade to Adventurer for unlimited AI generations.' });
+      } else {
+        toast.error('Failed to generate recap');
+      }
     } finally {
       setGeneratingRecap(false);
     }
