@@ -3,6 +3,30 @@
 ## Overview
 A comprehensive web application for Tabletop RPG Game Masters, serving as a digital "GM Screen" for managing campaigns, combat, and world-building. Supports multiple TTRPG systems including D&D 5e, Pathfinder, and more.
 
+## Player Mode Experience ✅ (NEW - March 4, 2026)
+
+### Role Selection Page
+After login, users choose between "Game Master" or "Player" modes with distinct visual cards showing features for each role.
+
+### Player Dashboard (/player)
+- "My Characters" grid with character cards showing portraits, class color, stats
+- "My Campaigns" section showing joined campaigns
+- Quick actions: "Create New Character" and "Join Campaign"
+- Empty states with call-to-action buttons
+
+### Character Builder (Redesigned)
+- 4-step wizard: Concept → Race & Class → Abilities → Details
+- Step 1: AI "Unseen Servant" panel with quick ideas + Basic Info form
+- Step 2: Race selection with stat bonuses, Class grid with hit dice/primary stats
+- Step 3: Visual ability score adjusters with +/- buttons and modifier display
+- Step 4: Alignment grid, Backstory, Portrait generation
+- Progress indicators with completion checkmarks
+- Live HP/AC calculation based on stats
+
+### Backend Endpoints Added
+- `GET /api/player/campaigns` - Get campaigns user has joined
+- `GET /api/player/campaign/{id}/inventory` - Get items assigned to player
+
 ## Design System - Arcane SaaS / Nebula Flow (Updated March 4, 2026)
 Modern dark fantasy dashboard design combining the clarity of a professional SaaS app (like Notion/Linear) with subtle magical fantasy elements. Inspired by Nebula Flow dashboard style.
 

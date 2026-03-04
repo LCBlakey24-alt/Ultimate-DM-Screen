@@ -5,8 +5,10 @@ import '@/App.css';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import AuthPage from '@/components/AuthPage';
+import RoleSelection from '@/components/RoleSelection';
 import CampaignList from '@/components/CampaignList';
 import CampaignDashboard from '@/components/CampaignDashboard';
+import PlayerDashboard from '@/components/PlayerDashboard';
 import DMScreen from '@/components/GMScreen';
 import CombatPage from '@/components/CombatPage';
 import PricingPage from '@/components/PricingPage';
@@ -87,8 +89,24 @@ function App() {
             path="/auth" 
             element={
               isAuthenticated ? 
-                <Navigate to="/campaigns" replace /> : 
+                <Navigate to="/home" replace /> : 
                 <AuthPage onLogin={handleLogin} />
+            } 
+          />
+          <Route 
+            path="/home" 
+            element={
+              isAuthenticated ? 
+                <RoleSelection username={username} onLogout={handleLogout} /> : 
+                <Navigate to="/auth" replace />
+            } 
+          />
+          <Route 
+            path="/player" 
+            element={
+              isAuthenticated ? 
+                <PlayerDashboard username={username} onLogout={handleLogout} /> : 
+                <Navigate to="/auth" replace />
             } 
           />
           <Route 
@@ -187,7 +205,7 @@ function App() {
             path="/" 
             element={
               isAuthenticated ? 
-                <Navigate to="/campaigns" replace /> : 
+                <Navigate to="/home" replace /> : 
                 <LandingPage />
             } 
           />

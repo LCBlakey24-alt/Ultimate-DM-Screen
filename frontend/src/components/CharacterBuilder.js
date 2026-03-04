@@ -4,38 +4,61 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { ArrowLeft, User, Sparkles, Loader, Wand2, ChevronDown, ChevronUp, Image, UserCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { 
+  ArrowLeft, ArrowRight, User, Sparkles, Loader, Wand2, 
+  Check, Shield, Heart, Swords, BookOpen, Image
+} from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Quick suggestion prompts for inspiration
+// Quick suggestion prompts
 const AI_SUGGESTIONS = [
-  "A sneaky rogue who uses a bow and has a dark past",
-  "A holy warrior seeking redemption for past sins",
-  "A scholarly wizard obsessed with ancient secrets",
-  "A nature-loving druid protecting their homeland",
-  "A charming bard collecting tales of adventure"
+  "A sneaky rogue with a bow and dark past",
+  "A holy warrior seeking redemption",
+  "A wizard obsessed with ancient secrets",
+  "A druid protecting their homeland",
+  "A charming bard collecting tales"
 ];
 
 // 5e Data
 const RACES = [
-  'Human', 'Elf', 'Dwarf', 'Halfling', 'Dragonborn', 'Gnome', 'Half-Elf', 'Half-Orc', 'Tiefling'
+  { name: 'Human', bonus: '+1 to all stats' },
+  { name: 'Elf', bonus: '+2 DEX' },
+  { name: 'Dwarf', bonus: '+2 CON' },
+  { name: 'Halfling', bonus: '+2 DEX' },
+  { name: 'Dragonborn', bonus: '+2 STR, +1 CHA' },
+  { name: 'Gnome', bonus: '+2 INT' },
+  { name: 'Half-Elf', bonus: '+2 CHA, +1 to two others' },
+  { name: 'Half-Orc', bonus: '+2 STR, +1 CON' },
+  { name: 'Tiefling', bonus: '+2 CHA, +1 INT' }
 ];
 
 const CLASSES = [
-  'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk', 'Paladin', 'Ranger', 'Rogue', 'Sorcerer', 'Warlock', 'Wizard'
+  { name: 'Barbarian', color: '#DC2626', hitDie: 'd12', primary: 'STR' },
+  { name: 'Bard', color: '#EC4899', hitDie: 'd8', primary: 'CHA' },
+  { name: 'Cleric', color: '#F59E0B', hitDie: 'd8', primary: 'WIS' },
+  { name: 'Druid', color: '#22C55E', hitDie: 'd8', primary: 'WIS' },
+  { name: 'Fighter', color: '#EF4444', hitDie: 'd10', primary: 'STR/DEX' },
+  { name: 'Monk', color: '#14B8A6', hitDie: 'd8', primary: 'DEX/WIS' },
+  { name: 'Paladin', color: '#FBBF24', hitDie: 'd10', primary: 'STR/CHA' },
+  { name: 'Ranger', color: '#10B981', hitDie: 'd10', primary: 'DEX/WIS' },
+  { name: 'Rogue', color: '#6B7280', hitDie: 'd8', primary: 'DEX' },
+  { name: 'Sorcerer', color: '#7C3AED', hitDie: 'd6', primary: 'CHA' },
+  { name: 'Warlock', color: '#6366F1', hitDie: 'd8', primary: 'CHA' },
+  { name: 'Wizard', color: '#8B5CF6', hitDie: 'd6', primary: 'INT' }
 ];
 
 const BACKGROUNDS = [
-  'Acolyte', 'Charlatan', 'Criminal', 'Entertainer', 'Folk Hero', 'Guild Artisan', 'Hermit', 'Noble', 'Outlander', 'Sage', 'Sailor', 'Soldier', 'Urchin'
+  'Acolyte', 'Charlatan', 'Criminal', 'Entertainer', 'Folk Hero', 
+  'Guild Artisan', 'Hermit', 'Noble', 'Outlander', 'Sage', 'Sailor', 'Soldier', 'Urchin'
 ];
 
 const ALIGNMENTS = [
-  'Lawful Good', 'Neutral Good', 'Chaotic Good',
-  'Lawful Neutral', 'Neutral', 'Chaotic Neutral',
-  'Lawful Evil', 'Neutral Evil', 'Chaotic Evil'
+  ['Lawful Good', 'Neutral Good', 'Chaotic Good'],
+  ['Lawful Neutral', 'Neutral', 'Chaotic Neutral'],
+  ['Lawful Evil', 'Neutral Evil', 'Chaotic Evil']
 ];
 
 function CharacterBuilder() {
@@ -46,10 +69,9 @@ function CharacterBuilder() {
   // AI Generation state
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiGenerating, setAiGenerating] = useState(false);
-  const [showAiPanel, setShowAiPanel] = useState(true);
   const [aiGenerated, setAiGenerated] = useState(false);
   
-  // Portrait generation state
+  // Portrait state
   const [portraitGenerating, setPortraitGenerating] = useState(false);
   const [portraitImage, setPortraitImage] = useState(null);
   const [gender, setGender] = useState('neutral');
@@ -58,7 +80,6 @@ function CharacterBuilder() {
     name: '',
     race: 'Human',
     character_class: 'Fighter',
-    subclass: '',
     background: 'Folk Hero',
     level: 1,
     alignment: 'Neutral Good',
@@ -82,9 +103,7 @@ function CharacterBuilder() {
   // AI Character Generation
   const handleAiGenerate = async () => {
     if (!aiPrompt.trim() || aiPrompt.trim().length < 10) {
-      toast.error('Description too short', {
-        description: 'Please describe your character in at least 10 characters'
-      });
+      toast.error('Please describe your character (at least 10 characters)');
       return;
     }
 
@@ -96,14 +115,11 @@ function CharacterBuilder() {
 
       if (response.data.success && response.data.character) {
         const generated = response.data.character;
-        
-        // Map the generated data to our form
         setCharacterData(prev => ({
           ...prev,
           name: generated.name || prev.name,
           race: generated.race || prev.race,
           character_class: generated.character_class || prev.character_class,
-          subclass: generated.subclass || '',
           background: generated.background || prev.background,
           level: generated.level || 1,
           alignment: generated.alignment || prev.alignment,
@@ -119,28 +135,24 @@ function CharacterBuilder() {
           flaws: generated.flaws || '',
           backstory: generated.backstory || ''
         }));
-
         setAiGenerated(true);
-        toast.success(response.data.message || 'Character generated!', {
-          description: 'Review and customize before creating',
-          duration: 4000
+        toast.success(`${generated.name} has been created!`, {
+          description: 'Review and customize below'
         });
       }
     } catch (error) {
       toast.error('AI generation failed', {
-        description: error.response?.data?.detail || 'Please try again with a different description'
+        description: error.response?.data?.detail || 'Try again'
       });
     } finally {
       setAiGenerating(false);
     }
   };
 
-  // Generate character portrait
+  // Portrait Generation
   const handleGeneratePortrait = async () => {
     if (!characterData.name.trim()) {
-      toast.error('Name required', {
-        description: 'Please enter a character name first'
-      });
+      toast.error('Enter a name first');
       return;
     }
 
@@ -151,61 +163,56 @@ function CharacterBuilder() {
         race: characterData.race,
         character_class: characterData.character_class,
         gender: gender,
-        appearance: characterData.backstory ? characterData.backstory.substring(0, 200) : ''
+        appearance: characterData.backstory?.substring(0, 200) || ''
       });
 
       if (response.data.success && response.data.image_base64) {
         setPortraitImage(`data:image/png;base64,${response.data.image_base64}`);
-        toast.success('Portrait generated!', {
-          description: response.data.message,
-          duration: 4000
-        });
+        toast.success('Portrait generated!');
       }
     } catch (error) {
-      toast.error('Portrait generation failed', {
-        description: error.response?.data?.detail || 'Please try again'
-      });
+      toast.error('Portrait generation failed');
     } finally {
       setPortraitGenerating(false);
     }
   };
 
   const calculateModifier = (score) => {
-    return Math.floor((score - 10) / 2);
+    const mod = Math.floor((score - 10) / 2);
+    return mod >= 0 ? `+${mod}` : `${mod}`;
   };
 
-  const getTotalPoints = () => {
-    return characterData.strength + characterData.dexterity + characterData.constitution +
-           characterData.intelligence + characterData.wisdom + characterData.charisma;
-  };
-
-  const handleCreate = async () => {
+  const handleSubmit = async () => {
     if (!characterData.name.trim()) {
-      toast.error('Character name required', {
-        description: 'Please enter a name for your character'
-      });
+      toast.error('Please enter a character name');
       return;
     }
 
     setCreating(true);
     try {
-      const response = await axios.post(`${API}/characters`, characterData);
-      
-      toast.success(`${characterData.name} created!`, {
-        description: 'Your character is ready for adventure',
-        duration: 3000
-      });
-      
-      // Navigate to character sheet
-      navigate(`/characters/${response.data.character_id}`);
+      const payload = {
+        ...characterData,
+        max_hp: parseInt(CLASSES.find(c => c.name === characterData.character_class)?.hitDie?.slice(1) || 8) + 
+                Math.floor((characterData.constitution - 10) / 2),
+        armor_class: 10 + Math.floor((characterData.dexterity - 10) / 2),
+        portrait_url: portraitImage || null
+      };
+
+      await axios.post(`${API}/characters`, payload);
+      toast.success('Character created!');
+      navigate('/player');
     } catch (error) {
-      toast.error('Failed to create character', {
-        description: error.response?.data?.detail || 'Please try again'
-      });
+      toast.error('Failed to create character');
     } finally {
       setCreating(false);
     }
   };
+
+  const getClassColor = () => {
+    return CLASSES.find(c => c.name === characterData.character_class)?.color || '#7C3AED';
+  };
+
+  const steps = ['Concept', 'Race & Class', 'Abilities', 'Details'];
 
   return (
     <div style={{
@@ -213,275 +220,252 @@ function CharacterBuilder() {
       background: 'linear-gradient(180deg, #0B0F19 0%, #111827 50%, #0B0F19 100%)',
       padding: '24px'
     }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-          <Button onClick={() => navigate('/characters')} className="btn-icon">
-            <ArrowLeft size={24} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+          <Button onClick={() => navigate('/player')} className="btn-icon">
+            <ArrowLeft size={20} />
           </Button>
-          <div>
+          <div style={{ flex: 1 }}>
             <h1 style={{
-              fontSize: 'clamp(28px, 5vw, 36px)',
+              fontSize: '28px',
               fontFamily: 'Montserrat, sans-serif',
               fontWeight: '800',
-              color: '#ffffff',
-              marginBottom: '4px'
+              color: '#ffffff'
             }}>
               Create Character
             </h1>
-            <p style={{ color: '#9CA3AF', fontSize: '14px' }}>
-              Step {step} of 4
-            </p>
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div style={{
-          height: '8px',
-          background: 'rgba(31, 41, 55, 0.8)',
-          borderRadius: '4px',
+        {/* Progress Steps */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
           marginBottom: '32px',
-          overflow: 'hidden'
+          padding: '0 20px'
         }}>
-          <div style={{
-            height: '100%',
-            background: 'linear-gradient(90deg, #7C3AED, #22D3EE)',
-            width: `${(step / 4) * 100}%`,
-            transition: 'width 0.3s ease'
-          }} />
-        </div>
-
-        {/* Unseen Servant AI Panel */}
-        <div style={{
-          marginBottom: '24px',
-          background: aiGenerated 
-            ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(34, 211, 238, 0.15))'
-            : 'linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(139, 92, 246, 0.15))',
-          border: aiGenerated ? '1px solid #10B981' : '1px solid #7C3AED',
-          borderRadius: '14px',
-          overflow: 'hidden',
-          transition: 'all 0.3s ease'
-        }}>
-          {/* Header - Always Visible */}
-          <button
-            onClick={() => setShowAiPanel(!showAiPanel)}
-            data-testid="ai-panel-toggle"
-            style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '16px 20px',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {steps.map((s, i) => (
+            <div 
+              key={i}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                opacity: i + 1 <= step ? 1 : 0.4
+              }}
+            >
               <div style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, #7C3AED, #8B5CF6)',
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: i + 1 < step ? '#10B981' : i + 1 === step ? getClassColor() : '#1F2937',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                color: '#fff',
+                fontWeight: '700',
+                fontSize: '14px',
+                marginRight: '10px'
               }}>
-                <Wand2 size={22} color="#ffffff" />
+                {i + 1 < step ? <Check size={18} /> : i + 1}
               </div>
-              <div style={{ textAlign: 'left' }}>
-                <h3 style={{ 
-                  color: '#ffffff', 
-                  fontSize: '18px', 
-                  fontWeight: '700',
-                  fontFamily: 'Montserrat, sans-serif',
-                  margin: 0
-                }}>
-                  Unseen Servant
-                </h3>
-                <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>
-                  {aiGenerated ? 'Character generated! Review below.' : 'Let AI create your character concept'}
-                </p>
-              </div>
+              <span style={{ 
+                color: i + 1 === step ? '#fff' : '#9CA3AF',
+                fontWeight: i + 1 === step ? '600' : '400',
+                fontSize: '14px',
+                display: i === steps.length - 1 || i === 0 ? 'block' : 'none'
+              }} className="step-label">
+                {s}
+              </span>
+              {i < steps.length - 1 && (
+                <div style={{
+                  height: '2px',
+                  width: '60px',
+                  background: i + 1 < step ? '#10B981' : '#1F2937',
+                  margin: '0 12px',
+                  display: 'none'
+                }} className="step-connector" />
+              )}
             </div>
-            {showAiPanel ? <ChevronUp size={24} color="#94a3b8" /> : <ChevronDown size={24} color="#94a3b8" />}
-          </button>
+          ))}
+        </div>
 
-          {/* Expandable Content */}
-          {showAiPanel && (
-            <div style={{ padding: '0 20px 20px 20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
-                  color: '#a78bfa', 
-                  fontSize: '14px', 
-                  fontWeight: '600' 
-                }}>
-                  Describe your character
-                </label>
+        {/* Step 1: Concept with AI */}
+        {step === 1 && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            {/* AI Generation Panel */}
+            <Card style={{
+              background: aiGenerated 
+                ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(34, 211, 238, 0.1))'
+                : 'linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(139, 92, 246, 0.1))',
+              border: aiGenerated ? '1px solid #10B981' : '1px solid #7C3AED',
+              borderRadius: '16px'
+            }}>
+              <CardContent style={{ padding: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    background: 'linear-gradient(135deg, #7C3AED, #8B5CF6)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <Wand2 size={24} color="#fff" />
+                  </div>
+                  <div>
+                    <h3 style={{ 
+                      color: '#fff', 
+                      fontSize: '18px', 
+                      fontWeight: '700',
+                      fontFamily: 'Montserrat, sans-serif'
+                    }}>
+                      Unseen Servant
+                    </h3>
+                    <p style={{ color: '#9CA3AF', fontSize: '13px' }}>
+                      Describe your character idea
+                    </p>
+                  </div>
+                </div>
+
                 <textarea
                   value={aiPrompt}
                   onChange={(e) => setAiPrompt(e.target.value)}
-                  placeholder="e.g., A mysterious elven wizard who was exiled from their homeland for practicing forbidden magic..."
-                  data-testid="ai-character-prompt"
+                  placeholder="Example: A mysterious half-elf wizard who was exiled for practicing forbidden magic..."
+                  data-testid="ai-prompt"
                   style={{
                     width: '100%',
-                    minHeight: '100px',
+                    minHeight: '120px',
                     padding: '14px',
                     background: 'rgba(0, 0, 0, 0.3)',
-                    border: '2px solid rgba(139, 92, 246, 0.3)',
+                    border: '1px solid rgba(124, 58, 237, 0.3)',
                     borderRadius: '12px',
-                    color: '#e2e8f0',
+                    color: '#E5E7EB',
                     fontSize: '14px',
-                    resize: 'vertical',
-                    outline: 'none',
-                    transition: 'border-color 0.2s'
+                    resize: 'none',
+                    marginBottom: '12px'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#8b5cf6'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(139, 92, 246, 0.3)'}
                 />
-              </div>
 
-              {/* Quick Suggestions */}
-              <div style={{ marginBottom: '16px' }}>
-                <p style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '8px' }}>
-                  Quick ideas:
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {AI_SUGGESTIONS.map((suggestion, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setAiPrompt(suggestion)}
-                      data-testid={`ai-suggestion-${idx}`}
-                      style={{
-                        padding: '6px 12px',
-                        background: 'rgba(139, 92, 246, 0.2)',
-                        border: '1px solid rgba(139, 92, 246, 0.4)',
-                        borderRadius: '20px',
-                        color: '#c4b5fd',
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.background = 'rgba(139, 92, 246, 0.4)';
-                        e.target.style.color = '#ffffff';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.background = 'rgba(139, 92, 246, 0.2)';
-                        e.target.style.color = '#c4b5fd';
-                      }}
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
+                {/* Quick Ideas */}
+                <div style={{ marginBottom: '16px' }}>
+                  <p style={{ color: '#6B7280', fontSize: '12px', marginBottom: '8px' }}>Quick ideas:</p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {AI_SUGGESTIONS.map((s, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setAiPrompt(s)}
+                        style={{
+                          padding: '5px 10px',
+                          background: 'rgba(124, 58, 237, 0.15)',
+                          border: '1px solid rgba(124, 58, 237, 0.3)',
+                          borderRadius: '16px',
+                          color: '#C4B5FD',
+                          fontSize: '11px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Generate Button */}
-              <Button
-                onClick={handleAiGenerate}
-                disabled={aiGenerating || !aiPrompt.trim()}
-                data-testid="ai-generate-btn"
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  background: aiGenerating 
-                    ? 'rgba(139, 92, 246, 0.5)' 
-                    : 'linear-gradient(135deg, #8b5cf6, #a855f7)',
-                  border: 'none',
-                  borderRadius: '12px',
-                  color: '#ffffff',
-                  fontSize: '16px',
-                  fontWeight: '700',
-                  cursor: aiGenerating || !aiPrompt.trim() ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                  transition: 'all 0.2s'
-                }}
-              >
-                {aiGenerating ? (
-                  <>
-                    <Loader className="spin" size={20} />
-                    Summoning Character...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles size={20} />
-                    Generate with AI
-                  </>
+                <Button
+                  onClick={handleAiGenerate}
+                  disabled={aiGenerating || !aiPrompt.trim()}
+                  data-testid="ai-generate-btn"
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    background: aiGenerating ? 'rgba(124, 58, 237, 0.5)' : 'linear-gradient(135deg, #7C3AED, #8B5CF6)',
+                    border: 'none',
+                    borderRadius: '10px',
+                    color: '#fff',
+                    fontWeight: '700',
+                    fontSize: '15px',
+                    cursor: aiGenerating || !aiPrompt.trim() ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  {aiGenerating ? (
+                    <><Loader className="spin" size={18} /> Generating...</>
+                  ) : (
+                    <><Sparkles size={18} /> Generate Character</>
+                  )}
+                </Button>
+
+                {aiGenerated && (
+                  <p style={{ color: '#10B981', fontSize: '13px', textAlign: 'center', marginTop: '12px' }}>
+                    ✓ Character generated! Review on the right →
+                  </p>
                 )}
-              </Button>
+              </CardContent>
+            </Card>
 
-              {aiGenerated && (
-                <p style={{ 
-                  marginTop: '12px', 
-                  color: '#22c55e', 
-                  fontSize: '13px', 
-                  textAlign: 'center' 
+            {/* Manual Entry Panel */}
+            <Card style={{
+              background: '#111827',
+              border: '1px solid #1F2937',
+              borderRadius: '16px'
+            }}>
+              <CardContent style={{ padding: '24px' }}>
+                <h3 style={{ 
+                  color: '#fff', 
+                  fontSize: '18px', 
+                  fontWeight: '700',
+                  fontFamily: 'Montserrat, sans-serif',
+                  marginBottom: '20px'
                 }}>
-                  ✨ Character generated! Review and edit the details below, then click "Create Character" when ready.
-                </p>
-              )}
-            </div>
-          )}
-        </div>
+                  Basic Info
+                </h3>
 
-        {/* Step 1: Basic Info */}
-        {step === 1 && (
-          <Card className="glow-card">
-            <CardHeader>
-              <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
-                Basic Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
                     Character Name *
                   </label>
                   <Input
                     value={characterData.name}
                     onChange={(e) => handleChange('name', e.target.value)}
-                    placeholder="Enter character name..."
+                    placeholder="Enter name..."
                     className="input"
+                    data-testid="character-name"
                     style={{ fontSize: '16px' }}
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
                       Race
                     </label>
                     <select
                       value={characterData.race}
                       onChange={(e) => handleChange('race', e.target.value)}
                       className="input"
-                      style={{ width: '100%', fontSize: '15px' }}
+                      style={{ width: '100%' }}
                     >
-                      {RACES.map(race => (
-                        <option key={race} value={race}>{race}</option>
+                      {RACES.map(r => (
+                        <option key={r.name} value={r.name}>{r.name}</option>
                       ))}
                     </select>
                   </div>
-
                   <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
                       Class
                     </label>
                     <select
                       value={characterData.character_class}
                       onChange={(e) => handleChange('character_class', e.target.value)}
                       className="input"
-                      style={{ width: '100%', fontSize: '15px' }}
+                      style={{ width: '100%' }}
                     >
-                      {CLASSES.map(cls => (
-                        <option key={cls} value={cls}>{cls}</option>
+                      {CLASSES.map(c => (
+                        <option key={c.name} value={c.name}>{c.name}</option>
                       ))}
                     </select>
                   </div>
@@ -489,23 +473,22 @@ function CharacterBuilder() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
                       Background
                     </label>
                     <select
                       value={characterData.background}
                       onChange={(e) => handleChange('background', e.target.value)}
                       className="input"
-                      style={{ width: '100%', fontSize: '15px' }}
+                      style={{ width: '100%' }}
                     >
-                      {BACKGROUNDS.map(bg => (
-                        <option key={bg} value={bg}>{bg}</option>
+                      {BACKGROUNDS.map(b => (
+                        <option key={b} value={b}>{b}</option>
                       ))}
                     </select>
                   </div>
-
                   <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
                       Level
                     </label>
                     <Input
@@ -518,218 +501,251 @@ function CharacterBuilder() {
                     />
                   </div>
                 </div>
-
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
-                    Alignment
-                  </label>
-                  <select
-                    value={characterData.alignment}
-                    onChange={(e) => handleChange('alignment', e.target.value)}
-                    className="input"
-                    style={{ width: '100%', fontSize: '15px' }}
-                  >
-                    {ALIGNMENTS.map(align => (
-                      <option key={align} value={align}>{align}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
-        {/* Step 2: Ability Scores */}
+        {/* Step 2: Race & Class Details */}
         {step === 2 && (
-          <Card className="glow-card">
-            <CardHeader>
-              <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
-                Ability Scores
-              </CardTitle>
-              <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '8px' }}>
-                Point Buy: {getTotalPoints()}/60 (Standard: 60, Point Buy allows 8-15)
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-                {['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].map((ability) => {
-                  const score = characterData[ability];
-                  const modifier = calculateModifier(score);
-                  return (
-                    <div key={ability} style={{
-                      padding: '20px',
-                      background: 'rgba(30, 64, 175, 0.1)',
-                      border: '2px solid #1e40af',
-                      borderRadius: '16px'
-                    }}>
-                      <div style={{ marginBottom: '12px' }}>
-                        <label style={{
-                          display: 'block',
-                          color: '#67e8f9',
-                          fontSize: '16px',
-                          fontWeight: '700',
-                          textTransform: 'capitalize',
-                          marginBottom: '4px'
-                        }}>
-                          {ability}
-                        </label>
-                        <span style={{ color: '#94a3b8', fontSize: '14px' }}>
-                          Modifier: {modifier >= 0 ? '+' : ''}{modifier}
-                        </span>
-                      </div>
-                      <Input
-                        type="number"
-                        min="3"
-                        max="20"
-                        value={score}
-                        onChange={(e) => handleChange(ability, parseInt(e.target.value) || 10)}
-                        className="input"
-                        style={{ fontSize: '20px', fontWeight: '800', textAlign: 'center' }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div style={{
-                marginTop: '20px',
-                padding: '16px',
-                background: 'rgba(168, 85, 247, 0.1)',
-                border: '1px solid #a855f7',
-                borderRadius: '12px'
-              }}>
-                <p style={{ color: '#a855f7', fontSize: '13px', lineHeight: '1.6' }}>
-                  💡 <strong>Tip:</strong> Standard array: 15, 14, 13, 12, 10, 8. Point buy allows scores from 8-15 before racial bonuses.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step 3: Personality */}
-        {step === 3 && (
-          <Card className="glow-card">
-            <CardHeader>
-              <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
-                Personality & Backstory
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
-                    Personality Traits
-                  </label>
-                  <textarea
-                    value={characterData.personality_traits}
-                    onChange={(e) => handleChange('personality_traits', e.target.value)}
-                    placeholder="What are your character's quirks and habits?"
-                    className="textarea"
-                    style={{ minHeight: '80px' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
-                    Ideals
-                  </label>
-                  <textarea
-                    value={characterData.ideals}
-                    onChange={(e) => handleChange('ideals', e.target.value)}
-                    placeholder="What does your character believe in?"
-                    className="textarea"
-                    style={{ minHeight: '80px' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
-                    Bonds
-                  </label>
-                  <textarea
-                    value={characterData.bonds}
-                    onChange={(e) => handleChange('bonds', e.target.value)}
-                    placeholder="Who or what is your character connected to?"
-                    className="textarea"
-                    style={{ minHeight: '80px' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
-                    Flaws
-                  </label>
-                  <textarea
-                    value={characterData.flaws}
-                    onChange={(e) => handleChange('flaws', e.target.value)}
-                    placeholder="What are your character's weaknesses?"
-                    className="textarea"
-                    style={{ minHeight: '80px' }}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step 4: Backstory & Portrait */}
-        {step === 4 && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px' }}>
-            <Card className="glow-card">
-              <CardHeader>
-                <CardTitle className="medieval-heading" style={{ fontSize: '24px', color: '#ffffff' }}>
-                  Backstory
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
-                    Tell Your Character's Story
-                  </label>
-                  <textarea
-                    value={characterData.backstory}
-                    onChange={(e) => handleChange('backstory', e.target.value)}
-                    placeholder="Where did your character come from? What drives them? What are they searching for?"
-                    className="textarea"
-                    style={{ minHeight: '200px' }}
-                  />
-                </div>
-
-                <div style={{
-                  marginTop: '20px',
-                  padding: '16px',
-                  background: 'rgba(34, 197, 94, 0.1)',
-                  border: '1px solid #22c55e',
-                  borderRadius: '12px'
-                }}>
-                  <h4 style={{ color: '#22c55e', fontSize: '14px', fontWeight: '700', marginBottom: '8px' }}>
-                    Character Summary
-                  </h4>
-                  <p style={{ color: '#e2e8f0', fontSize: '14px', lineHeight: '1.6' }}>
-                    <strong>{characterData.name || 'Your Character'}</strong> - Level {characterData.level} {characterData.race} {characterData.character_class}
-                    <br />
-                    Background: {characterData.background} | Alignment: {characterData.alignment}
-                  </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            {/* Race Selection */}
+            <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
+              <CardContent style={{ padding: '24px' }}>
+                <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>
+                  <User size={20} style={{ marginRight: '8px', verticalAlign: 'middle', color: '#22D3EE' }} />
+                  Choose Race
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {RACES.map(race => (
+                    <button
+                      key={race.name}
+                      onClick={() => handleChange('race', race.name)}
+                      style={{
+                        padding: '14px 16px',
+                        background: characterData.race === race.name ? 'rgba(34, 211, 238, 0.15)' : '#1F2937',
+                        border: characterData.race === race.name ? '2px solid #22D3EE' : '1px solid #374151',
+                        borderRadius: '10px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <span style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>{race.name}</span>
+                      <span style={{ color: '#9CA3AF', fontSize: '12px' }}>{race.bonus}</span>
+                    </button>
+                  ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Portrait Generation Panel */}
-            <Card className="glow-card" style={{ height: 'fit-content' }}>
-              <CardHeader>
-                <CardTitle className="medieval-heading" style={{ fontSize: '20px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Image size={20} style={{ color: '#a855f7' }} />
-                  Character Portrait
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+            {/* Class Selection */}
+            <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
+              <CardContent style={{ padding: '24px' }}>
+                <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>
+                  <Swords size={20} style={{ marginRight: '8px', verticalAlign: 'middle', color: getClassColor() }} />
+                  Choose Class
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  {CLASSES.map(cls => (
+                    <button
+                      key={cls.name}
+                      onClick={() => handleChange('character_class', cls.name)}
+                      style={{
+                        padding: '12px',
+                        background: characterData.character_class === cls.name ? `${cls.color}25` : '#1F2937',
+                        border: characterData.character_class === cls.name ? `2px solid ${cls.color}` : '1px solid #374151',
+                        borderRadius: '10px',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <div style={{ color: '#fff', fontWeight: '600', fontSize: '13px' }}>{cls.name}</div>
+                      <div style={{ color: '#9CA3AF', fontSize: '11px' }}>{cls.hitDie} • {cls.primary}</div>
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Step 3: Ability Scores */}
+        {step === 3 && (
+          <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
+            <CardContent style={{ padding: '24px' }}>
+              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '24px' }}>
+                Ability Scores
+              </h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                {[
+                  { key: 'strength', label: 'STR', icon: Swords },
+                  { key: 'dexterity', label: 'DEX', icon: ArrowRight },
+                  { key: 'constitution', label: 'CON', icon: Heart },
+                  { key: 'intelligence', label: 'INT', icon: BookOpen },
+                  { key: 'wisdom', label: 'WIS', icon: User },
+                  { key: 'charisma', label: 'CHA', icon: Sparkles }
+                ].map(stat => (
+                  <div 
+                    key={stat.key}
+                    style={{
+                      background: '#1F2937',
+                      borderRadius: '12px',
+                      padding: '20px',
+                      textAlign: 'center'
+                    }}
+                  >
+                    <stat.icon size={24} style={{ color: getClassColor(), marginBottom: '8px' }} />
+                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '600', marginBottom: '8px' }}>
+                      {stat.label}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <button
+                        onClick={() => handleChange(stat.key, Math.max(3, characterData[stat.key] - 1))}
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          background: '#374151',
+                          border: 'none',
+                          color: '#fff',
+                          fontSize: '18px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        −
+                      </button>
+                      <span style={{ 
+                        color: '#fff', 
+                        fontSize: '28px', 
+                        fontWeight: '800',
+                        minWidth: '40px'
+                      }}>
+                        {characterData[stat.key]}
+                      </span>
+                      <button
+                        onClick={() => handleChange(stat.key, Math.min(20, characterData[stat.key] + 1))}
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          background: '#374151',
+                          border: 'none',
+                          color: '#fff',
+                          fontSize: '18px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div style={{ color: getClassColor(), fontSize: '14px', fontWeight: '700', marginTop: '8px' }}>
+                      {calculateModifier(characterData[stat.key])}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Quick Stats Summary */}
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                gap: '24px', 
+                marginTop: '24px',
+                padding: '16px',
+                background: 'rgba(124, 58, 237, 0.1)',
+                borderRadius: '12px'
+              }}>
+                <div style={{ textAlign: 'center' }}>
+                  <Heart size={20} style={{ color: '#EF4444', marginBottom: '4px' }} />
+                  <div style={{ color: '#EF4444', fontSize: '20px', fontWeight: '700' }}>
+                    {parseInt(CLASSES.find(c => c.name === characterData.character_class)?.hitDie?.slice(1) || 8) + 
+                     Math.floor((characterData.constitution - 10) / 2)}
+                  </div>
+                  <div style={{ color: '#9CA3AF', fontSize: '11px' }}>HP</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <Shield size={20} style={{ color: '#22D3EE', marginBottom: '4px' }} />
+                  <div style={{ color: '#22D3EE', fontSize: '20px', fontWeight: '700' }}>
+                    {10 + Math.floor((characterData.dexterity - 10) / 2)}
+                  </div>
+                  <div style={{ color: '#9CA3AF', fontSize: '11px' }}>AC</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 4: Details & Portrait */}
+        {step === 4 && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px' }}>
+            <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
+              <CardContent style={{ padding: '24px' }}>
+                <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '20px' }}>
+                  Character Details
+                </h3>
+
+                {/* Alignment Grid */}
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{ display: 'block', marginBottom: '12px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
+                    Alignment
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
+                    {ALIGNMENTS.flat().map(align => (
+                      <button
+                        key={align}
+                        onClick={() => handleChange('alignment', align)}
+                        style={{
+                          padding: '10px 6px',
+                          background: characterData.alignment === align ? getClassColor() + '30' : '#1F2937',
+                          border: characterData.alignment === align ? `1px solid ${getClassColor()}` : '1px solid #374151',
+                          borderRadius: '6px',
+                          color: characterData.alignment === align ? '#fff' : '#9CA3AF',
+                          fontSize: '11px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {align}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Backstory */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
+                    Backstory
+                  </label>
+                  <textarea
+                    value={characterData.backstory}
+                    onChange={(e) => handleChange('backstory', e.target.value)}
+                    placeholder="Where did your character come from? What drives them?"
+                    className="textarea"
+                    style={{ minHeight: '150px' }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Portrait Panel */}
+            <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px', height: 'fit-content' }}>
+              <CardContent style={{ padding: '24px' }}>
+                <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Image size={18} style={{ color: '#7C3AED' }} />
+                  Portrait
+                </h3>
+
                 {/* Portrait Display */}
                 <div style={{
                   width: '100%',
                   aspectRatio: '1',
-                  background: 'rgba(30, 64, 175, 0.1)',
-                  border: '2px dashed #1e40af',
-                  borderRadius: '16px',
+                  background: portraitImage ? 'transparent' : 'rgba(124, 58, 237, 0.1)',
+                  border: '2px dashed #374151',
+                  borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -739,64 +755,50 @@ function CharacterBuilder() {
                   {portraitImage ? (
                     <img 
                       src={portraitImage} 
-                      alt={`Portrait of ${characterData.name}`}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '14px' }}
+                      alt="Character portrait"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }}
                     />
                   ) : (
-                    <div style={{ textAlign: 'center', padding: '20px' }}>
-                      <UserCircle size={64} color="#4a7dff" style={{ opacity: 0.5, marginBottom: '12px' }} />
-                      <p style={{ color: '#94a3b8', fontSize: '13px' }}>
-                        Generate an AI portrait for your character
-                      </p>
-                    </div>
+                    <User size={48} style={{ color: '#374151' }} />
                   )}
                 </div>
 
                 {/* Gender Selection */}
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', color: '#a78bfa', fontSize: '13px', fontWeight: '600' }}>
-                    Character Appearance
-                  </label>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    {['male', 'female', 'neutral'].map((g) => (
-                      <button
-                        key={g}
-                        onClick={() => setGender(g)}
-                        style={{
-                          flex: 1,
-                          padding: '8px 12px',
-                          borderRadius: '8px',
-                          border: gender === g ? '2px solid #a855f7' : '1px solid #374151',
-                          background: gender === g ? 'rgba(168, 85, 247, 0.2)' : 'transparent',
-                          color: gender === g ? '#a855f7' : '#94a3b8',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          cursor: 'pointer',
-                          textTransform: 'capitalize'
-                        }}
-                      >
-                        {g}
-                      </button>
-                    ))}
-                  </div>
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
+                  {['male', 'female', 'neutral'].map(g => (
+                    <button
+                      key={g}
+                      onClick={() => setGender(g)}
+                      style={{
+                        flex: 1,
+                        padding: '8px',
+                        borderRadius: '6px',
+                        border: gender === g ? '1px solid #7C3AED' : '1px solid #374151',
+                        background: gender === g ? 'rgba(124, 58, 237, 0.2)' : 'transparent',
+                        color: gender === g ? '#C4B5FD' : '#9CA3AF',
+                        fontSize: '11px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        textTransform: 'capitalize'
+                      }}
+                    >
+                      {g}
+                    </button>
+                  ))}
                 </div>
 
-                {/* Generate Button */}
                 <Button
                   onClick={handleGeneratePortrait}
                   disabled={portraitGenerating || !characterData.name.trim()}
-                  data-testid="generate-portrait-btn"
                   style={{
                     width: '100%',
                     padding: '12px',
-                    background: portraitGenerating 
-                      ? 'rgba(168, 85, 247, 0.5)' 
-                      : 'linear-gradient(135deg, #a855f7, #8b5cf6)',
+                    background: portraitGenerating ? 'rgba(124, 58, 237, 0.5)' : 'linear-gradient(135deg, #7C3AED, #8B5CF6)',
                     border: 'none',
-                    borderRadius: '12px',
-                    color: '#ffffff',
-                    fontSize: '14px',
-                    fontWeight: '700',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    fontWeight: '600',
+                    fontSize: '13px',
                     cursor: portraitGenerating || !characterData.name.trim() ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -805,72 +807,80 @@ function CharacterBuilder() {
                   }}
                 >
                   {portraitGenerating ? (
-                    <>
-                      <Loader className="spin" size={18} />
-                      Painting Portrait...
-                    </>
+                    <><Loader className="spin" size={16} /> Generating...</>
                   ) : (
-                    <>
-                      <Sparkles size={18} />
-                      Generate Portrait
-                    </>
+                    <><Sparkles size={16} /> Generate Portrait</>
                   )}
                 </Button>
-
-                <p style={{ 
-                  marginTop: '12px', 
-                  color: '#94a3b8', 
-                  fontSize: '11px', 
-                  textAlign: 'center' 
-                }}>
-                  AI will create a fantasy portrait based on your character's race, class, and description
-                </p>
               </CardContent>
             </Card>
           </div>
         )}
 
         {/* Navigation Buttons */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          marginTop: '32px',
+          padding: '20px',
+          background: '#111827',
+          borderRadius: '12px',
+          border: '1px solid #1F2937'
+        }}>
           <Button
             onClick={() => setStep(Math.max(1, step - 1))}
-            className="btn-outline"
             disabled={step === 1}
-            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            className="btn-secondary"
+            style={{ opacity: step === 1 ? 0.5 : 1 }}
           >
-            Previous
+            <ArrowLeft size={18} style={{ marginRight: '8px' }} />
+            Back
           </Button>
 
           {step < 4 ? (
             <Button
               onClick={() => setStep(Math.min(4, step + 1))}
               className="btn-primary"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               Next
+              <ArrowRight size={18} style={{ marginLeft: '8px' }} />
             </Button>
           ) : (
             <Button
-              onClick={handleCreate}
+              onClick={handleSubmit}
               disabled={creating || !characterData.name.trim()}
-              className="btn-primary"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+              data-testid="create-character-btn"
+              style={{
+                padding: '14px 28px',
+                background: 'linear-gradient(135deg, #10B981, #22D3EE)',
+                border: 'none',
+                borderRadius: '10px',
+                color: '#fff',
+                fontWeight: '700',
+                fontSize: '15px',
+                cursor: creating || !characterData.name.trim() ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 20px rgba(34, 211, 238, 0.4)'
+              }}
             >
               {creating ? (
-                <>
-                  <Loader className="spin" size={18} />
-                  Creating...
-                </>
+                <><Loader className="spin" size={18} /> Creating...</>
               ) : (
-                <>
-                  <Sparkles size={18} />
-                  Create Character
-                </>
+                <><Check size={18} /> Create Character</>
               )}
             </Button>
           )}
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .step-label { display: none !important; }
+          .step-connector { display: none !important; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -3599,6 +3599,62 @@ async def get_campaign_players(
         "players": characters
     }
 
+@api_router.get("/player/campaigns")
+async def get_player_campaigns(username: str = Depends(get_current_user)):
+    """Get all campaigns the current user has joined as a player"""
+    # Find all characters belonging to this user that are in campaigns
+    characters = await db.player_characters.find(
+        {'user_id': username, 'campaign_id': {'$ne': None}},
+        {'_id': 0, 'campaign_id': 1}
+    ).to_list(50)
+    
+    campaign_ids = list(set([c['campaign_id'] for c in characters if c.get('campaign_id')]))
+    
+    if not campaign_ids:
+        return []
+    
+    # Fetch campaign details
+    campaigns = await db.campaigns.find(
+        {'id': {'$in': campaign_ids}},
+        {'_id': 0, 'id': 1, 'name': 1, 'system': 1, 'dm_user_id': 1}
+    ).to_list(50)
+    
+    # Add GM name to each campaign
+    for campaign in campaigns:
+        user = await db.users.find_one(
+            {'username': campaign.get('dm_user_id')},
+            {'_id': 0, 'username': 1}
+        )
+        campaign['gm_name'] = user.get('username') if user else 'Unknown'
+    
+    return campaigns
+
+@api_router.get("/player/campaign/{campaign_id}/inventory")
+async def get_player_inventory(
+    campaign_id: str,
+    username: str = Depends(get_current_user)
+):
+    """Get inventory items assigned to the current player in a campaign"""
+    # First verify the player has a character in this campaign
+    character = await db.player_characters.find_one(
+        {'user_id': username, 'campaign_id': campaign_id},
+        {'_id': 0}
+    )
+    
+    if not character:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have a character in this campaign"
+        )
+    
+    # Get items assigned to this player
+    items = await db.inventory.find(
+        {'campaign_id': campaign_id, 'assigned_to': character.get('id')},
+        {'_id': 0}
+    ).to_list(100)
+    
+    return items
+
 @api_router.post("/ai/generate-character")
 async def ai_generate_character(
     request: AICharacterGenerateRequest,
