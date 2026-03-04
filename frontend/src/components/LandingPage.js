@@ -182,26 +182,111 @@ function LandingPage() {
         }} />
 
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative' }}>
-          {/* Main RQK Logo with Mascot - Large & Prominent */}
+          
+          {/* ROOK Mascot - Floating above the logo */}
           <div style={{ 
-            marginBottom: '40px', 
+            marginBottom: '24px', 
             display: 'flex', 
             justifyContent: 'center', 
-            alignItems: 'center',
-            width: '100%'
+            alignItems: 'center'
           }}>
             <img 
-              src="/rqk-logo-mascot.png" 
-              alt="Rookie Quest Keeper" 
+              src="/rook-mascot.png" 
+              alt="ROOK" 
               style={{ 
-                height: '180px',
-                maxWidth: '90%',
-                objectFit: 'contain',
-                filter: 'drop-shadow(0 0 40px rgba(34, 211, 238, 0.4))',
+                height: '140px',
+                filter: 'drop-shadow(0 0 30px rgba(34, 211, 238, 0.5))',
                 animation: 'float 3s ease-in-out infinite'
               }}
             />
           </div>
+
+          {/* GRAND Text Logo - Rookie Quest Keeper */}
+          <div style={{ 
+            marginBottom: '16px',
+            display: 'flex', 
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            {/* "ROOKIE QUEST" - Top line */}
+            <div style={{
+              fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: '600',
+              color: '#ffffff',
+              letterSpacing: '8px',
+              textTransform: 'uppercase',
+              opacity: 0.9
+            }}>
+              ROOKIE QUEST
+            </div>
+            
+            {/* "KEEPER" - Main hero text with accent lines */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 'clamp(16px, 3vw, 32px)'
+            }}>
+              {/* Left accent line - Blue */}
+              <div style={{
+                width: 'clamp(40px, 8vw, 100px)',
+                height: '3px',
+                background: 'linear-gradient(90deg, transparent 0%, #3B82F6 100%)',
+                borderRadius: '2px',
+                boxShadow: '0 0 20px rgba(59, 130, 246, 0.6)'
+              }} />
+              
+              {/* KEEPER text */}
+              <h1 style={{
+                fontSize: 'clamp(4rem, 12vw, 9rem)',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: '900',
+                color: '#ffffff',
+                letterSpacing: 'clamp(4px, 1.5vw, 16px)',
+                textTransform: 'uppercase',
+                margin: 0,
+                textShadow: '0 0 60px rgba(34, 211, 238, 0.4), 0 0 120px rgba(124, 58, 237, 0.2)',
+                background: 'linear-gradient(180deg, #ffffff 0%, #e2e8f0 50%, #94a3b8 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>
+                KEEPER
+              </h1>
+              
+              {/* Right accent line - Purple */}
+              <div style={{
+                width: 'clamp(40px, 8vw, 100px)',
+                height: '3px',
+                background: 'linear-gradient(90deg, #A855F7 0%, transparent 100%)',
+                borderRadius: '2px',
+                boxShadow: '0 0 20px rgba(168, 85, 247, 0.6)'
+              }} />
+            </div>
+
+            {/* Tagline under the logo */}
+            <p style={{
+              fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
+              color: '#22D3EE',
+              letterSpacing: '4px',
+              textTransform: 'uppercase',
+              marginTop: '12px',
+              fontWeight: '500'
+            }}>
+              Campaign Operating System
+            </p>
+          </div>
+
+          {/* Divider line */}
+          <div style={{
+            width: '120px',
+            height: '2px',
+            background: 'linear-gradient(90deg, #3B82F6, #22D3EE, #A855F7)',
+            margin: '32px auto',
+            borderRadius: '2px'
+          }} />
 
           {/* NEW Headline */}
           <h1 style={{
