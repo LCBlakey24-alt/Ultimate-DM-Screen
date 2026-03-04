@@ -230,7 +230,7 @@ function LandingPage() {
                 height: '220px',
                 maxWidth: '90%',
                 objectFit: 'contain',
-                filter: 'drop-shadow(0 0 40px rgba(20, 184, 166, 0.5))',
+                filter: 'drop-shadow(0 0 40px rgba(124, 58, 237, 0.5))',
                 animation: 'float 3s ease-in-out infinite'
               }}
             />
@@ -259,7 +259,7 @@ function LandingPage() {
             margin: '0 auto 40px',
             lineHeight: '1.7'
           }}>
-            Rookie Quest Keeper is the all-in-one <strong style={{ color: '#14b8a6' }}>campaign operating system</strong> for 5e Game Masters — 
+            Rookie Quest Keeper is the all-in-one <strong style={{ color: '#22D3EE' }}>campaign operating system</strong> for 5e Game Masters — 
             combining worldbuilding, AI content generation, combat control, and live session tools in one unified platform.
           </p>
 

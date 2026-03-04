@@ -222,8 +222,8 @@ function CharacterBuilder() {
           <div>
             <h1 style={{
               fontSize: 'clamp(28px, 5vw, 36px)',
-              fontFamily: 'Cinzel, serif',
-              fontWeight: '600',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: '800',
               color: '#ffffff',
               marginBottom: '4px'
             }}>

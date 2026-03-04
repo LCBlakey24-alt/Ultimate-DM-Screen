@@ -1,7 +1,7 @@
 /* Quest Keeper - Arcane SaaS Design System v3.0 */
-/* Modern Dark Fantasy Dashboard with Subtle Magical Elements */
+/* Modern Dark Fantasy Dashboard - Nebula Flow Style */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
   /* Arcane Color Palette */
@@ -63,12 +63,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Main App Container with Subtle Rune Pattern */
+/* Main App Container with Subtle Pattern */
 .App {
   min-height: 100vh;
   background: 
-    /* Subtle rune pattern overlay */
-    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%237C3AED' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    /* Subtle grid pattern overlay */
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%237C3AED' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
     /* Gradient background */
     linear-gradient(180deg, 
       #0B0F19 0%, 
@@ -133,10 +133,17 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== TYPOGRAPHY ===== */
+/* Rainbow gradient animation for text */
+@keyframes rainbow-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ===== TYPOGRAPHY - Montserrat ===== */
 .logo-title, .medieval-heading, h1, h2, h3 {
-  font-family: 'Cinzel', serif;
-  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
   letter-spacing: 0.5px;
   color: var(--text-white);
 }
@@ -150,8 +157,8 @@ body {
 }
 
 .logo-subtitle {
-  font-family: 'Cinzel', serif;
-  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
   font-size: 24px;
   background: linear-gradient(135deg, var(--arcane-purple) 0%, var(--magic-cyan) 100%);
   -webkit-background-clip: text;
@@ -161,9 +168,35 @@ body {
   letter-spacing: 3px;
 }
 
-/* Gradient text effect */
+/* Rainbow text effect - Nebula Flow style */
+.rainbow-text {
+  background: linear-gradient(
+    90deg,
+    #10B981 0%,
+    #22D3EE 20%,
+    #7C3AED 40%,
+    #EC4899 60%,
+    #F59E0B 80%,
+    #10B981 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbow-shift 4s linear infinite;
+}
+
+/* Gradient text effect - purple to cyan */
 .gradient-text {
   background: linear-gradient(135deg, var(--arcane-purple) 0%, var(--magic-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient text - green to cyan */
+.gradient-text-green {
+  background: linear-gradient(135deg, #10B981 0%, #22D3EE 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -202,6 +235,25 @@ body {
 .card.active, .card-glow.active {
   border-color: var(--arcane-purple);
   box-shadow: var(--shadow-glow);
+}
+
+/* ===== STAT BOXES - Nebula Flow Style ===== */
+.stat-box {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(34, 211, 238, 0.1) 100%);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-box-green {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(34, 211, 238, 0.1) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.stat-box-gold {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(236, 72, 153, 0.1) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 /* ===== INPUTS & FORMS ===== */
@@ -256,12 +308,14 @@ body {
   border: none;
   padding: 12px 24px;
   border-radius: var(--radius-md);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 15px var(--arcane-purple-glow);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .btn-primary:hover {
@@ -287,9 +341,9 @@ body {
   border: 1px solid var(--border-default);
   padding: 12px 24px;
   border-radius: var(--radius-md);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -311,9 +365,9 @@ body {
   border: 1px solid var(--border-default);
   padding: 10px 20px;
   border-radius: var(--radius-md);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 13px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -331,9 +385,9 @@ body {
   border: 1px solid rgba(239, 68, 68, 0.3);
   padding: 10px 16px;
   border-radius: var(--radius-md);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -382,9 +436,9 @@ body {
   border: none;
   border-radius: var(--radius-md);
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 13px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -496,15 +550,15 @@ select option {
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 4px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 600;
 }
 
 .stat-value {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-white);
-  font-family: 'Cinzel', serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 /* ===== HP BAR ===== */
@@ -597,7 +651,8 @@ select option {
   font-size: 11px;
   color: var(--text-muted);
   margin-bottom: 6px;
-  font-weight: 500;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .note-content {
@@ -614,7 +669,8 @@ select option {
   padding: 5px 12px;
   border-radius: 20px;
   border: 1px solid rgba(124, 58, 237, 0.3);
-  font-weight: 600;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
 }
 
 /* ===== SCROLLBAR ===== */

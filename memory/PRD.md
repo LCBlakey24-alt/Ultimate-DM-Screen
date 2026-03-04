@@ -3,8 +3,8 @@
 ## Overview
 A comprehensive web application for Tabletop RPG Game Masters, serving as a digital "GM Screen" for managing campaigns, combat, and world-building. Supports multiple TTRPG systems including D&D 5e, Pathfinder, and more.
 
-## Design System - Arcane SaaS (Updated March 4, 2026)
-Modern dark fantasy dashboard design combining the clarity of a professional SaaS app with subtle magical fantasy elements.
+## Design System - Arcane SaaS / Nebula Flow (Updated March 4, 2026)
+Modern dark fantasy dashboard design combining the clarity of a professional SaaS app (like Notion/Linear) with subtle magical fantasy elements. Inspired by Nebula Flow dashboard style.
 
 ### Color Palette
 - **Background**: #0B0F19 (Deep Obsidian)
@@ -17,11 +17,12 @@ Modern dark fantasy dashboard design combining the clarity of a professional Saa
 - **Text Secondary**: #9CA3AF
 
 ### Typography
-- **Headings**: Cinzel (fantasy serif)
+- **Headings**: Montserrat (bold, clean sans-serif)
 - **Body**: Inter (clean sans-serif)
 
-### Visual Elements
-- Subtle rune patterns in backgrounds
+### Visual Effects
+- **Rainbow text animation** for key headings (green → cyan → purple → pink → gold)
+- Subtle background patterns
 - Soft magical glow effects on active elements
 - Smooth hover animations
 - Rounded corners with clean shadows
