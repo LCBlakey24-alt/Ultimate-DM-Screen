@@ -321,6 +321,38 @@ Modern dark fantasy dashboard design combining the clarity of a professional Saa
 - **Frontend**: 116/116 E2E tests passing (100%) - Added 26 account settings tests
 - **New Test Files**: test_account_management.py, account-settings.spec.ts
 
+## Map Builder Feature ✅ (March 5, 2026)
+
+### Overview
+Full-featured battle map builder for DMs integrated into the GM Screen. Allows creating grid-based maps with terrain, walls, fog of war, and token placement.
+
+### Components
+- `/app/frontend/src/components/MapBuilder/MapBuilder.js` - Main editor with canvas, toolbar, side panel
+- `/app/frontend/src/components/MapBuilder/MapCanvas.js` - HTML5 Canvas rendering engine
+- `/app/frontend/src/components/MapBuilder/MapToolbar.js` - Tool selection and controls
+
+### Features
+- **Grid Canvas**: 30x20 default grid (configurable)
+- **Terrain Tools**: Stone, Wood, Grass, Water, Sand, Dirt, Snow, Lava, Void
+- **Drawing Tools**: Terrain brush, Wall, Door, Eraser, Fog of War
+- **Quick Fill**: One-click fill entire map with terrain
+- **Fog of War**: Reveal All / Hide All controls
+- **Token Placement**: Add tokens with HP tracking
+- **Keyboard Shortcuts**: V(Select), B(Brush), W(Wall), E(Eraser), F(Fog)
+- **View Controls**: Zoom, Pan, Grid toggle
+- **Save/Load**: Maps persist to campaign database
+- **Image Import**: Upload background images
+
+### API Endpoints
+- `POST /api/campaigns/{id}/maps` - Create map
+- `GET /api/campaigns/{id}/maps` - List maps
+- `PUT /api/campaigns/{id}/maps/{map_id}` - Update map
+- `DELETE /api/campaigns/{id}/maps/{map_id}` - Delete map
+
+### Integration
+- Accessible via GM Screen "Maps" tab
+- Maps can be loaded into combat encounters (future)
+
 ## Combat Enhancement Features (March 4, 2026)
 
 ### Creature Ability Cards ✅ IMPLEMENTED
@@ -413,24 +445,22 @@ Modern dark fantasy dashboard design combining the clarity of a professional Saa
 - Added limits: 500 for inventory/items, 200 for AI context, 100 for characters, 50 for campaign players
 
 ## Upcoming Tasks (Priority Order)
-1. **P0: GM→Player Item Linking** - Items assigned by GM automatically sync to player's character sheet with functional stats
-2. **P1: Player Mode Combat View** - Simplified combat tracker for players, actions sync with GM's view
-3. **P2: Smart Note Parsing** - Resume AI parsing of GM notes to auto-update game entities
-4. **P3: Add Database Indexes** - Add indexes to MongoDB for `campaign_id`, `user_id` fields for performance
-5. **P4: Refactor server.py** - Break monolithic backend into separate routers
+1. **P0: Player Character Sheet Overhaul** - All-in-one character sheet with spells, abilities, feats, clickable stats (user requested for next week)
+2. **P1: SRD Content Database** - Copyright-safe spells, abilities, feats from D&D 5e SRD
+3. **P2: User Content Upload System** - Allow users to upload JSON files to extend content database
+4. **P3: ROOK AI Suggestions** - "Did you know?" popups based on character build
+5. **P4: Map-Combat Integration** - Use saved maps in combat encounters with token sync
 
 ## Future Tasks
-- Combat Map Builder | AI Combat Turn Suggestions | Dark Mode / Theme Options | Import/Export Campaign
+- GM→Player Item Linking | Player Combat View | Smart Note Parsing | Backend Refactoring | AI Combat Narrator
 
-## Test Status (Updated March 4, 2026)
-- **Backend**: 10 test files, comprehensive API coverage
-- **Frontend**: 18 E2E test specs covering all major flows
+## Test Status (Updated March 5, 2026)
+- **Backend**: 12 test files, comprehensive API coverage (including test_maps_api.py)
+- **Frontend**: 26 E2E test specs covering all major flows
 - **New Test Files Created**:
-  - `/app/tests/e2e/dice-roller-stress.spec.ts` - Stress tests for large dice counts
-  - `/app/tests/e2e/gm-screen-tabs.spec.ts` - All GM screen tab functionality
-  - `/app/tests/e2e/player-dashboard.spec.ts` - Player dashboard and notes
-  - `/app/tests/e2e/golden-path.spec.ts` - End-to-end golden path tests
-  - `/app/backend/tests/test_player_notes_combat.py` - Player notes and combat APIs
+  - `/app/tests/e2e/map-builder.spec.ts` - Map Builder UI, tools, terrain, fog, tokens, save
+  - `/app/backend/tests/test_maps_api.py` - Maps API CRUD operations
+  - Previous: dice-roller-stress, gm-screen-tabs, player-dashboard, golden-path specs
 
 ---
-Last Updated: March 4, 2026
+Last Updated: March 5, 2026
