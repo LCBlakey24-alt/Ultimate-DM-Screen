@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map, ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map, ChevronDown, ChevronRight, Package } from 'lucide-react';
 import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
 import GodsTab from '@/components/tabs/GodsTab';
 import NPCsTab from '@/components/tabs/NPCsTab';
@@ -108,33 +108,26 @@ function CampaignDashboard({ username, onLogout }) {
         { id: 'gods', icon: Church, label: 'Gods' },
         { id: 'locations', icon: MapPin, label: 'Locations' },
         { id: 'npcs', icon: UserCircle, label: 'NPCs' },
+        { id: 'calendar', icon: Calendar, label: 'Calendar' },
       ]
     },
     {
-      id: 'tools',
-      label: 'Tools',
-      icon: Wand2,
+      id: 'combat',
+      label: 'Combat',
+      icon: Swords,
       tabs: [
-        { id: 'reference', icon: ScrollText, label: 'Reference' },
+        { id: 'combat-creator', icon: Swords, label: 'Combat' },
+        { id: 'maps', icon: Map, label: 'Battle Maps' },
         { id: 'encounter-gen', icon: Sparkles, label: 'Encounter Gen' },
-        { id: 'items', icon: Wand2, label: 'Items' },
-      ]
-    },
-    {
-      id: 'players-group',
-      label: 'Players',
-      icon: Users,
-      tabs: [
-        { id: 'players', icon: Users, label: 'Party' },
       ]
     },
   ];
 
-  // Ungrouped tabs (shown individually)
-  const ungroupedTabs = [
-    { id: 'combat-creator', icon: Swords, label: 'Combat' },
-    { id: 'maps', icon: Map, label: 'Battle Maps' },
-    { id: 'calendar', icon: Calendar, label: 'Calendar' },
+  // Standalone tabs (shown individually, not in groups)
+  const standaloneTabs = [
+    { id: 'reference', icon: ScrollText, label: 'References' },
+    { id: 'items', icon: Package, label: 'Inventory' },
+    { id: 'players', icon: Users, label: 'Players' },
     { id: 'ingame-notes', icon: FileText, label: 'Notes' },
   ];
 
@@ -390,7 +383,7 @@ function CampaignDashboard({ username, onLogout }) {
             }} />
             
             {/* Ungrouped tabs */}
-            {ungroupedTabs.map(tab => renderTabButton(tab, false))}
+            {standaloneTabs.map(tab => renderTabButton(tab, false))}
           </div>
         </div>
 

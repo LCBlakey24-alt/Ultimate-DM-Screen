@@ -1907,9 +1907,19 @@ async def get_campaign_setting(campaign_id: str, username: str = Depends(get_cur
 async def update_campaign_setting(campaign_id: str, setting_data: CampaignSettingUpdate, username: str = Depends(get_current_user)):
     await verify_campaign_ownership(campaign_id, username)
     
+    # Build update data, excluding None values
+    update_data = {k: v for k, v in setting_data.model_dump().items() if v is not None}
+    
     result = await db.campaign_settings.update_one(
         {'campaign_id': campaign_id},
-        {'$set': setting_data.model_dump()},
+        {
+            '$set': update_data,
+            '$setOnInsert': {
+                'campaign_id': campaign_id,
+                'id': str(uuid.uuid4()),
+                'created_at': datetime.now(timezone.utc).isoformat()
+            }
+        },
         upsert=True
     )
     

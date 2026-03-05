@@ -1,20 +1,43 @@
 import React, { useState } from 'react';
 import { Dices, X, ChevronUp, Minus } from 'lucide-react';
 
+// Dark Minimalist Theme - RED #E11D48
+const theme = {
+  bg: {
+    black: '#0D0D0D',
+    dark: '#141414',
+    panel: '#1A1A1A',
+    card: '#1F1F1F',
+    hover: '#2A2A2A'
+  },
+  accent: {
+    red: '#E11D48',
+    redHover: '#F43F5E',
+    redSubtle: 'rgba(225, 29, 72, 0.15)'
+  },
+  text: {
+    white: '#FFFFFF',
+    secondary: '#B3B3B3',
+    muted: '#808080'
+  },
+  border: 'rgba(255, 255, 255, 0.1)'
+};
+
 function FloatingDiceRoller() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [rolls, setRolls] = useState([]);
   const [customDice, setCustomDice] = useState('');
 
+  // Dice types with theme-consistent styling
   const diceTypes = [
-    { sides: 4, color: '#ef4444' },
-    { sides: 6, color: '#f97316' },
-    { sides: 8, color: '#eab308' },
-    { sides: 10, color: '#22c55e' },
-    { sides: 12, color: '#4a7dff' },
-    { sides: 20, color: '#a855f7' },
-    { sides: 100, color: '#ec4899' },
+    { sides: 4, label: 'd4' },
+    { sides: 6, label: 'd6' },
+    { sides: 8, label: 'd8' },
+    { sides: 10, label: 'd10' },
+    { sides: 12, label: 'd12' },
+    { sides: 20, label: 'd20' },
+    { sides: 100, label: 'd100' },
   ];
 
   const rollDice = (sides, count = 1) => {
@@ -40,7 +63,6 @@ function FloatingDiceRoller() {
   };
 
   const parseAndRoll = (input) => {
-    // Parse formats like "2d6", "d20", "4d8+5"
     const match = input.toLowerCase().match(/^(\d*)d(\d+)([+-]\d+)?$/);
     if (match) {
       const count = parseInt(match[1]) || 1;
@@ -75,55 +97,56 @@ function FloatingDiceRoller() {
 
   const clearRolls = () => setRolls([]);
 
+  // Floating button (closed state)
   if (!isOpen) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        data-testid="floating-dice-btn"
+        data-testid="dice-roller-toggle"
         style={{
           position: 'fixed',
           bottom: '24px',
           right: '24px',
-          width: '60px',
-          height: '60px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+          width: '56px',
+          height: '56px',
+          background: theme.accent.red,
           border: 'none',
-          boxShadow: '0 4px 20px rgba(168, 85, 247, 0.5)',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 9999,
-          transition: 'transform 0.2s, box-shadow 0.2s'
+          transition: 'all 0.2s',
+          boxShadow: '0 4px 20px rgba(225, 29, 72, 0.4)'
         }}
         onMouseEnter={(e) => {
-          e.target.style.transform = 'scale(1.1)';
-          e.target.style.boxShadow = '0 6px 30px rgba(168, 85, 247, 0.7)';
+          e.currentTarget.style.background = theme.accent.redHover;
+          e.currentTarget.style.transform = 'scale(1.05)';
         }}
         onMouseLeave={(e) => {
-          e.target.style.transform = 'scale(1)';
-          e.target.style.boxShadow = '0 4px 20px rgba(168, 85, 247, 0.5)';
+          e.currentTarget.style.background = theme.accent.red;
+          e.currentTarget.style.transform = 'scale(1)';
         }}
       >
-        <Dices size={28} color="#fff" />
+        <Dices size={26} color="#fff" />
       </button>
     );
   }
 
+  // Open dice roller panel
   return (
     <div
+      data-testid="dice-roller-panel"
       style={{
         position: 'fixed',
         bottom: '24px',
         right: '24px',
         width: isMinimized ? '200px' : '320px',
-        background: 'linear-gradient(180deg, #1a1a3e 0%, #0f0f23 100%)',
-        border: '2px solid #a855f7',
-        borderRadius: '16px',
-        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(168, 85, 247, 0.3)',
+        background: theme.bg.panel,
+        border: `1px solid ${theme.border}`,
+        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
         zIndex: 9999,
-        overflow: 'hidden'
+        fontFamily: 'Cityworm, Inter, sans-serif'
       }}
     >
       {/* Header */}
@@ -132,20 +155,21 @@ function FloatingDiceRoller() {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '12px 16px',
-        background: 'linear-gradient(90deg, #a855f7 0%, #7c3aed 100%)',
+        background: theme.accent.red,
         cursor: 'move'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Dices size={20} color="#fff" />
-          <span style={{ color: '#fff', fontWeight: '700', fontSize: '14px' }}>Dice Roller</span>
+          <Dices size={18} color="#fff" />
+          <span style={{ color: '#fff', fontWeight: '700', fontSize: '14px', letterSpacing: '0.5px' }}>
+            DICE ROLLER
+          </span>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '6px' }}>
           <button
             onClick={() => setIsMinimized(!isMinimized)}
             style={{
               background: 'rgba(255,255,255,0.2)',
               border: 'none',
-              borderRadius: '6px',
               padding: '4px',
               cursor: 'pointer',
               display: 'flex',
@@ -153,14 +177,14 @@ function FloatingDiceRoller() {
               justifyContent: 'center'
             }}
           >
-            {isMinimized ? <ChevronUp size={16} color="#fff" /> : <Minus size={16} color="#fff" />}
+            {isMinimized ? <ChevronUp size={14} color="#fff" /> : <Minus size={14} color="#fff" />}
           </button>
           <button
             onClick={() => setIsOpen(false)}
+            data-testid="dice-roller-close"
             style={{
               background: 'rgba(255,255,255,0.2)',
               border: 'none',
-              borderRadius: '6px',
               padding: '4px',
               cursor: 'pointer',
               display: 'flex',
@@ -168,7 +192,7 @@ function FloatingDiceRoller() {
               justifyContent: 'center'
             }}
           >
-            <X size={16} color="#fff" />
+            <X size={14} color="#fff" />
           </button>
         </div>
       </div>
@@ -182,35 +206,36 @@ function FloatingDiceRoller() {
             gap: '8px',
             marginBottom: '12px'
           }}>
-            {diceTypes.map(({ sides, color }) => (
+            {diceTypes.map(({ sides, label }) => (
               <button
                 key={sides}
                 onClick={() => rollDice(sides)}
                 data-testid={`roll-d${sides}-btn`}
                 style={{
                   padding: '10px 4px',
-                  background: `${color}20`,
-                  border: `2px solid ${color}`,
-                  borderRadius: '8px',
-                  color: color,
-                  fontWeight: '700',
-                  fontSize: '12px',
+                  background: theme.bg.card,
+                  border: `1px solid ${theme.border}`,
+                  color: theme.text.white,
+                  fontWeight: '600',
+                  fontSize: '13px',
                   cursor: 'pointer',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.15s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.background = `${color}40`;
-                  e.target.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.background = theme.accent.redSubtle;
+                  e.currentTarget.style.borderColor = theme.accent.red;
+                  e.currentTarget.style.color = theme.accent.red;
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.background = `${color}20`;
-                  e.target.style.transform = 'scale(1)';
+                  e.currentTarget.style.background = theme.bg.card;
+                  e.currentTarget.style.borderColor = theme.border;
+                  e.currentTarget.style.color = theme.text.white;
                 }}
               >
-                d{sides}
+                {label}
               </button>
             ))}
-            {/* Advantage/Disadvantage */}
+            {/* Advantage Button */}
             <button
               onClick={() => {
                 const roll1 = Math.floor(Math.random() * 20) + 1;
@@ -225,16 +250,16 @@ function FloatingDiceRoller() {
                   timestamp: new Date().toLocaleTimeString()
                 }, ...prev.slice(0, 9)]);
               }}
+              data-testid="roll-advantage-btn"
               style={{
                 padding: '10px 4px',
-                background: 'rgba(34, 197, 94, 0.2)',
-                border: '2px solid #22c55e',
-                borderRadius: '8px',
-                color: '#22c55e',
+                background: theme.accent.redSubtle,
+                border: `1px solid ${theme.accent.red}`,
+                color: theme.accent.red,
                 fontWeight: '700',
-                fontSize: '10px',
+                fontSize: '11px',
                 cursor: 'pointer',
-                transition: 'all 0.2s'
+                transition: 'all 0.15s'
               }}
             >
               ADV
@@ -249,23 +274,24 @@ function FloatingDiceRoller() {
               onChange={(e) => setCustomDice(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && parseAndRoll(customDice)}
               placeholder="e.g., 2d6+3"
+              data-testid="custom-dice-input"
               style={{
                 flex: 1,
                 padding: '10px 12px',
-                background: 'rgba(0, 0, 0, 0.4)',
-                border: '2px solid #374151',
-                borderRadius: '8px',
-                color: '#fff',
-                fontSize: '14px'
+                background: theme.bg.dark,
+                border: `1px solid ${theme.border}`,
+                color: theme.text.white,
+                fontSize: '14px',
+                fontFamily: 'Inter, sans-serif'
               }}
             />
             <button
               onClick={() => parseAndRoll(customDice)}
+              data-testid="custom-roll-btn"
               style={{
                 padding: '10px 16px',
-                background: 'linear-gradient(180deg, #a855f7 0%, #7c3aed 100%)',
+                background: theme.accent.red,
                 border: 'none',
-                borderRadius: '8px',
                 color: '#fff',
                 fontWeight: '700',
                 fontSize: '13px',
@@ -280,41 +306,45 @@ function FloatingDiceRoller() {
           <div style={{ 
             maxHeight: '200px', 
             overflowY: 'auto',
-            background: 'rgba(0, 0, 0, 0.3)',
-            borderRadius: '10px',
+            background: theme.bg.dark,
+            border: `1px solid ${theme.border}`,
             padding: '8px'
           }}>
             {rolls.length === 0 ? (
-              <p style={{ color: '#64748b', fontSize: '12px', textAlign: 'center', padding: '20px' }}>
+              <p style={{ color: theme.text.muted, fontSize: '12px', textAlign: 'center', padding: '20px' }}>
                 Click a die to roll!
               </p>
             ) : (
               rolls.map((roll) => (
                 <div
                   key={roll.id}
+                  data-testid="roll-result"
                   style={{
                     padding: '10px 12px',
                     marginBottom: '6px',
-                    background: roll.isCrit ? 'rgba(34, 197, 94, 0.2)' : roll.isFail ? 'rgba(239, 68, 68, 0.2)' : 'rgba(74, 125, 255, 0.1)',
-                    border: `1px solid ${roll.isCrit ? '#22c55e' : roll.isFail ? '#ef4444' : '#1e40af'}`,
-                    borderRadius: '8px'
+                    background: roll.isCrit 
+                      ? 'rgba(34, 197, 94, 0.15)' 
+                      : roll.isFail 
+                        ? 'rgba(239, 68, 68, 0.15)' 
+                        : theme.bg.card,
+                    border: `1px solid ${roll.isCrit ? '#22c55e' : roll.isFail ? '#ef4444' : theme.border}`
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ color: '#94a3b8', fontSize: '11px' }}>{roll.dice}</span>
-                    <span style={{ color: '#64748b', fontSize: '10px' }}>{roll.timestamp}</span>
+                    <span style={{ color: theme.text.muted, fontSize: '11px', fontWeight: '600' }}>{roll.dice}</span>
+                    <span style={{ color: theme.text.muted, fontSize: '10px' }}>{roll.timestamp}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
                     <span style={{ 
-                      color: roll.isCrit ? '#22c55e' : roll.isFail ? '#ef4444' : '#fff',
+                      color: roll.isCrit ? '#22c55e' : roll.isFail ? '#ef4444' : theme.text.white,
                       fontWeight: '800',
-                      fontSize: '20px',
-                      fontFamily: 'Montserrat'
+                      fontSize: '22px',
+                      fontFamily: 'Cityworm, Montserrat, sans-serif'
                     }}>
                       {roll.total}
                     </span>
                     {roll.results.length > 1 && (
-                      <span style={{ color: '#64748b', fontSize: '11px' }}>
+                      <span style={{ color: theme.text.muted, fontSize: '11px' }}>
                         ({roll.results.join(' + ')}{roll.modifier ? ` ${roll.modifier > 0 ? '+' : ''}${roll.modifier}` : ''})
                       </span>
                     )}
@@ -329,14 +359,14 @@ function FloatingDiceRoller() {
           {rolls.length > 0 && (
             <button
               onClick={clearRolls}
+              data-testid="clear-rolls-btn"
               style={{
                 width: '100%',
                 marginTop: '8px',
                 padding: '8px',
                 background: 'transparent',
-                border: '1px solid #374151',
-                borderRadius: '6px',
-                color: '#64748b',
+                border: `1px solid ${theme.border}`,
+                color: theme.text.muted,
                 fontSize: '11px',
                 cursor: 'pointer'
               }}
@@ -347,6 +377,7 @@ function FloatingDiceRoller() {
         </div>
       )}
 
+      {/* Minimized View */}
       {isMinimized && (
         <div style={{ padding: '12px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           {[4, 6, 8, 10, 12, 20].map(sides => (
@@ -355,11 +386,10 @@ function FloatingDiceRoller() {
               onClick={() => rollDice(sides)}
               style={{
                 padding: '6px 10px',
-                background: 'rgba(168, 85, 247, 0.2)',
-                border: '1px solid #a855f7',
-                borderRadius: '6px',
-                color: '#a855f7',
-                fontWeight: '700',
+                background: theme.bg.card,
+                border: `1px solid ${theme.border}`,
+                color: theme.text.white,
+                fontWeight: '600',
                 fontSize: '11px',
                 cursor: 'pointer'
               }}

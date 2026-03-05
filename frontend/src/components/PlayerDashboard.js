@@ -17,11 +17,11 @@ import { RQKLogoInline } from '@/components/ui/RQKLogo';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Dark Minimalist Theme
+// Dark Minimalist Theme - BLUE for Players
 const playerTheme = {
-  primary: '#DC2626',
-  hover: '#EF4444',
-  subtle: 'rgba(220, 38, 38, 0.15)',
+  primary: '#3B82F6',
+  hover: '#60A5FA',
+  subtle: 'rgba(59, 130, 246, 0.15)',
   border: 'rgba(255, 255, 255, 0.1)',
   bg: '#0D0D0D',
   card: '#1F1F1F',

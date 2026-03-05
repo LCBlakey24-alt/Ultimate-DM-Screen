@@ -118,8 +118,171 @@ const CLASSES = [
 ];
 
 const BACKGROUNDS = [
-  'Acolyte', 'Charlatan', 'Criminal', 'Entertainer', 'Folk Hero', 
-  'Guild Artisan', 'Hermit', 'Noble', 'Outlander', 'Sage', 'Sailor', 'Soldier', 'Urchin'
+  { name: 'Acolyte', feature: 'Shelter of the Faithful', skills: ['Insight', 'Religion'], tools: [], languages: 2 },
+  { name: 'Charlatan', feature: 'False Identity', skills: ['Deception', 'Sleight of Hand'], tools: ['Disguise kit', 'Forgery kit'], languages: 0 },
+  { name: 'Criminal', feature: 'Criminal Contact', skills: ['Deception', 'Stealth'], tools: ['Gaming set', 'Thieves\' tools'], languages: 0 },
+  { name: 'Entertainer', feature: 'By Popular Demand', skills: ['Acrobatics', 'Performance'], tools: ['Disguise kit', 'Musical instrument'], languages: 0 },
+  { name: 'Folk Hero', feature: 'Rustic Hospitality', skills: ['Animal Handling', 'Survival'], tools: ['Artisan\'s tools', 'Vehicles (land)'], languages: 0 },
+  { name: 'Guild Artisan', feature: 'Guild Membership', skills: ['Insight', 'Persuasion'], tools: ['Artisan\'s tools'], languages: 1 },
+  { name: 'Hermit', feature: 'Discovery', skills: ['Medicine', 'Religion'], tools: ['Herbalism kit'], languages: 1 },
+  { name: 'Noble', feature: 'Position of Privilege', skills: ['History', 'Persuasion'], tools: ['Gaming set'], languages: 1 },
+  { name: 'Outlander', feature: 'Wanderer', skills: ['Athletics', 'Survival'], tools: ['Musical instrument'], languages: 1 },
+  { name: 'Sage', feature: 'Researcher', skills: ['Arcana', 'History'], tools: [], languages: 2 },
+  { name: 'Sailor', feature: 'Ship\'s Passage', skills: ['Athletics', 'Perception'], tools: ['Navigator\'s tools', 'Vehicles (water)'], languages: 0 },
+  { name: 'Soldier', feature: 'Military Rank', skills: ['Athletics', 'Intimidation'], tools: ['Gaming set', 'Vehicles (land)'], languages: 0 },
+  { name: 'Urchin', feature: 'City Secrets', skills: ['Sleight of Hand', 'Stealth'], tools: ['Disguise kit', 'Thieves\' tools'], languages: 0 },
+];
+
+// Subclasses by class
+const SUBCLASSES = {
+  'Barbarian': [
+    { name: 'Path of the Berserker', level: 3, description: 'Frenzy in battle for extra attacks' },
+    { name: 'Path of the Totem Warrior', level: 3, description: 'Channel spirit animals for power' },
+    { name: 'Path of the Ancestral Guardian', level: 3, description: 'Spirits protect your allies' },
+    { name: 'Path of the Storm Herald', level: 3, description: 'Elemental aura damages foes' },
+    { name: 'Path of the Zealot', level: 3, description: 'Divine fury and resurrection' },
+  ],
+  'Bard': [
+    { name: 'College of Lore', level: 3, description: 'Additional skills and cutting words' },
+    { name: 'College of Valor', level: 3, description: 'Combat training and battle magic' },
+    { name: 'College of Glamour', level: 3, description: 'Fey-inspired charm and beauty' },
+    { name: 'College of Swords', level: 3, description: 'Blade flourishes in combat' },
+    { name: 'College of Whispers', level: 3, description: 'Psychic blades and manipulation' },
+  ],
+  'Cleric': [
+    { name: 'Life Domain', level: 1, description: 'Master healer with bonus healing' },
+    { name: 'Light Domain', level: 1, description: 'Radiant damage and fire spells' },
+    { name: 'War Domain', level: 1, description: 'Martial prowess and weapon attacks' },
+    { name: 'Knowledge Domain', level: 1, description: 'Divine insights and skills' },
+    { name: 'Tempest Domain', level: 1, description: 'Thunder and lightning powers' },
+    { name: 'Trickery Domain', level: 1, description: 'Illusions and stealth' },
+  ],
+  'Druid': [
+    { name: 'Circle of the Land', level: 2, description: 'Extra spells based on terrain' },
+    { name: 'Circle of the Moon', level: 2, description: 'Powerful wild shape combat' },
+    { name: 'Circle of Dreams', level: 2, description: 'Fey healing and teleportation' },
+    { name: 'Circle of the Shepherd', level: 2, description: 'Summon and protect beasts' },
+    { name: 'Circle of Spores', level: 2, description: 'Necrotic damage and undead' },
+  ],
+  'Fighter': [
+    { name: 'Champion', level: 3, description: 'Improved critical hits' },
+    { name: 'Battle Master', level: 3, description: 'Combat maneuvers and superiority dice' },
+    { name: 'Eldritch Knight', level: 3, description: 'Combine fighting with magic' },
+    { name: 'Samurai', level: 3, description: 'Fighting spirit and advantage' },
+    { name: 'Echo Knight', level: 3, description: 'Create echo to attack from' },
+  ],
+  'Monk': [
+    { name: 'Way of the Open Hand', level: 3, description: 'Stunning strikes and knockbacks' },
+    { name: 'Way of Shadow', level: 3, description: 'Ninja-like stealth abilities' },
+    { name: 'Way of the Four Elements', level: 3, description: 'Elemental martial arts' },
+    { name: 'Way of the Kensei', level: 3, description: 'Master of chosen weapons' },
+    { name: 'Way of Mercy', level: 3, description: 'Heal allies, harm enemies' },
+  ],
+  'Paladin': [
+    { name: 'Oath of Devotion', level: 3, description: 'Classic holy warrior' },
+    { name: 'Oath of the Ancients', level: 3, description: 'Protect nature and light' },
+    { name: 'Oath of Vengeance', level: 3, description: 'Hunt evil relentlessly' },
+    { name: 'Oath of Conquest', level: 3, description: 'Dominate with fear' },
+    { name: 'Oath of Redemption', level: 3, description: 'Peace and second chances' },
+  ],
+  'Ranger': [
+    { name: 'Hunter', level: 3, description: 'Specialized enemy tactics' },
+    { name: 'Beast Master', level: 3, description: 'Bond with animal companion' },
+    { name: 'Gloom Stalker', level: 3, description: 'Ambush from darkness' },
+    { name: 'Horizon Walker', level: 3, description: 'Planar warrior abilities' },
+    { name: 'Fey Wanderer', level: 3, description: 'Fey charm and psychic damage' },
+  ],
+  'Rogue': [
+    { name: 'Thief', level: 3, description: 'Fast hands and second-story work' },
+    { name: 'Assassin', level: 3, description: 'Deadly first strikes' },
+    { name: 'Arcane Trickster', level: 3, description: 'Magic-enhanced roguery' },
+    { name: 'Swashbuckler', level: 3, description: 'Charming duelist' },
+    { name: 'Phantom', level: 3, description: 'Death-touched abilities' },
+  ],
+  'Sorcerer': [
+    { name: 'Draconic Bloodline', level: 1, description: 'Dragon ancestry powers' },
+    { name: 'Wild Magic', level: 1, description: 'Unpredictable magical surges' },
+    { name: 'Divine Soul', level: 1, description: 'Access to cleric spells' },
+    { name: 'Shadow Magic', level: 1, description: 'Darkness and fear' },
+    { name: 'Aberrant Mind', level: 1, description: 'Psionic powers' },
+  ],
+  'Warlock': [
+    { name: 'The Fiend', level: 1, description: 'Demonic patron, fire powers' },
+    { name: 'The Archfey', level: 1, description: 'Fey patron, charm and teleport' },
+    { name: 'The Great Old One', level: 1, description: 'Eldritch patron, psychic powers' },
+    { name: 'The Celestial', level: 1, description: 'Divine patron, healing magic' },
+    { name: 'The Hexblade', level: 1, description: 'Sentient weapon patron' },
+  ],
+  'Wizard': [
+    { name: 'School of Evocation', level: 2, description: 'Powerful damage spells' },
+    { name: 'School of Abjuration', level: 2, description: 'Protective magic' },
+    { name: 'School of Conjuration', level: 2, description: 'Summoning and teleportation' },
+    { name: 'School of Divination', level: 2, description: 'Portent and knowledge' },
+    { name: 'School of Illusion', level: 2, description: 'Master of deception' },
+    { name: 'School of Necromancy', level: 2, description: 'Command undead' },
+  ],
+};
+
+// Starting equipment by class
+const STARTING_EQUIPMENT = {
+  'Barbarian': ['Greataxe or martial melee weapon', 'Two handaxes or simple weapon', 'Explorer\'s pack', '4 javelins'],
+  'Bard': ['Rapier, longsword, or simple weapon', 'Diplomat\'s pack or entertainer\'s pack', 'Lute or musical instrument', 'Leather armor, dagger'],
+  'Cleric': ['Mace or warhammer', 'Scale mail, leather, or chain mail', 'Light crossbow or simple weapon', 'Priest\'s pack or explorer\'s pack', 'Shield and holy symbol'],
+  'Druid': ['Wooden shield or simple weapon', 'Scimitar or simple melee weapon', 'Leather armor', 'Explorer\'s pack', 'Druidic focus'],
+  'Fighter': ['Chain mail or leather + longbow', 'Martial weapon + shield or two martial weapons', 'Light crossbow or two handaxes', 'Dungeoneer\'s pack or explorer\'s pack'],
+  'Monk': ['Shortsword or simple weapon', '10 darts', 'Dungeoneer\'s pack or explorer\'s pack'],
+  'Paladin': ['Martial weapon + shield or two martial weapons', '5 javelins or simple melee weapon', 'Priest\'s pack or explorer\'s pack', 'Chain mail, holy symbol'],
+  'Ranger': ['Scale mail or leather armor', 'Two shortswords or two simple melee weapons', 'Dungeoneer\'s pack or explorer\'s pack', 'Longbow and quiver of 20 arrows'],
+  'Rogue': ['Rapier or shortsword', 'Shortbow + quiver or shortsword', 'Burglar\'s, dungeoneer\'s, or explorer\'s pack', 'Leather armor, two daggers, thieves\' tools'],
+  'Sorcerer': ['Light crossbow or simple weapon', 'Component pouch or arcane focus', 'Dungeoneer\'s pack or explorer\'s pack', '2 daggers'],
+  'Warlock': ['Light crossbow or simple weapon', 'Component pouch or arcane focus', 'Scholar\'s pack or dungeoneer\'s pack', 'Leather armor, simple weapon, 2 daggers'],
+  'Wizard': ['Quarterstaff or dagger', 'Component pouch or arcane focus', 'Scholar\'s pack or explorer\'s pack', 'Spellbook'],
+};
+
+// Common 1st-level spells by class (for casters)
+const LEVEL_1_SPELLS = {
+  'Bard': ['Charm Person', 'Cure Wounds', 'Detect Magic', 'Disguise Self', 'Faerie Fire', 'Healing Word', 'Heroism', 'Sleep', 'Thunderwave'],
+  'Cleric': ['Bless', 'Command', 'Cure Wounds', 'Detect Magic', 'Guiding Bolt', 'Healing Word', 'Inflict Wounds', 'Protection from Evil', 'Shield of Faith'],
+  'Druid': ['Cure Wounds', 'Entangle', 'Faerie Fire', 'Fog Cloud', 'Goodberry', 'Healing Word', 'Speak with Animals', 'Thunderwave'],
+  'Paladin': ['Bless', 'Command', 'Cure Wounds', 'Detect Evil and Good', 'Divine Favor', 'Protection from Evil', 'Shield of Faith', 'Thunderous Smite'],
+  'Ranger': ['Cure Wounds', 'Detect Magic', 'Ensnaring Strike', 'Fog Cloud', 'Goodberry', 'Hail of Thorns', 'Hunter\'s Mark', 'Longstrider'],
+  'Sorcerer': ['Burning Hands', 'Charm Person', 'Chromatic Orb', 'Detect Magic', 'Disguise Self', 'Magic Missile', 'Shield', 'Sleep', 'Thunderwave'],
+  'Warlock': ['Armor of Agathys', 'Charm Person', 'Comprehend Languages', 'Expeditious Retreat', 'Hellish Rebuke', 'Hex', 'Protection from Evil', 'Witch Bolt'],
+  'Wizard': ['Burning Hands', 'Charm Person', 'Comprehend Languages', 'Detect Magic', 'Disguise Self', 'Find Familiar', 'Mage Armor', 'Magic Missile', 'Shield', 'Sleep'],
+};
+
+// Cantrips by class
+const CANTRIPS = {
+  'Bard': ['Blade Ward', 'Dancing Lights', 'Friends', 'Light', 'Mage Hand', 'Message', 'Minor Illusion', 'Prestidigitation', 'True Strike', 'Vicious Mockery'],
+  'Cleric': ['Guidance', 'Light', 'Mending', 'Resistance', 'Sacred Flame', 'Spare the Dying', 'Thaumaturgy', 'Toll the Dead', 'Word of Radiance'],
+  'Druid': ['Druidcraft', 'Guidance', 'Mending', 'Poison Spray', 'Produce Flame', 'Resistance', 'Shillelagh', 'Thorn Whip'],
+  'Sorcerer': ['Acid Splash', 'Blade Ward', 'Chill Touch', 'Dancing Lights', 'Fire Bolt', 'Friends', 'Light', 'Mage Hand', 'Message', 'Minor Illusion', 'Poison Spray', 'Prestidigitation', 'Ray of Frost', 'Shocking Grasp', 'True Strike'],
+  'Warlock': ['Blade Ward', 'Chill Touch', 'Eldritch Blast', 'Friends', 'Mage Hand', 'Minor Illusion', 'Poison Spray', 'Prestidigitation', 'True Strike'],
+  'Wizard': ['Acid Splash', 'Blade Ward', 'Chill Touch', 'Dancing Lights', 'Fire Bolt', 'Friends', 'Light', 'Mage Hand', 'Message', 'Minor Illusion', 'Poison Spray', 'Prestidigitation', 'Ray of Frost', 'Shocking Grasp', 'True Strike'],
+};
+
+// Common feats
+const FEATS = [
+  { name: 'Alert', description: '+5 initiative, can\'t be surprised', prereq: 'None' },
+  { name: 'Athlete', description: '+1 STR/DEX, climbing and jumping bonuses', prereq: 'None' },
+  { name: 'Crossbow Expert', description: 'Ignore loading, no disadvantage in melee', prereq: 'None' },
+  { name: 'Defensive Duelist', description: 'Use reaction to add proficiency to AC', prereq: 'DEX 13+' },
+  { name: 'Dual Wielder', description: '+1 AC when dual wielding, use non-light weapons', prereq: 'None' },
+  { name: 'Durable', description: '+1 CON, minimum HP on hit dice', prereq: 'None' },
+  { name: 'Great Weapon Master', description: '-5 attack for +10 damage, bonus attack on crit/kill', prereq: 'None' },
+  { name: 'Healer', description: 'Stabilize and heal with healer\'s kit', prereq: 'None' },
+  { name: 'Lucky', description: '3 luck points to reroll dice', prereq: 'None' },
+  { name: 'Magic Initiate', description: 'Learn 2 cantrips and 1 spell from a class', prereq: 'None' },
+  { name: 'Mobile', description: '+10 speed, Dash through difficult terrain, avoid opportunity attacks', prereq: 'None' },
+  { name: 'Observant', description: '+5 passive Perception/Investigation, read lips', prereq: 'None' },
+  { name: 'Polearm Master', description: 'Bonus attack with butt end, opportunity attacks on approach', prereq: 'None' },
+  { name: 'Resilient', description: '+1 to ability score, gain proficiency in that save', prereq: 'None' },
+  { name: 'Sentinel', description: 'Opportunity attacks reduce speed to 0', prereq: 'None' },
+  { name: 'Sharpshooter', description: '-5 attack for +10 damage, ignore cover, long range', prereq: 'None' },
+  { name: 'Shield Master', description: 'Add shield AC to DEX saves, shove as bonus action', prereq: 'None' },
+  { name: 'Skilled', description: 'Gain 3 skill or tool proficiencies', prereq: 'None' },
+  { name: 'Tough', description: '+2 HP per level', prereq: 'None' },
+  { name: 'War Caster', description: 'Advantage on concentration, somatic with hands full, spell opportunity attacks', prereq: 'Spellcasting' },
 ];
 
 const ALIGNMENTS = [
@@ -153,6 +316,7 @@ function CharacterBuilder() {
     name: '',
     race: 'Human',
     character_class: 'Fighter',
+    subclass: '',
     background: 'Folk Hero',
     level: 1,
     alignment: 'Neutral Good',
@@ -166,8 +330,21 @@ function CharacterBuilder() {
     personality_traits: '',
     ideals: '',
     bonds: '',
-    flaws: ''
+    flaws: '',
+    // New fields
+    selectedCantrips: [],
+    selectedSpells: [],
+    selectedFeat: '',
+    equipment: [],
   });
+
+  // Check if class is a spellcaster
+  const isCaster = ['Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard'].includes(characterData.character_class);
+  const availableSubclasses = SUBCLASSES[characterData.character_class] || [];
+  const availableCantrips = CANTRIPS[characterData.character_class] || [];
+  const availableSpells = LEVEL_1_SPELLS[characterData.character_class] || [];
+  const startingEquipment = STARTING_EQUIPMENT[characterData.character_class] || [];
+  const selectedBackground = BACKGROUNDS.find(b => b.name === characterData.background) || BACKGROUNDS[0];
 
   const handleChange = (field, value) => {
     setCharacterData(prev => ({ ...prev, [field]: value }));
@@ -364,17 +541,25 @@ function CharacterBuilder() {
     }
   };
 
+  // Blue theme for player section
+  const playerBlue = '#3B82F6';
+  const playerBlueHover = '#60A5FA';
+  const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
+
   const getClassColor = () => {
-    return CLASSES.find(c => c.name === characterData.character_class)?.color || '#7C3AED';
+    return CLASSES.find(c => c.name === characterData.character_class)?.color || playerBlue;
   };
 
-  const steps = ['Concept', 'Race & Class', 'Abilities', 'Details'];
+  const steps = isCaster 
+    ? ['Concept', 'Race & Class', 'Abilities', 'Spells & Feats', 'Details']
+    : ['Concept', 'Race & Class', 'Abilities', 'Features', 'Details'];
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(180deg, #0B0F19 0%, #111827 50%, #0B0F19 100%)',
-      padding: '24px'
+      background: '#0D0D0D',
+      padding: '24px',
+      fontFamily: 'Cityworm, Inter, sans-serif'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Header */}
@@ -1011,8 +1196,189 @@ function CharacterBuilder() {
           </div>
         )}
 
-        {/* Step 4: Details & Portrait */}
+        {/* Step 4: Subclass, Spells & Feats */}
         {step === 4 && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
+            <Card style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <CardContent style={{ padding: '24px' }}>
+                {/* Subclass Selection */}
+                <div style={{ marginBottom: '32px' }}>
+                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Shield size={20} style={{ color: playerBlue }} />
+                    Choose Your Subclass
+                  </h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' }}>
+                    {availableSubclasses.map(sub => (
+                      <button
+                        key={sub.name}
+                        onClick={() => handleChange('subclass', sub.name)}
+                        style={{
+                          padding: '16px',
+                          background: characterData.subclass === sub.name ? playerBlueSubtle : '#1F1F1F',
+                          border: characterData.subclass === sub.name ? `2px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
+                          color: characterData.subclass === sub.name ? playerBlue : '#fff',
+                          textAlign: 'left',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <div style={{ fontWeight: '600', marginBottom: '4px' }}>{sub.name}</div>
+                        <div style={{ fontSize: '12px', color: '#808080' }}>{sub.description}</div>
+                        <div style={{ fontSize: '11px', color: playerBlue, marginTop: '8px' }}>Unlocks at Level {sub.level}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Spells for Casters */}
+                {isCaster && availableCantrips.length > 0 && (
+                  <div style={{ marginBottom: '32px' }}>
+                    <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Wand2 size={20} style={{ color: playerBlue }} />
+                      Select Cantrips
+                    </h3>
+                    <p style={{ color: '#808080', fontSize: '13px', marginBottom: '12px' }}>
+                      Choose your starting cantrips (select 2-3)
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {availableCantrips.map(cantrip => (
+                        <button
+                          key={cantrip}
+                          onClick={() => {
+                            const current = characterData.selectedCantrips || [];
+                            if (current.includes(cantrip)) {
+                              handleChange('selectedCantrips', current.filter(c => c !== cantrip));
+                            } else if (current.length < 4) {
+                              handleChange('selectedCantrips', [...current, cantrip]);
+                            }
+                          }}
+                          style={{
+                            padding: '8px 16px',
+                            background: characterData.selectedCantrips?.includes(cantrip) ? playerBlueSubtle : '#1F1F1F',
+                            border: characterData.selectedCantrips?.includes(cantrip) ? `1px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
+                            color: characterData.selectedCantrips?.includes(cantrip) ? playerBlue : '#B3B3B3',
+                            fontSize: '13px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {cantrip}
+                        </button>
+                      ))}
+                    </div>
+                    <p style={{ color: '#808080', fontSize: '11px', marginTop: '8px' }}>
+                      Selected: {characterData.selectedCantrips?.length || 0}
+                    </p>
+                  </div>
+                )}
+
+                {/* Level 1 Spells for Casters */}
+                {isCaster && availableSpells.length > 0 && (
+                  <div style={{ marginBottom: '32px' }}>
+                    <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '12px' }}>
+                      Select 1st Level Spells
+                    </h3>
+                    <p style={{ color: '#808080', fontSize: '13px', marginBottom: '12px' }}>
+                      Choose your prepared/known spells (select 2-4)
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {availableSpells.map(spell => (
+                        <button
+                          key={spell}
+                          onClick={() => {
+                            const current = characterData.selectedSpells || [];
+                            if (current.includes(spell)) {
+                              handleChange('selectedSpells', current.filter(s => s !== spell));
+                            } else if (current.length < 6) {
+                              handleChange('selectedSpells', [...current, spell]);
+                            }
+                          }}
+                          style={{
+                            padding: '8px 16px',
+                            background: characterData.selectedSpells?.includes(spell) ? playerBlueSubtle : '#1F1F1F',
+                            border: characterData.selectedSpells?.includes(spell) ? `1px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
+                            color: characterData.selectedSpells?.includes(spell) ? playerBlue : '#B3B3B3',
+                            fontSize: '13px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {spell}
+                        </button>
+                      ))}
+                    </div>
+                    <p style={{ color: '#808080', fontSize: '11px', marginTop: '8px' }}>
+                      Selected: {characterData.selectedSpells?.length || 0}
+                    </p>
+                  </div>
+                )}
+
+                {/* Starting Equipment */}
+                <div style={{ marginBottom: '32px' }}>
+                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <BookOpen size={20} style={{ color: playerBlue }} />
+                    Starting Equipment
+                  </h3>
+                  <div style={{ background: '#1F1F1F', border: '1px solid rgba(255,255,255,0.1)', padding: '16px' }}>
+                    <p style={{ color: '#808080', fontSize: '12px', marginBottom: '8px' }}>As a {characterData.character_class}, you start with:</p>
+                    <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                      {startingEquipment.map((item, i) => (
+                        <li key={i} style={{ color: '#B3B3B3', fontSize: '13px', marginBottom: '6px' }}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Background Feature */}
+                <div style={{ marginBottom: '32px' }}>
+                  <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '12px' }}>
+                    Background Feature: {selectedBackground.feature}
+                  </h3>
+                  <div style={{ background: '#1F1F1F', border: '1px solid rgba(255,255,255,0.1)', padding: '16px' }}>
+                    <p style={{ color: '#808080', fontSize: '12px', marginBottom: '8px' }}>Skills: {selectedBackground.skills?.join(', ')}</p>
+                    {selectedBackground.tools?.length > 0 && (
+                      <p style={{ color: '#808080', fontSize: '12px', marginBottom: '8px' }}>Tools: {selectedBackground.tools.join(', ')}</p>
+                    )}
+                    {selectedBackground.languages > 0 && (
+                      <p style={{ color: '#808080', fontSize: '12px' }}>Languages: {selectedBackground.languages} of your choice</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Optional Feat */}
+                <div>
+                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Sparkles size={20} style={{ color: playerBlue }} />
+                    Optional Starting Feat
+                  </h3>
+                  <p style={{ color: '#808080', fontSize: '13px', marginBottom: '12px' }}>
+                    If your DM allows variant human or a free feat at level 1
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '10px', maxHeight: '300px', overflowY: 'auto' }}>
+                    {FEATS.map(feat => (
+                      <button
+                        key={feat.name}
+                        onClick={() => handleChange('selectedFeat', feat.name === characterData.selectedFeat ? '' : feat.name)}
+                        style={{
+                          padding: '12px',
+                          background: characterData.selectedFeat === feat.name ? playerBlueSubtle : '#1F1F1F',
+                          border: characterData.selectedFeat === feat.name ? `1px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
+                          color: characterData.selectedFeat === feat.name ? playerBlue : '#fff',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          fontSize: '12px'
+                        }}
+                      >
+                        <div style={{ fontWeight: '600', marginBottom: '2px' }}>{feat.name}</div>
+                        <div style={{ color: '#808080', fontSize: '11px' }}>{feat.description}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Step 5: Details & Portrait */}
+        {step === 5 && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px' }}>
             <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
               <CardContent style={{ padding: '24px' }}>
@@ -1168,10 +1534,11 @@ function CharacterBuilder() {
             Back
           </Button>
 
-          {step < 4 ? (
+          {step < 5 ? (
             <Button
-              onClick={() => setStep(Math.min(4, step + 1))}
+              onClick={() => setStep(Math.min(5, step + 1))}
               className="btn-primary"
+              style={{ background: playerBlue }}
             >
               Next
               <ArrowRight size={18} style={{ marginLeft: '8px' }} />
@@ -1183,9 +1550,8 @@ function CharacterBuilder() {
               data-testid="create-character-btn"
               style={{
                 padding: '14px 28px',
-                background: 'linear-gradient(135deg, #10B981, #22D3EE)',
+                background: playerBlue,
                 border: 'none',
-                borderRadius: '10px',
                 color: '#fff',
                 fontWeight: '700',
                 fontSize: '15px',
@@ -1193,7 +1559,7 @@ function CharacterBuilder() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 4px 20px rgba(34, 211, 238, 0.4)'
+                boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)'
               }}
             >
               {creating ? (
