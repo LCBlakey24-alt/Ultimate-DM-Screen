@@ -33,13 +33,25 @@ An all-in-one campaign operating system for 5e Game Masters combining worldbuild
 ### UI Elements
 - **ALL corners are SQUARE** (no rounded - 0px border-radius)
 - **Font:** Cityworm for branding, Inter for body text
-- **NO GOLD, NO PURPLE, NO BLUE accents** - red only
+- **GM/DM Sections:** Red accents (`#E11D48`)
+- **Player Sections:** Blue accents (`#3B82F6`) - differentiates player experience
 
 ### Tab Navigation (Sidebar)
-- **Position:** Left sidebar on both Campaign Dashboard and GM Screen
+- **Position:** Left sidebar on Campaign Dashboard and GM Screen
 - **Default state:** Dark grey background, grey text
 - **Hover state:** Lighter grey background + 3px red bar slides in from right
 - **Active state:** Full #E11D48 red background, white text
+
+### Sidebar Tab Groups (Campaign Dashboard)
+- **World Group:** Setting, World Builder, Gods, Locations, NPCs, Calendar
+- **Combat Group:** Combat, Battle Maps, Encounter Gen
+- **Standalone Tabs:** References, Inventory, Players, Notes
+
+### Dice Roller
+- **Position:** Bottom-LEFT corner (left: 24px, bottom: 24px)
+- **Theme:** Dark background, red header, square corners
+- **Features:** Quick dice buttons (d4-d100), Advantage roll, custom dice input
+- **Keyboard shortcut:** Press `R` to toggle
 
 ---
 
@@ -158,11 +170,21 @@ An all-in-one campaign operating system for 5e Game Masters combining worldbuild
 
 ### Completed (March 2026)
 - [x] **Context-Aware ROOK AI** - AI now pulls campaign setting, NPCs, locations, gods, and notes to generate tailored content
-- [x] **Sidebar Tab Grouping** - Organized 13 tabs into 3 collapsible groups (World, Tools, Players) + 4 ungrouped tabs
+- [x] **Sidebar Tab Grouping** - Organized tabs into World/Combat groups + standalone tabs (References, Inventory, Players, Notes)
 - [x] **Maps renamed to Battle Maps**
 - [x] **Keyboard Shortcuts** - R (dice), N (note), / (search), ? (help), Esc (close)
 - [x] Fixed "Invalid entity type: world_place" error
 - [x] Fixed RQKLogoInline import in PlayerDashboard
+- [x] Fixed Character Builder BACKGROUNDS dropdown bug
+- [x] **Dice Roller moved to bottom-LEFT** for better UX
+- [x] **Player Section uses BLUE theme** (#3B82F6) to differentiate from GM
+- [x] **Enhanced Character Builder** with 5 steps:
+  - Subclass selection
+  - Cantrip & spell selection for casters
+  - Starting equipment display
+  - Background feature details
+  - Optional feat selection
+- [x] Campaign setting save persistence fixed
 
 ### Backlog
 - [ ] Character Builder enhancements (subclass, spells, feats)
