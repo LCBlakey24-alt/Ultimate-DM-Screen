@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import '@/App.css';
@@ -21,6 +21,8 @@ import MyCharacters from '@/components/MyCharacters';
 import CharacterBuilder from '@/components/CharacterBuilder';
 import CharacterSheet from '@/components/CharacterSheet';
 import CharacterSheetFull from '@/components/CharacterSheetFull';
+import { KeyboardShortcutsModal, ShortcutsHint } from '@/components/KeyboardShortcuts';
+import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -35,7 +37,7 @@ axios.interceptors.request.use((config) => {
 });
 
 // Conditional Dice Roller - only shows on gameplay pages
-function ConditionalDiceRoller({ isAuthenticated }) {
+function ConditionalDiceRoller({ isAuthenticated, forceShow, onToggle }) {
   const location = useLocation();
   
   // Pages where dice roller should NOT appear
@@ -47,7 +49,64 @@ function ConditionalDiceRoller({ isAuthenticated }) {
     return location.pathname.startsWith(path);
   });
   
-  return shouldShowDice ? <FloatingDiceRoller /> : null;
+  // Show if forced or should show based on path
+  return (shouldShowDice || forceShow) ? <FloatingDiceRoller onToggle={onToggle} /> : null;
+}
+
+// Keyboard shortcuts wrapper component
+function KeyboardShortcutsProvider({ children, isAuthenticated }) {
+  const [showHelp, setShowHelp] = useState(false);
+  const [showDice, setShowDice] = useState(false);
+  const location = useLocation();
+  
+  // Check if on a page where shortcuts should be active
+  const shortcutsEnabled = isAuthenticated && !['/', '/auth'].includes(location.pathname);
+  
+  const handleToggleDice = useCallback(() => {
+    setShowDice(prev => !prev);
+    // Find and click the dice roller button if it exists
+    const diceButton = document.querySelector('[data-testid="dice-roller-toggle"]');
+    if (diceButton) diceButton.click();
+  }, []);
+  
+  const handleFocusSearch = useCallback(() => {
+    // Find any search input on the page
+    const searchInput = document.querySelector('[data-testid="reference-search-input"]') ||
+                        document.querySelector('input[type="search"]') ||
+                        document.querySelector('input[placeholder*="Search"]');
+    if (searchInput) {
+      searchInput.focus();
+      searchInput.select();
+    }
+  }, []);
+  
+  const handleEscape = useCallback(() => {
+    setShowHelp(false);
+    // Close any open dialogs
+    const closeButton = document.querySelector('[data-testid="dialog-close"]') ||
+                        document.querySelector('[aria-label="Close"]');
+    if (closeButton) closeButton.click();
+  }, []);
+  
+  useKeyboardShortcuts({
+    onToggleDice: handleToggleDice,
+    onFocusSearch: handleFocusSearch,
+    onShowHelp: () => setShowHelp(true),
+    onEscape: handleEscape,
+    enabled: shortcutsEnabled
+  });
+  
+  return (
+    <>
+      {children}
+      {shortcutsEnabled && (
+        <>
+          <ShortcutsHint onClick={() => setShowHelp(true)} />
+          <KeyboardShortcutsModal isOpen={showHelp} onClose={() => setShowHelp(false)} />
+        </>
+      )}
+    </>
+  );
 }
 
 function App() {
@@ -102,134 +161,136 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Routes>
-          <Route 
-            path="/auth" 
-            element={
-              isAuthenticated ? 
-                <Navigate to="/home" replace /> : 
-                <AuthPage onLogin={handleLogin} />
-            } 
-          />
-          <Route 
-            path="/home" 
-            element={
-              isAuthenticated ? 
-                <UnifiedDashboard username={username} onLogout={handleLogout} /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/player" 
-            element={
-              isAuthenticated ? 
-                <PlayerDashboard username={username} onLogout={handleLogout} /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/campaigns" 
-            element={
-              isAuthenticated ? 
-                <CampaignList username={username} onLogout={handleLogout} /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/characters" 
-            element={
-              isAuthenticated ? 
-                <MyCharacters username={username} onLogout={handleLogout} /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/characters/new" 
-            element={
-              isAuthenticated ? 
-                <CharacterBuilder /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/characters/:characterId" 
-            element={
-              isAuthenticated ? 
-                <CharacterSheetFull /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/campaign/:campaignId" 
-            element={
-              isAuthenticated ? 
-                <CampaignDashboard username={username} onLogout={handleLogout} /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/gm-screen/:campaignId" 
-            element={
-              isAuthenticated ? 
-                <DMScreen username={username} /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/campaign/:campaignId/combat" 
-            element={
-              isAuthenticated ? 
-                <CombatPage /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/pricing" 
-            element={
-              isAuthenticated ? 
-                <PricingPage username={username} onLogout={handleLogout} /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/subscription/success" 
-            element={<Navigate to="/pricing" replace />} 
-          />
-          <Route 
-            path="/subscription/cancel" 
-            element={<Navigate to="/pricing" replace />} 
-          />
-          <Route 
-            path="/admin" 
-            element={
-              isAuthenticated ? 
-                <AdminPage username={username} /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/account" 
-            element={
-              isAuthenticated ? 
-                <AccountSettings username={username} onLogout={handleLogout} onUsernameChange={setUsername} /> : 
-                <Navigate to="/auth" replace />
-            } 
-          />
-          <Route 
-            path="/reset-password" 
-            element={<AuthPage onLogin={handleLogin} />} 
-          />
-          <Route 
-            path="/" 
-            element={
-              isAuthenticated ? 
-                <Navigate to="/home" replace /> : 
-                <LandingPage />
-            } 
-          />
-        </Routes>
-        {/* Floating Dice Roller - Only on gameplay pages */}
-        <ConditionalDiceRoller isAuthenticated={isAuthenticated} />
+        <KeyboardShortcutsProvider isAuthenticated={isAuthenticated}>
+          <Routes>
+            <Route 
+              path="/auth" 
+              element={
+                isAuthenticated ? 
+                  <Navigate to="/home" replace /> : 
+                  <AuthPage onLogin={handleLogin} />
+              } 
+            />
+            <Route 
+              path="/home" 
+              element={
+                isAuthenticated ? 
+                  <UnifiedDashboard username={username} onLogout={handleLogout} /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/player" 
+              element={
+                isAuthenticated ? 
+                  <PlayerDashboard username={username} onLogout={handleLogout} /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/campaigns" 
+              element={
+                isAuthenticated ? 
+                  <CampaignList username={username} onLogout={handleLogout} /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/characters" 
+              element={
+                isAuthenticated ? 
+                  <MyCharacters username={username} onLogout={handleLogout} /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/characters/new" 
+              element={
+                isAuthenticated ? 
+                  <CharacterBuilder /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/characters/:characterId" 
+              element={
+                isAuthenticated ? 
+                  <CharacterSheetFull /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/campaign/:campaignId" 
+              element={
+                isAuthenticated ? 
+                  <CampaignDashboard username={username} onLogout={handleLogout} /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/gm-screen/:campaignId" 
+              element={
+                isAuthenticated ? 
+                  <DMScreen username={username} /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/campaign/:campaignId/combat" 
+              element={
+                isAuthenticated ? 
+                  <CombatPage /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/pricing" 
+              element={
+                isAuthenticated ? 
+                  <PricingPage username={username} onLogout={handleLogout} /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/subscription/success" 
+              element={<Navigate to="/pricing" replace />} 
+            />
+            <Route 
+              path="/subscription/cancel" 
+              element={<Navigate to="/pricing" replace />} 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                isAuthenticated ? 
+                  <AdminPage username={username} /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/account" 
+              element={
+                isAuthenticated ? 
+                  <AccountSettings username={username} onLogout={handleLogout} onUsernameChange={setUsername} /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
+              path="/reset-password" 
+              element={<AuthPage onLogin={handleLogin} />} 
+            />
+            <Route 
+              path="/" 
+              element={
+                isAuthenticated ? 
+                  <Navigate to="/home" replace /> : 
+                  <LandingPage />
+              } 
+            />
+          </Routes>
+          {/* Floating Dice Roller - Only on gameplay pages */}
+          <ConditionalDiceRoller isAuthenticated={isAuthenticated} />
+        </KeyboardShortcutsProvider>
       </BrowserRouter>
       <Toaster position="top-right" richColors />
     </div>
