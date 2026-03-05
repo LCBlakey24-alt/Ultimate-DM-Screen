@@ -11,9 +11,11 @@ test.describe('Player Dashboard and Notes', () => {
     await hideEmergentBadge(page);
     await loginTestUser(page);
     
-    // After login, navigate to Player dashboard
-    // From role selection, click "Enter as Player"
-    await page.getByRole('button', { name: /Enter as Player/i }).click();
+    // After login, user is on UnifiedDashboard (/home)
+    await expect(page.getByText('MY CHARACTERS')).toBeVisible({ timeout: 10000 });
+    
+    // Navigate to Player dashboard via direct URL
+    await page.goto('/player', { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/\/player/, { timeout: 15000 });
   });
 
@@ -33,9 +35,6 @@ test.describe('Player Dashboard and Notes', () => {
     // Click on Notes tab
     await page.getByTestId('tab-notes').click();
     
-    // Wait for notes content to load
-    await page.waitForTimeout(1000);
-    
     // Should show Session Recaps section (use first() for strict mode)
     await expect(page.getByText('Session Recaps').first()).toBeVisible();
     
@@ -46,7 +45,6 @@ test.describe('Player Dashboard and Notes', () => {
   test('Add Note button opens note dialog', async ({ page }) => {
     // Navigate to Notes tab
     await page.getByTestId('tab-notes').click();
-    await page.waitForTimeout(1000);
     
     // Click Add Note button
     await page.getByTestId('add-player-note-btn').click();
@@ -60,7 +58,6 @@ test.describe('Player Dashboard and Notes', () => {
   test('Create, view, and delete a player note (full CRUD flow)', async ({ page }) => {
     // Navigate to Notes tab
     await page.getByTestId('tab-notes').click();
-    await page.waitForTimeout(1000);
     
     // Create a unique note
     const uniqueId = Date.now().toString(36);
@@ -78,10 +75,7 @@ test.describe('Player Dashboard and Notes', () => {
     await page.getByTestId('save-note-btn').click();
     
     // Wait for dialog to close and note to appear
-    await page.waitForTimeout(2000);
-    
-    // Verify note appears in the list
-    await expect(page.getByText(noteTitle)).toBeVisible();
+    await expect(page.getByText(noteTitle)).toBeVisible({ timeout: 10000 });
     
     // Find and delete the note
     // Look for the delete button associated with this note
@@ -92,11 +86,8 @@ test.describe('Player Dashboard and Notes', () => {
     page.once('dialog', dialog => dialog.accept());
     await deleteBtn.click();
     
-    // Wait for deletion
-    await page.waitForTimeout(2000);
-    
-    // Verify note is deleted (should not be visible anymore)
-    await expect(page.getByText(noteTitle)).not.toBeVisible();
+    // Wait for deletion - note should disappear
+    await expect(page.getByText(noteTitle)).not.toBeVisible({ timeout: 10000 });
   });
 
   test('Create Character button is accessible', async ({ page }) => {
@@ -110,12 +101,13 @@ test.describe('Player Dashboard and Notes', () => {
     await expect(page.getByTestId('join-campaign-btn')).toBeVisible();
   });
 
-  test('Back button returns to role selection', async ({ page }) => {
+  test('Back button returns to UnifiedDashboard', async ({ page }) => {
     // Click back button
     await page.getByTestId('back-btn').click();
     
-    // Should return to role selection page (/home)
+    // Should return to UnifiedDashboard (/home)
     await page.waitForURL(/\/home/, { timeout: 10000 });
-    await expect(page.getByText(/Choose Your Adventure/i)).toBeVisible();
+    await expect(page.getByText('MY CHARACTERS')).toBeVisible();
+    await expect(page.getByText('MY CAMPAIGNS')).toBeVisible();
   });
 });

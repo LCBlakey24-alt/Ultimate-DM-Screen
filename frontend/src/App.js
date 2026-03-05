@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import '@/App.css';
+import '@/styles/designSystem.css';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import AuthPage from '@/components/AuthPage';
-import RoleSelection from '@/components/RoleSelection';
+import UnifiedDashboard from '@/components/UnifiedDashboard';
 import CampaignList from '@/components/CampaignList';
 import CampaignDashboard from '@/components/CampaignDashboard';
 import PlayerDashboard from '@/components/PlayerDashboard';
@@ -114,7 +115,7 @@ function App() {
             path="/home" 
             element={
               isAuthenticated ? 
-                <RoleSelection username={username} onLogout={handleLogout} /> : 
+                <UnifiedDashboard username={username} onLogout={handleLogout} /> : 
                 <Navigate to="/auth" replace />
             } 
           />

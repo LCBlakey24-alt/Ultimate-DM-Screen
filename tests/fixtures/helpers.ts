@@ -84,8 +84,8 @@ export const TEST_USER = {
 
 export async function loginTestUser(page: Page) {
   await loginUser(page, TEST_USER.email, TEST_USER.password);
-  // After login, user goes to /home (role selection) then navigates to campaigns
-  await page.waitForURL(/\/(home|campaigns)/, { timeout: 15000 });
+  // After login, user goes to /home (UnifiedDashboard)
+  await page.waitForURL(/\/home/, { timeout: 15000 });
 }
 
 export async function navigateToGMScreen(page: Page) {

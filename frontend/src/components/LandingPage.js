@@ -12,6 +12,38 @@ import RookDemo from '@/components/RookDemo';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
+// New Brand Colors - No Gold, Square Corners
+const brand = {
+  bg: {
+    primary: '#18181B',
+    secondary: '#1E1E22',
+    card: '#242428',
+    elevated: '#2E2E32'
+  },
+  gm: {
+    primary: '#A4243B',
+    hover: '#B82E47',
+    subtle: 'rgba(164, 36, 59, 0.15)',
+    border: 'rgba(164, 36, 59, 0.4)'
+  },
+  player: {
+    primary: '#2563EB',
+    hover: '#3B82F6',
+    subtle: 'rgba(37, 99, 235, 0.15)',
+    border: 'rgba(37, 99, 235, 0.4)'
+  },
+  text: {
+    primary: '#FAFAFA',
+    secondary: '#A1A1AA',
+    muted: '#71717A'
+  },
+  accent: {
+    success: '#22C55E',
+    warning: '#F59E0B',
+    danger: '#EF4444'
+  }
+};
+
 // Custom hook for intersection observer animations
 function useInView(options = {}) {
   const ref = useRef(null);
@@ -121,28 +153,28 @@ function LandingPage() {
       icon: Globe,
       title: "World Builder",
       description: "Build immersive worlds with a hierarchical system: Continents, Countries, Cities, and Places of Interest.",
-      color: "#22D3EE",
+      color: brand.player.primary,
       details: ["Nested location hierarchy", "Generate with ROOK AI", "Custom place types"]
     },
     {
       icon: Sword,
       title: "Combat Manager",
       description: "Run epic battles with our initiative tracker, monster database, and interactive battle maps.",
-      color: "#EF4444",
+      color: brand.gm.primary,
       details: ["2687+ monster statblocks", "Attack & damage roller", "Encounter difficulty calculator"]
     },
     {
       icon: Sparkles,
       title: "ROOK AI Assistant",
       description: "Your intelligent Game Master companion. ROOK handles the heavy lifting so you can focus on storytelling.",
-      color: "#3B82F6",
+      color: brand.player.hover,
       details: ["Generate NPCs & Locations", "Session recap writing", "Smart note parsing", "Encounter creation"]
     },
     {
       icon: Dices,
       title: "GM Screen",
       description: "Everything you need during live sessions: dice roller, quick reference, session notes, and party tracker.",
-      color: "#F59E0B",
+      color: brand.gm.hover,
       details: ["Floating dice roller", "Random tables", "Name generator with NPC save"]
     }
   ];
@@ -162,7 +194,7 @@ function LandingPage() {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: 'linear-gradient(180deg, #0B0F19 0%, #111827 50%, #0B0F19 100%)',
+      background: brand.bg.primary,
       overflow: 'hidden',
       position: 'relative'
     }}>
@@ -177,14 +209,14 @@ function LandingPage() {
         zIndex: 0,
         transform: `translateY(${scrollY * 0.15}px)`
       }}>
-        {/* Large decorative circles */}
+        {/* Large decorative circles - using brand colors */}
         <div style={{
           position: 'absolute',
           top: '5%',
           left: '-5%',
           width: '600px',
           height: '600px',
-          border: '1px solid rgba(59, 130, 246, 0.08)',
+          border: `1px solid ${brand.player.subtle}`,
           borderRadius: '50%'
         }} />
         <div style={{
@@ -193,7 +225,7 @@ function LandingPage() {
           right: '-10%',
           width: '800px',
           height: '800px',
-          border: '1px solid rgba(168, 85, 247, 0.06)',
+          border: `1px solid ${brand.gm.subtle}`,
           borderRadius: '50%'
         }} />
         <div style={{

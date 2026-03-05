@@ -45,7 +45,7 @@ test.describe('Auth Flow - Email Based Login', () => {
     await expect(page.getByTestId('login-email')).toBeVisible();
   });
 
-  test('should register a new user and redirect to campaigns', async ({ page }) => {
+  test('should register a new user and redirect to unified dashboard', async ({ page }) => {
     await page.goto('/auth', { waitUntil: 'domcontentloaded' });
     await waitForAppReady(page);
     
@@ -55,25 +55,27 @@ test.describe('Auth Flow - Email Based Login', () => {
     // Register user
     await registerUser(page, testEmail, testUsername, 'testpass123');
     
-    // Should redirect to campaigns page
-    await expect(page).toHaveURL(/\/campaigns/, { timeout: 15000 });
+    // Should redirect to /home (UnifiedDashboard) - no longer /campaigns
+    await expect(page).toHaveURL(/\/home/, { timeout: 15000 });
     
-    // Verify we see the campaigns page with "Your Campaigns" header
-    await expect(page.getByText('Your Campaigns')).toBeVisible({ timeout: 10000 });
+    // Verify we see the UnifiedDashboard with "MY CHARACTERS" and "MY CAMPAIGNS" sections
+    await expect(page.getByText('MY CHARACTERS')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('MY CAMPAIGNS')).toBeVisible();
   });
 
-  test('should login with email and redirect to campaigns', async ({ page }) => {
+  test('should login with email and redirect to unified dashboard', async ({ page }) => {
     await page.goto('/auth', { waitUntil: 'domcontentloaded' });
     await waitForAppReady(page);
     
     // Login with test credentials
     await loginUser(page, TEST_USER.email, TEST_USER.password);
     
-    // Should redirect to campaigns page
-    await expect(page).toHaveURL(/\/campaigns/, { timeout: 15000 });
+    // Should redirect to /home (UnifiedDashboard) - no longer /campaigns
+    await expect(page).toHaveURL(/\/home/, { timeout: 15000 });
     
-    // Verify we see the campaigns page
-    await expect(page.getByText('Your Campaigns')).toBeVisible({ timeout: 10000 });
+    // Verify we see the UnifiedDashboard
+    await expect(page.getByText('MY CHARACTERS')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('MY CAMPAIGNS')).toBeVisible();
   });
 
   test('should show error for invalid login credentials', async ({ page }) => {

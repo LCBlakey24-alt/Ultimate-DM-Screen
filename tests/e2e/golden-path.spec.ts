@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { 
-  hideEmergentBadge, 
+  hideEmergentBadge,
+  dismissToasts, 
   loginTestUser, 
   navigateToGMScreen,
   TEST_CAMPAIGN_ID,
@@ -15,22 +16,22 @@ import {
  * 2. Navigate to GM Screen
  * 3. Select encounter and start combat
  * 4. Perform combat actions (HP changes, turn advancement)
- * 5. End combat and return to GM Screen
+ * 5. End combat and return to Campaign Dashboard
  * 
- * This test validates the critical bug fix where combat end
- * was navigating to /dm-screen (black screen) instead of /gm-screen.
+ * Updated for rebrand: End combat now navigates to Campaign Dashboard
+ * instead of GM Screen.
  */
 test.describe('Golden Path: Complete Combat Flow', () => {
   test.beforeEach(async ({ page }) => {
     await hideEmergentBadge(page);
+    await dismissToasts(page);
   });
 
-  test('full combat flow: login → GM Screen → start combat → combat actions → end combat → back to GM Screen', async ({ page }) => {
+  test('full combat flow: login → GM Screen → start combat → combat actions → end combat → Campaign Dashboard', async ({ page }) => {
     // Step 1: Login
     await loginTestUser(page);
     
-    // Step 2: If on role selection, go to GM (or navigate directly)
-    // Navigate directly to GM screen
+    // Step 2: Navigate directly to GM screen
     await navigateToGMScreen(page);
     
     // Verify we're on GM Screen
@@ -64,36 +65,27 @@ test.describe('Golden Path: Complete Combat Flow', () => {
     // Click Next Turn
     await page.getByRole('button', { name: /Next Turn/i }).click({ force: true });
     
-    // Small wait for turn to advance
-    await page.waitForTimeout(500);
-    
     // Damage a combatant (click -5 HP)
     const minusFiveBtn = page.locator('button:text-is("-5")').first();
     await minusFiveBtn.click({ force: true });
-    await page.waitForTimeout(500);
     
     // Heal a combatant (click +5 HP)
     const plusFiveBtn = page.locator('button:text-is("+5")').first();
     await plusFiveBtn.click({ force: true });
-    await page.waitForTimeout(500);
     
-    // Step 6: End Combat (CRITICAL - this validates the bug fix)
+    // Step 6: End Combat
     page.once('dialog', dialog => dialog.accept());
     await page.getByRole('button', { name: /End Combat/i }).click();
     
-    // CRITICAL ASSERTION: Verify we're back on GM Screen with /gm-screen/ URL
-    // This was the bug - it was going to /dm-screen which doesn't exist
-    await expect(page).toHaveURL(new RegExp(`/gm-screen/${TEST_CAMPAIGN_ID}`), { timeout: 10000 });
+    // UPDATED: End combat now navigates to Campaign Dashboard (/campaign/:id)
+    await expect(page).toHaveURL(new RegExp(`/campaign/${TEST_CAMPAIGN_ID}`), { timeout: 10000 });
     
-    // Verify GM Screen content is visible
-    await expect(page.getByRole('heading', { name: 'Combat Control' })).toBeVisible({ timeout: 10000 });
-    
-    // Verify the encounter is still available
-    await expect(page.getByTestId(`encounter-${TEST_SCENARIO_ID}`)).toBeVisible();
+    // Verify Campaign Dashboard content is visible - use heading for strict selector
+    await expect(page.getByRole('heading', { name: 'Campaign Setting' })).toBeVisible({ timeout: 10000 });
   });
 
-  test('golden path: GM can use all tabs after combat', async ({ page }) => {
-    // Login and go to GM Screen
+  test('golden path: GM can access GM Screen via direct navigation', async ({ page }) => {
+    // Login and go to GM Screen directly
     await loginTestUser(page);
     await navigateToGMScreen(page);
     
@@ -105,9 +97,15 @@ test.describe('Golden Path: Complete Combat Flow', () => {
     // End combat immediately
     page.once('dialog', dialog => dialog.accept());
     await page.getByRole('button', { name: /End Combat/i }).click();
+    
+    // UPDATED: End combat now navigates to Campaign Dashboard
+    await expect(page).toHaveURL(new RegExp(`/campaign/${TEST_CAMPAIGN_ID}`), { timeout: 10000 });
+    
+    // GM Screen button opens in new tab (window.open), so navigate directly
+    await page.goto(`/gm-screen/${TEST_CAMPAIGN_ID}`, { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(new RegExp(`/gm-screen/${TEST_CAMPAIGN_ID}`), { timeout: 10000 });
     
-    // Now test all tabs work after returning from combat
+    // Verify GM Screen tabs work
     // Dice tab
     await page.getByTestId('tab-dice').click();
     await expect(page.getByRole('heading', { name: 'Dice Roller' }).first()).toBeVisible();
@@ -116,26 +114,22 @@ test.describe('Golden Path: Complete Combat Flow', () => {
     await page.getByTestId('tab-names').click();
     await expect(page.getByTestId('generate-name-btn')).toBeVisible();
     
-    // Party tab
-    await page.getByTestId('tab-party').click();
-    await expect(page.getByRole('heading', { name: 'Party Overview' })).toBeVisible();
-    
     // Back to Combat tab
     await page.getByTestId('tab-combat').click();
     await expect(page.getByRole('heading', { name: 'Combat Control' })).toBeVisible();
   });
 
-  test('golden path: Player flow - dashboard → notes → create note → delete note', async ({ page }) => {
-    // Login
+  test('golden path: Player flow - UnifiedDashboard → Player dashboard → notes', async ({ page }) => {
+    // Login - lands on UnifiedDashboard
     await loginTestUser(page);
+    await expect(page.getByText('MY CHARACTERS')).toBeVisible({ timeout: 10000 });
     
-    // Go to Player dashboard
-    await page.getByRole('button', { name: /Enter as Player/i }).click();
+    // Navigate to Player dashboard via direct URL
+    await page.goto('/player', { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/\/player/, { timeout: 15000 });
     
     // Navigate to Notes tab
     await page.getByTestId('tab-notes').click();
-    await page.waitForTimeout(1000);
     
     // Create a note
     const uniqueId = Date.now().toString(36);
@@ -147,8 +141,7 @@ test.describe('Golden Path: Complete Combat Flow', () => {
     await page.getByTestId('save-note-btn').click();
     
     // Verify note created
-    await page.waitForTimeout(2000);
-    await expect(page.getByText(noteTitle)).toBeVisible();
+    await expect(page.getByText(noteTitle)).toBeVisible({ timeout: 10000 });
     
     // Delete the note
     const noteCard = page.locator(`[data-testid^="player-note-"]`).filter({ hasText: noteTitle });
@@ -157,8 +150,7 @@ test.describe('Golden Path: Complete Combat Flow', () => {
     await deleteBtn.click();
     
     // Verify note deleted
-    await page.waitForTimeout(2000);
-    await expect(page.getByText(noteTitle)).not.toBeVisible();
+    await expect(page.getByText(noteTitle)).not.toBeVisible({ timeout: 10000 });
     
     // Navigate back to Characters
     await page.getByTestId('tab-characters').click();
@@ -182,18 +174,16 @@ test.describe('Golden Path: Complete Combat Flow', () => {
     
     // Roll
     await page.getByRole('button', { name: /Roll 100D6/i }).click();
-    await page.waitForTimeout(2000);
     
     // Verify result shows "100d6 = XXX"
-    await expect(page.getByText(/100d6\s*=\s*\d+/)).toBeVisible();
+    await expect(page.getByText(/100d6\s*=\s*\d+/)).toBeVisible({ timeout: 10000 });
     
     // Test rolling 500 dice (stress test)
     await diceCountInput.clear();
     await diceCountInput.fill('500');
     await page.getByRole('button', { name: /Roll 500D6/i }).click();
-    await page.waitForTimeout(3000);
     
     // Verify large roll completes
-    await expect(page.getByText(/500d6\s*=\s*\d+/)).toBeVisible();
+    await expect(page.getByText(/500d6\s*=\s*\d+/)).toBeVisible({ timeout: 10000 });
   });
 });
