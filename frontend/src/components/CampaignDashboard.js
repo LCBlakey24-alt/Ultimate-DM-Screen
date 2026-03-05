@@ -23,6 +23,18 @@ import QuickTips, { TIPS } from '@/components/QuickTips';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// GM Theme Colors
+const gmTheme = {
+  primary: '#A4243B',
+  hover: '#B82E47',
+  subtle: 'rgba(164, 36, 59, 0.15)',
+  border: 'rgba(164, 36, 59, 0.4)',
+  bg: '#18181B',
+  card: '#242428',
+  text: '#FAFAFA',
+  textSecondary: '#A1A1AA'
+};
+
 function CampaignDashboard({ username, onLogout }) {
   const { campaignId } = useParams();
   const navigate = useNavigate();
@@ -67,38 +79,37 @@ function CampaignDashboard({ username, onLogout }) {
   if (!campaign) return null;
 
   const tabs = [
-    { id: 'setting', icon: Book, label: 'Setting', color: '#7C3AED' },
-    { id: 'world', icon: Globe, label: 'World', color: '#22D3EE' },
-    { id: 'gods', icon: Church, label: 'Gods', color: '#F59E0B' },
-    { id: 'npcs', icon: UserCircle, label: 'NPCs', color: '#8B5CF6' },
-    { id: 'locations', icon: MapPin, label: 'Locations', color: '#22D3EE' },
-    { id: 'players', icon: Users, label: 'Players', color: '#10B981' },
-    { id: 'combat-creator', icon: Swords, label: 'Combat', color: '#EF4444' },
-    { id: 'maps', icon: Map, label: 'Maps', color: '#06B6D4' },
-    { id: 'encounter-gen', icon: Sparkles, label: 'Encounter Gen', color: '#F59E0B' },
-    { id: 'items', icon: Wand2, label: 'Items', color: '#22D3EE' },
-    { id: 'reference', icon: ScrollText, label: 'Reference', color: '#8B5CF6' },
-    { id: 'calendar', icon: Calendar, label: 'Calendar', color: '#F59E0B' },
-    { id: 'ingame-notes', icon: FileText, label: 'Notes', color: '#9CA3AF' },
+    { id: 'setting', icon: Book, label: 'Setting', color: gmTheme.primary },
+    { id: 'world', icon: Globe, label: 'World', color: gmTheme.primary },
+    { id: 'gods', icon: Church, label: 'Gods', color: gmTheme.primary },
+    { id: 'npcs', icon: UserCircle, label: 'NPCs', color: gmTheme.primary },
+    { id: 'locations', icon: MapPin, label: 'Locations', color: gmTheme.primary },
+    { id: 'players', icon: Users, label: 'Players', color: gmTheme.primary },
+    { id: 'combat-creator', icon: Swords, label: 'Combat', color: gmTheme.primary },
+    { id: 'maps', icon: Map, label: 'Maps', color: gmTheme.primary },
+    { id: 'encounter-gen', icon: Sparkles, label: 'Encounter Gen', color: gmTheme.primary },
+    { id: 'items', icon: Wand2, label: 'Items', color: gmTheme.primary },
+    { id: 'reference', icon: ScrollText, label: 'Reference', color: gmTheme.primary },
+    { id: 'calendar', icon: Calendar, label: 'Calendar', color: gmTheme.primary },
+    { id: 'ingame-notes', icon: FileText, label: 'Notes', color: gmTheme.textSecondary },
   ];
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(180deg, #0B0F19 0%, #111827 50%, #0B0F19 100%)',
+      background: gmTheme.bg,
       display: 'flex',
       flexDirection: 'column'
     }}>
       {/* Header */}
       <div style={{
-        background: 'rgba(17, 24, 39, 0.95)',
-        borderBottom: '1px solid #1F2937',
+        background: 'rgba(30, 30, 34, 0.95)',
+        borderBottom: `1px solid ${gmTheme.border}`,
         padding: '12px 16px',
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backdropFilter: 'blur(10px)',
-        boxShadow: '0 0 30px rgba(124, 58, 237, 0.1)'
+        backdropFilter: 'blur(10px)'
       }}>
         <div style={{ 
           maxWidth: '100%', 
@@ -118,7 +129,7 @@ function CampaignDashboard({ username, onLogout }) {
                 background: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
-                color: '#7C3AED',
+                color: gmTheme.primary,
                 display: 'none',
                 padding: '8px'
               }}
@@ -129,11 +140,16 @@ function CampaignDashboard({ username, onLogout }) {
 
             <Button 
               data-testid="back-to-campaigns-btn"
-              onClick={() => navigate('/campaigns')} 
-              className="btn-icon"
-              style={{ minWidth: '44px', minHeight: '44px' }}
+              onClick={() => navigate('/home')} 
+              style={{ 
+                minWidth: '44px', 
+                minHeight: '44px',
+                background: gmTheme.card,
+                border: `1px solid ${gmTheme.border}`,
+                borderRadius: '2px'
+              }}
             >
-              <ArrowLeft size={20} />
+              <ArrowLeft size={20} color={gmTheme.textSecondary} />
             </Button>
             
             <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>

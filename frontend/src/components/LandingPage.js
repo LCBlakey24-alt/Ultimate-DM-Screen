@@ -301,9 +301,9 @@ function LandingPage() {
         right: 0,
         zIndex: 50,
         padding: '16px 24px',
-        background: 'rgba(11, 15, 25, 0.95)',
+        background: 'rgba(24, 24, 27, 0.95)',
         backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(59, 130, 246, 0.2)'
+        borderBottom: `1px solid ${brand.gm.subtle}`
       }}>
         <div style={{ 
           maxWidth: '1200px', 
@@ -322,15 +322,29 @@ function LandingPage() {
           <div style={{ display: 'flex', gap: '12px' }}>
             <Button 
               onClick={() => navigate('/auth')}
-              className="btn-outline"
-              style={{ padding: '10px 20px' }}
+              style={{ 
+                padding: '10px 20px',
+                background: 'transparent',
+                border: `1px solid ${brand.text.muted}`,
+                borderRadius: '2px',
+                color: brand.text.secondary
+              }}
             >
               Log In
             </Button>
             <Button 
               onClick={() => navigate('/auth')}
-              className="btn-primary"
-              style={{ padding: '10px 24px', display: 'flex', alignItems: 'center', gap: '8px' }}
+              data-testid="get-started-btn"
+              style={{ 
+                padding: '10px 24px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                background: brand.player.primary,
+                border: 'none',
+                borderRadius: '2px',
+                color: brand.text.primary
+              }}
             >
               Get Started Free <ArrowRight size={16} />
             </Button>
@@ -355,14 +369,14 @@ function LandingPage() {
           pointerEvents: 'none',
           transform: `translateY(${scrollY * 0.3}px)`
         }}>
-          {/* Floating orbs - background layer */}
+          {/* Floating orbs - background layer - using brand colors */}
           <div style={{
             position: 'absolute',
             top: '10%',
             left: '5%',
             width: '500px',
             height: '500px',
-            background: 'radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, transparent 70%)',
+            background: `radial-gradient(circle, ${brand.gm.subtle} 0%, transparent 70%)`,
             borderRadius: '50%',
             filter: 'blur(80px)'
           }} />
@@ -372,7 +386,7 @@ function LandingPage() {
             right: '5%',
             width: '450px',
             height: '450px',
-            background: 'radial-gradient(circle, rgba(34, 211, 238, 0.15) 0%, transparent 70%)',
+            background: `radial-gradient(circle, ${brand.player.subtle} 0%, transparent 70%)`,
             borderRadius: '50%',
             filter: 'blur(80px)'
           }} />
@@ -382,7 +396,7 @@ function LandingPage() {
             left: '25%',
             width: '400px',
             height: '400px',
-            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%)',
+            background: `radial-gradient(circle, ${brand.player.subtle} 0%, transparent 70%)`,
             borderRadius: '50%',
             filter: 'blur(80px)'
           }} />
@@ -394,8 +408,8 @@ function LandingPage() {
             left: '15%',
             width: '60px',
             height: '60px',
-            border: '2px solid rgba(34, 211, 238, 0.2)',
-            borderRadius: '12px',
+            border: `2px solid ${brand.player.border}`,
+            borderRadius: '4px',
             transform: 'rotate(45deg)'
           }} />
           <div style={{
@@ -404,7 +418,7 @@ function LandingPage() {
             right: '20%',
             width: '40px',
             height: '40px',
-            border: '2px solid rgba(168, 85, 247, 0.2)',
+            border: `2px solid ${brand.gm.border}`,
             borderRadius: '50%'
           }} />
           <div style={{
@@ -413,8 +427,8 @@ function LandingPage() {
             left: '10%',
             width: '80px',
             height: '80px',
-            border: '2px solid rgba(59, 130, 246, 0.15)',
-            borderRadius: '16px',
+            border: `2px solid ${brand.player.border}`,
+            borderRadius: '4px',
             transform: 'rotate(15deg)'
           }} />
           <div style={{
@@ -423,19 +437,19 @@ function LandingPage() {
             right: '12%',
             width: '50px',
             height: '50px',
-            border: '2px solid rgba(34, 211, 238, 0.15)',
-            borderRadius: '8px',
+            border: `2px solid ${brand.gm.border}`,
+            borderRadius: '4px',
             transform: 'rotate(-20deg)'
           }} />
           
           {/* Star/sparkle dots */}
           {[
-            { top: '12%', left: '25%', size: 4, color: 'rgba(34, 211, 238, 0.5)' },
-            { top: '35%', right: '30%', size: 6, color: 'rgba(168, 85, 247, 0.4)' },
-            { top: '55%', left: '8%', size: 5, color: 'rgba(59, 130, 246, 0.4)' },
-            { top: '20%', right: '8%', size: 4, color: 'rgba(34, 211, 238, 0.3)' },
-            { top: '70%', right: '25%', size: 5, color: 'rgba(168, 85, 247, 0.3)' },
-            { top: '45%', left: '20%', size: 3, color: 'rgba(255, 255, 255, 0.3)' }
+            { top: '12%', left: '25%', size: 4, color: brand.player.primary },
+            { top: '35%', right: '30%', size: 6, color: brand.gm.primary },
+            { top: '55%', left: '8%', size: 5, color: brand.player.primary },
+            { top: '20%', right: '8%', size: 4, color: brand.player.hover },
+            { top: '70%', right: '25%', size: 5, color: brand.gm.primary },
+            { top: '45%', left: '20%', size: 3, color: brand.text.muted }
           ].map((star, i) => (
             <div key={i} style={{
               position: 'absolute',
@@ -473,7 +487,7 @@ function LandingPage() {
               alt="ROOK" 
               style={{ 
                 height: '140px',
-                filter: 'drop-shadow(0 0 30px rgba(34, 211, 238, 0.5))',
+                filter: `drop-shadow(0 0 30px ${brand.player.primary})`,
                 animation: 'float 3s ease-in-out infinite'
               }}
             />
@@ -497,7 +511,7 @@ function LandingPage() {
               textTransform: 'uppercase',
               margin: 0,
               lineHeight: '1',
-              textShadow: '0 0 40px rgba(59, 130, 246, 0.3)',
+              textShadow: `0 0 40px ${brand.player.subtle}`,
               background: 'linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -518,9 +532,9 @@ function LandingPage() {
               <div style={{
                 width: 'clamp(30px, 6vw, 80px)',
                 height: '4px',
-                background: 'linear-gradient(90deg, transparent 0%, #3B82F6 100%)',
+                background: `linear-gradient(90deg, transparent 0%, ${brand.player.primary} 100%)`,
                 borderRadius: '2px',
-                boxShadow: '0 0 25px rgba(59, 130, 246, 0.7)'
+                boxShadow: `0 0 25px ${brand.player.border}`
               }} />
               
               {/* KEEPER text */}
@@ -533,7 +547,7 @@ function LandingPage() {
                 textTransform: 'uppercase',
                 margin: 0,
                 lineHeight: '1',
-                textShadow: '0 0 60px rgba(34, 211, 238, 0.5), 0 0 120px rgba(168, 85, 247, 0.3)',
+                textShadow: `0 0 60px ${brand.player.subtle}, 0 0 120px ${brand.gm.subtle}`,
                 background: 'linear-gradient(180deg, #ffffff 0%, #e2e8f0 40%, #94a3b8 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -542,20 +556,20 @@ function LandingPage() {
                 KEEPER
               </h1>
               
-              {/* Right accent line - Purple */}
+              {/* Right accent line - Red */}
               <div style={{
                 width: 'clamp(30px, 6vw, 80px)',
                 height: '4px',
-                background: 'linear-gradient(90deg, #A855F7 0%, transparent 100%)',
+                background: `linear-gradient(90deg, ${brand.gm.primary} 0%, transparent 100%)`,
                 borderRadius: '2px',
-                boxShadow: '0 0 25px rgba(168, 85, 247, 0.7)'
+                boxShadow: `0 0 25px ${brand.gm.border}`
               }} />
             </div>
 
             {/* Tagline under the logo */}
             <p style={{
               fontSize: 'clamp(0.85rem, 1.8vw, 1.1rem)',
-              color: '#22D3EE',
+              color: brand.player.primary,
               letterSpacing: '6px',
               textTransform: 'uppercase',
               marginTop: '16px',
@@ -569,7 +583,7 @@ function LandingPage() {
           <div style={{
             width: '120px',
             height: '2px',
-            background: 'linear-gradient(90deg, #3B82F6, #22D3EE, #A855F7)',
+            background: `linear-gradient(90deg, ${brand.player.primary}, ${brand.gm.primary})`,
             margin: '32px auto',
             borderRadius: '2px'
           }} />
@@ -595,12 +609,12 @@ function LandingPage() {
           <AnimateOnScroll animation="fadeUp" delay={0.35}>
           <p style={{
             fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
-            color: '#94a3b8',
+            color: brand.text.secondary,
             maxWidth: '800px',
             margin: '0 auto 40px',
             lineHeight: '1.7'
           }}>
-            Rookie Quest Keeper is the all-in-one <strong style={{ color: '#22D3EE' }}>campaign operating system</strong> for 5e Game Masters — 
+            Rookie Quest Keeper is the all-in-one <strong style={{ color: brand.player.primary }}>campaign operating system</strong> for 5e Game Masters — 
             combining worldbuilding, AI content generation, combat control, and live session tools in one unified platform.
           </p>
           </AnimateOnScroll>
@@ -610,7 +624,6 @@ function LandingPage() {
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '32px' }}>
             <Button 
               onClick={() => navigate('/auth')}
-              className="btn-primary"
               data-testid="hero-cta-btn"
               style={{ 
                 padding: '16px 32px', 
@@ -618,7 +631,11 @@ function LandingPage() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
-                boxShadow: '0 0 40px rgba(34, 197, 94, 0.4)'
+                background: brand.player.primary,
+                border: 'none',
+                borderRadius: '2px',
+                color: brand.text.primary,
+                fontWeight: '700'
               }}
             >
               <Play size={20} /> Start Free Campaign
@@ -627,13 +644,16 @@ function LandingPage() {
               onClick={() => {
                 document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
               }}
-              className="btn-outline"
               style={{ 
                 padding: '16px 32px', 
                 fontSize: '18px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px'
+                gap: '10px',
+                background: 'transparent',
+                border: `1px solid ${brand.text.muted}`,
+                borderRadius: '2px',
+                color: brand.text.secondary
               }}
             >
               Explore Features <ChevronRight size={20} />

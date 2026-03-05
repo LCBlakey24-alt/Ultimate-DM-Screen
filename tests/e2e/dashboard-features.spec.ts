@@ -101,10 +101,12 @@ test.describe('Campaign Dashboard Features', () => {
     await expect(page.getByTestId('add-player-btn')).toBeVisible();
   });
 
-  test('Back button navigates to campaigns list', async ({ page }) => {
+  test('Back button navigates to unified dashboard', async ({ page }) => {
     await page.getByTestId('back-to-campaigns-btn').click();
     
-    await expect(page).toHaveURL(/\/campaigns/, { timeout: 10000 });
-    await expect(page.getByText('Your Campaigns')).toBeVisible();
+    // With rebrand: Back button now goes to /home (UnifiedDashboard) instead of /campaigns
+    await expect(page).toHaveURL(/\/home/, { timeout: 10000 });
+    await expect(page.getByText('MY CHARACTERS')).toBeVisible();
+    await expect(page.getByText('MY CAMPAIGNS')).toBeVisible();
   });
 });

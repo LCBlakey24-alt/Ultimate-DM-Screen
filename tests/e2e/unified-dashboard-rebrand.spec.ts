@@ -113,9 +113,14 @@ test.describe('Unified Dashboard Rebrand', () => {
       await page.waitForURL(/\/character-builder/, { timeout: 10000 });
     });
 
-    test('New Campaign button navigates to campaign creation', async ({ page }) => {
+    test('New Campaign button opens campaign creation dialog', async ({ page }) => {
       await page.getByTestId('new-campaign-btn').click();
-      await page.waitForURL(/\/campaigns\/new/, { timeout: 10000 });
+      // Fix: navigates to /campaigns and opens Create Campaign modal
+      await page.waitForURL(/\/campaigns/, { timeout: 10000 });
+      // Verify the Create New Campaign modal is open
+      await expect(page.getByRole('heading', { name: 'Create New Campaign' })).toBeVisible({ timeout: 5000 });
+      await expect(page.getByRole('textbox', { name: /enter campaign name/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Create Campaign' })).toBeVisible();
     });
 
     test('Character card navigates to character sheet', async ({ page }) => {

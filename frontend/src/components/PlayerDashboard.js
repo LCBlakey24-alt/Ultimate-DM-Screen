@@ -17,6 +17,18 @@ import { RookSuggestionPopup, useRookSuggestions, getRandomTip } from './RookSug
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Player Theme Colors
+const playerTheme = {
+  primary: '#2563EB',
+  hover: '#3B82F6',
+  subtle: 'rgba(37, 99, 235, 0.15)',
+  border: 'rgba(37, 99, 235, 0.4)',
+  bg: '#18181B',
+  card: '#242428',
+  text: '#FAFAFA',
+  textSecondary: '#A1A1AA'
+};
+
 function PlayerDashboard({ username, onLogout }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('characters');
@@ -121,7 +133,7 @@ function PlayerDashboard({ username, onLogout }) {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(180deg, #0B0F19 0%, #111827 50%, #0B0F19 100%)',
+      background: playerTheme.bg,
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -143,8 +155,8 @@ function PlayerDashboard({ username, onLogout }) {
           right: 0,
           bottom: 0,
           backgroundImage: `
-            linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px)
+            linear-gradient(${playerTheme.subtle} 1px, transparent 1px),
+            linear-gradient(90deg, ${playerTheme.subtle} 1px, transparent 1px)
           `,
           backgroundSize: '60px 60px'
         }} />
@@ -155,7 +167,7 @@ function PlayerDashboard({ username, onLogout }) {
           right: '-10%',
           width: '500px',
           height: '500px',
-          border: '1px solid rgba(34, 211, 238, 0.1)',
+          border: `1px solid ${playerTheme.border}`,
           borderRadius: '50%'
         }} />
         <div style={{
@@ -164,7 +176,7 @@ function PlayerDashboard({ username, onLogout }) {
           left: '-5%',
           width: '400px',
           height: '400px',
-          border: '1px solid rgba(16, 185, 129, 0.08)',
+          border: `1px solid ${playerTheme.subtle}`,
           borderRadius: '50%'
         }} />
         {/* Glow effect */}
