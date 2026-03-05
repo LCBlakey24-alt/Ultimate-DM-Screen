@@ -4,15 +4,36 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { RQKLogoInline } from '@/components/ui/RQKLogo';
 import { Scroll, Plus, LogOut, Trash2, Settings, Crown, Sparkles, Shield, Star, User } from 'lucide-react';
 import QuickTips, { TIPS } from '@/components/QuickTips';
 import ReviewModal from '@/components/ReviewModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Dark Minimalist Theme
+const theme = {
+  bg: {
+    black: '#0D0D0D',
+    dark: '#141414',
+    panel: '#1A1A1A',
+    card: '#1F1F1F',
+    hover: '#2A2A2A',
+    elevated: '#333333'
+  },
+  accent: {
+    red: '#DC2626',
+    redHover: '#EF4444',
+    redSubtle: 'rgba(220, 38, 38, 0.15)'
+  },
+  text: {
+    white: '#FFFFFF',
+    secondary: '#B3B3B3',
+    muted: '#808080'
+  },
+  border: 'rgba(255, 255, 255, 0.1)'
+};
 
 function CampaignList({ username, onLogout }) {
   const [campaigns, setCampaigns] = useState([]);
@@ -46,10 +67,8 @@ function CampaignList({ username, onLogout }) {
     fetchSubscription();
     checkAdminStatus();
     
-    // Check for create=true in URL params
     if (searchParams.get('create') === 'true') {
       setShowCreateDialog(true);
-      // Clear the param from URL
       setSearchParams({});
     }
   }, []);
@@ -90,7 +109,6 @@ function CampaignList({ username, onLogout }) {
       return;
     }
 
-    // Check campaign limit for free tier
     if (subscription && !subscription.is_premium && campaigns.length >= 2) {
       toast.error('Free tier is limited to 2 campaigns. Upgrade to Adventurer for unlimited campaigns!');
       navigate('/pricing');
@@ -135,7 +153,7 @@ function CampaignList({ username, onLogout }) {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(180deg, #030014 0%, #0a0a2e 50%, #030014 100%)',
+      background: theme.bg.black,
       padding: '32px 20px'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -149,35 +167,41 @@ function CampaignList({ username, onLogout }) {
           gap: '20px' 
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <RQKLogoInline size="default" />
-            <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.1)' }} />
+            <h1 style={{ 
+              fontSize: '28px', 
+              color: theme.text.white, 
+              fontWeight: '700',
+              letterSpacing: '2px'
+            }}>
+              ROOKIE QUEST<br />
+              <span style={{ fontSize: '22px', color: theme.text.muted }}>KEEPER</span>
+            </h1>
+            <div style={{ width: '1px', height: '50px', background: theme.border }} />
             <div>
-              <h1 style={{ 
+              <h2 style={{ 
                 fontSize: '24px', 
-                color: '#ffffff', 
+                color: theme.text.white, 
                 marginBottom: '4px',
-                fontFamily: 'Montserrat, sans-serif',
-                fontWeight: '800'
+                fontWeight: '700'
               }}>
                 Your Campaigns
-              </h1>
-              <p style={{ color: '#22D3EE', fontSize: '14px' }}>Welcome back, {username}!</p>
+              </h2>
+              <p style={{ color: theme.accent.red, fontSize: '14px' }}>Welcome back, {username}!</p>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
             {/* Subscription Badge */}
             <Button
               data-testid="pricing-btn"
               onClick={() => navigate('/pricing')}
-              className={subscription?.is_premium ? "btn-success" : "btn-outline"}
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '8px',
-                background: subscription?.is_premium 
-                  ? 'linear-gradient(90deg, #22c55e, #16a34a)' 
-                  : 'transparent',
-                border: subscription?.is_premium ? 'none' : '2px solid #a855f7'
+                background: subscription?.is_premium ? '#22c55e' : 'transparent',
+                border: subscription?.is_premium ? 'none' : `1px solid ${theme.border}`,
+                color: subscription?.is_premium ? theme.text.white : theme.text.secondary,
+                padding: '10px 16px'
               }}
             >
               {subscription?.is_premium ? (
@@ -192,54 +216,75 @@ function CampaignList({ username, onLogout }) {
                 </>
               )}
             </Button>
-            {/* Admin Button - Only visible to admin */}
+            
+            {/* Admin Button */}
             {isAdmin && (
               <Button
                 data-testid="admin-btn"
                 onClick={() => navigate('/admin')}
-                className="btn-outline"
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
                   gap: '8px',
-                  border: '2px solid #ef4444',
-                  color: '#ef4444'
+                  background: 'transparent',
+                  border: `1px solid ${theme.accent.red}`,
+                  color: theme.accent.red,
+                  padding: '10px 16px'
                 }}
               >
                 <Shield size={18} />
                 Admin
               </Button>
             )}
+            
             {/* Review Button */}
             <Button
               data-testid="review-btn"
               onClick={() => setShowReviewModal(true)}
-              className="btn-outline"
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '8px',
-                border: '2px solid #eab308',
-                color: '#eab308'
+                background: 'transparent',
+                border: `1px solid #F59E0B`,
+                color: '#F59E0B',
+                padding: '10px 16px'
               }}
             >
               <Star size={18} />
               Leave Review
             </Button>
+            
             <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
               <DialogTrigger asChild>
-                <Button data-testid="create-campaign-btn" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Button 
+                  data-testid="create-campaign-btn" 
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '8px',
+                    background: theme.accent.red,
+                    border: 'none',
+                    color: theme.text.white,
+                    padding: '10px 20px',
+                    fontWeight: '600'
+                  }}
+                >
                   <Plus size={20} />
                   New Campaign
                 </Button>
               </DialogTrigger>
-              <DialogContent className="modal">
+              <DialogContent style={{
+                background: theme.bg.panel,
+                border: `1px solid ${theme.border}`,
+                padding: '28px',
+                maxWidth: '500px'
+              }}>
                 <DialogHeader>
                   <DialogTitle style={{ 
                     fontSize: '24px', 
-                    color: '#ffffff',
-                    fontFamily: 'Montserrat, sans-serif',
-                    fontWeight: '800'
+                    color: theme.text.white,
+                    fontWeight: '700'
                   }}>
                     Create New Campaign
                   </DialogTitle>
@@ -249,10 +294,9 @@ function CampaignList({ username, onLogout }) {
                     <label style={{ 
                       display: 'block', 
                       marginBottom: '10px', 
-                      color: '#ffffff', 
-                      fontSize: '14px', 
-                      fontWeight: '700',
-                      fontFamily: 'Montserrat, sans-serif',
+                      color: theme.text.white, 
+                      fontSize: '12px', 
+                      fontWeight: '600',
                       textTransform: 'uppercase',
                       letterSpacing: '1px'
                     }}>
@@ -264,17 +308,21 @@ function CampaignList({ username, onLogout }) {
                       value={newCampaign.name}
                       onChange={(e) => setNewCampaign({ ...newCampaign, name: e.target.value })}
                       placeholder="Enter campaign name"
-                      className="input-glow"
+                      style={{
+                        background: theme.bg.dark,
+                        border: `1px solid ${theme.border}`,
+                        color: theme.text.white,
+                        padding: '12px'
+                      }}
                     />
                   </div>
                   <div style={{ marginBottom: '20px' }}>
                     <label style={{ 
                       display: 'block', 
                       marginBottom: '10px', 
-                      color: '#ffffff', 
-                      fontSize: '14px', 
-                      fontWeight: '700',
-                      fontFamily: 'Montserrat, sans-serif',
+                      color: theme.text.white, 
+                      fontSize: '12px', 
+                      fontWeight: '600',
                       textTransform: 'uppercase',
                       letterSpacing: '1px'
                     }}>
@@ -284,14 +332,20 @@ function CampaignList({ username, onLogout }) {
                       data-testid="campaign-system-select"
                       value={newCampaign.system}
                       onChange={(e) => setNewCampaign({ ...newCampaign, system: e.target.value })}
-                      className="input-glow"
-                      style={{ cursor: 'pointer' }}
+                      style={{
+                        width: '100%',
+                        background: theme.bg.dark,
+                        border: `1px solid ${theme.border}`,
+                        color: theme.text.white,
+                        padding: '12px',
+                        cursor: 'pointer'
+                      }}
                     >
                       {ttrpgSystems.map(system => (
                         <option key={system} value={system}>{system}</option>
                       ))}
                     </select>
-                    <p style={{ fontSize: '12px', color: '#67e8f9', marginTop: '8px', fontStyle: 'italic' }}>
+                    <p style={{ fontSize: '12px', color: theme.accent.red, marginTop: '8px' }}>
                       AI will tailor content to your chosen system
                     </p>
                   </div>
@@ -299,10 +353,9 @@ function CampaignList({ username, onLogout }) {
                     <label style={{ 
                       display: 'block', 
                       marginBottom: '10px', 
-                      color: '#ffffff', 
-                      fontSize: '14px', 
-                      fontWeight: '700',
-                      fontFamily: 'Montserrat, sans-serif',
+                      color: theme.text.white, 
+                      fontSize: '12px', 
+                      fontWeight: '600',
                       textTransform: 'uppercase',
                       letterSpacing: '1px'
                     }}>
@@ -313,13 +366,15 @@ function CampaignList({ username, onLogout }) {
                       value={newCampaign.description}
                       onChange={(e) => setNewCampaign({ ...newCampaign, description: e.target.value })}
                       placeholder="Describe your campaign..."
-                      className="textarea-glow"
                       style={{ 
+                        width: '100%',
                         minHeight: '100px',
                         maxHeight: '120px',
                         resize: 'vertical',
-                        display: 'block',
-                        width: '100%'
+                        background: theme.bg.dark,
+                        border: `1px solid ${theme.border}`,
+                        color: theme.text.white,
+                        padding: '12px'
                       }}
                     />
                   </div>
@@ -327,35 +382,82 @@ function CampaignList({ username, onLogout }) {
                     display: 'flex', 
                     gap: '12px', 
                     justifyContent: 'flex-end',
-                    marginTop: '24px',
                     paddingTop: '16px',
-                    borderTop: '1px solid rgba(30, 64, 175, 0.3)',
-                    position: 'relative',
-                    zIndex: 10
+                    borderTop: `1px solid ${theme.border}`
                   }}>
                     <Button 
                       type="button" 
-                      className="btn-outline"
                       onClick={() => setShowCreateDialog(false)}
+                      style={{
+                        background: 'transparent',
+                        border: `1px solid ${theme.border}`,
+                        color: theme.text.secondary,
+                        padding: '10px 20px'
+                      }}
                     >
                       Cancel
                     </Button>
-                    <Button data-testid="create-campaign-submit-btn" type="submit" className="btn-primary">
+                    <Button 
+                      data-testid="create-campaign-submit-btn" 
+                      type="submit"
+                      style={{
+                        background: theme.accent.red,
+                        border: 'none',
+                        color: theme.text.white,
+                        padding: '10px 20px',
+                        fontWeight: '600'
+                      }}
+                    >
                       Create Campaign
                     </Button>
                   </div>
                 </form>
               </DialogContent>
             </Dialog>
-            <Button onClick={() => navigate('/characters')} className="btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button 
+              onClick={() => navigate('/characters')} 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                background: 'transparent',
+                border: `1px solid ${theme.border}`,
+                color: theme.text.secondary,
+                padding: '10px 16px'
+              }}
+            >
               <User size={20} />
               My Characters
             </Button>
-            <Button data-testid="account-settings-btn" onClick={() => navigate('/account')} className="btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button 
+              data-testid="account-settings-btn" 
+              onClick={() => navigate('/account')} 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                background: 'transparent',
+                border: `1px solid ${theme.border}`,
+                color: theme.text.secondary,
+                padding: '10px 16px'
+              }}
+            >
               <Settings size={20} />
               Account
             </Button>
-            <Button data-testid="logout-btn" onClick={onLogout} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button 
+              data-testid="logout-btn" 
+              onClick={onLogout} 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                background: theme.bg.card,
+                border: `1px solid ${theme.border}`,
+                color: theme.text.secondary,
+                padding: '10px 16px'
+              }}
+            >
               <LogOut size={20} />
               Logout
             </Button>
@@ -371,21 +473,34 @@ function CampaignList({ username, onLogout }) {
 
         {/* Campaigns Grid */}
         {campaigns.length === 0 ? (
-          <div className="glow-panel" style={{ padding: '60px 20px', textAlign: 'center' }}>
-            <Scroll size={64} style={{ color: '#4a7dff', margin: '0 auto 24px' }} />
+          <div style={{ 
+            background: theme.bg.panel, 
+            border: `1px solid ${theme.border}`,
+            padding: '60px 20px', 
+            textAlign: 'center' 
+          }}>
+            <Scroll size={64} style={{ color: theme.accent.red, margin: '0 auto 24px' }} />
             <h2 style={{ 
               fontSize: '24px', 
-              color: '#ffffff', 
+              color: theme.text.white, 
               marginBottom: '12px',
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: '800'
+              fontWeight: '700'
             }}>
               No Campaigns Yet
             </h2>
-            <p style={{ color: '#94a3b8', marginBottom: '24px' }}>
+            <p style={{ color: theme.text.secondary, marginBottom: '24px' }}>
               Create your first campaign to begin your adventure!
             </p>
-            <Button onClick={() => setShowCreateDialog(true)} className="btn-primary">
+            <Button 
+              onClick={() => setShowCreateDialog(true)} 
+              style={{
+                background: theme.accent.red,
+                border: 'none',
+                color: theme.text.white,
+                padding: '12px 24px',
+                fontWeight: '600'
+              }}
+            >
               <Plus size={20} style={{ marginRight: '8px' }} />
               Create First Campaign
             </Button>
@@ -400,25 +515,41 @@ function CampaignList({ username, onLogout }) {
               <div 
                 key={campaign.id} 
                 data-testid={`campaign-card-${campaign.id}`}
-                className="card-glow"
-                style={{ cursor: 'pointer' }}
+                style={{ 
+                  background: theme.bg.card,
+                  border: `1px solid ${theme.border}`,
+                  padding: '24px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = theme.accent.red;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = theme.border;
+                }}
               >
                 <div style={{ marginBottom: '16px' }}>
                   <h3 style={{ 
                     fontSize: '22px', 
-                    color: '#ffffff', 
+                    color: theme.text.white, 
                     marginBottom: '12px',
-                    fontFamily: 'Montserrat, sans-serif',
                     fontWeight: '700'
                   }}>
                     {campaign.name}
                   </h3>
-                  <span className="system-badge">
+                  <span style={{
+                    fontSize: '11px',
+                    color: theme.accent.red,
+                    background: theme.accent.redSubtle,
+                    padding: '4px 10px',
+                    fontWeight: '600'
+                  }}>
                     {campaign.system || '5e 2024 Compatible'}
                   </span>
                 </div>
                 <p style={{ 
-                  color: '#94a3b8', 
+                  color: theme.text.secondary, 
                   fontSize: '14px', 
                   lineHeight: '1.6',
                   marginBottom: '20px',
@@ -430,8 +561,17 @@ function CampaignList({ username, onLogout }) {
                   <Button 
                     data-testid={`manage-campaign-btn-${campaign.id}`}
                     onClick={() => handleManageCampaign(campaign.id)}
-                    className="btn-primary"
-                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    style={{ 
+                      flex: 1, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      gap: '8px',
+                      background: theme.accent.red,
+                      border: 'none',
+                      color: theme.text.white,
+                      padding: '12px'
+                    }}
                   >
                     <Settings size={16} />
                     Manage
@@ -442,14 +582,18 @@ function CampaignList({ username, onLogout }) {
                       e.stopPropagation();
                       handleDeleteCampaign(campaign.id);
                     }}
-                    className="btn-danger"
-                    style={{ padding: '12px 16px' }}
+                    style={{ 
+                      padding: '12px 16px',
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      color: '#EF4444'
+                    }}
                   >
                     <Trash2 size={18} />
                   </Button>
                 </div>
-                <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #1e40af' }}>
-                  <p style={{ fontSize: '12px', color: '#64748b' }}>
+                <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: `1px solid ${theme.border}` }}>
+                  <p style={{ fontSize: '12px', color: theme.text.muted }}>
                     Created: {new Date(campaign.created_at).toLocaleDateString()}
                   </p>
                 </div>

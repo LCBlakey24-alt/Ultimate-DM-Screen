@@ -15,7 +15,7 @@ import aiohttp
 import uuid
 
 # Backend URL configuration
-BACKEND_URL = "https://dm-battle-maps.preview.emergentagent.com/api"
+BACKEND_URL = "https://ttrpg-rebrand.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):

@@ -5,39 +5,34 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { 
   User, Crown, Plus, ChevronRight, Star, Link2, Settings,
-  Users, Swords, MapPin, Calendar, LogOut
+  Users, MapPin, LogOut
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Design tokens
-const colors = {
+// Dark Minimalist Theme
+const theme = {
   bg: {
-    primary: '#18181B',
-    secondary: '#1E1E22',
-    card: '#242428',
-    elevated: '#2E2E32',
-    hover: '#38383D'
+    black: '#0D0D0D',
+    dark: '#141414',
+    panel: '#1A1A1A',
+    card: '#1F1F1F',
+    hover: '#2A2A2A',
+    elevated: '#333333'
   },
-  gm: {
-    primary: '#A4243B',
-    hover: '#B82E47',
-    subtle: 'rgba(164, 36, 59, 0.15)',
-    border: 'rgba(164, 36, 59, 0.4)'
-  },
-  player: {
-    primary: '#2563EB',
-    hover: '#3B82F6',
-    subtle: 'rgba(37, 99, 235, 0.15)',
-    border: 'rgba(37, 99, 235, 0.4)'
+  accent: {
+    red: '#DC2626',
+    redHover: '#EF4444',
+    redSubtle: 'rgba(220, 38, 38, 0.15)',
+    redBorder: 'rgba(220, 38, 38, 0.4)'
   },
   text: {
-    primary: '#FAFAFA',
-    secondary: '#A1A1AA',
-    muted: '#71717A'
+    white: '#FFFFFF',
+    secondary: '#B3B3B3',
+    muted: '#808080'
   },
-  border: 'rgba(255, 255, 255, 0.08)'
+  border: 'rgba(255, 255, 255, 0.1)'
 };
 
 function UnifiedDashboard({ username, onLogout }) {
@@ -89,7 +84,6 @@ function UnifiedDashboard({ username, onLogout }) {
       toast.success('Thank you for your review!');
       setShowReviewModal(false);
       
-      // If 4-5 stars, redirect to landing page
       if (reviewRating >= 4) {
         setTimeout(() => {
           window.open('/', '_blank');
@@ -112,12 +106,12 @@ function UnifiedDashboard({ username, onLogout }) {
     return (
       <div style={{ 
         minHeight: '100vh', 
-        background: colors.bg.primary,
+        background: theme.bg.black,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        <div style={{ color: colors.text.secondary }}>Loading...</div>
+        <div className="loading-spinner"></div>
       </div>
     );
   }
@@ -125,14 +119,14 @@ function UnifiedDashboard({ username, onLogout }) {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: colors.bg.primary,
+      background: theme.bg.black,
       display: 'flex',
       flexDirection: 'column'
     }}>
       {/* Header */}
       <header style={{
-        background: colors.bg.secondary,
-        borderBottom: `1px solid ${colors.border}`,
+        background: theme.bg.dark,
+        borderBottom: `1px solid ${theme.border}`,
         padding: '16px 32px',
         display: 'flex',
         justifyContent: 'space-between',
@@ -140,34 +134,32 @@ function UnifiedDashboard({ username, onLogout }) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <h1 style={{
-            fontFamily: 'Montserrat, sans-serif',
-            fontWeight: '800',
+            fontWeight: '700',
             fontSize: '24px',
-            color: colors.text.primary,
+            color: theme.text.white,
             margin: 0
           }}>
             ROOKIE QUEST KEEPER
           </h1>
           <span style={{ 
-            color: colors.text.muted, 
+            color: theme.text.muted, 
             fontSize: '14px',
-            borderLeft: `1px solid ${colors.border}`,
+            borderLeft: `1px solid ${theme.border}`,
             paddingLeft: '16px'
           }}>
             Welcome, {username}
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {/* Review Button */}
           <Button
             onClick={() => setShowReviewModal(true)}
             data-testid="review-btn"
             style={{
               background: 'transparent',
-              border: `1px solid ${colors.border}`,
-              borderRadius: '2px',
-              color: colors.text.secondary,
+              border: `1px solid ${theme.border}`,
+              color: theme.text.secondary,
               padding: '8px 16px',
               display: 'flex',
               alignItems: 'center',
@@ -175,7 +167,7 @@ function UnifiedDashboard({ username, onLogout }) {
             }}
           >
             <Star size={16} />
-            Leave Review
+            Review
           </Button>
 
           {/* Referral Button */}
@@ -184,9 +176,8 @@ function UnifiedDashboard({ username, onLogout }) {
             data-testid="referral-btn"
             style={{
               background: 'transparent',
-              border: `1px solid ${colors.border}`,
-              borderRadius: '2px',
-              color: colors.text.secondary,
+              border: `1px solid ${theme.border}`,
+              color: theme.text.secondary,
               padding: '8px 16px',
               display: 'flex',
               alignItems: 'center',
@@ -194,7 +185,7 @@ function UnifiedDashboard({ username, onLogout }) {
             }}
           >
             <Link2 size={16} />
-            Referral Code
+            Referral
           </Button>
 
           {/* Settings */}
@@ -204,7 +195,7 @@ function UnifiedDashboard({ username, onLogout }) {
               background: 'transparent',
               border: 'none',
               padding: '8px',
-              color: colors.text.muted
+              color: theme.text.muted
             }}
           >
             <Settings size={20} />
@@ -217,7 +208,7 @@ function UnifiedDashboard({ username, onLogout }) {
               background: 'transparent',
               border: 'none',
               padding: '8px',
-              color: colors.text.muted
+              color: theme.text.muted
             }}
           >
             <LogOut size={20} />
@@ -225,7 +216,7 @@ function UnifiedDashboard({ username, onLogout }) {
         </div>
       </header>
 
-      {/* Main Content - Split View */}
+      {/* Main Content */}
       <div style={{
         flex: 1,
         display: 'grid',
@@ -233,7 +224,7 @@ function UnifiedDashboard({ username, onLogout }) {
         padding: '32px',
         gap: '0'
       }}>
-        {/* LEFT: Player Characters (Blue) */}
+        {/* LEFT: Characters */}
         <div style={{ padding: '0 32px 0 0' }}>
           <div style={{
             display: 'flex',
@@ -242,26 +233,24 @@ function UnifiedDashboard({ username, onLogout }) {
             marginBottom: '24px'
           }}>
             <h2 style={{
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: '800',
-              fontSize: '20px',
-              color: colors.player.primary,
+              fontWeight: '700',
+              fontSize: '18px',
+              color: theme.text.white,
               margin: 0,
               display: 'flex',
               alignItems: 'center',
               gap: '10px'
             }}>
-              <User size={24} />
+              <User size={20} color={theme.accent.red} />
               MY CHARACTERS
             </h2>
             <Button
               onClick={() => navigate('/character-builder')}
               data-testid="new-character-btn"
               style={{
-                background: colors.player.primary,
+                background: theme.accent.red,
                 border: 'none',
-                borderRadius: '2px',
-                color: colors.text.primary,
+                color: theme.text.white,
                 padding: '10px 20px',
                 fontWeight: '600',
                 display: 'flex',
@@ -275,29 +264,28 @@ function UnifiedDashboard({ username, onLogout }) {
           </div>
 
           {/* Character List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {characters.length === 0 ? (
               <div style={{
-                background: colors.player.subtle,
-                border: `1px solid ${colors.player.border}`,
-                borderRadius: '4px',
+                background: theme.bg.card,
+                border: `1px solid ${theme.border}`,
                 padding: '40px',
                 textAlign: 'center'
               }}>
-                <User size={48} style={{ color: colors.player.primary, opacity: 0.5, marginBottom: '16px' }} />
-                <h3 style={{ color: colors.text.primary, margin: '0 0 8px', fontSize: '16px' }}>
+                <User size={48} style={{ color: theme.text.muted, marginBottom: '16px' }} />
+                <h3 style={{ color: theme.text.white, margin: '0 0 8px', fontSize: '16px' }}>
                   No Characters Yet
                 </h3>
-                <p style={{ color: colors.text.secondary, margin: '0 0 20px', fontSize: '14px' }}>
+                <p style={{ color: theme.text.muted, margin: '0 0 20px', fontSize: '14px' }}>
                   Create your first character to join campaigns
                 </p>
                 <Button
                   onClick={() => navigate('/character-builder')}
                   style={{
-                    background: colors.player.primary,
+                    background: theme.accent.red,
                     border: 'none',
-                    borderRadius: '2px',
-                    padding: '12px 24px'
+                    padding: '12px 24px',
+                    color: theme.text.white
                   }}
                 >
                   Create Character
@@ -310,10 +298,9 @@ function UnifiedDashboard({ username, onLogout }) {
                   onClick={() => navigate(`/characters/${char.id}`)}
                   data-testid={`character-${char.id}`}
                   style={{
-                    background: colors.bg.card,
-                    border: `1px solid ${colors.player.border}`,
-                    borderLeft: `3px solid ${colors.player.primary}`,
-                    borderRadius: '2px',
+                    background: theme.bg.card,
+                    border: `1px solid ${theme.border}`,
+                    borderLeft: `3px solid ${theme.accent.red}`,
                     padding: '16px 20px',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
@@ -322,28 +309,26 @@ function UnifiedDashboard({ username, onLogout }) {
                     alignItems: 'center'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = colors.bg.elevated;
-                    e.currentTarget.style.borderColor = colors.player.primary;
+                    e.currentTarget.style.background = theme.bg.hover;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = colors.bg.card;
-                    e.currentTarget.style.borderColor = colors.player.border;
+                    e.currentTarget.style.background = theme.bg.card;
                   }}
                 >
                   <div>
                     <h3 style={{ 
-                      color: colors.text.primary, 
+                      color: theme.text.white, 
                       margin: '0 0 4px', 
                       fontSize: '16px',
-                      fontWeight: '700'
+                      fontWeight: '600'
                     }}>
                       {char.name}
                     </h3>
-                    <p style={{ color: colors.text.secondary, margin: 0, fontSize: '13px' }}>
+                    <p style={{ color: theme.text.secondary, margin: 0, fontSize: '13px' }}>
                       Level {char.level} {char.race} {char.character_class}
                     </p>
                   </div>
-                  <ChevronRight size={20} style={{ color: colors.player.primary }} />
+                  <ChevronRight size={20} style={{ color: theme.accent.red }} />
                 </div>
               ))
             )}
@@ -351,12 +336,9 @@ function UnifiedDashboard({ username, onLogout }) {
         </div>
 
         {/* Divider */}
-        <div style={{ 
-          background: colors.border,
-          width: '1px'
-        }} />
+        <div style={{ background: theme.border, width: '1px' }} />
 
-        {/* RIGHT: GM Campaigns (Red) */}
+        {/* RIGHT: Campaigns */}
         <div style={{ padding: '0 0 0 32px' }}>
           <div style={{
             display: 'flex',
@@ -365,26 +347,24 @@ function UnifiedDashboard({ username, onLogout }) {
             marginBottom: '24px'
           }}>
             <h2 style={{
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: '800',
-              fontSize: '20px',
-              color: colors.gm.primary,
+              fontWeight: '700',
+              fontSize: '18px',
+              color: theme.text.white,
               margin: 0,
               display: 'flex',
               alignItems: 'center',
               gap: '10px'
             }}>
-              <Crown size={24} />
+              <Crown size={20} color={theme.accent.red} />
               MY CAMPAIGNS
             </h2>
             <Button
               onClick={() => navigate('/campaigns?create=true')}
               data-testid="new-campaign-btn"
               style={{
-                background: colors.gm.primary,
+                background: theme.accent.red,
                 border: 'none',
-                borderRadius: '2px',
-                color: colors.text.primary,
+                color: theme.text.white,
                 padding: '10px 20px',
                 fontWeight: '600',
                 display: 'flex',
@@ -398,29 +378,28 @@ function UnifiedDashboard({ username, onLogout }) {
           </div>
 
           {/* Campaign List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {campaigns.length === 0 ? (
               <div style={{
-                background: colors.gm.subtle,
-                border: `1px solid ${colors.gm.border}`,
-                borderRadius: '4px',
+                background: theme.bg.card,
+                border: `1px solid ${theme.border}`,
                 padding: '40px',
                 textAlign: 'center'
               }}>
-                <Crown size={48} style={{ color: colors.gm.primary, opacity: 0.5, marginBottom: '16px' }} />
-                <h3 style={{ color: colors.text.primary, margin: '0 0 8px', fontSize: '16px' }}>
+                <Crown size={48} style={{ color: theme.text.muted, marginBottom: '16px' }} />
+                <h3 style={{ color: theme.text.white, margin: '0 0 8px', fontSize: '16px' }}>
                   No Campaigns Yet
                 </h3>
-                <p style={{ color: colors.text.secondary, margin: '0 0 20px', fontSize: '14px' }}>
+                <p style={{ color: theme.text.muted, margin: '0 0 20px', fontSize: '14px' }}>
                   Create your first campaign to start GMing
                 </p>
                 <Button
                   onClick={() => navigate('/campaigns/new')}
                   style={{
-                    background: colors.gm.primary,
+                    background: theme.accent.red,
                     border: 'none',
-                    borderRadius: '2px',
-                    padding: '12px 24px'
+                    padding: '12px 24px',
+                    color: theme.text.white
                   }}
                 >
                   Create Campaign
@@ -433,10 +412,9 @@ function UnifiedDashboard({ username, onLogout }) {
                   onClick={() => navigate(`/campaign/${campaign.id}`)}
                   data-testid={`campaign-${campaign.id}`}
                   style={{
-                    background: colors.bg.card,
-                    border: `1px solid ${colors.gm.border}`,
-                    borderLeft: `3px solid ${colors.gm.primary}`,
-                    borderRadius: '2px',
+                    background: theme.bg.card,
+                    border: `1px solid ${theme.border}`,
+                    borderLeft: `3px solid ${theme.accent.red}`,
                     padding: '16px 20px',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
@@ -445,27 +423,25 @@ function UnifiedDashboard({ username, onLogout }) {
                     alignItems: 'center'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = colors.bg.elevated;
-                    e.currentTarget.style.borderColor = colors.gm.primary;
+                    e.currentTarget.style.background = theme.bg.hover;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = colors.bg.card;
-                    e.currentTarget.style.borderColor = colors.gm.border;
+                    e.currentTarget.style.background = theme.bg.card;
                   }}
                 >
                   <div>
                     <h3 style={{ 
-                      color: colors.text.primary, 
+                      color: theme.text.white, 
                       margin: '0 0 4px', 
                       fontSize: '16px',
-                      fontWeight: '700'
+                      fontWeight: '600'
                     }}>
                       {campaign.name}
                     </h3>
                     <div style={{ 
                       display: 'flex', 
                       gap: '16px',
-                      color: colors.text.secondary, 
+                      color: theme.text.secondary, 
                       fontSize: '13px' 
                     }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -476,7 +452,7 @@ function UnifiedDashboard({ username, onLogout }) {
                       </span>
                     </div>
                   </div>
-                  <ChevronRight size={20} style={{ color: colors.gm.primary }} />
+                  <ChevronRight size={20} style={{ color: theme.accent.red }} />
                 </div>
               ))
             )}
@@ -499,9 +475,8 @@ function UnifiedDashboard({ username, onLogout }) {
         >
           <div 
             style={{
-              background: colors.bg.card,
-              border: `1px solid ${colors.border}`,
-              borderRadius: '4px',
+              background: theme.bg.panel,
+              border: `1px solid ${theme.border}`,
               padding: '32px',
               width: '100%',
               maxWidth: '400px'
@@ -509,25 +484,19 @@ function UnifiedDashboard({ username, onLogout }) {
             onClick={e => e.stopPropagation()}
           >
             <h2 style={{ 
-              color: colors.text.primary, 
+              color: theme.text.white, 
               margin: '0 0 8px',
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: '800',
+              fontWeight: '700',
               fontSize: '20px'
             }}>
               Leave a Review
             </h2>
-            <p style={{ color: colors.text.secondary, margin: '0 0 24px', fontSize: '14px' }}>
+            <p style={{ color: theme.text.muted, margin: '0 0 24px', fontSize: '14px' }}>
               How would you rate your experience?
             </p>
 
             {/* Star Rating */}
-            <div style={{ 
-              display: 'flex', 
-              gap: '8px', 
-              marginBottom: '20px',
-              justifyContent: 'center'
-            }}>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', justifyContent: 'center' }}>
               {[1, 2, 3, 4, 5].map(star => (
                 <button
                   key={star}
@@ -542,7 +511,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   <Star 
                     size={32} 
                     fill={star <= reviewRating ? '#F59E0B' : 'transparent'}
-                    color={star <= reviewRating ? '#F59E0B' : colors.text.muted}
+                    color={star <= reviewRating ? '#F59E0B' : theme.text.muted}
                   />
                 </button>
               ))}
@@ -557,10 +526,9 @@ function UnifiedDashboard({ username, onLogout }) {
                 width: '100%',
                 minHeight: '100px',
                 padding: '12px',
-                background: colors.bg.secondary,
-                border: `1px solid ${colors.border}`,
-                borderRadius: '2px',
-                color: colors.text.primary,
+                background: theme.bg.dark,
+                border: `1px solid ${theme.border}`,
+                color: theme.text.white,
                 fontSize: '14px',
                 resize: 'vertical',
                 marginBottom: '20px'
@@ -573,9 +541,8 @@ function UnifiedDashboard({ username, onLogout }) {
                 style={{
                   flex: 1,
                   background: 'transparent',
-                  border: `1px solid ${colors.border}`,
-                  borderRadius: '2px',
-                  color: colors.text.secondary,
+                  border: `1px solid ${theme.border}`,
+                  color: theme.text.secondary,
                   padding: '12px'
                 }}
               >
@@ -586,10 +553,9 @@ function UnifiedDashboard({ username, onLogout }) {
                 disabled={submittingReview}
                 style={{
                   flex: 1,
-                  background: colors.player.primary,
+                  background: theme.accent.red,
                   border: 'none',
-                  borderRadius: '2px',
-                  color: colors.text.primary,
+                  color: theme.text.white,
                   padding: '12px'
                 }}
               >
@@ -615,9 +581,8 @@ function UnifiedDashboard({ username, onLogout }) {
         >
           <div 
             style={{
-              background: colors.bg.card,
-              border: `1px solid ${colors.border}`,
-              borderRadius: '4px',
+              background: theme.bg.panel,
+              border: `1px solid ${theme.border}`,
               padding: '32px',
               width: '100%',
               maxWidth: '400px'
@@ -625,30 +590,28 @@ function UnifiedDashboard({ username, onLogout }) {
             onClick={e => e.stopPropagation()}
           >
             <h2 style={{ 
-              color: colors.text.primary, 
+              color: theme.text.white, 
               margin: '0 0 8px',
-              fontFamily: 'Montserrat, sans-serif',
-              fontWeight: '800',
+              fontWeight: '700',
               fontSize: '20px'
             }}>
               Your Referral Code
             </h2>
-            <p style={{ color: colors.text.secondary, margin: '0 0 24px', fontSize: '14px' }}>
+            <p style={{ color: theme.text.muted, margin: '0 0 24px', fontSize: '14px' }}>
               Share this link with friends to earn rewards
             </p>
 
             <div style={{
-              background: colors.bg.secondary,
-              border: `1px solid ${colors.border}`,
-              borderRadius: '2px',
+              background: theme.bg.dark,
+              border: `1px solid ${theme.border}`,
               padding: '16px',
               marginBottom: '20px',
               textAlign: 'center'
             }}>
               <code style={{ 
-                color: colors.player.primary, 
+                color: theme.accent.red, 
                 fontSize: '16px',
-                fontWeight: '700'
+                fontWeight: '600'
               }}>
                 {referralCode || 'Loading...'}
               </code>
@@ -658,10 +621,9 @@ function UnifiedDashboard({ username, onLogout }) {
               onClick={copyReferralCode}
               style={{
                 width: '100%',
-                background: colors.player.primary,
+                background: theme.accent.red,
                 border: 'none',
-                borderRadius: '2px',
-                color: colors.text.primary,
+                color: theme.text.white,
                 padding: '12px',
                 fontWeight: '600'
               }}

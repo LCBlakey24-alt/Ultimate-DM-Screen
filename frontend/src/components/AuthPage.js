@@ -4,15 +4,36 @@ import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RQKLogo } from '@/components/ui/RQKLogo';
 import { Gift, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Dark Minimalist Theme
+const theme = {
+  bg: {
+    black: '#0D0D0D',
+    dark: '#141414',
+    panel: '#1A1A1A',
+    card: '#1F1F1F',
+    hover: '#2A2A2A'
+  },
+  accent: {
+    red: '#DC2626',
+    redHover: '#EF4444',
+    redSubtle: 'rgba(220, 38, 38, 0.15)'
+  },
+  text: {
+    white: '#FFFFFF',
+    secondary: '#B3B3B3',
+    muted: '#808080'
+  },
+  border: 'rgba(255, 255, 255, 0.1)'
+};
+
 function AuthPage({ onLogin }) {
   const [searchParams] = useSearchParams();
-  const [mode, setMode] = useState('login'); // 'login', 'register', 'forgot', 'reset'
+  const [mode, setMode] = useState('login');
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [registerData, setRegisterData] = useState({ email: '', username: '', password: '', referral_code: '' });
   const [forgotEmail, setForgotEmail] = useState('');
@@ -21,7 +42,6 @@ function AuthPage({ onLogin }) {
   const [referralFromUrl, setReferralFromUrl] = useState(null);
 
   useEffect(() => {
-    // Check for referral code in URL
     const refCode = searchParams.get('ref');
     if (refCode) {
       setReferralFromUrl(refCode);
@@ -30,7 +50,6 @@ function AuthPage({ onLogin }) {
       toast.info('Referral code applied! Create an account to get started.');
     }
     
-    // Check for reset token in URL
     const resetToken = searchParams.get('token');
     if (resetToken) {
       setResetData(prev => ({ ...prev, token: resetToken }));
@@ -136,6 +155,15 @@ function AuthPage({ onLogin }) {
     }
   };
 
+  const inputStyle = {
+    background: theme.bg.dark,
+    border: `1px solid ${theme.border}`,
+    color: theme.text.white,
+    padding: '12px 16px',
+    width: '100%',
+    fontSize: '14px'
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -143,14 +171,14 @@ function AuthPage({ onLogin }) {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '20px',
-      background: 'linear-gradient(180deg, #030014 0%, #0a0a2e 50%, #030014 100%)'
+      background: theme.bg.black
     }}>
       <div style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         width: '100%',
-        maxWidth: '1200px',
+        maxWidth: '420px',
         gap: '40px'
       }}>
         {/* ROOK Mascot */}
@@ -160,39 +188,64 @@ function AuthPage({ onLogin }) {
           className="animate-float"
           style={{ 
             height: '120px',
-            filter: 'drop-shadow(0 0 30px rgba(34, 211, 238, 0.4))'
+            filter: `drop-shadow(0 0 30px ${theme.accent.redSubtle})`
           }} 
         />
 
-        {/* Grand ROOKIE QUEST KEEPER Logo */}
-        <RQKLogo size="large" showTagline={true} />
+        {/* Logo */}
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{
+            fontSize: '32px',
+            fontWeight: '700',
+            color: theme.text.white,
+            letterSpacing: '4px',
+            margin: '0 0 8px'
+          }}>
+            ROOKIE QUEST
+          </h1>
+          <h2 style={{
+            fontSize: '40px',
+            fontWeight: '700',
+            color: theme.text.white,
+            letterSpacing: '8px',
+            margin: 0
+          }}>
+            KEEPER
+          </h2>
+          <div style={{
+            width: '60px',
+            height: '3px',
+            background: theme.accent.red,
+            margin: '16px auto 0'
+          }} />
+        </div>
 
         {/* Auth Card */}
-        <div className="glow-panel" style={{
-          maxWidth: '420px',
-          width: '100%',
-          padding: '32px'
+        <div style={{
+          background: theme.bg.panel,
+          border: `1px solid ${theme.border}`,
+          padding: '32px',
+          width: '100%'
         }}>
           {/* Login Form */}
           {mode === 'login' && (
             <>
-              <h2 style={{
-                fontSize: '24px',
-                fontWeight: '800',
-                color: '#ffffff',
+              <h3 style={{
+                fontSize: '20px',
+                fontWeight: '600',
+                color: theme.text.white,
                 textAlign: 'center',
-                marginBottom: '8px',
-                fontFamily: 'Montserrat, sans-serif'
+                marginBottom: '8px'
               }}>
                 Welcome Back
-              </h2>
-              <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '24px', fontSize: '14px' }}>
+              </h3>
+              <p style={{ color: theme.text.muted, textAlign: 'center', marginBottom: '24px', fontSize: '14px' }}>
                 Sign in to continue your adventure
               </p>
 
               <form onSubmit={handleLogin}>
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '6px' }}>
+                  <label style={{ color: theme.text.muted, fontSize: '12px', display: 'block', marginBottom: '6px' }}>
                     <Mail size={14} style={{ display: 'inline', marginRight: '6px' }} />
                     Email
                   </label>
@@ -202,11 +255,12 @@ function AuthPage({ onLogin }) {
                     value={loginData.email}
                     onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                     data-testid="login-email"
+                    style={inputStyle}
                   />
                 </div>
 
                 <div style={{ marginBottom: '8px' }}>
-                  <label style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '6px' }}>
+                  <label style={{ color: theme.text.muted, fontSize: '12px', display: 'block', marginBottom: '6px' }}>
                     <Lock size={14} style={{ display: 'inline', marginRight: '6px' }} />
                     Password
                   </label>
@@ -216,6 +270,7 @@ function AuthPage({ onLogin }) {
                     value={loginData.password}
                     onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                     data-testid="login-password"
+                    style={inputStyle}
                   />
                 </div>
 
@@ -225,7 +280,7 @@ function AuthPage({ onLogin }) {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#14b8a6',
+                    color: theme.accent.red,
                     fontSize: '13px',
                     cursor: 'pointer',
                     marginBottom: '20px',
@@ -238,9 +293,16 @@ function AuthPage({ onLogin }) {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary"
                   data-testid="login-btn"
-                  style={{ width: '100%', marginBottom: '12px' }}
+                  style={{ 
+                    width: '100%', 
+                    marginBottom: '12px',
+                    background: theme.accent.red,
+                    border: 'none',
+                    color: theme.text.white,
+                    padding: '12px',
+                    fontWeight: '600'
+                  }}
                 >
                   {loading ? 'Signing in...' : 'LOG IN'}
                 </Button>
@@ -248,8 +310,13 @@ function AuthPage({ onLogin }) {
                 <Button
                   type="button"
                   onClick={() => setMode('register')}
-                  className="btn-secondary"
-                  style={{ width: '100%' }}
+                  style={{ 
+                    width: '100%',
+                    background: 'transparent',
+                    border: `1px solid ${theme.border}`,
+                    color: theme.text.secondary,
+                    padding: '12px'
+                  }}
                 >
                   CREATE ACCOUNT
                 </Button>
@@ -260,23 +327,22 @@ function AuthPage({ onLogin }) {
           {/* Register Form */}
           {mode === 'register' && (
             <>
-              <h2 style={{
-                fontSize: '24px',
-                fontWeight: '800',
-                color: '#ffffff',
+              <h3 style={{
+                fontSize: '20px',
+                fontWeight: '600',
+                color: theme.text.white,
                 textAlign: 'center',
-                marginBottom: '8px',
-                fontFamily: 'Montserrat, sans-serif'
+                marginBottom: '8px'
               }}>
                 Create Account
-              </h2>
-              <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '24px', fontSize: '14px' }}>
+              </h3>
+              <p style={{ color: theme.text.muted, textAlign: 'center', marginBottom: '24px', fontSize: '14px' }}>
                 Start your GM journey today
               </p>
 
               <form onSubmit={handleRegister}>
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '6px' }}>
+                  <label style={{ color: theme.text.muted, fontSize: '12px', display: 'block', marginBottom: '6px' }}>
                     <Mail size={14} style={{ display: 'inline', marginRight: '6px' }} />
                     Email
                   </label>
@@ -286,11 +352,12 @@ function AuthPage({ onLogin }) {
                     value={registerData.email}
                     onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                     data-testid="register-email"
+                    style={inputStyle}
                   />
                 </div>
 
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '6px' }}>
+                  <label style={{ color: theme.text.muted, fontSize: '12px', display: 'block', marginBottom: '6px' }}>
                     <User size={14} style={{ display: 'inline', marginRight: '6px' }} />
                     Display Name
                   </label>
@@ -300,11 +367,12 @@ function AuthPage({ onLogin }) {
                     value={registerData.username}
                     onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
                     data-testid="register-username"
+                    style={inputStyle}
                   />
                 </div>
 
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '6px' }}>
+                  <label style={{ color: theme.text.muted, fontSize: '12px', display: 'block', marginBottom: '6px' }}>
                     <Lock size={14} style={{ display: 'inline', marginRight: '6px' }} />
                     Password
                   </label>
@@ -314,6 +382,7 @@ function AuthPage({ onLogin }) {
                     value={registerData.password}
                     onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                     data-testid="register-password"
+                    style={inputStyle}
                   />
                 </div>
 
@@ -321,7 +390,6 @@ function AuthPage({ onLogin }) {
                   <div style={{
                     background: 'rgba(34, 197, 94, 0.1)',
                     border: '1px solid rgba(34, 197, 94, 0.3)',
-                    borderRadius: '8px',
                     padding: '10px',
                     marginBottom: '16px',
                     display: 'flex',
@@ -338,9 +406,16 @@ function AuthPage({ onLogin }) {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary"
                   data-testid="register-btn"
-                  style={{ width: '100%', marginBottom: '12px' }}
+                  style={{ 
+                    width: '100%', 
+                    marginBottom: '12px',
+                    background: theme.accent.red,
+                    border: 'none',
+                    color: theme.text.white,
+                    padding: '12px',
+                    fontWeight: '600'
+                  }}
                 >
                   {loading ? 'Creating account...' : 'CREATE ACCOUNT'}
                 </Button>
@@ -348,8 +423,13 @@ function AuthPage({ onLogin }) {
                 <Button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="btn-outline"
-                  style={{ width: '100%' }}
+                  style={{ 
+                    width: '100%',
+                    background: 'transparent',
+                    border: `1px solid ${theme.border}`,
+                    color: theme.text.secondary,
+                    padding: '12px'
+                  }}
                 >
                   <ArrowLeft size={16} style={{ marginRight: '8px' }} />
                   Back to Login
@@ -361,23 +441,22 @@ function AuthPage({ onLogin }) {
           {/* Forgot Password Form */}
           {mode === 'forgot' && (
             <>
-              <h2 style={{
-                fontSize: '24px',
-                fontWeight: '800',
-                color: '#ffffff',
+              <h3 style={{
+                fontSize: '20px',
+                fontWeight: '600',
+                color: theme.text.white,
                 textAlign: 'center',
-                marginBottom: '8px',
-                fontFamily: 'Montserrat, sans-serif'
+                marginBottom: '8px'
               }}>
                 Forgot Password?
-              </h2>
-              <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '24px', fontSize: '14px' }}>
+              </h3>
+              <p style={{ color: theme.text.muted, textAlign: 'center', marginBottom: '24px', fontSize: '14px' }}>
                 Enter your email and we'll send you a reset link
               </p>
 
               <form onSubmit={handleForgotPassword}>
                 <div style={{ marginBottom: '20px' }}>
-                  <label style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '6px' }}>
+                  <label style={{ color: theme.text.muted, fontSize: '12px', display: 'block', marginBottom: '6px' }}>
                     <Mail size={14} style={{ display: 'inline', marginRight: '6px' }} />
                     Email
                   </label>
@@ -387,15 +466,23 @@ function AuthPage({ onLogin }) {
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     data-testid="forgot-email"
+                    style={inputStyle}
                   />
                 </div>
 
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary"
                   data-testid="forgot-btn"
-                  style={{ width: '100%', marginBottom: '12px' }}
+                  style={{ 
+                    width: '100%', 
+                    marginBottom: '12px',
+                    background: theme.accent.red,
+                    border: 'none',
+                    color: theme.text.white,
+                    padding: '12px',
+                    fontWeight: '600'
+                  }}
                 >
                   {loading ? 'Sending...' : 'SEND RESET LINK'}
                 </Button>
@@ -403,8 +490,13 @@ function AuthPage({ onLogin }) {
                 <Button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="btn-outline"
-                  style={{ width: '100%' }}
+                  style={{ 
+                    width: '100%',
+                    background: 'transparent',
+                    border: `1px solid ${theme.border}`,
+                    color: theme.text.secondary,
+                    padding: '12px'
+                  }}
                 >
                   <ArrowLeft size={16} style={{ marginRight: '8px' }} />
                   Back to Login
@@ -416,23 +508,22 @@ function AuthPage({ onLogin }) {
           {/* Reset Password Form */}
           {mode === 'reset' && (
             <>
-              <h2 style={{
-                fontSize: '24px',
-                fontWeight: '800',
-                color: '#ffffff',
+              <h3 style={{
+                fontSize: '20px',
+                fontWeight: '600',
+                color: theme.text.white,
                 textAlign: 'center',
-                marginBottom: '8px',
-                fontFamily: 'Montserrat, sans-serif'
+                marginBottom: '8px'
               }}>
                 Reset Password
-              </h2>
-              <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '24px', fontSize: '14px' }}>
+              </h3>
+              <p style={{ color: theme.text.muted, textAlign: 'center', marginBottom: '24px', fontSize: '14px' }}>
                 Enter your new password
               </p>
 
               <form onSubmit={handleResetPassword}>
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '6px' }}>
+                  <label style={{ color: theme.text.muted, fontSize: '12px', display: 'block', marginBottom: '6px' }}>
                     <Lock size={14} style={{ display: 'inline', marginRight: '6px' }} />
                     New Password
                   </label>
@@ -442,11 +533,12 @@ function AuthPage({ onLogin }) {
                     value={resetData.new_password}
                     onChange={(e) => setResetData({ ...resetData, new_password: e.target.value })}
                     data-testid="reset-password"
+                    style={inputStyle}
                   />
                 </div>
 
                 <div style={{ marginBottom: '20px' }}>
-                  <label style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '6px' }}>
+                  <label style={{ color: theme.text.muted, fontSize: '12px', display: 'block', marginBottom: '6px' }}>
                     <Lock size={14} style={{ display: 'inline', marginRight: '6px' }} />
                     Confirm Password
                   </label>
@@ -456,15 +548,23 @@ function AuthPage({ onLogin }) {
                     value={resetData.confirm_password}
                     onChange={(e) => setResetData({ ...resetData, confirm_password: e.target.value })}
                     data-testid="reset-confirm"
+                    style={inputStyle}
                   />
                 </div>
 
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary"
                   data-testid="reset-btn"
-                  style={{ width: '100%', marginBottom: '12px' }}
+                  style={{ 
+                    width: '100%', 
+                    marginBottom: '12px',
+                    background: theme.accent.red,
+                    border: 'none',
+                    color: theme.text.white,
+                    padding: '12px',
+                    fontWeight: '600'
+                  }}
                 >
                   {loading ? 'Resetting...' : 'RESET PASSWORD'}
                 </Button>
@@ -472,8 +572,13 @@ function AuthPage({ onLogin }) {
                 <Button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="btn-outline"
-                  style={{ width: '100%' }}
+                  style={{ 
+                    width: '100%',
+                    background: 'transparent',
+                    border: `1px solid ${theme.border}`,
+                    color: theme.text.secondary,
+                    padding: '12px'
+                  }}
                 >
                   <ArrowLeft size={16} style={{ marginRight: '8px' }} />
                   Back to Login
@@ -484,7 +589,7 @@ function AuthPage({ onLogin }) {
         </div>
 
         {/* Footer */}
-        <p style={{ color: '#64748b', fontSize: '12px', textAlign: 'center' }}>
+        <p style={{ color: theme.text.muted, fontSize: '12px', textAlign: 'center' }}>
           A product of Rookie Quest
         </p>
       </div>

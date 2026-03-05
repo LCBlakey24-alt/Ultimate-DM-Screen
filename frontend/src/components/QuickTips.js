@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Lightbulb, X, ChevronDown, ChevronUp } from 'lucide-react';
 
+// Dark Minimalist Theme Colors
+const theme = {
+  accent: '#DC2626',
+  accentSubtle: 'rgba(220, 38, 38, 0.15)',
+  accentBorder: 'rgba(220, 38, 38, 0.3)',
+  text: '#FFFFFF',
+  muted: '#808080'
+};
+
 function QuickTips({ tips, pageId, title = "Quick Tips" }) {
   const [isVisible, setIsVisible] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -41,10 +50,9 @@ function QuickTips({ tips, pageId, title = "Quick Tips" }) {
           alignItems: 'center',
           gap: '6px',
           padding: '8px 14px',
-          background: 'rgba(234, 179, 8, 0.1)',
-          border: '1px solid rgba(234, 179, 8, 0.3)',
-          borderRadius: '8px',
-          color: '#eab308',
+          background: theme.accentSubtle,
+          border: `1px solid ${theme.accentBorder}`,
+          color: theme.accent,
           fontSize: '12px',
           cursor: 'pointer',
           marginBottom: '16px'
@@ -58,9 +66,8 @@ function QuickTips({ tips, pageId, title = "Quick Tips" }) {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.08) 0%, rgba(251, 191, 36, 0.05) 100%)',
-      border: '2px solid rgba(234, 179, 8, 0.3)',
-      borderRadius: '12px',
+      background: theme.accentSubtle,
+      border: `1px solid ${theme.accentBorder}`,
       marginBottom: '20px',
       overflow: 'hidden'
     }}>
@@ -73,20 +80,20 @@ function QuickTips({ tips, pageId, title = "Quick Tips" }) {
           justifyContent: 'space-between',
           padding: '12px 16px',
           cursor: 'pointer',
-          background: 'rgba(234, 179, 8, 0.1)'
+          background: 'rgba(220, 38, 38, 0.1)'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Lightbulb size={18} color="#eab308" />
-          <span style={{ color: '#eab308', fontWeight: '700', fontSize: '14px' }}>
+          <Lightbulb size={18} color={theme.accent} />
+          <span style={{ color: theme.accent, fontWeight: '700', fontSize: '14px' }}>
             {title}
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {isCollapsed ? (
-            <ChevronDown size={18} color="#eab308" />
+            <ChevronDown size={18} color={theme.accent} />
           ) : (
-            <ChevronUp size={18} color="#eab308" />
+            <ChevronUp size={18} color={theme.accent} />
           )}
           <button
             onClick={(e) => { e.stopPropagation(); handleDismiss(); }}
@@ -101,7 +108,7 @@ function QuickTips({ tips, pageId, title = "Quick Tips" }) {
             }}
             title="Dismiss tips"
           >
-            <X size={16} color="#94a3b8" />
+            <X size={16} color={theme.muted} />
           </button>
         </div>
       </div>
@@ -124,7 +131,7 @@ function QuickTips({ tips, pageId, title = "Quick Tips" }) {
               }}>
                 {tip.highlight ? (
                   <>
-                    <span style={{ color: '#eab308', fontWeight: '600' }}>{tip.highlight}</span>
+                    <span style={{ color: theme.accent, fontWeight: '600' }}>{tip.highlight}</span>
                     {' '}{tip.text}
                   </>
                 ) : (

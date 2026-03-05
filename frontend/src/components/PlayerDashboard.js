@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RQKLogoInline } from '@/components/ui/RQKLogo';
 import { 
   Plus, User, ArrowLeft, Settings, LogOut, Swords, Shield, Heart,
   Sparkles, Link, Loader, ChevronRight, Users, BookOpen, FileText
@@ -17,16 +16,18 @@ import { RookSuggestionPopup, useRookSuggestions, getRandomTip } from './RookSug
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Player Theme Colors
+// Dark Minimalist Theme
 const playerTheme = {
-  primary: '#2563EB',
-  hover: '#3B82F6',
-  subtle: 'rgba(37, 99, 235, 0.15)',
-  border: 'rgba(37, 99, 235, 0.4)',
-  bg: '#18181B',
-  card: '#242428',
-  text: '#FAFAFA',
-  textSecondary: '#A1A1AA'
+  primary: '#DC2626',
+  hover: '#EF4444',
+  subtle: 'rgba(220, 38, 38, 0.15)',
+  border: 'rgba(255, 255, 255, 0.1)',
+  bg: '#0D0D0D',
+  card: '#1F1F1F',
+  panel: '#1A1A1A',
+  text: '#FFFFFF',
+  textSecondary: '#B3B3B3',
+  muted: '#808080'
 };
 
 function PlayerDashboard({ username, onLogout }) {

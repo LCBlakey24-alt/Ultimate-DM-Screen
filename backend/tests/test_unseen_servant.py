@@ -6,7 +6,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dm-battle-maps.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ttrpg-rebrand.preview.emergentagent.com').rstrip('/')
 
 
 class TestUnseenServant:

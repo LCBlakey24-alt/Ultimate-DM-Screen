@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { RQKLogoInline } from '@/components/ui/RQKLogo';
 import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map } from 'lucide-react';
 import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
 import GodsTab from '@/components/tabs/GodsTab';
@@ -23,16 +22,27 @@ import QuickTips, { TIPS } from '@/components/QuickTips';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// GM Theme Colors
-const gmTheme = {
-  primary: '#A4243B',
-  hover: '#B82E47',
-  subtle: 'rgba(164, 36, 59, 0.15)',
-  border: 'rgba(164, 36, 59, 0.4)',
-  bg: '#18181B',
-  card: '#242428',
-  text: '#FAFAFA',
-  textSecondary: '#A1A1AA'
+// Dark Minimalist Theme
+const theme = {
+  bg: {
+    black: '#0D0D0D',
+    dark: '#141414',
+    panel: '#1A1A1A',
+    card: '#1F1F1F',
+    hover: '#2A2A2A',
+    elevated: '#333333'
+  },
+  accent: {
+    red: '#DC2626',
+    redHover: '#EF4444',
+    redSubtle: 'rgba(220, 38, 38, 0.15)'
+  },
+  text: {
+    white: '#FFFFFF',
+    secondary: '#B3B3B3',
+    muted: '#808080'
+  },
+  border: 'rgba(255, 255, 255, 0.1)'
 };
 
 function CampaignDashboard({ username, onLogout }) {
@@ -42,6 +52,7 @@ function CampaignDashboard({ username, onLogout }) {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('setting');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState(null);
 
   useEffect(() => {
     fetchCampaign();
@@ -65,7 +76,7 @@ function CampaignDashboard({ username, onLogout }) {
 
   const handleTabClick = (tabId) => {
     setActiveTab(tabId);
-    setMobileMenuOpen(false); // Close mobile menu after selection
+    setMobileMenuOpen(false);
   };
 
   if (loading) {
@@ -79,37 +90,36 @@ function CampaignDashboard({ username, onLogout }) {
   if (!campaign) return null;
 
   const tabs = [
-    { id: 'setting', icon: Book, label: 'Setting', color: gmTheme.primary },
-    { id: 'world', icon: Globe, label: 'World', color: gmTheme.primary },
-    { id: 'gods', icon: Church, label: 'Gods', color: gmTheme.primary },
-    { id: 'npcs', icon: UserCircle, label: 'NPCs', color: gmTheme.primary },
-    { id: 'locations', icon: MapPin, label: 'Locations', color: gmTheme.primary },
-    { id: 'players', icon: Users, label: 'Players', color: gmTheme.primary },
-    { id: 'combat-creator', icon: Swords, label: 'Combat', color: gmTheme.primary },
-    { id: 'maps', icon: Map, label: 'Maps', color: gmTheme.primary },
-    { id: 'encounter-gen', icon: Sparkles, label: 'Encounter Gen', color: gmTheme.primary },
-    { id: 'items', icon: Wand2, label: 'Items', color: gmTheme.primary },
-    { id: 'reference', icon: ScrollText, label: 'Reference', color: gmTheme.primary },
-    { id: 'calendar', icon: Calendar, label: 'Calendar', color: gmTheme.primary },
-    { id: 'ingame-notes', icon: FileText, label: 'Notes', color: gmTheme.textSecondary },
+    { id: 'setting', icon: Book, label: 'Setting' },
+    { id: 'world', icon: Globe, label: 'World' },
+    { id: 'gods', icon: Church, label: 'Gods' },
+    { id: 'npcs', icon: UserCircle, label: 'NPCs' },
+    { id: 'locations', icon: MapPin, label: 'Locations' },
+    { id: 'players', icon: Users, label: 'Players' },
+    { id: 'combat-creator', icon: Swords, label: 'Combat' },
+    { id: 'maps', icon: Map, label: 'Maps' },
+    { id: 'encounter-gen', icon: Sparkles, label: 'Encounter Gen' },
+    { id: 'items', icon: Wand2, label: 'Items' },
+    { id: 'reference', icon: ScrollText, label: 'Reference' },
+    { id: 'calendar', icon: Calendar, label: 'Calendar' },
+    { id: 'ingame-notes', icon: FileText, label: 'Notes' },
   ];
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: gmTheme.bg,
+      background: theme.bg.black,
       display: 'flex',
       flexDirection: 'column'
     }}>
       {/* Header */}
       <div style={{
-        background: 'rgba(30, 30, 34, 0.95)',
-        borderBottom: `1px solid ${gmTheme.border}`,
+        background: theme.bg.dark,
+        borderBottom: `1px solid ${theme.border}`,
         padding: '12px 16px',
         position: 'sticky',
         top: 0,
-        zIndex: 50,
-        backdropFilter: 'blur(10px)'
+        zIndex: 50
       }}>
         <div style={{ 
           maxWidth: '100%', 
@@ -121,7 +131,7 @@ function CampaignDashboard({ username, onLogout }) {
           gap: '12px' 
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {/* Mobile: Hamburger Menu */}
+            {/* Mobile Menu Toggle */}
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="mobile-menu-toggle"
@@ -129,11 +139,10 @@ function CampaignDashboard({ username, onLogout }) {
                 background: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
-                color: gmTheme.primary,
+                color: theme.accent.red,
                 display: 'none',
                 padding: '8px'
               }}
-              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -144,21 +153,19 @@ function CampaignDashboard({ username, onLogout }) {
               style={{ 
                 minWidth: '44px', 
                 minHeight: '44px',
-                background: gmTheme.card,
-                border: `1px solid ${gmTheme.border}`,
-                borderRadius: '2px'
+                background: theme.bg.card,
+                border: `1px solid ${theme.border}`
               }}
             >
-              <ArrowLeft size={20} color={gmTheme.textSecondary} />
+              <ArrowLeft size={20} color={theme.text.secondary} />
             </Button>
             
             <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
               <h1 style={{ 
                 fontSize: 'clamp(18px, 4vw, 24px)', 
-                color: '#ffffff', 
+                color: theme.text.white, 
                 marginBottom: '4px',
-                fontFamily: 'Montserrat, sans-serif',
-                fontWeight: '800',
+                fontWeight: '700',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -167,38 +174,33 @@ function CampaignDashboard({ username, onLogout }) {
                 {campaign.name}
               </h1>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <span className="system-badge" style={{ fontSize: '11px', padding: '2px 8px' }}>
+                <span style={{
+                  fontSize: '11px',
+                  color: theme.accent.red,
+                  background: theme.accent.redSubtle,
+                  padding: '2px 8px',
+                  fontWeight: '600'
+                }}>
                   {campaign.system || '5e 2024'}
-                </span>
-                <span style={{ fontSize: '11px', color: '#9CA3AF', display: 'none' }} className="desktop-only">
-                  Campaign Command Center
                 </span>
               </div>
             </div>
           </div>
           
-          {/* Logos - Hidden on small mobile */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center',
-            gap: '12px'
-          }}
-          className="desktop-logos">
-            <RQKLogoInline size="small" />
-          </div>
-          
           <Button 
             data-testid="open-dm-screen-btn"
             onClick={handleOpenGMScreen}
-            className="btn-primary"
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
               gap: '8px',
-              boxShadow: '0 0 25px rgba(124, 58, 237, 0.4)',
+              background: theme.accent.red,
+              border: 'none',
+              color: theme.text.white,
               fontSize: 'clamp(12px, 2vw, 14px)',
               padding: '10px 16px',
-              minHeight: '44px'
+              minHeight: '44px',
+              fontWeight: '600'
             }}
           >
             <Monitor size={18} />
@@ -207,83 +209,90 @@ function CampaignDashboard({ username, onLogout }) {
         </div>
       </div>
 
-      {/* Main Layout with Left Sidebar */}
+      {/* Main Layout */}
       <div style={{ 
         display: 'flex', 
         flex: 1,
         overflow: 'hidden',
         position: 'relative'
       }}>
-        {/* LEFT SIDEBAR - Always Visible Desktop, Overlay Mobile */}
+        {/* LEFT SIDEBAR */}
         <div 
           className={`sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}
           style={{
-            width: '240px',
-            minWidth: '240px',
-            background: 'rgba(17, 24, 39, 0.98)',
-            borderRight: '1px solid #1F2937',
-            padding: '20px 12px',
+            width: '220px',
+            minWidth: '220px',
+            background: theme.bg.dark,
+            borderRight: `1px solid ${theme.border}`,
+            padding: '16px 0',
             overflowY: 'auto',
-            boxShadow: '4px 0 20px rgba(0, 0, 0, 0.3)',
             transition: 'transform 0.3s ease'
           }}
         >
           <h3 style={{
-            color: '#9CA3AF',
+            color: theme.text.muted,
             fontSize: '11px',
             fontWeight: '600',
             letterSpacing: '1.5px',
             textTransform: 'uppercase',
-            marginBottom: '16px',
-            paddingLeft: '12px'
+            marginBottom: '12px',
+            paddingLeft: '16px'
           }}>
             Campaign Tools
           </h3>
           
-          {/* Sidebar Navigation Tabs */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => handleTabClick(tab.id)}
-                data-testid={`${tab.id}-tab`}
-                style={{
-                  padding: '14px 16px',
-                  borderRadius: '10px',
-                  border: activeTab === tab.id ? `1px solid ${tab.color}` : '1px solid transparent',
-                  background: activeTab === tab.id ? `${tab.color}15` : 'transparent',
-                  color: activeTab === tab.id ? tab.color : '#9CA3AF',
-                  fontFamily: 'Inter, sans-serif',
-                  fontWeight: '500',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  transition: 'all 0.2s',
-                  textAlign: 'left',
-                  width: '100%',
-                  minHeight: '44px'
-                }}
-                onMouseEnter={(e) => {
-                  if (activeTab !== tab.id) {
-                    e.currentTarget.style.background = 'rgba(124, 58, 237, 0.1)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (activeTab !== tab.id) {
-                    e.currentTarget.style.background = 'transparent';
-                  }
-                }}
-              >
-                <tab.icon size={18} />
-                <span style={{ flex: 1 }}>{tab.label}</span>
-              </button>
-            ))}
+          {/* Sidebar Tabs with Red Bar Hover Effect */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            {tabs.map(tab => {
+              const isActive = activeTab === tab.id;
+              const isHovered = hoveredTab === tab.id && !isActive;
+              
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabClick(tab.id)}
+                  onMouseEnter={() => setHoveredTab(tab.id)}
+                  onMouseLeave={() => setHoveredTab(null)}
+                  data-testid={`${tab.id}-tab`}
+                  style={{
+                    position: 'relative',
+                    padding: '12px 16px',
+                    border: 'none',
+                    background: isActive ? theme.accent.red : (isHovered ? theme.bg.hover : 'transparent'),
+                    color: isActive ? theme.text.white : (isHovered ? theme.text.white : theme.text.secondary),
+                    fontWeight: '500',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    transition: 'all 0.15s ease',
+                    textAlign: 'left',
+                    width: '100%',
+                    minHeight: '44px'
+                  }}
+                >
+                  <tab.icon size={18} />
+                  <span style={{ flex: 1 }}>{tab.label}</span>
+                  
+                  {/* Red bar on right side when hovered (not active) */}
+                  {isHovered && !isActive && (
+                    <div style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: '3px',
+                      background: theme.accent.red
+                    }} />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Mobile Overlay Background */}
+        {/* Mobile Overlay */}
         {mobileMenuOpen && (
           <div 
             className="mobile-overlay"
@@ -301,11 +310,12 @@ function CampaignDashboard({ username, onLogout }) {
           />
         )}
 
-        {/* MAIN CONTENT AREA */}
+        {/* MAIN CONTENT */}
         <div style={{ 
           flex: 1, 
           overflowY: 'auto',
-          padding: 'clamp(12px, 3vw, 24px)'
+          padding: 'clamp(12px, 3vw, 24px)',
+          background: theme.bg.black
         }}>
           {/* Quick Tips */}
           <QuickTips 
@@ -315,7 +325,12 @@ function CampaignDashboard({ username, onLogout }) {
           />
 
           {/* Tab Content */}
-          <div className="glow-panel" style={{ minHeight: '500px' }}>
+          <div style={{
+            background: theme.bg.panel,
+            border: `1px solid ${theme.border}`,
+            padding: '24px',
+            minHeight: '500px'
+          }}>
             {activeTab === 'setting' && <CampaignSettingTab campaignId={campaignId} />}
             {activeTab === 'world' && <WorldBuilderTab campaignId={campaignId} />}
             {activeTab === 'gods' && <GodsTab campaignId={campaignId} />}
@@ -333,25 +348,19 @@ function CampaignDashboard({ username, onLogout }) {
         </div>
       </div>
 
-      {/* Mobile & Responsive Styles */}
+      {/* Responsive Styles */}
       <style>{`
-        /* Desktop logos hidden on mobile */
         @media (max-width: 640px) {
-          .desktop-logos {
-            display: none !important;
-          }
-          .desktop-only {
+          .desktop-logos, .desktop-only {
             display: none !important;
           }
         }
 
-        /* Mobile menu toggle visible only on mobile */
         @media (max-width: 1024px) {
           .mobile-menu-toggle {
             display: block !important;
           }
 
-          /* Sidebar becomes overlay on mobile */
           .sidebar {
             position: fixed !important;
             top: 0;
@@ -370,18 +379,10 @@ function CampaignDashboard({ username, onLogout }) {
           }
         }
 
-        /* Touch-friendly buttons */
         @media (hover: none) and (pointer: coarse) {
           button, .clickable-box {
             min-height: 44px !important;
             min-width: 44px !important;
-          }
-        }
-
-        /* Responsive padding */
-        @media (max-width: 768px) {
-          .glow-panel {
-            padding: 16px !important;
           }
         }
       `}</style>

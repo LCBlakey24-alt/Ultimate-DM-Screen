@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { RQKLogoInline } from '@/components/ui/RQKLogo';
+// Logo import removed for minimalist design
 import { 
   Sword, Users, BookOpen, Send, 
   Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap
@@ -270,99 +270,48 @@ function GMScreen({ username }) {
     { id: 'notes', icon: FileText, label: 'Notes', color: '#94a3b8' },
   ];
 
+  // Dark Minimalist Theme
+  const theme = {
+    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F', hover: '#2A2A2A' },
+    accent: { red: '#DC2626', redHover: '#EF4444', redSubtle: 'rgba(220, 38, 38, 0.15)' },
+    text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
+    border: 'rgba(255, 255, 255, 0.1)'
+  };
+
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: 'linear-gradient(180deg, #0B0F19 0%, #111827 50%, #0B0F19 100%)',
-      position: 'relative',
-      overflow: 'hidden'
+      background: theme.bg.black,
+      position: 'relative'
     }}>
-      {/* Parallax Background */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '100vh',
-        pointerEvents: 'none',
-        zIndex: 0
-      }}>
-        {/* Grid pattern */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage: `
-            linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px'
-        }} />
-        {/* Decorative circles */}
-        <div style={{
-          position: 'absolute',
-          top: '10%',
-          left: '-5%',
-          width: '500px',
-          height: '500px',
-          border: '1px solid rgba(34, 211, 238, 0.08)',
-          borderRadius: '50%'
-        }} />
-        <div style={{
-          position: 'absolute',
-          top: '60%',
-          right: '-10%',
-          width: '600px',
-          height: '600px',
-          border: '1px solid rgba(168, 85, 247, 0.06)',
-          borderRadius: '50%'
-        }} />
-        {/* Glow effect */}
-        <div style={{
-          position: 'absolute',
-          top: '0',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '800px',
-          height: '400px',
-          background: 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.1) 0%, transparent 60%)',
-          pointerEvents: 'none'
-        }} />
-      </div>
-
       {/* Header */}
       <div style={{ 
         position: 'relative',
         zIndex: 10,
-        background: 'rgba(11, 15, 25, 0.9)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(59, 130, 246, 0.2)',
+        background: theme.bg.dark,
+        borderBottom: `1px solid ${theme.border}`,
         padding: '12px 24px'
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            {/* Logo */}
-            <RQKLogoInline size="small" />
-            <div style={{ width: '1px', height: '30px', background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ width: '1px', height: '30px', background: theme.border }} />
             <div>
-              <h1 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Sword size={20} style={{ color: '#22D3EE' }} />
+              <h1 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Sword size={20} style={{ color: theme.accent.red }} />
                 {campaign?.name}
               </h1>
               {calendar && (
-                <p style={{ fontSize: '11px', color: '#22D3EE', marginTop: '2px' }}>
+                <p style={{ fontSize: '11px', color: theme.accent.red, marginTop: '2px' }}>
                   {calendar.custom_months?.[calendar.current_month - 1]?.name || 'Month'} {calendar.current_day}, Year {calendar.current_year}
                 </p>
               )}
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <Button onClick={() => setShowQuickRef(true)} className="btn-outline" style={{ display: 'flex', gap: '6px', padding: '8px 14px', fontSize: '13px' }}>
+            <Button onClick={() => setShowQuickRef(true)} style={{ display: 'flex', gap: '6px', padding: '8px 14px', fontSize: '13px', background: 'transparent', border: `1px solid ${theme.border}`, color: theme.text.secondary }}>
               <BookOpen size={14} /> Reference
             </Button>
-            <Button onClick={handleEndSession} className="btn-secondary" style={{ display: 'flex', gap: '6px', padding: '8px 14px', fontSize: '13px' }}>
+            <Button onClick={handleEndSession} style={{ display: 'flex', gap: '6px', padding: '8px 14px', fontSize: '13px', background: theme.accent.red, border: 'none', color: theme.text.white }}>
               <LogOut size={14} /> End Session
             </Button>
           </div>
@@ -378,18 +327,15 @@ function GMScreen({ username }) {
           title="GM Screen Tips"
         />
 
-        {/* Tab Navigation - Glass morphism style */}
+        {/* Tab Navigation - Dark Minimalist */}
         <div style={{ 
           display: 'flex', 
-          gap: '6px', 
+          gap: '2px', 
           marginBottom: '24px', 
           flexWrap: 'wrap', 
-          background: 'rgba(17, 24, 39, 0.7)',
-          backdropFilter: 'blur(16px)',
-          padding: '10px', 
-          borderRadius: '16px', 
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3)'
+          background: theme.bg.dark,
+          padding: '4px', 
+          border: `1px solid ${theme.border}`
         }}>
           {tabs.map(tab => (
             <button
@@ -397,48 +343,70 @@ function GMScreen({ username }) {
               onClick={() => setActiveTab(tab.id)}
               data-testid={`tab-${tab.id}`}
               style={{
+                position: 'relative',
                 flex: '1 1 auto',
                 minWidth: '90px',
                 padding: '12px 16px',
-                borderRadius: '12px',
-                border: activeTab === tab.id ? `2px solid ${tab.color}` : '2px solid transparent',
-                background: activeTab === tab.id ? `${tab.color}15` : 'rgba(255, 255, 255, 0.03)',
-                color: activeTab === tab.id ? tab.color : '#94a3b8',
-                fontFamily: 'Montserrat, sans-serif',
-                fontWeight: '700',
+                border: 'none',
+                background: activeTab === tab.id ? theme.accent.red : 'transparent',
+                color: activeTab === tab.id ? theme.text.white : theme.text.secondary,
+                fontWeight: '600',
                 fontSize: '12px',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                transition: 'all 0.2s'
+                transition: 'all 0.15s'
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== tab.id) {
+                  e.currentTarget.style.background = theme.bg.hover;
+                  e.currentTarget.style.color = theme.text.white;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== tab.id) {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = theme.text.secondary;
+                }
               }}
             >
               <tab.icon size={16} />
               {tab.label}
+              {activeTab !== tab.id && (
+                <div style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: '0px',
+                  background: theme.accent.red,
+                  transition: 'width 0.15s'
+                }} className="tab-hover-bar" />
+              )}
             </button>
           ))}
         </div>
 
         {/* Tab Content */}
-        <div className="glow-panel" style={{ minHeight: '500px' }}>
+        <div style={{ background: theme.bg.panel, border: `1px solid ${theme.border}`, padding: '24px', minHeight: '500px' }}>
           {/* COMBAT TAB */}
           {activeTab === 'combat' && (
             <div>
-              <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Swords size={24} style={{ color: '#ef4444' }} /> Combat Control
+              <h2 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Swords size={24} style={{ color: theme.accent.red }} /> Combat Control
               </h2>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
                 {/* Encounter Selector */}
                 <div>
-                  <h3 style={{ fontSize: '14px', color: '#67e8f9', fontWeight: '700', marginBottom: '12px' }}>Select Encounter</h3>
+                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '600', marginBottom: '12px' }}>Select Encounter</h3>
                   {scenarios.length === 0 ? (
-                    <div style={{ background: 'rgba(10, 10, 40, 0.6)', border: '2px dashed #1e40af', borderRadius: '12px', padding: '30px', textAlign: 'center' }}>
-                      <Swords size={32} style={{ color: '#1e40af', margin: '0 auto 12px' }} />
-                      <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '8px' }}>No encounters created</p>
-                      <p style={{ color: '#64748b', fontSize: '11px' }}>Create encounters in the Combat Creator tab of your campaign dashboard</p>
+                    <div style={{ background: theme.bg.card, border: `1px dashed ${theme.border}`, padding: '30px', textAlign: 'center' }}>
+                      <Swords size={32} style={{ color: theme.text.muted, margin: '0 auto 12px' }} />
+                      <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '8px' }}>No encounters created</p>
+                      <p style={{ color: theme.text.muted, fontSize: '11px' }}>Create encounters in the Combat Creator tab of your campaign dashboard</p>
                     </div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto' }}>
@@ -449,20 +417,20 @@ function GMScreen({ username }) {
                           onClick={() => setSelectedScenario(s)}
                           style={{
                             padding: '14px 16px',
-                            background: selectedScenario?.id === s.id ? 'rgba(239, 68, 68, 0.15)' : 'rgba(10, 10, 40, 0.6)',
-                            border: `2px solid ${selectedScenario?.id === s.id ? '#ef4444' : '#1e40af'}`,
-                            borderRadius: '12px',
-                            color: '#ffffff',
+                            background: selectedScenario?.id === s.id ? theme.accent.redSubtle : theme.bg.card,
+                            border: `1px solid ${selectedScenario?.id === s.id ? theme.accent.red : theme.border}`,
+                            borderLeft: selectedScenario?.id === s.id ? `3px solid ${theme.accent.red}` : `1px solid ${theme.border}`,
+                            color: theme.text.white,
                             textAlign: 'left',
                             cursor: 'pointer',
-                            transition: 'all 0.2s'
+                            transition: 'all 0.15s'
                           }}
                         >
-                          <div style={{ fontWeight: '700', marginBottom: '4px', fontFamily: 'Montserrat', fontSize: '14px' }}>{s.name}</div>
-                          <div style={{ fontSize: '11px', color: '#67e8f9', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                          <div style={{ fontWeight: '600', marginBottom: '4px', fontSize: '14px' }}>{s.name}</div>
+                          <div style={{ fontSize: '11px', color: theme.text.secondary, display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                             <span>{s.combatants?.length || 0} combatants</span>
                             {s.map_url && <span style={{ color: '#22c55e' }}>Has Map</span>}
-                            {s.combatants?.some(c => c.loot?.length > 0) && <span style={{ color: '#eab308' }}>Has Loot</span>}
+                            {s.combatants?.some(c => c.loot?.length > 0) && <span style={{ color: '#F59E0B' }}>Has Loot</span>}
                           </div>
                         </button>
                       ))}
@@ -472,11 +440,10 @@ function GMScreen({ username }) {
 
                 {/* Combat Actions */}
                 <div>
-                  <h3 style={{ fontSize: '14px', color: '#67e8f9', fontWeight: '700', marginBottom: '12px' }}>Launch Combat</h3>
+                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '600', marginBottom: '12px' }}>Launch Combat</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <Button 
                       onClick={launchCombat} 
-                      className="btn-secondary" 
                       data-testid="start-combat-btn"
                       disabled={!selectedScenario}
                       style={{ 
@@ -487,8 +454,9 @@ function GMScreen({ username }) {
                         gap: '10px',
                         padding: '16px',
                         fontSize: '15px',
-                        background: selectedScenario ? 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)' : undefined,
-                        boxShadow: selectedScenario ? '0 0 25px rgba(239, 68, 68, 0.4)' : undefined,
+                        background: selectedScenario ? theme.accent.red : theme.bg.card,
+                        border: 'none',
+                        color: theme.text.white,
                         opacity: selectedScenario ? 1 : 0.5
                       }}
                     >
@@ -497,10 +465,9 @@ function GMScreen({ username }) {
                     
                     <Button 
                       onClick={quickStartCombat} 
-                      className="btn-outline"
                       data-testid="quick-combat-btn"
                       disabled={players.length === 0}
-                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px' }}
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: 'transparent', border: `1px solid ${theme.border}`, color: theme.text.secondary }}
                     >
                       <Users size={16} /> Quick Start with Players ({players.length})
                     </Button>
@@ -516,35 +483,34 @@ function GMScreen({ username }) {
                         justifyContent: 'center', 
                         gap: '8px', 
                         padding: '14px',
-                        background: 'linear-gradient(180deg, #f97316 0%, #ea580c 100%)',
+                        background: theme.accent.red,
                         border: 'none',
-                        boxShadow: '0 0 20px rgba(249, 115, 22, 0.3)'
+                        color: theme.text.white
                       }}
                     >
                       <Zap size={16} /> Spontaneous Combat
                     </Button>
                     
-                    <p style={{ fontSize: '11px', color: '#64748b', textAlign: 'center', fontStyle: 'italic', marginTop: '8px' }}>
+                    <p style={{ fontSize: '11px', color: theme.text.muted, textAlign: 'center', fontStyle: 'italic', marginTop: '8px' }}>
                       Combat opens in a dedicated full-screen view with initiative tracker and battle map
                     </p>
                   </div>
                   
                   {/* Selected Encounter Preview */}
                   {selectedScenario && (
-                    <div style={{ marginTop: '20px', background: 'rgba(10, 10, 40, 0.5)', border: '2px solid #1e40af', borderRadius: '12px', padding: '14px' }}>
-                      <h4 style={{ fontSize: '13px', color: '#ffffff', fontWeight: '700', marginBottom: '10px' }}>{selectedScenario.name}</h4>
+                    <div style={{ marginTop: '20px', background: theme.bg.card, border: `1px solid ${theme.border}`, padding: '14px' }}>
+                      <h4 style={{ fontSize: '13px', color: theme.text.white, fontWeight: '600', marginBottom: '10px' }}>{selectedScenario.name}</h4>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                         {selectedScenario.combatants?.slice(0, 6).map(c => (
                           <div key={c.id} style={{ 
-                            background: c.type === 'player' ? 'rgba(74, 125, 255, 0.2)' : 'rgba(239, 68, 68, 0.2)', 
-                            border: `1px solid ${c.type === 'player' ? '#4a7dff' : '#ef4444'}`,
-                            borderRadius: '8px', 
+                            background: c.type === 'player' ? 'rgba(74, 125, 255, 0.2)' : theme.accent.redSubtle, 
+                            border: `1px solid ${c.type === 'player' ? '#4a7dff' : theme.accent.red}`,
                             padding: '6px 10px',
                             fontSize: '11px',
-                            color: '#fff'
+                            color: theme.text.white
                           }}>
                             {c.name}
-                            {c.loot?.length > 0 && <Coins size={10} style={{ marginLeft: '4px', color: '#eab308' }} />}
+                            {c.loot?.length > 0 && <Coins size={10} style={{ marginLeft: '4px', color: '#F59E0B' }} />}
                           </div>
                         ))}
                         {selectedScenario.combatants?.length > 6 && (
