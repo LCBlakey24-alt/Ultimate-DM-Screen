@@ -108,17 +108,74 @@ function PlayerDashboard({ username, onLogout }) {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(180deg, #0B0F19 0%, #111827 50%, #0B0F19 100%)'
+      background: 'linear-gradient(180deg, #0B0F19 0%, #111827 50%, #0B0F19 100%)',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
+      {/* Parallax Background */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '100vh',
+        pointerEvents: 'none',
+        zIndex: 0
+      }}>
+        {/* Grid pattern */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `
+            linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px'
+        }} />
+        {/* Decorative circles */}
+        <div style={{
+          position: 'absolute',
+          top: '20%',
+          right: '-10%',
+          width: '500px',
+          height: '500px',
+          border: '1px solid rgba(34, 211, 238, 0.1)',
+          borderRadius: '50%'
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '10%',
+          left: '-5%',
+          width: '400px',
+          height: '400px',
+          border: '1px solid rgba(16, 185, 129, 0.08)',
+          borderRadius: '50%'
+        }} />
+        {/* Glow effect */}
+        <div style={{
+          position: 'absolute',
+          top: '0',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '800px',
+          height: '400px',
+          background: 'radial-gradient(ellipse at center, rgba(34, 211, 238, 0.1) 0%, transparent 60%)',
+          pointerEvents: 'none'
+        }} />
+      </div>
+
       {/* Header */}
       <header style={{
         padding: '16px 24px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderBottom: '1px solid #1F2937',
-        background: 'rgba(17, 24, 39, 0.95)',
-        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        background: 'rgba(11, 15, 25, 0.9)',
+        backdropFilter: 'blur(12px)',
         position: 'sticky',
         top: 0,
         zIndex: 50
@@ -164,14 +221,18 @@ function PlayerDashboard({ username, onLogout }) {
       </header>
 
       {/* Main Content */}
-      <div style={{ padding: '32px 24px', maxWidth: '1200px', margin: '0 auto' }}>
-        {/* Tab Navigation */}
+      <div style={{ position: 'relative', zIndex: 10, padding: '32px 24px', maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Tab Navigation - Glass morphism style */}
         <div style={{
           display: 'flex',
           gap: '8px',
           marginBottom: '32px',
-          borderBottom: '1px solid #1F2937',
-          paddingBottom: '16px'
+          padding: '10px',
+          background: 'rgba(17, 24, 39, 0.7)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '16px',
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3)'
         }}>
           <button
             onClick={() => setActiveTab('characters')}

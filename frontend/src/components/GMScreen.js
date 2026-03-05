@@ -277,10 +277,77 @@ function GMScreen({ username }) {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, #030014 0%, #0a0a2e 50%, #030014 100%)' }}>
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(180deg, #0B0F19 0%, #111827 50%, #0B0F19 100%)',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Parallax Background */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '100vh',
+        pointerEvents: 'none',
+        zIndex: 0
+      }}>
+        {/* Grid pattern */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `
+            linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px'
+        }} />
+        {/* Decorative circles */}
+        <div style={{
+          position: 'absolute',
+          top: '10%',
+          left: '-5%',
+          width: '500px',
+          height: '500px',
+          border: '1px solid rgba(34, 211, 238, 0.08)',
+          borderRadius: '50%'
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '60%',
+          right: '-10%',
+          width: '600px',
+          height: '600px',
+          border: '1px solid rgba(168, 85, 247, 0.06)',
+          borderRadius: '50%'
+        }} />
+        {/* Glow effect */}
+        <div style={{
+          position: 'absolute',
+          top: '0',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '800px',
+          height: '400px',
+          background: 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.1) 0%, transparent 60%)',
+          pointerEvents: 'none'
+        }} />
+      </div>
+
       {/* Header */}
-      <div className="glow-panel" style={{ margin: '0', borderRadius: '0', padding: '12px 24px', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+      <div style={{ 
+        position: 'relative',
+        zIndex: 10,
+        background: 'rgba(11, 15, 25, 0.9)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(59, 130, 246, 0.2)',
+        padding: '12px 24px'
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             {/* Logo */}
             <RQKLogoInline size="small" />
@@ -309,7 +376,7 @@ function GMScreen({ username }) {
       </div>
 
       {/* Main Content */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+      <div style={{ position: 'relative', zIndex: 10, maxWidth: '1400px', margin: '0 auto', padding: '20px' }}>
         {/* Quick Tips */}
         <QuickTips 
           tips={TIPS.gmScreen} 
@@ -317,8 +384,19 @@ function GMScreen({ username }) {
           title="GM Screen Tips"
         />
 
-        {/* Tab Navigation */}
-        <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', flexWrap: 'wrap', background: 'rgba(10, 10, 40, 0.5)', padding: '8px', borderRadius: '16px', border: '2px solid #1e40af' }}>
+        {/* Tab Navigation - Glass morphism style */}
+        <div style={{ 
+          display: 'flex', 
+          gap: '6px', 
+          marginBottom: '24px', 
+          flexWrap: 'wrap', 
+          background: 'rgba(17, 24, 39, 0.7)',
+          backdropFilter: 'blur(16px)',
+          padding: '10px', 
+          borderRadius: '16px', 
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3)'
+        }}>
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -326,15 +404,15 @@ function GMScreen({ username }) {
               data-testid={`tab-${tab.id}`}
               style={{
                 flex: '1 1 auto',
-                minWidth: '100px',
+                minWidth: '90px',
                 padding: '12px 16px',
                 borderRadius: '12px',
                 border: activeTab === tab.id ? `2px solid ${tab.color}` : '2px solid transparent',
-                background: activeTab === tab.id ? `${tab.color}20` : 'transparent',
+                background: activeTab === tab.id ? `${tab.color}15` : 'rgba(255, 255, 255, 0.03)',
                 color: activeTab === tab.id ? tab.color : '#94a3b8',
                 fontFamily: 'Montserrat, sans-serif',
                 fontWeight: '700',
-                fontSize: '13px',
+                fontSize: '12px',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
