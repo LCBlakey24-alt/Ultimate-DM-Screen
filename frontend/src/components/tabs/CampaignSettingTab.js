@@ -126,7 +126,7 @@ function CampaignSettingTab({ campaignId }) {
 
       {/* ROOK Panel */}
       <div style={{ position: 'sticky', top: '120px', height: 'fit-content' }}>
-        <div className="glow-panel" style={{ borderColor: '#a855f7' }}>
+        <div className="glow-panel" style={{ borderColor: '#E11D48' }}>
           <h3 style={{ 
             fontSize: '18px', 
             color: '#ffffff', 
@@ -134,13 +134,13 @@ function CampaignSettingTab({ campaignId }) {
             display: 'flex', 
             alignItems: 'center', 
             gap: '10px',
-            fontFamily: 'Montserrat, sans-serif',
+            fontFamily: 'Inter, sans-serif',
             fontWeight: '700'
           }}>
-            <Wand2 size={20} style={{ color: '#a855f7' }} />
+            <Wand2 size={20} style={{ color: '#E11D48' }} />
             ROOK
           </h3>
-          <p style={{ fontSize: '13px', color: '#c4b5fd', marginBottom: '16px', lineHeight: '1.5' }}>
+          <p style={{ fontSize: '13px', color: '#B3B3B3', marginBottom: '16px', lineHeight: '1.5' }}>
             Generate world-building ideas, setting descriptions, conflicts, and lore. Copy to your setting or use for inspiration.
           </p>
           <div style={{ marginBottom: '16px' }}>
@@ -148,7 +148,7 @@ function CampaignSettingTab({ campaignId }) {
               display: 'block', 
               marginBottom: '8px', 
               fontSize: '13px',
-              color: '#a855f7',
+              color: '#E11D48',
               fontWeight: '600'
             }}>
               What do you need?
@@ -158,7 +158,7 @@ function CampaignSettingTab({ campaignId }) {
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               className="textarea-glow"
-              style={{ minHeight: '100px', fontSize: '13px', borderColor: '#a855f7' }}
+              style={{ minHeight: '100px', fontSize: '13px', borderColor: '#E11D48' }}
               placeholder="Example: Create a high-fantasy world where magic is fading and ancient technologies are being rediscovered"
             />
           </div>
@@ -174,7 +174,7 @@ function CampaignSettingTab({ campaignId }) {
               alignItems: 'center', 
               justifyContent: 'center', 
               gap: '8px',
-              background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+              background: '#E11D48',
               border: 'none'
             }}
           >
@@ -193,7 +193,7 @@ function CampaignSettingTab({ campaignId }) {
           {aiResult && (
             <div style={{ marginTop: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label style={{ fontSize: '13px', color: '#a855f7', fontWeight: '600' }}>Result</label>
+                <label style={{ fontSize: '13px', color: '#E11D48', fontWeight: '600' }}>Result</label>
                 <div style={{ display: 'flex', gap: '6px' }}>
                   <Button
                     data-testid="insert-setting-result-btn"
@@ -218,9 +218,8 @@ function CampaignSettingTab({ campaignId }) {
                 </div>
               </div>
               <div style={{
-                background: 'rgba(10, 10, 40, 0.6)',
-                border: '2px solid #7c3aed',
-                borderRadius: '10px',
+                background: 'rgba(10, 10, 20, 0.6)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
                 padding: '14px',
                 maxHeight: '400px',
                 overflow: 'auto',

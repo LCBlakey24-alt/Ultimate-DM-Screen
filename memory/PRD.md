@@ -11,6 +11,8 @@ An all-in-one campaign operating system for 5e Game Masters combining worldbuild
 ## Design System (Updated March 2026)
 
 ### Dark Minimalist Theme
+
+**Color Palette:**
 - **Background Colors:**
   - Black: `#0D0D0D`
   - Dark: `#141414`
@@ -18,23 +20,37 @@ An all-in-one campaign operating system for 5e Game Masters combining worldbuild
   - Card: `#1F1F1F`
   - Hover: `#2A2A2A`
 
-- **Accent Color:**
-  - Red: `#DC2626`
-  - Red Hover: `#EF4444`
-  - Red Subtle: `rgba(220, 38, 38, 0.15)`
+- **Accent Color - CRIMSON RED:**
+  - Red: `#E11D48` (rgb(225, 29, 72))
+  - Red Hover: `#F43F5E`
+  - Red Subtle: `rgba(225, 29, 72, 0.15)`
 
-- **Text Colors:**
+- **Text Colors (WHITE ONLY):**
   - White: `#FFFFFF`
   - Secondary: `#B3B3B3`
   - Muted: `#808080`
 
-- **UI Elements:**
-  - ALL corners are SQUARE (no rounded)
-  - Tabs: Hover = lighter grey + red bar on right side
-  - Tabs: Active = full red background
+### UI Elements
+- **ALL corners are SQUARE** (no rounded - 0px border-radius)
+- **Font:** Cityworm for branding, Inter for body text
+- **NO GOLD, NO PURPLE, NO BLUE accents** - red only
 
-### NO GOLD ACCENTS
-The previous gold/blue theme has been completely replaced with the dark minimalist red theme.
+### Tab Navigation (Sidebar)
+- **Position:** Left sidebar on both Campaign Dashboard and GM Screen
+- **Default state:** Dark grey background, grey text
+- **Hover state:** Lighter grey background + 3px red bar slides in from right
+- **Active state:** Full #E11D48 red background, white text
+
+---
+
+## Brand Assets
+
+### Logos
+- **Main Logo:** `/public/rqk-main-logo.svg` - Cityworm font "ROOKIE QUEST KEEPER"
+- **Mini Logo:** `/public/rqk-mini-logo.svg` - "RQK" initials
+
+### Mascot
+- **ROOK Mascot:** `/public/rqk-mascot.png` - Hooded wizard figure with D20 and spellbook, red glowing eyes
 
 ---
 
@@ -42,7 +58,7 @@ The previous gold/blue theme has been completely replaced with the dark minimali
 
 ### 1. Landing Page
 - Dark minimalist design with ROOK mascot
-- Red CTA buttons
+- Red CTA buttons (#E11D48)
 - Feature showcase
 - Pricing section (Free + Adventurer tiers)
 
@@ -50,26 +66,25 @@ The previous gold/blue theme has been completely replaced with the dark minimali
 - Login/Register flow
 - Password reset
 - Referral system
-- Dark themed auth cards
+- Dark themed auth cards with square corners
 
 ### 3. Unified Dashboard
 - Post-login landing page
 - "My Characters" section (left)
 - "My Campaigns" section (right)
-- Quick access to all features
+- Red accent on buttons and borders
 
 ### 4. Campaign Dashboard
-- Sidebar navigation with tabs
-- Setting, World, Gods, NPCs, Locations, Players, Combat, Maps, etc.
-- Tab hover effect with red bar
-- Tab active state = full red
+- **LEFT SIDEBAR** navigation with tabs
+- Tabs: Setting, World, Gods, NPCs, Locations, Players, Combat, Maps, Encounter Gen, Items, Reference, Calendar, Notes
+- Tab hover: lighter grey + red bar on right
+- Tab active: full red
 
 ### 5. GM Screen
-- Combat management
-- Monster database (2687+ monsters)
-- Quick reference tools
-- Session notes
-- Dice roller
+- **LEFT SIDEBAR** navigation with tabs (same layout as Campaign Dashboard)
+- Tabs: Combat, Dice, Monsters, Creatures, Names, Tables, Loot Gen, Inventory, Party, Notes
+- Tab hover: lighter grey + red bar on right
+- Tab active: full red
 
 ### 6. ROOK AI Assistant
 - AI content generation
@@ -92,6 +107,7 @@ The previous gold/blue theme has been completely replaced with the dark minimali
 - Tailwind CSS
 - shadcn/ui components (modified for square corners)
 - lucide-react icons
+- Cityworm custom font
 
 ### Backend
 - FastAPI
@@ -109,21 +125,23 @@ The previous gold/blue theme has been completely replaced with the dark minimali
 ## What's Been Implemented (March 2026)
 
 ### Completed
-- [x] Full dark minimalist redesign
+- [x] Full dark minimalist redesign with #E11D48 red
+- [x] New Cityworm font for branding
+- [x] New mascot (hooded wizard with D20)
+- [x] New SVG logos
 - [x] Landing page with new theme
 - [x] Auth page (login/register/forgot password)
 - [x] Unified Dashboard
-- [x] Campaign Dashboard with sidebar tabs
-- [x] Tab hover effect (lighter grey + red bar)
-- [x] Tab active effect (full red)
-- [x] Square corners on all UI elements
+- [x] Campaign Dashboard with LEFT SIDEBAR tabs
+- [x] GM Screen with LEFT SIDEBAR tabs (same layout)
+- [x] Tab hover animation (red bar slides in from right)
+- [x] Tab active animation (full red background)
+- [x] Square corners on ALL UI elements
 - [x] Quick Tips with red accent
-- [x] Campaign List page
-- [x] GM Screen basic layout
+- [x] 41/41 frontend tests passing
 
 ### In Progress
 - [ ] Character Builder enhancements (subclass, spells, feats)
-- [ ] Full GM Screen redesign
 
 ### Backlog
 - [ ] Custom content import system
@@ -133,9 +151,9 @@ The previous gold/blue theme has been completely replaced with the dark minimali
 ---
 
 ## Testing Status
-- 36/36 frontend tests passing
+- 41/41 frontend tests passing
 - All design requirements verified
-- Sidebar tabs working correctly
+- Sidebar tabs working correctly on both dashboards
 
 ---
 
@@ -146,12 +164,20 @@ The previous gold/blue theme has been completely replaced with the dark minimali
 │   ├── models.py
 │   └── server.py
 ├── frontend/
+│   ├── public/
+│   │   ├── fonts/
+│   │   │   └── CitywormRegular.ttf
+│   │   ├── rqk-main-logo.svg
+│   │   ├── rqk-mini-logo.svg
+│   │   └── rqk-mascot.png
 │   ├── src/
+│   │   ├── fonts/
+│   │   │   └── CitywormRegular.ttf
 │   │   ├── components/
 │   │   │   ├── AuthPage.js
-│   │   │   ├── CampaignDashboard.js
+│   │   │   ├── CampaignDashboard.js (LEFT SIDEBAR)
 │   │   │   ├── CampaignList.js
-│   │   │   ├── GMScreen.js
+│   │   │   ├── GMScreen.js (LEFT SIDEBAR)
 │   │   │   ├── LandingPage.js
 │   │   │   ├── QuickTips.js
 │   │   │   └── UnifiedDashboard.js
@@ -166,7 +192,7 @@ The previous gold/blue theme has been completely replaced with the dark minimali
 ---
 
 ## Next Steps
-1. Complete any remaining pages with the new design
-2. Character Builder enhancements
+1. Character Builder enhancements
+2. Continue auditing other tabs for old color references
 3. Full regression testing
 4. User acceptance testing
