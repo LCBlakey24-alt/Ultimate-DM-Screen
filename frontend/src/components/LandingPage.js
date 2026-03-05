@@ -181,33 +181,37 @@ function LandingPage() {
           padding: '0 24px', 
           textAlign: 'center'
         }}>
-          {/* NEW Mascot */}
+          {/* Text Logo with Cityworm Font */}
           <div style={{ marginBottom: '32px' }}>
-            <img 
-              src="/rqk-mascot.png" 
-              alt="ROOK - Your AI Game Master Assistant" 
-              className="animate-float"
-              style={{ 
-                height: '180px',
-                filter: `drop-shadow(0 0 40px ${theme.accent.redSubtle})`
-              }}
-            />
-          </div>
-
-          {/* Logo with Cityworm Font */}
-          <div style={{ marginBottom: '32px' }}>
-            <img 
-              src="/rqk-main-logo.svg" 
-              alt="Rookie Quest Keeper"
-              style={{ 
-                maxWidth: '700px',
-                width: '100%',
-                height: 'auto'
-              }}
-            />
+            <h1 style={{
+              fontFamily: 'Cityworm, sans-serif',
+              fontSize: 'clamp(2.5rem, 8vw, 5rem)',
+              fontWeight: '700',
+              color: theme.text.white,
+              letterSpacing: '8px',
+              textTransform: 'uppercase',
+              margin: 0,
+              lineHeight: '1.1'
+            }}>
+              ROOKIE QUEST
+            </h1>
+            
+            <h1 style={{
+              fontFamily: 'Cityworm, sans-serif',
+              fontSize: 'clamp(3rem, 10vw, 6rem)',
+              fontWeight: '700',
+              color: theme.text.white,
+              letterSpacing: '12px',
+              textTransform: 'uppercase',
+              margin: '0',
+              lineHeight: '1'
+            }}>
+              KEEPER
+            </h1>
             
             <p style={{
-              fontSize: 'clamp(0.85rem, 1.8vw, 1.1rem)',
+              fontFamily: 'Cityworm, sans-serif',
+              fontSize: 'clamp(0.9rem, 2vw, 1.2rem)',
               color: theme.accent.red,
               letterSpacing: '6px',
               textTransform: 'uppercase',
@@ -228,7 +232,8 @@ function LandingPage() {
 
           {/* Headline */}
           <h2 style={{
-            fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+            fontFamily: 'Cityworm, sans-serif',
+            fontSize: 'clamp(2rem, 4vw, 3.5rem)',
             fontWeight: '700',
             color: theme.text.white,
             marginBottom: '24px',
@@ -240,7 +245,8 @@ function LandingPage() {
 
           {/* Subheadline */}
           <p style={{
-            fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
+            fontFamily: 'Cityworm, sans-serif',
+            fontSize: 'clamp(1rem, 1.8vw, 1.25rem)',
             color: theme.text.secondary,
             maxWidth: '800px',
             margin: '0 auto 40px',
@@ -257,14 +263,16 @@ function LandingPage() {
               data-testid="hero-cta-btn"
               style={{ 
                 padding: '16px 32px', 
-                fontSize: '18px',
+                fontSize: '16px',
+                fontFamily: 'Cityworm, sans-serif',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
                 background: theme.accent.red,
                 border: 'none',
                 color: theme.text.white,
-                fontWeight: '600'
+                fontWeight: '600',
+                letterSpacing: '1px'
               }}
             >
               <Play size={20} /> Start Free Campaign
@@ -275,13 +283,15 @@ function LandingPage() {
               }}
               style={{ 
                 padding: '16px 32px', 
-                fontSize: '18px',
+                fontSize: '16px',
+                fontFamily: 'Cityworm, sans-serif',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
                 background: 'transparent',
                 border: `1px solid ${theme.border.default}`,
-                color: theme.text.secondary
+                color: theme.text.secondary,
+                letterSpacing: '1px'
               }}
             >
               Explore Features <ChevronRight size={20} />
@@ -354,7 +364,8 @@ function LandingPage() {
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{
-              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontFamily: 'Cityworm, sans-serif',
+              fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
               fontWeight: '700',
               color: theme.text.white,
               marginBottom: '20px'
@@ -362,8 +373,9 @@ function LandingPage() {
               Your Entire Campaign. <span style={{ color: theme.accent.red }}>One System.</span>
             </h2>
             <p style={{
+              fontFamily: 'Cityworm, sans-serif',
               color: theme.text.secondary,
-              fontSize: '18px',
+              fontSize: '16px',
               lineHeight: '1.8',
               maxWidth: '800px',
               margin: '0 auto'
@@ -411,80 +423,37 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* App Preview Section */}
+      {/* App Preview Section - Live Demo Only */}
       <section style={{ padding: '80px 24px', background: theme.bg.panel }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{
-              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontFamily: 'Cityworm, sans-serif',
+              fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
               fontWeight: '700',
               color: theme.text.white,
               marginBottom: '16px'
             }}>
-              See <span style={{ color: theme.accent.red }}>Rookie Quest Keeper</span> in Action
+              Try <span style={{ color: theme.accent.red }}>ROOK</span> Right Now
             </h2>
-            <p style={{ color: theme.text.secondary, fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
-              Try our AI assistant ROOK right here - no signup required
+            <p style={{ 
+              fontFamily: 'Cityworm, sans-serif',
+              color: theme.text.secondary, 
+              fontSize: '16px', 
+              maxWidth: '600px', 
+              margin: '0 auto' 
+            }}>
+              Our AI assistant can generate NPCs, locations, and more - no signup required
             </p>
           </div>
 
           {/* Live Demo */}
           <div style={{
-            position: 'relative',
-            overflow: 'hidden',
             border: `1px solid ${theme.border.default}`,
             background: theme.bg.black,
-            maxWidth: '900px',
-            margin: '0 auto'
+            padding: '40px'
           }}>
-            {/* Browser Chrome */}
-            <div style={{
-              background: theme.bg.dark,
-              padding: '12px 20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              borderBottom: `1px solid ${theme.border.default}`
-            }}>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#EF4444' }} />
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#F59E0B' }} />
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#22C55E' }} />
-              </div>
-              <div style={{
-                flex: 1,
-                background: theme.bg.black,
-                padding: '6px 16px',
-                marginLeft: '12px',
-                fontSize: '12px',
-                color: theme.text.muted
-              }}>
-                rookiequestkeeper.com
-              </div>
-            </div>
-
-            {/* ROOK Demo Content */}
-            <div style={{
-              background: theme.bg.black,
-              minHeight: '400px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '40px'
-            }}>
-              <div style={{ textAlign: 'center', width: '100%' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '16px' }}>
-                  <img src="/rqk-mascot.png" alt="ROOK" style={{ width: '48px', height: '48px' }} />
-                  <h3 style={{ color: theme.text.white, fontSize: '24px', fontWeight: '600' }}>
-                    Try ROOK Now
-                  </h3>
-                </div>
-                <p style={{ color: theme.text.muted, fontSize: '14px', marginBottom: '24px' }}>
-                  See how ROOK generates NPCs with a single prompt
-                </p>
-                <RookDemo />
-              </div>
-            </div>
+            <RookDemo />
           </div>
 
           {/* CTA */}
@@ -493,12 +462,14 @@ function LandingPage() {
               onClick={() => navigate('/auth')}
               style={{
                 padding: '16px 40px',
-                fontSize: '18px',
+                fontSize: '16px',
+                fontFamily: 'Cityworm, sans-serif',
                 fontWeight: '600',
                 background: theme.accent.red,
                 border: 'none',
                 color: theme.text.white,
-                cursor: 'pointer'
+                cursor: 'pointer',
+                letterSpacing: '1px'
               }}
             >
               Try It Free <ArrowRight size={20} style={{ marginLeft: '8px', display: 'inline' }} />

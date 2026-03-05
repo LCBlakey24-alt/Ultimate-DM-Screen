@@ -41,17 +41,65 @@ const RECOMMENDED_STATS = {
   'Wizard': { strength: 8, dexterity: 14, constitution: 13, intelligence: 16, wisdom: 12, charisma: 10 }
 };
 
-// 5e Data
+// 5e Data - Expanded Race List
 const RACES = [
-  { name: 'Human', bonus: '+1 to all stats' },
-  { name: 'Elf', bonus: '+2 DEX' },
-  { name: 'Dwarf', bonus: '+2 CON' },
-  { name: 'Halfling', bonus: '+2 DEX' },
-  { name: 'Dragonborn', bonus: '+2 STR, +1 CHA' },
-  { name: 'Gnome', bonus: '+2 INT' },
-  { name: 'Half-Elf', bonus: '+2 CHA, +1 to two others' },
-  { name: 'Half-Orc', bonus: '+2 STR, +1 CON' },
-  { name: 'Tiefling', bonus: '+2 CHA, +1 INT' }
+  // Core Races (PHB)
+  { name: 'Human', bonus: '+1 to all stats', source: 'PHB' },
+  { name: 'Elf', bonus: '+2 DEX', source: 'PHB' },
+  { name: 'Dwarf', bonus: '+2 CON', source: 'PHB' },
+  { name: 'Halfling', bonus: '+2 DEX', source: 'PHB' },
+  { name: 'Dragonborn', bonus: '+2 STR, +1 CHA', source: 'PHB' },
+  { name: 'Gnome', bonus: '+2 INT', source: 'PHB' },
+  { name: 'Half-Elf', bonus: '+2 CHA, +1 to two others', source: 'PHB' },
+  { name: 'Half-Orc', bonus: '+2 STR, +1 CON', source: 'PHB' },
+  { name: 'Tiefling', bonus: '+2 CHA, +1 INT', source: 'PHB' },
+  // Volo's Guide / Mordenkainen's
+  { name: 'Aasimar', bonus: '+2 CHA, +1 other', source: "Volo's" },
+  { name: 'Firbolg', bonus: '+2 WIS, +1 STR', source: "Volo's" },
+  { name: 'Goliath', bonus: '+2 STR, +1 CON', source: "Volo's" },
+  { name: 'Kenku', bonus: '+2 DEX, +1 WIS', source: "Volo's" },
+  { name: 'Lizardfolk', bonus: '+2 CON, +1 WIS', source: "Volo's" },
+  { name: 'Tabaxi', bonus: '+2 DEX, +1 CHA', source: "Volo's" },
+  { name: 'Triton', bonus: '+1 STR, +1 CON, +1 CHA', source: "Volo's" },
+  { name: 'Bugbear', bonus: '+2 STR, +1 DEX', source: "Volo's" },
+  { name: 'Goblin', bonus: '+2 DEX, +1 CON', source: "Volo's" },
+  { name: 'Hobgoblin', bonus: '+2 CON, +1 INT', source: "Volo's" },
+  { name: 'Kobold', bonus: '+2 DEX, -2 STR', source: "Volo's" },
+  { name: 'Orc', bonus: '+2 STR, +1 CON', source: "Volo's" },
+  { name: 'Yuan-ti Pureblood', bonus: '+2 CHA, +1 INT', source: "Volo's" },
+  // Theros
+  { name: 'Leonin', bonus: '+2 CON, +1 STR', source: 'Theros' },
+  { name: 'Satyr', bonus: '+2 CHA, +1 DEX', source: 'Theros' },
+  // Strixhaven / Wildemount
+  { name: 'Owlin', bonus: '+2 to one, +1 to another', source: 'Strixhaven' },
+  // Eberron
+  { name: 'Changeling', bonus: '+2 CHA, +1 other', source: 'Eberron' },
+  { name: 'Kalashtar', bonus: '+2 WIS, +1 CHA', source: 'Eberron' },
+  { name: 'Shifter', bonus: '+2 DEX or WIS', source: 'Eberron' },
+  { name: 'Warforged', bonus: '+2 CON, +1 other', source: 'Eberron' },
+  // Ravnica
+  { name: 'Centaur', bonus: '+2 STR, +1 WIS', source: 'Ravnica' },
+  { name: 'Loxodon', bonus: '+2 CON, +1 WIS', source: 'Ravnica' },
+  { name: 'Minotaur', bonus: '+2 STR, +1 CON', source: 'Ravnica' },
+  { name: 'Simic Hybrid', bonus: '+2 CON, +1 other', source: 'Ravnica' },
+  { name: 'Vedalken', bonus: '+2 INT, +1 WIS', source: 'Ravnica' },
+  // Elemental Evil
+  { name: 'Aarakocra', bonus: '+2 DEX, +1 WIS', source: 'EE' },
+  { name: 'Genasi (Air)', bonus: '+2 CON, +1 DEX', source: 'EE' },
+  { name: 'Genasi (Earth)', bonus: '+2 CON, +1 STR', source: 'EE' },
+  { name: 'Genasi (Fire)', bonus: '+2 CON, +1 INT', source: 'EE' },
+  { name: 'Genasi (Water)', bonus: '+2 CON, +1 WIS', source: 'EE' },
+  // Spelljammer / Newer
+  { name: 'Autognome', bonus: '+2 to one, +1 to another', source: 'Spelljammer' },
+  { name: 'Giff', bonus: '+2 STR, +1 CON', source: 'Spelljammer' },
+  { name: 'Hadozee', bonus: '+2 DEX, +1 other', source: 'Spelljammer' },
+  { name: 'Plasmoid', bonus: '+2 to one, +1 to another', source: 'Spelljammer' },
+  { name: 'Thri-kreen', bonus: '+2 DEX, +1 other', source: 'Spelljammer' },
+  // Monsters of the Multiverse style (flexible ASI)
+  { name: 'Harengon', bonus: '+2 to one, +1 to another', source: 'Witchlight' },
+  { name: 'Fairy', bonus: '+2 to one, +1 to another', source: 'Witchlight' },
+  // Custom
+  { name: 'Custom Lineage', bonus: '+2 to one stat', source: 'Tasha\'s' },
 ];
 
 const CLASSES = [

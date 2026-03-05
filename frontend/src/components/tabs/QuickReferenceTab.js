@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Search, Shield, Swords, Scroll, Coins, Target, Award, ChevronDown, ChevronUp, Zap, Heart, Dices } from 'lucide-react';
+import { Search, Shield, Swords, Scroll, Coins, Target, ChevronDown, ChevronUp, Zap, Heart, Dices, BookOpen, Users, Wand2, X, Loader2 } from 'lucide-react';
 import { ITEMS_DATABASE, ITEM_TYPES, RARITY_OPTIONS } from '@/data/itemsDatabase';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+// Theme colors
+const theme = {
+  accent: '#E11D48',
+  accentSubtle: 'rgba(225, 29, 72, 0.15)',
+  bg: { card: '#1F1F1F', dark: '#141414', hover: '#2A2A2A', panel: '#1A1A1A' },
+  text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
+  border: 'rgba(255, 255, 255, 0.1)'
+};
 
 // TTRPG 5e Difficulty Classes
 const DIFFICULTY_CLASSES = [
@@ -13,30 +23,6 @@ const DIFFICULTY_CLASSES = [
   { dc: 20, difficulty: 'Hard', description: 'Even skilled individuals may fail' },
   { dc: 25, difficulty: 'Very Hard', description: 'Only experts attempt this' },
   { dc: 30, difficulty: 'Nearly Impossible', description: 'Heroic effort required' },
-];
-
-// Experience Thresholds by Level
-const XP_THRESHOLDS = [
-  { level: 1, easy: 25, medium: 50, hard: 75, deadly: 100 },
-  { level: 2, easy: 50, medium: 100, hard: 150, deadly: 200 },
-  { level: 3, easy: 75, medium: 150, hard: 225, deadly: 400 },
-  { level: 4, easy: 125, medium: 250, hard: 375, deadly: 500 },
-  { level: 5, easy: 250, medium: 500, hard: 750, deadly: 1100 },
-  { level: 6, easy: 300, medium: 600, hard: 900, deadly: 1400 },
-  { level: 7, easy: 350, medium: 750, hard: 1100, deadly: 1700 },
-  { level: 8, easy: 450, medium: 900, hard: 1400, deadly: 2100 },
-  { level: 9, easy: 550, medium: 1100, hard: 1600, deadly: 2400 },
-  { level: 10, easy: 600, medium: 1200, hard: 1900, deadly: 2800 },
-  { level: 11, easy: 800, medium: 1600, hard: 2400, deadly: 3600 },
-  { level: 12, easy: 1000, medium: 2000, hard: 3000, deadly: 4500 },
-  { level: 13, easy: 1100, medium: 2200, hard: 3400, deadly: 5100 },
-  { level: 14, easy: 1250, medium: 2500, hard: 3800, deadly: 5700 },
-  { level: 15, easy: 1400, medium: 2800, hard: 4300, deadly: 6400 },
-  { level: 16, easy: 1600, medium: 3200, hard: 4800, deadly: 7200 },
-  { level: 17, easy: 2000, medium: 3900, hard: 5900, deadly: 8800 },
-  { level: 18, easy: 2100, medium: 4200, hard: 6300, deadly: 9500 },
-  { level: 19, easy: 2400, medium: 4900, hard: 7300, deadly: 10900 },
-  { level: 20, easy: 2800, medium: 5700, hard: 8500, deadly: 12700 },
 ];
 
 // Conditions Reference
@@ -55,7 +41,7 @@ const CONDITIONS = [
   { name: 'Restrained', effect: 'Speed 0, disadvantage on attacks and DEX saves, attacks against have advantage' },
   { name: 'Stunned', effect: 'Incapacitated, cannot move, auto-fail STR/DEX saves, attacks have advantage' },
   { name: 'Unconscious', effect: 'Incapacitated, prone, auto-fail STR/DEX saves, attacks have advantage, hits within 5ft are crits' },
-  { name: 'Exhaustion', effect: 'Cumulative levels: 1=Disadvantage on checks, 2=Half speed, 3=Disadvantage on attacks/saves, 4=Half HP, 5=Speed 0, 6=Death' },
+  { name: 'Exhaustion', effect: '1=Disadvantage on checks, 2=Half speed, 3=Disadvantage on attacks/saves, 4=Half HP, 5=Speed 0, 6=Death' },
 ];
 
 // Cover Rules
@@ -65,50 +51,177 @@ const COVER_RULES = [
   { type: 'Total Cover', ac: 'N/A', dex: 'N/A', description: 'Cannot be targeted directly by attacks or spells' },
 ];
 
+// Spell Schools with colors
+const SPELL_SCHOOLS = {
+  'Abjuration': '#3B82F6',
+  'Conjuration': '#F59E0B',
+  'Divination': '#A855F7',
+  'Enchantment': '#EC4899',
+  'Evocation': '#EF4444',
+  'Illusion': '#8B5CF6',
+  'Necromancy': '#6B7280',
+  'Transmutation': '#22C55E',
+};
+
 function QuickReferenceTab({ campaignId }) {
   const [activeSection, setActiveSection] = useState('items');
   const [searchTerm, setSearchTerm] = useState('');
   const [itemTypeFilter, setItemTypeFilter] = useState('all');
   const [rarityFilter, setRarityFilter] = useState('all');
   const [showMagicOnly, setShowMagicOnly] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [expandedSections, setExpandedSections] = useState({
     dc: true,
-    xp: false,
     conditions: false,
     cover: false
   });
 
+  // API Data States
+  const [spells, setSpells] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [races, setRaces] = useState([]);
+  const [loading, setLoading] = useState({ spells: false, classes: false, races: false });
+  const [selectedSpell, setSelectedSpell] = useState(null);
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [selectedRace, setSelectedRace] = useState(null);
+  
+  // Spell Filters
+  const [spellLevelFilter, setSpellLevelFilter] = useState('all');
+  const [spellSchoolFilter, setSpellSchoolFilter] = useState('all');
+  const [spellClassFilter, setSpellClassFilter] = useState('all');
+
+  // Fetch spells from API
+  const fetchSpells = useCallback(async () => {
+    if (spells.length > 0) return;
+    setLoading(prev => ({ ...prev, spells: true }));
+    try {
+      const response = await fetch(`${API_URL}/api/srd/spells`);
+      const data = await response.json();
+      setSpells(data.spells || []);
+    } catch (error) {
+      console.error('Failed to fetch spells:', error);
+    } finally {
+      setLoading(prev => ({ ...prev, spells: false }));
+    }
+  }, [spells.length]);
+
+  // Fetch classes from API
+  const fetchClasses = useCallback(async () => {
+    if (classes.length > 0) return;
+    setLoading(prev => ({ ...prev, classes: true }));
+    try {
+      const response = await fetch(`${API_URL}/api/srd/classes`);
+      const data = await response.json();
+      setClasses(data.classes || []);
+    } catch (error) {
+      console.error('Failed to fetch classes:', error);
+    } finally {
+      setLoading(prev => ({ ...prev, classes: false }));
+    }
+  }, [classes.length]);
+
+  // Fetch races from API
+  const fetchRaces = useCallback(async () => {
+    if (races.length > 0) return;
+    setLoading(prev => ({ ...prev, races: true }));
+    try {
+      const response = await fetch(`${API_URL}/api/srd/races`);
+      const data = await response.json();
+      setRaces(data.races || []);
+    } catch (error) {
+      console.error('Failed to fetch races:', error);
+    } finally {
+      setLoading(prev => ({ ...prev, races: false }));
+    }
+  }, [races.length]);
+
+  // Fetch data when section changes
+  useEffect(() => {
+    if (activeSection === 'spells') fetchSpells();
+    if (activeSection === 'classes') fetchClasses();
+    if (activeSection === 'races') fetchRaces();
+  }, [activeSection, fetchSpells, fetchClasses, fetchRaces]);
+
   const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
   // Filter items
   const filteredItems = ITEMS_DATABASE.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesType = itemTypeFilter === 'all' || item.type === itemTypeFilter;
     const matchesRarity = rarityFilter === 'all' || item.rarity === rarityFilter;
     const matchesMagic = !showMagicOnly || item.is_magic;
     return matchesSearch && matchesType && matchesRarity && matchesMagic;
-  }).slice(0, 100); // Limit to 100 for performance
+  }).slice(0, 100);
+
+  // Filter spells
+  const filteredSpells = spells.filter(spell => {
+    const matchesSearch = spell.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (spell.description && spell.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesLevel = spellLevelFilter === 'all' || spell.level === parseInt(spellLevelFilter);
+    const matchesSchool = spellSchoolFilter === 'all' || spell.school?.toLowerCase() === spellSchoolFilter.toLowerCase();
+    const matchesClass = spellClassFilter === 'all' || (spell.classes && spell.classes.some(c => c.toLowerCase() === spellClassFilter.toLowerCase()));
+    return matchesSearch && matchesLevel && matchesSchool && matchesClass;
+  });
+
+  // Filter classes
+  const filteredClasses = classes.filter(cls =>
+    cls.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Filter races
+  const filteredRaces = races.filter(race =>
+    race.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (race.traits && race.traits.some(t => t.toLowerCase().includes(searchTerm.toLowerCase())))
+  );
 
   const sections = [
-    { id: 'items', label: 'Items & Equipment', icon: Swords },
-    { id: 'rules', label: 'Rules Reference', icon: Scroll },
+    { id: 'items', label: 'Items', icon: Swords },
+    { id: 'spells', label: 'Spells', icon: Wand2 },
+    { id: 'classes', label: 'Classes', icon: Users },
+    { id: 'races', label: 'Races', icon: BookOpen },
+    { id: 'rules', label: 'Rules', icon: Scroll },
   ];
 
+  const getRarityColor = (rarity) => {
+    switch(rarity) {
+      case 'Legendary': return '#F59E0B';
+      case 'Very Rare': return '#A855F7';
+      case 'Rare': return '#3B82F6';
+      case 'Uncommon': return '#22C55E';
+      default: return theme.text.muted;
+    }
+  };
+
+  // Get unique spell classes for filter
+  const spellClassOptions = [...new Set(spells.flatMap(s => s.classes || []))].sort();
+
   return (
-    <div>
+    <div style={{ fontFamily: 'Cityworm, Inter, sans-serif' }} data-testid="quick-reference-tab">
       {/* Section Tabs */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', flexWrap: 'wrap' }}>
         {sections.map(section => (
           <Button
             key={section.id}
-            onClick={() => setActiveSection(section.id)}
-            className={activeSection === section.id ? 'btn-primary' : 'btn-outline'}
-            style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
+            onClick={() => { 
+              setActiveSection(section.id); 
+              setSearchTerm(''); 
+              setSelectedSpell(null);
+              setSelectedClass(null);
+              setSelectedRace(null);
+            }}
+            data-testid={`reference-tab-${section.id}`}
+            style={{ 
+              display: 'flex', 
+              gap: '8px', 
+              alignItems: 'center',
+              background: activeSection === section.id ? theme.accent : 'transparent',
+              border: activeSection === section.id ? 'none' : `1px solid ${theme.border}`,
+              color: activeSection === section.id ? theme.text.white : theme.text.secondary,
+              padding: '10px 16px'
+            }}
           >
             <section.icon size={16} />
             {section.label}
@@ -116,38 +229,49 @@ function QuickReferenceTab({ campaignId }) {
         ))}
       </div>
 
-      {/* Items & Equipment Section */}
+      {/* Search Bar - Global */}
+      <div style={{ marginBottom: '20px', position: 'relative' }}>
+        <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: theme.text.muted }} />
+        <Input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={`Search ${activeSection}...`}
+          style={{ 
+            paddingLeft: '38px',
+            background: theme.bg.dark,
+            border: `1px solid ${theme.border}`,
+            color: theme.text.white
+          }}
+          data-testid="reference-search-input"
+        />
+      </div>
+
+      {/* Items Section */}
       {activeSection === 'items' && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '24px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Swords size={28} style={{ color: '#eab308' }} />
-              Fantasy Items Database
+            <h2 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Swords size={24} style={{ color: theme.accent }} />
+              Items Database
             </h2>
-            <span style={{ color: '#67e8f9', fontSize: '14px' }}>
+            <span style={{ color: theme.text.muted, fontSize: '14px' }}>
               {ITEMS_DATABASE.length.toLocaleString()} items
             </span>
           </div>
 
           {/* Filters */}
           <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
-              <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
-              <Input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search items..."
-                className="input-glow"
-                style={{ paddingLeft: '38px' }}
-                data-testid="item-search-input"
-              />
-            </div>
             <select
               value={itemTypeFilter}
               onChange={(e) => setItemTypeFilter(e.target.value)}
-              className="input-glow"
-              style={{ padding: '8px 12px', minWidth: '150px' }}
               data-testid="item-type-filter"
+              style={{ 
+                padding: '8px 12px', 
+                minWidth: '150px',
+                background: theme.bg.dark,
+                border: `1px solid ${theme.border}`,
+                color: theme.text.white
+              }}
             >
               <option value="all">All Types</option>
               {ITEM_TYPES.map(type => (
@@ -157,257 +281,498 @@ function QuickReferenceTab({ campaignId }) {
             <select
               value={rarityFilter}
               onChange={(e) => setRarityFilter(e.target.value)}
-              className="input-glow"
-              style={{ padding: '8px 12px', minWidth: '130px' }}
-              data-testid="rarity-filter"
+              data-testid="item-rarity-filter"
+              style={{ 
+                padding: '8px 12px', 
+                minWidth: '130px',
+                background: theme.bg.dark,
+                border: `1px solid ${theme.border}`,
+                color: theme.text.white
+              }}
             >
               <option value="all">All Rarities</option>
               {RARITY_OPTIONS.map(rarity => (
                 <option key={rarity} value={rarity}>{rarity}</option>
               ))}
             </select>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#eab308', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: theme.accent, cursor: 'pointer' }}>
               <input 
                 type="checkbox" 
                 checked={showMagicOnly} 
                 onChange={(e) => setShowMagicOnly(e.target.checked)}
-                style={{ accentColor: '#eab308' }}
+                style={{ accentColor: theme.accent }}
               />
-              <span style={{ fontSize: '13px' }}>Magic Items Only</span>
+              <span style={{ fontSize: '13px' }}>Magic Only</span>
             </label>
           </div>
 
-          {/* Items List */}
-          <div style={{ 
-            border: '2px solid #1e40af', 
-            borderRadius: '12px', 
-            overflow: 'hidden',
-            maxHeight: '600px',
-            overflowY: 'auto'
-          }}>
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', 
-              padding: '12px 16px', 
-              background: 'rgba(10, 10, 40, 0.8)', 
-              borderBottom: '2px solid #1e40af',
-              position: 'sticky',
-              top: 0,
-              zIndex: 1
-            }}>
-              <span style={{ color: '#67e8f9', fontWeight: '700', fontSize: '12px' }}>NAME</span>
-              <span style={{ color: '#67e8f9', fontWeight: '700', fontSize: '12px' }}>TYPE</span>
-              <span style={{ color: '#67e8f9', fontWeight: '700', fontSize: '12px' }}>DAMAGE</span>
-              <span style={{ color: '#67e8f9', fontWeight: '700', fontSize: '12px' }}>VALUE</span>
-              <span style={{ color: '#67e8f9', fontWeight: '700', fontSize: '12px' }}>RARITY</span>
-            </div>
-            
-            <p style={{ padding: '8px 16px', fontSize: '11px', color: '#64748b', borderBottom: '1px solid #1e40af' }}>
-              Showing {filteredItems.length} of {ITEMS_DATABASE.length} items
-            </p>
-            
+          {/* Items Grid with Click-to-Expand */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px' }}>
             {filteredItems.map((item, index) => (
               <div 
                 key={`${item.name}-${index}`}
+                onClick={() => setSelectedItem(selectedItem?.name === item.name ? null : item)}
+                data-testid={`item-card-${index}`}
                 style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', 
-                  padding: '12px 16px', 
-                  borderBottom: '1px solid rgba(30, 64, 175, 0.5)',
-                  background: index % 2 === 0 ? 'rgba(10, 10, 40, 0.4)' : 'transparent',
-                  transition: 'background 0.15s'
+                  padding: '16px',
+                  background: selectedItem?.name === item.name ? theme.accentSubtle : theme.bg.card,
+                  border: `1px solid ${selectedItem?.name === item.name ? theme.accent : theme.border}`,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s'
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(234, 179, 8, 0.1)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = index % 2 === 0 ? 'rgba(10, 10, 40, 0.4)' : 'transparent'}
               >
-                <div>
-                  <span style={{ color: '#ffffff', fontWeight: '600', fontSize: '13px' }}>
-                    {item.name}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                  <div>
+                    <span style={{ color: theme.text.white, fontWeight: '600', fontSize: '14px' }}>
+                      {item.name}
+                    </span>
+                    {item.is_magic && <span style={{ color: theme.accent, marginLeft: '6px' }}>✨</span>}
+                  </div>
+                  <span style={{ fontSize: '11px', color: getRarityColor(item.rarity) }}>
+                    {item.rarity || 'Common'}
                   </span>
-                  {item.is_magic && <span style={{ color: '#eab308', marginLeft: '6px' }}>✨</span>}
-                  {item.requires_attunement && <span style={{ color: '#a855f7', marginLeft: '4px', fontSize: '10px' }}>(A)</span>}
                 </div>
-                <span style={{ color: '#94a3b8', fontSize: '12px' }}>{item.type}</span>
-                <span style={{ color: item.damage ? '#ef4444' : '#64748b', fontSize: '12px' }}>
-                  {item.damage ? `${item.damage} ${item.damage_type}` : '-'}
-                </span>
-                <span style={{ color: item.value ? '#eab308' : '#64748b', fontSize: '12px' }}>
-                  {item.value || '-'}
-                </span>
-                <span style={{ 
-                  fontSize: '11px', 
-                  color: item.rarity === 'Legendary' ? '#eab308' : item.rarity === 'Very Rare' ? '#a855f7' : item.rarity === 'Rare' ? '#4a7dff' : item.rarity === 'Uncommon' ? '#22c55e' : '#94a3b8'
-                }}>
-                  {item.rarity || 'Common'}
-                </span>
+                <div style={{ fontSize: '12px', color: theme.text.muted, marginBottom: '8px' }}>
+                  {item.type} {item.damage && `• ${item.damage} ${item.damage_type}`} {item.value && `• ${item.value} gp`}
+                </div>
+                {selectedItem?.name === item.name && item.description && (
+                  <div style={{ 
+                    marginTop: '12px', 
+                    paddingTop: '12px', 
+                    borderTop: `1px solid ${theme.border}`,
+                    fontSize: '13px',
+                    color: theme.text.secondary,
+                    lineHeight: '1.6'
+                  }}>
+                    {item.description}
+                  </div>
+                )}
               </div>
             ))}
           </div>
+          <p style={{ marginTop: '12px', fontSize: '12px', color: theme.text.muted }}>
+            Showing {filteredItems.length} of {ITEMS_DATABASE.length} items. Click an item to see its description.
+          </p>
         </div>
       )}
 
-      {/* Rules Reference Section */}
+      {/* Spells Section - Enhanced with API Data */}
+      {activeSection === 'spells' && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h2 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Wand2 size={24} style={{ color: theme.accent }} />
+              SRD Spells
+            </h2>
+            <span style={{ color: theme.text.muted, fontSize: '14px' }}>
+              {loading.spells ? <Loader2 size={16} className="animate-spin" /> : `${spells.length} spells`}
+            </span>
+          </div>
+
+          {/* Spell Filters */}
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
+            <select
+              value={spellLevelFilter}
+              onChange={(e) => setSpellLevelFilter(e.target.value)}
+              data-testid="spell-level-filter"
+              style={{ 
+                padding: '8px 12px', 
+                minWidth: '120px',
+                background: theme.bg.dark,
+                border: `1px solid ${theme.border}`,
+                color: theme.text.white
+              }}
+            >
+              <option value="all">All Levels</option>
+              <option value="0">Cantrip</option>
+              {[1,2,3,4,5,6,7,8,9].map(level => (
+                <option key={level} value={level}>Level {level}</option>
+              ))}
+            </select>
+            <select
+              value={spellSchoolFilter}
+              onChange={(e) => setSpellSchoolFilter(e.target.value)}
+              data-testid="spell-school-filter"
+              style={{ 
+                padding: '8px 12px', 
+                minWidth: '140px',
+                background: theme.bg.dark,
+                border: `1px solid ${theme.border}`,
+                color: theme.text.white
+              }}
+            >
+              <option value="all">All Schools</option>
+              {Object.keys(SPELL_SCHOOLS).map(school => (
+                <option key={school} value={school}>{school}</option>
+              ))}
+            </select>
+            <select
+              value={spellClassFilter}
+              onChange={(e) => setSpellClassFilter(e.target.value)}
+              data-testid="spell-class-filter"
+              style={{ 
+                padding: '8px 12px', 
+                minWidth: '140px',
+                background: theme.bg.dark,
+                border: `1px solid ${theme.border}`,
+                color: theme.text.white
+              }}
+            >
+              <option value="all">All Classes</option>
+              {spellClassOptions.map(cls => (
+                <option key={cls} value={cls}>{cls}</option>
+              ))}
+            </select>
+          </div>
+
+          {loading.spells ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+              <Loader2 size={32} className="animate-spin" style={{ color: theme.accent }} />
+            </div>
+          ) : (
+            <>
+              {/* Spells Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '12px' }}>
+                {filteredSpells.slice(0, 50).map((spell, index) => (
+                  <div 
+                    key={`${spell.name}-${index}`}
+                    onClick={() => setSelectedSpell(selectedSpell?.name === spell.name ? null : spell)}
+                    data-testid={`spell-card-${index}`}
+                    style={{ 
+                      padding: '16px',
+                      background: selectedSpell?.name === spell.name ? theme.accentSubtle : theme.bg.card,
+                      border: `1px solid ${selectedSpell?.name === spell.name ? theme.accent : theme.border}`,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ color: theme.text.white, fontWeight: '600', fontSize: '16px' }}>{spell.name}</span>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <span style={{ 
+                          background: SPELL_SCHOOLS[spell.school] || theme.text.muted, 
+                          color: '#fff', 
+                          padding: '2px 8px', 
+                          fontSize: '10px',
+                          fontWeight: '600'
+                        }}>
+                          {spell.school}
+                        </span>
+                        <span style={{ 
+                          background: theme.accentSubtle, 
+                          color: theme.accent, 
+                          padding: '2px 8px', 
+                          fontSize: '11px',
+                          fontWeight: '600'
+                        }}>
+                          {spell.level === 0 ? 'Cantrip' : `Lvl ${spell.level}`}
+                        </span>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '12px', color: theme.text.muted, marginBottom: '10px' }}>
+                      {spell.casting_time} • {spell.range} • {spell.duration}
+                      {spell.concentration && <span style={{ color: theme.accent, marginLeft: '8px' }}>⚡ Concentration</span>}
+                      {spell.ritual && <span style={{ color: '#22C55E', marginLeft: '8px' }}>📜 Ritual</span>}
+                    </div>
+                    
+                    {/* Full description when selected */}
+                    {selectedSpell?.name === spell.name && (
+                      <div style={{ 
+                        marginTop: '12px', 
+                        paddingTop: '12px', 
+                        borderTop: `1px solid ${theme.border}`
+                      }}>
+                        <div style={{ fontSize: '12px', color: theme.text.muted, marginBottom: '8px' }}>
+                          <strong>Components:</strong> {spell.components?.join(', ')}
+                          {spell.material && <span> ({spell.material})</span>}
+                        </div>
+                        <div style={{ fontSize: '12px', color: theme.text.muted, marginBottom: '8px' }}>
+                          <strong>Classes:</strong> {spell.classes?.join(', ')}
+                        </div>
+                        <p style={{ fontSize: '13px', color: theme.text.secondary, lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
+                          {spell.description}
+                        </p>
+                        {spell.higher_levels && (
+                          <div style={{ 
+                            marginTop: '12px', 
+                            padding: '10px', 
+                            background: theme.bg.dark, 
+                            border: `1px solid ${theme.border}` 
+                          }}>
+                            <strong style={{ color: theme.accent, fontSize: '12px' }}>At Higher Levels:</strong>
+                            <p style={{ fontSize: '12px', color: theme.text.secondary, marginTop: '4px', lineHeight: '1.5' }}>
+                              {spell.higher_levels}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <p style={{ marginTop: '16px', fontSize: '12px', color: theme.text.muted }}>
+                Showing {Math.min(filteredSpells.length, 50)} of {filteredSpells.length} spells. Click a spell for full details.
+              </p>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Classes Section - Enhanced with API Data */}
+      {activeSection === 'classes' && (
+        <div>
+          <h2 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Users size={24} style={{ color: theme.accent }} />
+            Character Classes
+            {loading.classes && <Loader2 size={20} className="animate-spin" style={{ color: theme.accent }} />}
+          </h2>
+
+          {loading.classes ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+              <Loader2 size={32} className="animate-spin" style={{ color: theme.accent }} />
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '12px' }}>
+              {filteredClasses.map((cls, index) => (
+                <div 
+                  key={index}
+                  onClick={() => setSelectedClass(selectedClass?.name === cls.name ? null : cls)}
+                  data-testid={`class-card-${index}`}
+                  style={{ 
+                    padding: '16px',
+                    background: selectedClass?.name === cls.name ? theme.accentSubtle : theme.bg.card,
+                    border: `1px solid ${selectedClass?.name === cls.name ? theme.accent : theme.border}`,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  <h3 style={{ color: theme.text.white, fontWeight: '600', fontSize: '18px', marginBottom: '8px' }}>
+                    {cls.name}
+                  </h3>
+                  <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: theme.text.muted, marginBottom: '10px', flexWrap: 'wrap' }}>
+                    <span><strong style={{ color: theme.accent }}>Hit Die:</strong> {cls.hit_die}</span>
+                    <span><strong style={{ color: theme.accent }}>Saves:</strong> {cls.saving_throws?.join(', ')}</span>
+                  </div>
+                  
+                  {/* Full details when selected */}
+                  {selectedClass?.name === cls.name && (
+                    <div style={{ 
+                      marginTop: '12px', 
+                      paddingTop: '12px', 
+                      borderTop: `1px solid ${theme.border}`
+                    }}>
+                      {cls.proficiencies && cls.proficiencies.length > 0 && (
+                        <div style={{ marginBottom: '10px' }}>
+                          <strong style={{ color: theme.accent, fontSize: '12px' }}>Proficiencies:</strong>
+                          <p style={{ fontSize: '12px', color: theme.text.secondary, marginTop: '4px' }}>
+                            {cls.proficiencies.join(', ')}
+                          </p>
+                        </div>
+                      )}
+                      {cls.starting_equipment && cls.starting_equipment.length > 0 && (
+                        <div>
+                          <strong style={{ color: theme.accent, fontSize: '12px' }}>Starting Equipment:</strong>
+                          <p style={{ fontSize: '12px', color: theme.text.secondary, marginTop: '4px' }}>
+                            {cls.starting_equipment.join(', ')}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          <p style={{ marginTop: '16px', fontSize: '12px', color: theme.text.muted }}>
+            {classes.length} classes available. Click a class for full details.
+          </p>
+        </div>
+      )}
+
+      {/* Races Section - Enhanced with API Data */}
+      {activeSection === 'races' && (
+        <div>
+          <h2 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <BookOpen size={24} style={{ color: theme.accent }} />
+            Character Races
+            {loading.races && <Loader2 size={20} className="animate-spin" style={{ color: theme.accent }} />}
+          </h2>
+
+          {loading.races ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+              <Loader2 size={32} className="animate-spin" style={{ color: theme.accent }} />
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '12px' }}>
+              {filteredRaces.map((race, index) => (
+                <div 
+                  key={index}
+                  onClick={() => setSelectedRace(selectedRace?.name === race.name ? null : race)}
+                  data-testid={`race-card-${index}`}
+                  style={{ 
+                    padding: '16px',
+                    background: selectedRace?.name === race.name ? theme.accentSubtle : theme.bg.card,
+                    border: `1px solid ${selectedRace?.name === race.name ? theme.accent : theme.border}`,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  <h3 style={{ color: theme.text.white, fontWeight: '600', fontSize: '18px', marginBottom: '8px' }}>
+                    {race.name}
+                  </h3>
+                  <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: theme.text.muted, marginBottom: '10px', flexWrap: 'wrap' }}>
+                    <span><strong style={{ color: theme.accent }}>ASI:</strong> {race.ability_bonuses}</span>
+                    <span><strong style={{ color: theme.accent }}>Speed:</strong> {race.speed} ft</span>
+                    <span><strong style={{ color: theme.accent }}>Size:</strong> {race.size}</span>
+                  </div>
+                  
+                  {/* Traits summary */}
+                  {race.traits && race.traits.length > 0 && (
+                    <p style={{ fontSize: '12px', color: theme.text.secondary }}>
+                      <strong style={{ color: theme.accent }}>Traits:</strong> {race.traits.join(', ')}
+                    </p>
+                  )}
+                  
+                  {/* Full details when selected */}
+                  {selectedRace?.name === race.name && (
+                    <div style={{ 
+                      marginTop: '12px', 
+                      paddingTop: '12px', 
+                      borderTop: `1px solid ${theme.border}`
+                    }}>
+                      {race.age && (
+                        <div style={{ marginBottom: '10px' }}>
+                          <strong style={{ color: theme.accent, fontSize: '12px' }}>Age:</strong>
+                          <p style={{ fontSize: '12px', color: theme.text.secondary, marginTop: '4px', lineHeight: '1.5' }}>
+                            {race.age}
+                          </p>
+                        </div>
+                      )}
+                      {race.alignment && (
+                        <div style={{ marginBottom: '10px' }}>
+                          <strong style={{ color: theme.accent, fontSize: '12px' }}>Alignment:</strong>
+                          <p style={{ fontSize: '12px', color: theme.text.secondary, marginTop: '4px', lineHeight: '1.5' }}>
+                            {race.alignment}
+                          </p>
+                        </div>
+                      )}
+                      {race.size_description && (
+                        <div style={{ marginBottom: '10px' }}>
+                          <strong style={{ color: theme.accent, fontSize: '12px' }}>Size:</strong>
+                          <p style={{ fontSize: '12px', color: theme.text.secondary, marginTop: '4px', lineHeight: '1.5' }}>
+                            {race.size_description}
+                          </p>
+                        </div>
+                      )}
+                      {race.languages && race.languages.length > 0 && (
+                        <div style={{ marginBottom: '10px' }}>
+                          <strong style={{ color: theme.accent, fontSize: '12px' }}>Languages:</strong>
+                          <p style={{ fontSize: '12px', color: theme.text.secondary, marginTop: '4px' }}>
+                            {race.languages.join(', ')}
+                          </p>
+                        </div>
+                      )}
+                      {race.subraces && race.subraces.length > 0 && (
+                        <div>
+                          <strong style={{ color: theme.accent, fontSize: '12px' }}>Subraces:</strong>
+                          <p style={{ fontSize: '12px', color: theme.text.secondary, marginTop: '4px' }}>
+                            {race.subraces.join(', ')}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          <p style={{ marginTop: '16px', fontSize: '12px', color: theme.text.muted }}>
+            {races.length} races available. Click a race for full details.
+          </p>
+        </div>
+      )}
+
+      {/* Rules Section */}
       {activeSection === 'rules' && (
         <div>
-          <h2 style={{ fontSize: '24px', color: '#ffffff', fontFamily: 'Montserrat, sans-serif', fontWeight: '800', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Scroll size={28} style={{ color: '#4a7dff' }} />
-            Quick Reference
+          <h2 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Scroll size={24} style={{ color: theme.accent }} />
+            Rules Quick Reference
           </h2>
 
           {/* Difficulty Classes */}
-          <Card className="card-glow" style={{ marginBottom: '16px' }}>
+          <div style={{ marginBottom: '16px', background: theme.bg.card, border: `1px solid ${theme.border}` }}>
             <div 
               onClick={() => toggleSection('dc')}
-              style={{ 
-                padding: '16px 20px', 
-                cursor: 'pointer', 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                borderBottom: expandedSections.dc ? '1px solid #1e40af' : 'none'
-              }}
+              style={{ padding: '16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
-              <h3 style={{ fontSize: '16px', color: '#ffffff', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Target size={20} style={{ color: '#ef4444' }} />
+              <h3 style={{ fontSize: '16px', color: theme.text.white, fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Target size={20} style={{ color: theme.accent }} />
                 Difficulty Classes (DC)
               </h3>
-              {expandedSections.dc ? <ChevronUp size={20} color="#67e8f9" /> : <ChevronDown size={20} color="#67e8f9" />}
+              {expandedSections.dc ? <ChevronUp size={20} color={theme.accent} /> : <ChevronDown size={20} color={theme.accent} />}
             </div>
             {expandedSections.dc && (
-              <CardContent style={{ padding: '16px 20px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-                  {DIFFICULTY_CLASSES.map(dc => (
-                    <div key={dc.dc} style={{ background: 'rgba(10, 10, 40, 0.5)', border: '1px solid #1e40af', borderRadius: '8px', padding: '12px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                        <span style={{ color: '#ef4444', fontWeight: '700', fontSize: '20px' }}>DC {dc.dc}</span>
-                        <span style={{ color: '#67e8f9', fontWeight: '600', fontSize: '12px' }}>{dc.difficulty}</span>
-                      </div>
-                      <p style={{ color: '#94a3b8', fontSize: '11px' }}>{dc.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
+              <div style={{ padding: '0 16px 16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
+                {DIFFICULTY_CLASSES.map(dc => (
+                  <div key={dc.dc} style={{ background: theme.bg.dark, border: `1px solid ${theme.border}`, padding: '12px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: '700', color: theme.accent }}>{dc.dc}</div>
+                    <div style={{ fontSize: '14px', color: theme.text.white, fontWeight: '600' }}>{dc.difficulty}</div>
+                    <div style={{ fontSize: '12px', color: theme.text.muted }}>{dc.description}</div>
+                  </div>
+                ))}
+              </div>
             )}
-          </Card>
-
-          {/* XP Thresholds */}
-          <Card className="card-glow" style={{ marginBottom: '16px' }}>
-            <div 
-              onClick={() => toggleSection('xp')}
-              style={{ 
-                padding: '16px 20px', 
-                cursor: 'pointer', 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                borderBottom: expandedSections.xp ? '1px solid #1e40af' : 'none'
-              }}
-            >
-              <h3 style={{ fontSize: '16px', color: '#ffffff', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Award size={20} style={{ color: '#eab308' }} />
-                Encounter XP Thresholds (Per Character)
-              </h3>
-              {expandedSections.xp ? <ChevronUp size={20} color="#67e8f9" /> : <ChevronDown size={20} color="#67e8f9" />}
-            </div>
-            {expandedSections.xp && (
-              <CardContent style={{ padding: '16px 20px' }}>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr style={{ borderBottom: '2px solid #1e40af' }}>
-                        <th style={{ padding: '10px', textAlign: 'left', color: '#67e8f9', fontSize: '12px' }}>LEVEL</th>
-                        <th style={{ padding: '10px', textAlign: 'center', color: '#22c55e', fontSize: '12px' }}>EASY</th>
-                        <th style={{ padding: '10px', textAlign: 'center', color: '#eab308', fontSize: '12px' }}>MEDIUM</th>
-                        <th style={{ padding: '10px', textAlign: 'center', color: '#f97316', fontSize: '12px' }}>HARD</th>
-                        <th style={{ padding: '10px', textAlign: 'center', color: '#ef4444', fontSize: '12px' }}>DEADLY</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {XP_THRESHOLDS.map(row => (
-                        <tr key={row.level} style={{ borderBottom: '1px solid rgba(30, 64, 175, 0.3)' }}>
-                          <td style={{ padding: '8px 10px', color: '#fff', fontWeight: '700' }}>{row.level}</td>
-                          <td style={{ padding: '8px 10px', textAlign: 'center', color: '#22c55e' }}>{row.easy.toLocaleString()}</td>
-                          <td style={{ padding: '8px 10px', textAlign: 'center', color: '#eab308' }}>{row.medium.toLocaleString()}</td>
-                          <td style={{ padding: '8px 10px', textAlign: 'center', color: '#f97316' }}>{row.hard.toLocaleString()}</td>
-                          <td style={{ padding: '8px 10px', textAlign: 'center', color: '#ef4444' }}>{row.deadly.toLocaleString()}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            )}
-          </Card>
+          </div>
 
           {/* Conditions */}
-          <Card className="card-glow" style={{ marginBottom: '16px' }}>
+          <div style={{ marginBottom: '16px', background: theme.bg.card, border: `1px solid ${theme.border}` }}>
             <div 
               onClick={() => toggleSection('conditions')}
-              style={{ 
-                padding: '16px 20px', 
-                cursor: 'pointer', 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                borderBottom: expandedSections.conditions ? '1px solid #1e40af' : 'none'
-              }}
+              style={{ padding: '16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
-              <h3 style={{ fontSize: '16px', color: '#ffffff', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Zap size={20} style={{ color: '#a855f7' }} />
-                Conditions Reference
+              <h3 style={{ fontSize: '16px', color: theme.text.white, fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Zap size={20} style={{ color: theme.accent }} />
+                Conditions
               </h3>
-              {expandedSections.conditions ? <ChevronUp size={20} color="#67e8f9" /> : <ChevronDown size={20} color="#67e8f9" />}
+              {expandedSections.conditions ? <ChevronUp size={20} color={theme.accent} /> : <ChevronDown size={20} color={theme.accent} />}
             </div>
             {expandedSections.conditions && (
-              <CardContent style={{ padding: '16px 20px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '10px' }}>
-                  {CONDITIONS.map(condition => (
-                    <div key={condition.name} style={{ background: 'rgba(10, 10, 40, 0.5)', border: '1px solid #1e40af', borderRadius: '8px', padding: '10px 12px' }}>
-                      <h4 style={{ color: '#a855f7', fontWeight: '700', fontSize: '13px', marginBottom: '4px' }}>{condition.name}</h4>
-                      <p style={{ color: '#94a3b8', fontSize: '11px', lineHeight: '1.4' }}>{condition.effect}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
+              <div style={{ padding: '0 16px 16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
+                {CONDITIONS.map(condition => (
+                  <div key={condition.name} style={{ background: theme.bg.dark, border: `1px solid ${theme.border}`, padding: '12px' }}>
+                    <div style={{ fontSize: '14px', color: theme.accent, fontWeight: '600', marginBottom: '6px' }}>{condition.name}</div>
+                    <div style={{ fontSize: '12px', color: theme.text.secondary, lineHeight: '1.5' }}>{condition.effect}</div>
+                  </div>
+                ))}
+              </div>
             )}
-          </Card>
+          </div>
 
-          {/* Cover Rules */}
-          <Card className="card-glow" style={{ marginBottom: '16px' }}>
+          {/* Cover */}
+          <div style={{ marginBottom: '16px', background: theme.bg.card, border: `1px solid ${theme.border}` }}>
             <div 
               onClick={() => toggleSection('cover')}
-              style={{ 
-                padding: '16px 20px', 
-                cursor: 'pointer', 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                borderBottom: expandedSections.cover ? '1px solid #1e40af' : 'none'
-              }}
+              style={{ padding: '16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
-              <h3 style={{ fontSize: '16px', color: '#ffffff', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Shield size={20} style={{ color: '#4a7dff' }} />
+              <h3 style={{ fontSize: '16px', color: theme.text.white, fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Shield size={20} style={{ color: theme.accent }} />
                 Cover Rules
               </h3>
-              {expandedSections.cover ? <ChevronUp size={20} color="#67e8f9" /> : <ChevronDown size={20} color="#67e8f9" />}
+              {expandedSections.cover ? <ChevronUp size={20} color={theme.accent} /> : <ChevronDown size={20} color={theme.accent} />}
             </div>
             {expandedSections.cover && (
-              <CardContent style={{ padding: '16px 20px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-                  {COVER_RULES.map(cover => (
-                    <div key={cover.type} style={{ background: 'rgba(10, 10, 40, 0.5)', border: '1px solid #1e40af', borderRadius: '8px', padding: '12px' }}>
-                      <h4 style={{ color: '#4a7dff', fontWeight: '700', fontSize: '14px', marginBottom: '8px' }}>{cover.type}</h4>
-                      <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
-                        <span style={{ color: '#22c55e', fontSize: '12px' }}>AC: {cover.ac}</span>
-                        <span style={{ color: '#eab308', fontSize: '12px' }}>DEX Save: {cover.dex}</span>
-                      </div>
-                      <p style={{ color: '#94a3b8', fontSize: '11px' }}>{cover.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
+              <div style={{ padding: '0 16px 16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+                {COVER_RULES.map(cover => (
+                  <div key={cover.type} style={{ background: theme.bg.dark, border: `1px solid ${theme.border}`, padding: '12px' }}>
+                    <div style={{ fontSize: '14px', color: theme.accent, fontWeight: '600', marginBottom: '6px' }}>{cover.type}</div>
+                    <div style={{ fontSize: '12px', color: theme.text.muted, marginBottom: '4px' }}>AC: {cover.ac} | DEX Save: {cover.dex}</div>
+                    <div style={{ fontSize: '12px', color: theme.text.secondary }}>{cover.description}</div>
+                  </div>
+                ))}
+              </div>
             )}
-          </Card>
+          </div>
         </div>
       )}
     </div>
