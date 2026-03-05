@@ -75,9 +75,14 @@ An all-in-one campaign operating system for 5e Game Masters combining worldbuild
 - Red accent on buttons and borders
 
 ### 4. Campaign Dashboard
-- **LEFT SIDEBAR** navigation with tabs
-- Tabs: Setting, World, Gods, NPCs, Locations, Players, Combat, Maps, Encounter Gen, Items, Reference, Calendar, Notes
+- **LEFT SIDEBAR** navigation with **COLLAPSIBLE TAB GROUPS**:
+  - **World Group:** Setting, World Builder, Gods, Locations, NPCs
+  - **Tools Group:** Reference, Encounter Gen, Items
+  - **Players Group:** Party
+  - **Ungrouped Tabs:** Combat, Battle Maps, Calendar, Notes
 - Tab hover: lighter grey + red bar on right
+- Active tab: full red background
+- Group headers: expand/collapse on click, active tab's group auto-expands
 - Tab active: full red
 
 ### 5. GM Screen
@@ -149,7 +154,15 @@ An all-in-one campaign operating system for 5e Game Masters combining worldbuild
   - [x] Rules section with DC tables, Conditions, Cover Rules
 
 ### In Progress
-- [ ] Context-Aware AI Idea Generation (use campaign data for tailored suggestions)
+- [ ] None
+
+### Completed (March 2026)
+- [x] **Context-Aware ROOK AI** - AI now pulls campaign setting, NPCs, locations, gods, and notes to generate tailored content
+- [x] **Sidebar Tab Grouping** - Organized 13 tabs into 3 collapsible groups (World, Tools, Players) + 4 ungrouped tabs
+- [x] **Maps renamed to Battle Maps**
+- [x] **Keyboard Shortcuts** - R (dice), N (note), / (search), ? (help), Esc (close)
+- [x] Fixed "Invalid entity type: world_place" error
+- [x] Fixed RQKLogoInline import in PlayerDashboard
 
 ### Backlog
 - [ ] Character Builder enhancements (subclass, spells, feats)

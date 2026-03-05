@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import PlayerNotesTab from './tabs/PlayerNotesTab';
 import { RookSuggestionPopup, useRookSuggestions, getRandomTip } from './RookSuggestions';
+import { RQKLogoInline } from '@/components/ui/RQKLogo';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
