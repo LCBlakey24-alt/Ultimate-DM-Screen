@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Upload, Trash2, Eye } from 'lucide-react';
+import { Map, PlusCircle, Trash2, Edit, Grid } from 'lucide-react';
+import { MapBuilder } from '@/components/MapBuilder';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -13,9 +11,8 @@ const API = `${BACKEND_URL}/api`;
 function MapsTab({ campaignId }) {
   const [maps, setMaps] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showDialog, setShowDialog] = useState(false);
-  const [formData, setFormData] = useState({ name: '', image_data: '' });
-  const [imagePreview, setImagePreview] = useState(null);
+  const [showMapBuilder, setShowMapBuilder] = useState(false);
+  const [selectedMap, setSelectedMap] = useState(null);
 
   useEffect(() => {
     fetchMaps();
@@ -24,163 +21,254 @@ function MapsTab({ campaignId }) {
   const fetchMaps = async () => {
     try {
       const response = await axios.get(`${API}/campaigns/${campaignId}/maps`);
-      setMaps(response.data);
+      setMaps(response.data || []);
     } catch (error) {
-      toast.error('Failed to load maps');
+      console.error('Failed to load maps:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5000000) {
-        toast.error('Image too large. Max 5MB');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        setFormData({ ...formData, image_data: base64String });
-        setImagePreview(base64String);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleCreateMap = () => {
+    setSelectedMap(null);
+    setShowMapBuilder(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.name) {
-      toast.error('Map name is required');
-      return;
-    }
-    try {
-      await axios.post(`${API}/campaigns/${campaignId}/maps`, formData);
-      toast.success('Map added!');
-      fetchMaps();
-      resetForm();
-    } catch (error) {
-      toast.error('Failed to save map');
-    }
+  const handleEditMap = (map) => {
+    setSelectedMap(map);
+    setShowMapBuilder(true);
   };
 
-  const handleDelete = async (mapId) => {
-    if (!window.confirm('Delete this map?')) return;
+  const handleDeleteMap = async (mapId) => {
+    if (!window.confirm('Delete this map? This cannot be undone.')) return;
+    
     try {
       await axios.delete(`${API}/campaigns/${campaignId}/maps/${mapId}`);
       toast.success('Map deleted');
-      fetchMaps();
+      setMaps(maps.filter(m => m.id !== mapId));
     } catch (error) {
       toast.error('Failed to delete map');
     }
   };
 
-  const resetForm = () => {
-    setFormData({ name: '', image_data: '' });
-    setImagePreview(null);
-    setShowDialog(false);
+  const handleMapSaved = (savedMap) => {
+    setMaps(prev => {
+      const existing = prev.findIndex(m => m.id === savedMap.id);
+      if (existing >= 0) {
+        const updated = [...prev];
+        updated[existing] = savedMap;
+        return updated;
+      }
+      return [...prev, savedMap];
+    });
+    setShowMapBuilder(false);
+    toast.success('Map saved!');
   };
 
-  if (loading) return <div className="loading-spinner"></div>;
+  if (loading) {
+    return <div className="loading-spinner" />;
+  }
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h2 className="medieval-heading" style={{ fontSize: '28px', color: '#d4af37' }}>Maps</h2>
-        <Dialog open={showDialog} onOpenChange={(open) => { if (!open) resetForm(); setShowDialog(open); }}>
-          <DialogTrigger asChild>
-            <Button data-testid="add-map-btn" className="btn-primary" style={{ display: 'flex', gap: '8px' }}>
-              <Plus size={18} />
-              Add Map
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="modal">
-            <DialogHeader>
-              <DialogTitle className="medieval-heading" style={{ fontSize: '24px', color: '#d4af37' }}>
-                Add Map
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Map Name</label>
-                <Input
-                  data-testid="map-name-input"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="input"
-                  required
-                />
-              </div>
-              <div style={{ marginBottom: '24px' }}>
-                <label className="gold-text" style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Upload Image</label>
-                <input
-                  data-testid="map-image-input"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  style={{
-                    padding: '10px',
-                    background: 'rgba(20, 16, 12, 0.6)',
-                    border: '1px solid #5a4a2f',
-                    borderRadius: '6px',
-                    color: '#e8dcc4',
-                    width: '100%'
-                  }}
-                />
-                {imagePreview && (
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    style={{ marginTop: '12px', maxWidth: '100%', borderRadius: '8px', border: '1px solid #5a4a2f' }}
-                  />
-                )}
-              </div>
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                <Button type="button" className="btn-secondary" onClick={resetForm}>Cancel</Button>
-                <Button data-testid="map-submit-btn" type="submit" className="btn-primary">Add Map</Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+      {/* Header */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '24px',
+        flexWrap: 'wrap',
+        gap: '12px'
+      }}>
+        <div>
+          <h2 style={{ 
+            fontSize: '24px', 
+            color: '#ffffff', 
+            fontFamily: 'Montserrat, sans-serif', 
+            fontWeight: '800',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+            <Map size={28} style={{ color: '#06b6d4' }} />
+            Battle Maps
+          </h2>
+          <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
+            Create and manage battle maps with terrain, walls, and fog of war
+          </p>
+        </div>
+        <Button
+          onClick={handleCreateMap}
+          data-testid="create-map-btn"
+          style={{
+            background: 'linear-gradient(180deg, #06b6d4 0%, #0891b2 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '12px 20px',
+            fontSize: '14px',
+            fontWeight: '600'
+          }}
+        >
+          <PlusCircle size={18} />
+          Create New Map
+        </Button>
       </div>
 
+      {/* Maps Grid */}
       {maps.length === 0 ? (
-        <Card className="parchment-dark" style={{ padding: '40px', textAlign: 'center' }}>
-          <p style={{ color: '#8b7355' }}>No maps added yet. Upload your first map!</p>
-        </Card>
+        <div style={{
+          textAlign: 'center',
+          padding: '80px 20px',
+          background: 'rgba(6, 182, 212, 0.05)',
+          borderRadius: '16px',
+          border: '2px dashed rgba(6, 182, 212, 0.3)'
+        }}>
+          <Map size={64} style={{ color: '#06b6d4', opacity: 0.3, margin: '0 auto 20px' }} />
+          <h3 style={{ color: '#fff', fontSize: '20px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat' }}>
+            No Battle Maps Yet
+          </h3>
+          <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '24px', maxWidth: '400px', margin: '0 auto 24px' }}>
+            Create your first battle map with terrain, walls, doors, and fog of war. 
+            Maps can be linked to combat encounters.
+          </p>
+          <Button
+            onClick={handleCreateMap}
+            style={{
+              background: 'linear-gradient(180deg, #06b6d4 0%, #0891b2 100%)',
+              padding: '14px 28px',
+              fontSize: '15px'
+            }}
+          >
+            <PlusCircle size={18} style={{ marginRight: '8px' }} />
+            Create Your First Map
+          </Button>
+        </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
+          gap: '20px' 
+        }}>
           {maps.map(map => (
-            <Card key={map.id} data-testid={`map-card-${map.id}`} className="card">
-              <CardContent style={{ padding: '16px' }}>
-                {map.image_data && (
-                  <img
-                    src={map.image_data}
-                    alt={map.name}
-                    style={{
-                      width: '100%',
-                      height: '180px',
-                      objectFit: 'cover',
-                      borderRadius: '8px',
-                      marginBottom: '12px',
-                      border: '1px solid #5a4a2f'
-                    }}
-                  />
-                )}
-                <h3 className="medieval-heading" style={{ fontSize: '18px', color: '#d4af37', marginBottom: '12px' }}>
+            <div
+              key={map.id}
+              data-testid={`map-card-${map.id}`}
+              style={{
+                background: 'rgba(6, 182, 212, 0.08)',
+                border: '2px solid rgba(6, 182, 212, 0.25)',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {/* Map Preview */}
+              <div style={{ 
+                height: '140px', 
+                background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative'
+              }}>
+                <Map size={48} style={{ color: '#06b6d4', opacity: 0.4 }} />
+                
+                {/* Quick Info Badges */}
+                <div style={{ 
+                  position: 'absolute', 
+                  top: '10px', 
+                  right: '10px',
+                  display: 'flex',
+                  gap: '6px'
+                }}>
+                  <span style={{
+                    background: 'rgba(6, 182, 212, 0.2)',
+                    color: '#22d3ee',
+                    padding: '4px 8px',
+                    borderRadius: '6px',
+                    fontSize: '10px',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                    <Grid size={10} />
+                    {map.width || 20}x{map.height || 15}
+                  </span>
+                </div>
+              </div>
+
+              {/* Map Info */}
+              <div style={{ padding: '16px' }}>
+                <h3 style={{ 
+                  color: '#fff', 
+                  fontSize: '16px', 
+                  fontWeight: '700', 
+                  marginBottom: '6px',
+                  fontFamily: 'Montserrat'
+                }}>
                   {map.name}
                 </h3>
+                <p style={{ 
+                  color: '#64748b', 
+                  fontSize: '12px',
+                  marginBottom: '16px'
+                }}>
+                  {map.objects?.length || 0} objects • {map.walls?.length || 0} walls
+                </p>
+
+                {/* Actions */}
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <Button data-testid={`delete-map-btn-${map.id}`} onClick={() => handleDelete(map.id)} className="btn-danger" style={{ flex: 1 }}>
-                    <Trash2 size={14} style={{ marginRight: '4px' }} />
-                    Delete
+                  <Button
+                    onClick={() => handleEditMap(map)}
+                    data-testid={`edit-map-${map.id}`}
+                    style={{
+                      flex: 1,
+                      background: 'rgba(6, 182, 212, 0.15)',
+                      border: '1px solid rgba(6, 182, 212, 0.4)',
+                      color: '#22d3ee',
+                      padding: '10px',
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <Edit size={14} />
+                    Edit
+                  </Button>
+                  <Button
+                    onClick={() => handleDeleteMap(map.id)}
+                    data-testid={`delete-map-${map.id}`}
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.15)',
+                      border: '1px solid rgba(239, 68, 68, 0.4)',
+                      color: '#ef4444',
+                      padding: '10px',
+                      fontSize: '13px'
+                    }}
+                  >
+                    <Trash2 size={14} />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
+      )}
+
+      {/* Map Builder Modal */}
+      {showMapBuilder && (
+        <MapBuilder
+          campaignId={campaignId}
+          existingMap={selectedMap}
+          onClose={() => {
+            setShowMapBuilder(false);
+            setSelectedMap(null);
+          }}
+          onMapSaved={handleMapSaved}
+        />
       )}
     </div>
   );

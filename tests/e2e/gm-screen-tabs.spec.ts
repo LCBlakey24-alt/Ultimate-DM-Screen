@@ -14,10 +14,9 @@ test.describe('GM Screen Tabs Test', () => {
     await navigateToGMScreen(page);
   });
 
-  test('GM Screen displays all tabs', async ({ page }) => {
-    // Verify all main tabs are present
+  test('GM Screen displays all tabs (Maps moved to Campaign Dashboard)', async ({ page }) => {
+    // Verify all main tabs are present - Maps tab was moved to Campaign Dashboard
     await expect(page.getByTestId('tab-combat')).toBeVisible();
-    await expect(page.getByTestId('tab-maps')).toBeVisible();
     await expect(page.getByTestId('tab-dice')).toBeVisible();
     await expect(page.getByTestId('tab-monsters')).toBeVisible();
     await expect(page.getByTestId('tab-creatures')).toBeVisible();
@@ -27,6 +26,9 @@ test.describe('GM Screen Tabs Test', () => {
     await expect(page.getByTestId('tab-inventory')).toBeVisible();
     await expect(page.getByTestId('tab-party')).toBeVisible();
     await expect(page.getByTestId('tab-notes')).toBeVisible();
+    
+    // Maps tab should NOT be on GM Screen anymore (moved to Campaign Dashboard)
+    await expect(page.getByTestId('tab-maps')).not.toBeVisible();
   });
 
   test('Combat tab shows Combat Control section', async ({ page }) => {
@@ -133,27 +135,6 @@ test.describe('GM Screen Tabs Test', () => {
     await expect(page.getByTestId('save-as-npc-btn')).toBeVisible({ timeout: 5000 });
   });
 
-  test('Maps tab shows Map Builder functionality', async ({ page }) => {
-    await page.getByTestId('tab-maps').click();
-    
-    // Should show saved maps heading or maps content
-    await expect(page.getByText(/Saved Maps|Battle Maps/i).first()).toBeVisible({ timeout: 5000 });
-    
-    // Should have Create Map button
-    await expect(page.getByTestId('create-map-btn')).toBeVisible();
-  });
-
-  test('Maps tab can open Map Builder', async ({ page }) => {
-    await page.getByTestId('tab-maps').click();
-    
-    // Wait for maps tab to load
-    await expect(page.getByTestId('create-map-btn')).toBeVisible({ timeout: 5000 });
-    
-    // Click Create Map button
-    await page.getByTestId('create-map-btn').click();
-    
-    // Map Builder should open - look for canvas or map builder UI elements
-    // The Map Builder shows terrain tools and a canvas
-    await expect(page.locator('canvas').first()).toBeVisible({ timeout: 5000 });
-  });
+  // Maps tab tests removed - Maps functionality moved to Campaign Dashboard
+  // See map-builder.spec.ts for Campaign Dashboard Maps tab tests
 });

@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { RQKLogoInline } from '@/components/ui/RQKLogo';
-import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X } from 'lucide-react';
+import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map } from 'lucide-react';
 import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
 import GodsTab from '@/components/tabs/GodsTab';
 import NPCsTab from '@/components/tabs/NPCsTab';
@@ -17,6 +17,7 @@ import EncounterGeneratorTab from '@/components/tabs/EncounterGeneratorTab';
 import ItemCreatorTab from '@/components/tabs/ItemCreatorTab';
 import QuickReferenceTab from '@/components/tabs/QuickReferenceTab';
 import WorldBuilderTab from '@/components/tabs/WorldBuilderTab';
+import MapsTab from '@/components/tabs/MapsTab';
 import QuickTips, { TIPS } from '@/components/QuickTips';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -73,6 +74,7 @@ function CampaignDashboard({ username, onLogout }) {
     { id: 'locations', icon: MapPin, label: 'Locations', color: '#22D3EE' },
     { id: 'players', icon: Users, label: 'Players', color: '#10B981' },
     { id: 'combat-creator', icon: Swords, label: 'Combat', color: '#EF4444' },
+    { id: 'maps', icon: Map, label: 'Maps', color: '#06B6D4' },
     { id: 'encounter-gen', icon: Sparkles, label: 'Encounter Gen', color: '#F59E0B' },
     { id: 'items', icon: Wand2, label: 'Items', color: '#22D3EE' },
     { id: 'reference', icon: ScrollText, label: 'Reference', color: '#8B5CF6' },
@@ -305,6 +307,7 @@ function CampaignDashboard({ username, onLogout }) {
             {activeTab === 'locations' && <LocationsTab campaignId={campaignId} />}
             {activeTab === 'players' && <PlayersTab campaignId={campaignId} />}
             {activeTab === 'combat-creator' && <CombatCreatorTab campaignId={campaignId} />}
+            {activeTab === 'maps' && <MapsTab campaignId={campaignId} />}
             {activeTab === 'encounter-gen' && <EncounterGeneratorTab campaignId={campaignId} />}
             {activeTab === 'items' && <ItemCreatorTab campaignId={campaignId} />}
             {activeTab === 'reference' && <QuickReferenceTab campaignId={campaignId} />}

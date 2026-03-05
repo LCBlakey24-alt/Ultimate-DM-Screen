@@ -80,7 +80,7 @@ function CombatPage() {
   useEffect(() => {
     if (!scenarioData) {
       toast.error('No combat data found');
-      navigate(`/gm-screen/${campaignId}`);
+      navigate(`/campaign/${campaignId}`);
       return;
     }
     
@@ -176,9 +176,9 @@ function CombatPage() {
   };
 
   const endCombat = () => {
-    if (!window.confirm('End combat and return to GM Screen?')) return;
+    if (!window.confirm('End combat and return to campaign?')) return;
     toast.success('Combat ended!');
-    navigate(`/gm-screen/${campaignId}`);
+    navigate(`/campaign/${campaignId}`);
   };
 
   const updateHP = (id, change) => {

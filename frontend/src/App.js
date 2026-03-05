@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import '@/App.css';
 import { Toaster } from '@/components/ui/sonner';
@@ -32,6 +32,22 @@ axios.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Conditional Dice Roller - only shows on gameplay pages
+function ConditionalDiceRoller({ isAuthenticated }) {
+  const location = useLocation();
+  
+  // Pages where dice roller should NOT appear
+  const excludedPaths = ['/', '/auth', '/home', '/pricing', '/admin', '/account', '/reset-password'];
+  
+  // Check if current path should show dice roller
+  const shouldShowDice = isAuthenticated && !excludedPaths.some(path => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  });
+  
+  return shouldShowDice ? <FloatingDiceRoller /> : null;
+}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -211,8 +227,8 @@ function App() {
             } 
           />
         </Routes>
-        {/* Floating Dice Roller - Available on all pages when logged in */}
-        {isAuthenticated && <FloatingDiceRoller />}
+        {/* Floating Dice Roller - Only on gameplay pages */}
+        <ConditionalDiceRoller isAuthenticated={isAuthenticated} />
       </BrowserRouter>
       <Toaster position="top-right" richColors />
     </div>

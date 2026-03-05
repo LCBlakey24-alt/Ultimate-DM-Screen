@@ -80,10 +80,10 @@ const glassPanel = {
   background: 'rgba(30, 41, 59, 0.6)',
   backdropFilter: 'blur(16px)',
   border: '1px solid rgba(148, 163, 184, 0.1)',
-  borderRadius: '16px'
+  borderRadius: '12px'
 };
 
-// Ability Score Block Component
+// Compact Ability Score Block Component
 function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBonus, onClick, isEditing, onScoreChange }) {
   const Icon = ability.icon;
   const saveModifier = isProficientSave ? modifier + profBonus : modifier;
@@ -95,11 +95,11 @@ function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBon
       data-testid={`ability-${ability.key}`}
       style={{
         ...glassPanel,
-        padding: '16px',
+        padding: '10px 8px',
         cursor: onClick ? 'pointer' : 'default',
         transition: 'all 0.2s ease',
         textAlign: 'center',
-        minWidth: '100px'
+        minWidth: '70px'
       }}
       className="hover:border-cyan-500/30"
     >
@@ -107,15 +107,15 @@ function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBon
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
-        gap: '6px',
-        marginBottom: '8px'
+        gap: '4px',
+        marginBottom: '4px'
       }}>
-        <Icon size={16} color={ability.color} />
+        <Icon size={12} color={ability.color} />
         <span style={{ 
           color: ability.color, 
-          fontSize: '12px', 
+          fontSize: '10px', 
           fontWeight: '700',
-          letterSpacing: '1px'
+          letterSpacing: '0.5px'
         }}>
           {ability.label}
         </span>
@@ -127,17 +127,18 @@ function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBon
           value={score}
           onChange={(e) => onScoreChange(ability.key, parseInt(e.target.value) || 10)}
           style={{ 
-            width: '60px', 
+            width: '50px', 
             textAlign: 'center', 
             margin: '0 auto',
-            fontSize: '20px',
-            fontWeight: '800'
+            fontSize: '16px',
+            fontWeight: '800',
+            padding: '4px'
           }}
           onClick={(e) => e.stopPropagation()}
         />
       ) : (
         <div style={{ 
-          fontSize: '28px', 
+          fontSize: '22px', 
           fontWeight: '800', 
           color: '#fff',
           fontFamily: 'Montserrat, sans-serif',
@@ -148,33 +149,33 @@ function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBon
       )}
       
       <div style={{ 
-        fontSize: '18px', 
+        fontSize: '14px', 
         fontWeight: '700', 
         color: ability.color,
-        marginTop: '4px'
+        marginTop: '2px'
       }}>
         {modifier >= 0 ? `+${modifier}` : modifier}
       </div>
       
       <div style={{
-        marginTop: '8px',
-        paddingTop: '8px',
+        marginTop: '4px',
+        paddingTop: '4px',
         borderTop: `1px solid ${ability.color}30`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '4px'
+        gap: '3px'
       }}>
         {isProficientSave && (
           <div style={{
-            width: '8px',
-            height: '8px',
+            width: '6px',
+            height: '6px',
             borderRadius: '50%',
             background: '#22c55e'
           }} />
         )}
-        <span style={{ color: '#94a3b8', fontSize: '10px' }}>SAVE</span>
-        <span style={{ color: isProficientSave ? '#22c55e' : '#e2e8f0', fontSize: '14px', fontWeight: '700' }}>
+        <span style={{ color: '#94a3b8', fontSize: '9px' }}>SAVE</span>
+        <span style={{ color: isProficientSave ? '#22c55e' : '#e2e8f0', fontSize: '12px', fontWeight: '700' }}>
           {saveDisplay}
         </span>
       </div>
@@ -182,7 +183,7 @@ function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBon
   );
 }
 
-// Skill Row Component
+// Compact Skill Row Component
 function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onToggle, isEditing }) {
   const Icon = skill.icon;
   const totalMod = abilityMod + (isProficient ? profBonus : 0) + (isExpert ? profBonus : 0);
@@ -196,8 +197,8 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
       style={{
         display: 'flex',
         alignItems: 'center',
-        padding: '8px 12px',
-        borderRadius: '8px',
+        padding: '5px 8px',
+        borderRadius: '6px',
         background: isProficient ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
         transition: 'all 0.15s ease'
       }}
@@ -207,36 +208,40 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
         <button
           onClick={() => onToggle(skill.name)}
           style={{
-            width: '20px',
-            height: '20px',
-            borderRadius: '4px',
+            width: '16px',
+            height: '16px',
+            borderRadius: '3px',
             border: isProficient ? '2px solid #22c55e' : '2px solid #475569',
             background: isProficient ? '#22c55e' : 'transparent',
-            marginRight: '10px',
+            marginRight: '8px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            flexShrink: 0
           }}
         >
-          {isProficient && <Check size={12} color="#fff" />}
+          {isProficient && <Check size={10} color="#fff" />}
         </button>
       )}
       
-      <Icon size={14} color={isProficient ? '#22c55e' : '#64748b'} style={{ marginRight: '8px' }} />
+      <Icon size={12} color={isProficient ? '#22c55e' : '#64748b'} style={{ marginRight: '6px', flexShrink: 0 }} />
       
       <span style={{ 
         flex: 1,
         color: isProficient ? '#22c55e' : '#e2e8f0',
-        fontSize: '13px',
-        fontWeight: isProficient ? '600' : '400'
+        fontSize: '12px',
+        fontWeight: isProficient ? '600' : '400',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
       }}>
         {skill.name}
       </span>
       
       <span style={{ 
         color: ability?.color || '#64748b', 
-        fontSize: '10px',
+        fontSize: '9px',
         marginRight: '12px',
         opacity: 0.7
       }}>
@@ -769,42 +774,42 @@ function CharacterSheetFull() {
           </div>
         </div>
 
-        {/* Quick Stats Bar */}
+        {/* Quick Stats Bar - Compact */}
         <div style={{
           display: 'flex',
-          gap: '16px',
-          marginBottom: '24px',
+          gap: '10px',
+          marginBottom: '20px',
           flexWrap: 'wrap'
         }}>
           {/* HP */}
           <div data-testid="hp-display" style={{
             ...glassPanel,
-            padding: '12px 20px',
+            padding: '8px 14px',
             display: 'flex',
             alignItems: 'center',
-            gap: '12px'
+            gap: '8px'
           }}>
-            <Heart size={20} color="#ef4444" />
+            <Heart size={16} color="#ef4444" />
             <div>
-              <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>HP</span>
+              <span style={{ color: '#64748b', fontSize: '9px', display: 'block' }}>HP</span>
               {editMode ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                   <Input
                     type="number"
                     value={editData.current_hit_points}
                     onChange={(e) => setEditData({ ...editData, current_hit_points: parseInt(e.target.value) || 0 })}
-                    style={{ width: '50px', padding: '4px', textAlign: 'center' }}
+                    style={{ width: '40px', padding: '2px', textAlign: 'center', fontSize: '14px' }}
                   />
-                  <span style={{ color: '#64748b' }}>/</span>
+                  <span style={{ color: '#64748b', fontSize: '12px' }}>/</span>
                   <Input
                     type="number"
                     value={editData.max_hit_points}
                     onChange={(e) => setEditData({ ...editData, max_hit_points: parseInt(e.target.value) || 0 })}
-                    style={{ width: '50px', padding: '4px', textAlign: 'center' }}
+                    style={{ width: '40px', padding: '2px', textAlign: 'center', fontSize: '14px' }}
                   />
                 </div>
               ) : (
-                <span style={{ color: '#ef4444', fontWeight: '800', fontSize: '20px' }}>
+                <span style={{ color: '#ef4444', fontWeight: '800', fontSize: '16px' }}>
                   {data.current_hit_points}/{data.max_hit_points}
                 </span>
               )}
@@ -814,23 +819,23 @@ function CharacterSheetFull() {
           {/* AC */}
           <div data-testid="ac-display" style={{
             ...glassPanel,
-            padding: '12px 20px',
+            padding: '8px 14px',
             display: 'flex',
             alignItems: 'center',
-            gap: '12px'
+            gap: '8px'
           }}>
-            <Shield size={20} color="#3b82f6" />
+            <Shield size={16} color="#3b82f6" />
             <div>
-              <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>AC</span>
+              <span style={{ color: '#64748b', fontSize: '9px', display: 'block' }}>AC</span>
               {editMode ? (
                 <Input
                   type="number"
                   value={editData.armor_class}
                   onChange={(e) => setEditData({ ...editData, armor_class: parseInt(e.target.value) || 10 })}
-                  style={{ width: '50px', padding: '4px', textAlign: 'center' }}
+                  style={{ width: '40px', padding: '2px', textAlign: 'center', fontSize: '14px' }}
                 />
               ) : (
-                <span style={{ color: '#3b82f6', fontWeight: '800', fontSize: '20px' }}>
+                <span style={{ color: '#3b82f6', fontWeight: '800', fontSize: '16px' }}>
                   {data.armor_class}
                 </span>
               )}
@@ -840,15 +845,15 @@ function CharacterSheetFull() {
           {/* Initiative */}
           <div data-testid="initiative-display" style={{
             ...glassPanel,
-            padding: '12px 20px',
+            padding: '8px 14px',
             display: 'flex',
             alignItems: 'center',
-            gap: '12px'
+            gap: '8px'
           }}>
-            <Zap size={20} color="#eab308" />
+            <Zap size={16} color="#eab308" />
             <div>
-              <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>INIT</span>
-              <span style={{ color: '#eab308', fontWeight: '800', fontSize: '20px' }}>
+              <span style={{ color: '#64748b', fontSize: '9px', display: 'block' }}>INIT</span>
+              <span style={{ color: '#eab308', fontWeight: '800', fontSize: '16px' }}>
                 {getModifierDisplay(data.dexterity)}
               </span>
             </div>
@@ -857,15 +862,15 @@ function CharacterSheetFull() {
           {/* Speed */}
           <div data-testid="speed-display" style={{
             ...glassPanel,
-            padding: '12px 20px',
+            padding: '8px 14px',
             display: 'flex',
             alignItems: 'center',
-            gap: '12px'
+            gap: '8px'
           }}>
-            <Activity size={20} color="#22c55e" />
+            <Activity size={16} color="#22c55e" />
             <div>
-              <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>SPEED</span>
-              <span style={{ color: '#22c55e', fontWeight: '800', fontSize: '20px' }}>
+              <span style={{ color: '#64748b', fontSize: '9px', display: 'block' }}>SPEED</span>
+              <span style={{ color: '#22c55e', fontWeight: '800', fontSize: '16px' }}>
                 {data.speed} ft
               </span>
             </div>
@@ -874,28 +879,28 @@ function CharacterSheetFull() {
           {/* Proficiency */}
           <div data-testid="prof-display" style={{
             ...glassPanel,
-            padding: '12px 20px',
+            padding: '8px 14px',
             display: 'flex',
             alignItems: 'center',
-            gap: '12px'
+            gap: '8px'
           }}>
-            <Award size={20} color="#a855f7" />
+            <Award size={16} color="#a855f7" />
             <div>
-              <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>PROF</span>
-              <span style={{ color: '#a855f7', fontWeight: '800', fontSize: '20px' }}>
+              <span style={{ color: '#64748b', fontSize: '9px', display: 'block' }}>PROF</span>
+              <span style={{ color: '#a855f7', fontWeight: '800', fontSize: '16px' }}>
                 +{profBonus}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Tab Navigation - Compact */}
         <div style={{
           display: 'flex',
-          gap: '8px',
-          marginBottom: '24px',
+          gap: '6px',
+          marginBottom: '20px',
           overflowX: 'auto',
-          paddingBottom: '8px'
+          paddingBottom: '6px'
         }}>
           {TABS.map(tab => {
             const Icon = tab.icon;
@@ -907,10 +912,10 @@ function CharacterSheetFull() {
                 onClick={() => setActiveTab(tab.id)}
                 style={{
                   ...glassPanel,
-                  padding: '12px 20px',
+                  padding: '10px 16px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
+                  gap: '6px',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   background: isActive 
@@ -1068,31 +1073,102 @@ function CharacterSheetFull() {
           {/* Spells Tab */}
           {activeTab === 'spells' && (
             <div>
-              {/* Spell Slots */}
-              {data.spellcasting_ability && (
-                <div style={{ ...glassPanel, padding: '16px 20px', marginBottom: '20px' }}>
-                  <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <div>
-                      <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>SPELLCASTING ABILITY</span>
-                      <span style={{ color: '#a855f7', fontWeight: '700', fontSize: '16px', textTransform: 'capitalize' }}>
-                        {data.spellcasting_ability}
+              {/* Spellcasting Stats & Spell Slots */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginBottom: '20px' }}>
+                {/* Spellcasting Info */}
+                <div style={{ ...glassPanel, padding: '16px' }}>
+                  <h4 style={{ color: '#a855f7', fontSize: '12px', fontWeight: '700', marginBottom: '12px' }}>SPELLCASTING</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: '#64748b', fontSize: '11px' }}>Ability</span>
+                      <span style={{ color: '#a855f7', fontWeight: '700', fontSize: '14px', textTransform: 'capitalize' }}>
+                        {data.spellcasting_ability || 'None'}
                       </span>
                     </div>
-                    <div>
-                      <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>SPELL SAVE DC</span>
-                      <span style={{ color: '#f97316', fontWeight: '700', fontSize: '16px' }}>
-                        {8 + profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: '#64748b', fontSize: '11px' }}>Save DC</span>
+                      <span style={{ color: '#f97316', fontWeight: '700', fontSize: '14px' }}>
+                        {data.spellcasting_ability ? 8 + profBonus + calculateModifier(data[data.spellcasting_ability] || 10) : '—'}
                       </span>
                     </div>
-                    <div>
-                      <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>SPELL ATTACK</span>
-                      <span style={{ color: '#22c55e', fontWeight: '700', fontSize: '16px' }}>
-                        +{profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: '#64748b', fontSize: '11px' }}>Attack Bonus</span>
+                      <span style={{ color: '#22c55e', fontWeight: '700', fontSize: '14px' }}>
+                        {data.spellcasting_ability ? `+${profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}` : '—'}
                       </span>
                     </div>
                   </div>
                 </div>
-              )}
+
+                {/* Spell Slots */}
+                <div style={{ ...glassPanel, padding: '16px' }}>
+                  <h4 style={{ color: '#3b82f6', fontSize: '12px', fontWeight: '700', marginBottom: '12px' }}>SPELL SLOTS</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '6px' }}>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(level => {
+                      const slotKey = `spell_slots_${level}`;
+                      const usedKey = `spell_slots_${level}_used`;
+                      const maxSlots = data[slotKey] || 0;
+                      const usedSlots = data[usedKey] || 0;
+                      const availableSlots = Math.max(0, maxSlots - usedSlots);
+                      
+                      return (
+                        <div key={level} style={{ textAlign: 'center' }}>
+                          <div style={{ 
+                            color: maxSlots > 0 ? '#3b82f6' : '#475569', 
+                            fontSize: '10px', 
+                            marginBottom: '4px',
+                            fontWeight: '600'
+                          }}>
+                            {level}
+                          </div>
+                          <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '2px'
+                          }}>
+                            {maxSlots > 0 ? (
+                              Array.from({ length: maxSlots }).map((_, idx) => (
+                                <div
+                                  key={idx}
+                                  onClick={() => {
+                                    if (editMode) {
+                                      const newUsed = idx < usedSlots ? idx : idx + 1;
+                                      setEditData({ ...editData, [usedKey]: newUsed });
+                                    }
+                                  }}
+                                  style={{
+                                    width: '14px',
+                                    height: '14px',
+                                    borderRadius: '3px',
+                                    border: '2px solid #3b82f6',
+                                    background: idx < usedSlots ? 'transparent' : '#3b82f6',
+                                    cursor: editMode ? 'pointer' : 'default',
+                                    transition: 'all 0.15s ease'
+                                  }}
+                                />
+                              ))
+                            ) : (
+                              <div style={{
+                                width: '14px',
+                                height: '14px',
+                                borderRadius: '3px',
+                                background: '#1e293b',
+                                border: '1px solid #334155'
+                              }} />
+                            )}
+                          </div>
+                          {maxSlots > 0 && (
+                            <div style={{ color: '#64748b', fontSize: '9px', marginTop: '2px' }}>
+                              {availableSlots}/{maxSlots}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
 
               {/* Spell Filters */}
               <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>

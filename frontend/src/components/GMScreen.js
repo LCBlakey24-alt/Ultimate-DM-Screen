@@ -5,8 +5,8 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { RQKLogoInline } from '@/components/ui/RQKLogo';
 import { 
-  Sword, Users, BookOpen, Send, Sparkles, 
-  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, Shield, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap, Map
+  Sword, Users, BookOpen, Send, 
+  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap
 } from 'lucide-react';
 import DiceRoller from '@/components/DiceRoller';
 import LootGenerator from '@/components/LootGenerator';
@@ -17,7 +17,6 @@ import RandomTables from '@/components/RandomTables';
 import QuickTips, { TIPS } from '@/components/QuickTips';
 import CustomCreatureManager from '@/components/CustomCreatureManager';
 import QuickCombatModal from '@/components/QuickCombatModal';
-import { MapBuilder } from '@/components/MapBuilder';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -40,8 +39,6 @@ function GMScreen({ username }) {
   const [selectedScenario, setSelectedScenario] = useState(null);
   const [showQuickCombat, setShowQuickCombat] = useState(false);
   const [customCreatures, setCustomCreatures] = useState([]);
-  const [showMapBuilder, setShowMapBuilder] = useState(false);
-  const [maps, setMaps] = useState([]);
   
   // Name Generator state
   const [generatedName, setGeneratedName] = useState(null);
@@ -59,15 +56,14 @@ function GMScreen({ username }) {
 
   const fetchAllData = async () => {
     try {
-      const [campaignRes, playersRes, npcsRes, scenariosRes, calendarRes, notesRes, creaturesRes, mapsRes] = await Promise.all([
+      const [campaignRes, playersRes, npcsRes, scenariosRes, calendarRes, notesRes, creaturesRes] = await Promise.all([
         axios.get(`${API}/campaigns/${campaignId}`),
         axios.get(`${API}/campaigns/${campaignId}/players`),
         axios.get(`${API}/campaigns/${campaignId}/npcs`),
         axios.get(`${API}/campaigns/${campaignId}/combat-scenarios`),
         axios.get(`${API}/campaigns/${campaignId}/calendar`),
         axios.get(`${API}/campaigns/${campaignId}/ingame-notes`),
-        axios.get(`${API}/campaigns/${campaignId}/custom-creatures`),
-        axios.get(`${API}/campaigns/${campaignId}/maps`).catch(() => ({ data: [] }))
+        axios.get(`${API}/campaigns/${campaignId}/custom-creatures`)
       ]);
       
       setCampaign(campaignRes.data);
@@ -77,7 +73,6 @@ function GMScreen({ username }) {
       setCalendar(calendarRes.data);
       setSessionNotes(notesRes.data.slice(0, 30));
       setCustomCreatures(creaturesRes.data || []);
-      setMaps(mapsRes.data || []);
     } catch (error) {
       toast.error('Failed to load GM Screen data');
     } finally {
@@ -172,9 +167,9 @@ function GMScreen({ username }) {
   };
 
   const handleEndSession = () => {
-    if (!window.confirm('End session and return to campaigns?')) return;
+    if (!window.confirm('End session and return to campaign dashboard?')) return;
     toast.success('Session ended!');
-    navigate('/campaigns');
+    navigate(`/campaign/${campaignId}`);
   };
 
   // ==================== NAME GENERATOR ====================
@@ -264,7 +259,6 @@ function GMScreen({ username }) {
 
   const tabs = [
     { id: 'combat', icon: Swords, label: 'Combat', color: '#ef4444' },
-    { id: 'maps', icon: Map, label: 'Maps', color: '#06b6d4' },
     { id: 'dice', icon: Dices, label: 'Dice', color: '#a855f7' },
     { id: 'monsters', icon: Skull, label: 'Monsters', color: '#dc2626' },
     { id: 'creatures', icon: PlusCircle, label: 'Creatures', color: '#10b981' },
@@ -562,99 +556,6 @@ function GMScreen({ username }) {
                     </div>
                   )}
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* MAPS TAB */}
-          {activeTab === 'maps' && (
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h2 style={{ fontSize: '20px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Map size={24} style={{ color: '#06b6d4' }} /> Battle Maps
-                </h2>
-                <Button
-                  onClick={() => setShowMapBuilder(true)}
-                  data-testid="create-map-btn"
-                  style={{
-                    background: 'linear-gradient(180deg, #06b6d4 0%, #0891b2 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  <PlusCircle size={16} />
-                  Create Map
-                </Button>
-              </div>
-              
-              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '20px' }}>
-                Build battle maps with terrain, walls, and fog of war. Place tokens and use in combat encounters.
-              </p>
-              
-              {/* Saved Maps Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
-                {maps.length > 0 ? maps.map(map => (
-                  <div
-                    key={map.id}
-                    style={{
-                      background: 'rgba(6, 182, 212, 0.1)',
-                      border: '2px solid rgba(6, 182, 212, 0.3)',
-                      borderRadius: '12px',
-                      padding: '16px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onClick={() => {
-                      setShowMapBuilder(true);
-                      // Would load this map
-                    }}
-                  >
-                    <div style={{ 
-                      height: '120px', 
-                      background: 'rgba(0,0,0,0.3)', 
-                      borderRadius: '8px', 
-                      marginBottom: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <Map size={32} style={{ color: '#06b6d4', opacity: 0.5 }} />
-                    </div>
-                    <h3 style={{ color: '#fff', fontSize: '14px', fontWeight: '700' }}>
-                      {map.name}
-                    </h3>
-                    <p style={{ color: '#64748b', fontSize: '11px', marginTop: '4px' }}>
-                      {map.width}x{map.height} grid
-                    </p>
-                  </div>
-                )) : (
-                  <div style={{
-                    gridColumn: '1 / -1',
-                    textAlign: 'center',
-                    padding: '60px 20px',
-                    background: 'rgba(6, 182, 212, 0.05)',
-                    borderRadius: '12px',
-                    border: '2px dashed rgba(6, 182, 212, 0.3)'
-                  }}>
-                    <Map size={48} style={{ color: '#06b6d4', opacity: 0.3, margin: '0 auto 16px' }} />
-                    <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
-                      No Battle Maps Yet
-                    </h3>
-                    <p style={{ color: '#64748b', fontSize: '13px', marginBottom: '20px' }}>
-                      Create your first battle map with terrain, walls, and fog of war
-                    </p>
-                    <Button
-                      onClick={() => setShowMapBuilder(true)}
-                      style={{
-                        background: 'linear-gradient(180deg, #06b6d4 0%, #0891b2 100%)'
-                      }}
-                    >
-                      <PlusCircle size={16} style={{ marginRight: '6px' }} />
-                      Create Your First Map
-                    </Button>
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -1102,25 +1003,6 @@ function GMScreen({ username }) {
         customCreatures={customCreatures}
         onStartCombat={handleQuickCombatStart}
       />
-      
-      {/* Map Builder */}
-      {showMapBuilder && (
-        <MapBuilder
-          campaignId={campaignId}
-          onClose={() => setShowMapBuilder(false)}
-          onMapSaved={(savedMap) => {
-            setMaps(prev => {
-              const existing = prev.findIndex(m => m.id === savedMap.id);
-              if (existing >= 0) {
-                const updated = [...prev];
-                updated[existing] = savedMap;
-                return updated;
-              }
-              return [...prev, savedMap];
-            });
-          }}
-        />
-      )}
     </div>
   );
 }
