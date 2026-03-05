@@ -552,11 +552,21 @@ New comprehensive player character sheet with tabbed interface replacing the old
 - Integrated with spellcasting stats (ability, save DC, attack bonus)
 
 ## Completed Features (Updated March 5, 2026)
-1. ✅ **P0: Player Character Sheet Overhaul** - COMPLETED - All-in-one character sheet with tabs, spell slots
-2. ✅ **P1: SRD Content Database** - COMPLETED - 39 spells, 6 classes with features, 4 races with traits, 8 feats
-3. ✅ **P2: UX Improvements** - COMPLETED - Map Builder relocation, dice roller visibility, compact layouts
-4. ✅ **P3: ROOK AI Suggestions** - COMPLETED - "Did you know?" popups based on character class
-5. ✅ **P4: Map-Combat Integration** - COMPLETED - Load saved maps into combat encounters
+1. ✅ **P0: Full UI Rebrand** - COMPLETED - New color scheme (red GM / blue Player), square corners, no gold
+2. ✅ **P0: Unified Dashboard** - COMPLETED - Single page showing both characters and campaigns after login
+3. ✅ **P1: Player Character Sheet Overhaul** - COMPLETED - All-in-one character sheet with tabs, spell slots
+4. ✅ **P2: SRD Content Database** - COMPLETED - 39 spells, 6 classes with features, 4 races with traits, 8 feats
+5. ✅ **P3: UX Improvements** - COMPLETED - Map Builder relocation, dice roller visibility, compact layouts
+6. ✅ **P4: ROOK AI Suggestions** - COMPLETED - "Did you know?" popups based on character class
+7. ✅ **P5: Map-Combat Integration** - COMPLETED - Load saved maps into combat encounters
+
+## Rebrand Summary (March 5, 2026)
+- **Landing Page**: Blue/red accent lines, updated background, square decorative shapes
+- **Unified Dashboard**: Split view - Player (blue left) | GM (red right)
+- **GM Pages**: Red theme (#A4243B) - Campaign Dashboard, GM Screen, Combat
+- **Player Pages**: Blue theme (#2563EB) - Character Sheet, Player Dashboard
+- **Role Selection**: REMOVED - goes directly to Unified Dashboard
+- **Square Corners**: All buttons, cards, tabs use 2-4px border-radius
 
 ## Upcoming Tasks (Priority Order)
 1. **P0: Character Builder Enhancements** - Add subclass selection, spell selection, feat selection (user requested)
@@ -569,13 +579,12 @@ New comprehensive player character sheet with tabbed interface replacing the old
 - Smart Note Parsing | Backend Refactoring (split server.py) | AI Combat Narrator
 
 ## Test Status (Updated March 5, 2026)
-- **Backend**: 31 tests passing (18 SRD API + 13 Character API)
-- **Frontend**: 91 E2E tests passing
+- **Backend**: 31 tests passing
+- **Frontend**: 57 E2E tests passing (100% pass rate)
 - **New Test Files Created**:
-  - `/app/tests/e2e/ux-updates.spec.ts` - UX improvements tests (10 tests)
+  - `/app/tests/e2e/unified-dashboard-rebrand.spec.ts` - Rebrand verification tests (14 tests)
 - **Updated Test Files**:
-  - `/app/tests/e2e/gm-screen-tabs.spec.ts` - Removed Maps tab test
-  - `/app/tests/e2e/map-builder.spec.ts` - Maps now accessed from Campaign Dashboard
+  - `/app/tests/e2e/dashboard-features.spec.ts` - Fixed back button navigation
 
 ---
 Last Updated: March 5, 2026
