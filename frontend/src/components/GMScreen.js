@@ -46,6 +46,7 @@ function GMScreen({ username }) {
   const [nameGender, setNameGender] = useState('any');
   const [savingNPC, setSavingNPC] = useState(false);
   const [savedNames, setSavedNames] = useState([]);
+  const [hoveredTab, setHoveredTab] = useState(null);
   
   // Tab state - single tab for everything
   const [activeTab, setActiveTab] = useState('combat');
@@ -258,22 +259,22 @@ function GMScreen({ username }) {
   if (loading) return <div className="loading-screen"><div className="loading-spinner"></div></div>;
 
   const tabs = [
-    { id: 'combat', icon: Swords, label: 'Combat', color: '#ef4444' },
-    { id: 'dice', icon: Dices, label: 'Dice', color: '#a855f7' },
-    { id: 'monsters', icon: Skull, label: 'Monsters', color: '#dc2626' },
-    { id: 'creatures', icon: PlusCircle, label: 'Creatures', color: '#10b981' },
-    { id: 'names', icon: UserPlus, label: 'Names', color: '#f97316' },
-    { id: 'tables', icon: Wand2, label: 'Tables', color: '#22c55e' },
-    { id: 'loot', icon: Coins, label: 'Loot Gen', color: '#eab308' },
-    { id: 'inventory', icon: Package, label: 'Inventory', color: '#67e8f9' },
-    { id: 'party', icon: Users, label: 'Party', color: '#4a7dff' },
-    { id: 'notes', icon: FileText, label: 'Notes', color: '#94a3b8' },
+    { id: 'combat', icon: Swords, label: 'Combat' },
+    { id: 'dice', icon: Dices, label: 'Dice' },
+    { id: 'monsters', icon: Skull, label: 'Monsters' },
+    { id: 'creatures', icon: PlusCircle, label: 'Creatures' },
+    { id: 'names', icon: UserPlus, label: 'Names' },
+    { id: 'tables', icon: Wand2, label: 'Tables' },
+    { id: 'loot', icon: Coins, label: 'Loot Gen' },
+    { id: 'inventory', icon: Package, label: 'Inventory' },
+    { id: 'party', icon: Users, label: 'Party' },
+    { id: 'notes', icon: FileText, label: 'Notes' },
   ];
 
-  // Dark Minimalist Theme
+  // Dark Minimalist Theme - NEW RED #E11D48
   const theme = {
     bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F', hover: '#2A2A2A' },
-    accent: { red: '#DC2626', redHover: '#EF4444', redSubtle: 'rgba(220, 38, 38, 0.15)' },
+    accent: { red: '#E11D48', redHover: '#F43F5E', redSubtle: 'rgba(225, 29, 72, 0.15)' },
     text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
     border: 'rgba(255, 255, 255, 0.1)'
   };
@@ -318,97 +319,121 @@ function GMScreen({ username }) {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div style={{ position: 'relative', zIndex: 10, maxWidth: '1400px', margin: '0 auto', padding: '20px' }}>
-        {/* Quick Tips */}
-        <QuickTips 
-          tips={TIPS.gmScreen} 
-          pageId="gmScreen" 
-          title="GM Screen Tips"
-        />
-
-        {/* Tab Navigation - Dark Minimalist */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '2px', 
-          marginBottom: '24px', 
-          flexWrap: 'wrap', 
+      {/* Main Layout with Sidebar */}
+      <div style={{ 
+        display: 'flex', 
+        flex: 1,
+        overflow: 'hidden',
+        height: 'calc(100vh - 60px)'
+      }}>
+        {/* LEFT SIDEBAR - Tab Navigation */}
+        <div style={{
+          width: '200px',
+          minWidth: '200px',
           background: theme.bg.dark,
-          padding: '4px', 
-          border: `1px solid ${theme.border}`
+          borderRight: `1px solid ${theme.border}`,
+          padding: '16px 0',
+          overflowY: 'auto'
         }}>
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              data-testid={`tab-${tab.id}`}
-              style={{
-                position: 'relative',
-                flex: '1 1 auto',
-                minWidth: '90px',
-                padding: '12px 16px',
-                border: 'none',
-                background: activeTab === tab.id ? theme.accent.red : 'transparent',
-                color: activeTab === tab.id ? theme.text.white : theme.text.secondary,
-                fontWeight: '600',
-                fontSize: '12px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'all 0.15s'
-              }}
-              onMouseEnter={(e) => {
-                if (activeTab !== tab.id) {
-                  e.currentTarget.style.background = theme.bg.hover;
-                  e.currentTarget.style.color = theme.text.white;
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeTab !== tab.id) {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = theme.text.secondary;
-                }
-              }}
-            >
-              <tab.icon size={16} />
-              {tab.label}
-              {activeTab !== tab.id && (
-                <div style={{
-                  position: 'absolute',
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: '0px',
-                  background: theme.accent.red,
-                  transition: 'width 0.15s'
-                }} className="tab-hover-bar" />
-              )}
-            </button>
-          ))}
+          <h3 style={{
+            color: theme.text.muted,
+            fontSize: '11px',
+            fontWeight: '600',
+            letterSpacing: '1.5px',
+            textTransform: 'uppercase',
+            marginBottom: '12px',
+            paddingLeft: '16px'
+          }}>
+            GM Tools
+          </h3>
+          
+          {/* Sidebar Tabs with Red Bar Hover Effect */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            {tabs.map(tab => {
+              const isActive = activeTab === tab.id;
+              const isHovered = hoveredTab === tab.id && !isActive;
+              
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  onMouseEnter={() => setHoveredTab(tab.id)}
+                  onMouseLeave={() => setHoveredTab(null)}
+                  data-testid={`tab-${tab.id}`}
+                  style={{
+                    position: 'relative',
+                    padding: '12px 16px',
+                    border: 'none',
+                    background: isActive ? theme.accent.red : (isHovered ? theme.bg.hover : 'transparent'),
+                    color: isActive ? theme.text.white : (isHovered ? theme.text.white : theme.text.secondary),
+                    fontWeight: '500',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    textAlign: 'left',
+                    width: '100%',
+                    minHeight: '44px',
+                    overflow: 'hidden'
+                  }}
+                >
+                  <tab.icon size={18} />
+                  <span style={{ flex: 1 }}>{tab.label}</span>
+                  
+                  {/* Red bar on right side - slides in on hover */}
+                  <div style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: isHovered && !isActive ? '3px' : '0px',
+                    background: theme.accent.red,
+                    transition: 'width 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }} />
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Quick Tips */}
+          <div style={{ padding: '16px', marginTop: '16px' }}>
+            <QuickTips 
+              tips={TIPS.gmScreen} 
+              pageId="gmScreen" 
+              title="GM Screen Tips"
+            />
+          </div>
         </div>
 
-        {/* Tab Content */}
-        <div style={{ background: theme.bg.panel, border: `1px solid ${theme.border}`, padding: '24px', minHeight: '500px' }}>
-          {/* COMBAT TAB */}
-          {activeTab === 'combat' && (
-            <div>
-              <h2 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Swords size={24} style={{ color: theme.accent.red }} /> Combat Control
-              </h2>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-                {/* Encounter Selector */}
-                <div>
-                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '600', marginBottom: '12px' }}>Select Encounter</h3>
-                  {scenarios.length === 0 ? (
-                    <div style={{ background: theme.bg.card, border: `1px dashed ${theme.border}`, padding: '30px', textAlign: 'center' }}>
-                      <Swords size={32} style={{ color: theme.text.muted, margin: '0 auto 12px' }} />
-                      <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '8px' }}>No encounters created</p>
-                      <p style={{ color: theme.text.muted, fontSize: '11px' }}>Create encounters in the Combat Creator tab of your campaign dashboard</p>
-                    </div>
-                  ) : (
+        {/* MAIN CONTENT AREA */}
+        <div style={{ 
+          flex: 1, 
+          overflowY: 'auto',
+          padding: '24px',
+          background: theme.bg.black
+        }}>
+          {/* Tab Content */}
+          <div style={{ background: theme.bg.panel, border: `1px solid ${theme.border}`, padding: '24px', minHeight: '500px' }}>
+            {/* COMBAT TAB */}
+            {activeTab === 'combat' && (
+              <div>
+                <h2 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Swords size={24} style={{ color: theme.accent.red }} /> Combat Control
+                </h2>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                  {/* Encounter Selector */}
+                  <div>
+                    <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '600', marginBottom: '12px' }}>Select Encounter</h3>
+                    {scenarios.length === 0 ? (
+                      <div style={{ background: theme.bg.card, border: `1px dashed ${theme.border}`, padding: '30px', textAlign: 'center' }}>
+                        <Swords size={32} style={{ color: theme.text.muted, margin: '0 auto 12px' }} />
+                        <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '8px' }}>No encounters created</p>
+                        <p style={{ color: theme.text.muted, fontSize: '11px' }}>Create encounters in the Combat Creator tab of your campaign dashboard</p>
+                      </div>
+                    ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto' }}>
                       {scenarios.map(s => (
                         <button
@@ -913,7 +938,7 @@ function GMScreen({ username }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 {/* Add Note */}
                 <div>
-                  <h3 style={{ fontSize: '14px', color: '#67e8f9', fontWeight: '700', marginBottom: '12px' }}>Quick Note</h3>
+                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '700', marginBottom: '12px' }}>Quick Note</h3>
                   <textarea
                     value={quickNote}
                     onChange={(e) => setQuickNote(e.target.value)}
@@ -924,8 +949,7 @@ function GMScreen({ username }) {
                   <Button 
                     onClick={handleSubmitNote} 
                     disabled={processingNote || !quickNote.trim()} 
-                    className="btn-primary" 
-                    style={{ width: '100%', display: 'flex', gap: '8px', justifyContent: 'center' }}
+                    style={{ width: '100%', display: 'flex', gap: '8px', justifyContent: 'center', background: theme.accent.red, color: theme.text.white, border: 'none' }}
                   >
                     {processingNote ? <Loader size={14} className="animate-spin" /> : <Send size={14} />} Save Note
                   </Button>
@@ -933,20 +957,20 @@ function GMScreen({ username }) {
 
                 {/* Notes List */}
                 <div>
-                  <h3 style={{ fontSize: '14px', color: '#67e8f9', fontWeight: '700', marginBottom: '12px' }}>Recent Notes ({sessionNotes.length})</h3>
+                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '700', marginBottom: '12px' }}>Recent Notes ({sessionNotes.length})</h3>
                   <div style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {sessionNotes.length === 0 ? (
-                      <div style={{ background: 'rgba(10, 10, 40, 0.5)', border: '2px dashed #1e40af', borderRadius: '12px', padding: '30px', textAlign: 'center' }}>
-                        <FileText size={32} style={{ color: '#1e40af', margin: '0 auto 12px' }} />
-                        <p style={{ color: '#94a3b8', fontSize: '13px' }}>No notes yet</p>
+                      <div style={{ background: theme.bg.card, border: `2px dashed ${theme.border}`, padding: '30px', textAlign: 'center' }}>
+                        <FileText size={32} style={{ color: theme.text.muted, margin: '0 auto 12px' }} />
+                        <p style={{ color: theme.text.secondary, fontSize: '13px' }}>No notes yet</p>
                       </div>
                     ) : (
                       sessionNotes.map(note => (
-                        <div key={note.id} style={{ background: 'rgba(10, 10, 40, 0.5)', border: '1px solid #1e40af', borderRadius: '10px', padding: '12px' }}>
-                          <div style={{ fontSize: '10px', color: '#64748b', marginBottom: '6px' }}>
+                        <div key={note.id} style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, padding: '12px' }}>
+                          <div style={{ fontSize: '10px', color: theme.text.muted, marginBottom: '6px' }}>
                             {new Date(note.created_at).toLocaleString()}
                           </div>
-                          <div style={{ color: '#fff', fontSize: '13px', lineHeight: '1.5' }}>{note.content}</div>
+                          <div style={{ color: theme.text.white, fontSize: '13px', lineHeight: '1.5' }}>{note.content}</div>
                         </div>
                       ))
                     )}
@@ -955,6 +979,7 @@ function GMScreen({ username }) {
               </div>
             </div>
           )}
+        </div>
         </div>
       </div>
 

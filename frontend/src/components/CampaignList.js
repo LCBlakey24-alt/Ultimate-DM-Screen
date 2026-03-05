@@ -12,7 +12,7 @@ import ReviewModal from '@/components/ReviewModal';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Dark Minimalist Theme
+// Dark Minimalist Theme - NEW #E11D48
 const theme = {
   bg: {
     black: '#0D0D0D',
@@ -23,9 +23,9 @@ const theme = {
     elevated: '#333333'
   },
   accent: {
-    red: '#DC2626',
-    redHover: '#EF4444',
-    redSubtle: 'rgba(220, 38, 38, 0.15)'
+    red: '#E11D48',
+    redHover: '#F43F5E',
+    redSubtle: 'rgba(225, 29, 72, 0.15)'
   },
   text: {
     white: '#FFFFFF',

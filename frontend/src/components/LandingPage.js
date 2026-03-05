@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Sword, Users, Map, Sparkles, Dices, BookOpen, Crown, 
   ChevronRight, Star, Shield, Wand2, Globe, Scroll,
   ArrowRight, Check, Play, Zap, Clock, Target, TrendingUp,
-  Brain, ChevronDown
+  Brain
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import RookDemo from '@/components/RookDemo';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-// New Dark Minimalist Design System
+// NEW Dark Minimalist Design System with #E11D48
 const theme = {
   bg: {
     black: '#0D0D0D',
@@ -20,14 +20,13 @@ const theme = {
     panel: '#1A1A1A',
     card: '#1F1F1F',
     hover: '#2A2A2A',
-    elevated: '#333333',
-    light: '#404040'
+    elevated: '#333333'
   },
   accent: {
-    red: '#DC2626',
-    redHover: '#EF4444',
-    redSubtle: 'rgba(220, 38, 38, 0.15)',
-    redBorder: 'rgba(220, 38, 38, 0.4)'
+    red: '#E11D48',
+    redHover: '#F43F5E',
+    redSubtle: 'rgba(225, 29, 72, 0.15)',
+    redBorder: 'rgba(225, 29, 72, 0.4)'
   },
   text: {
     white: '#FFFFFF',
@@ -134,9 +133,9 @@ function LandingPage() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img 
-              src="/rqk-logo-mascot.png" 
-              alt="Rookie Quest Keeper" 
-              style={{ height: '42px' }}
+              src="/rqk-mini-logo.svg" 
+              alt="RQK" 
+              style={{ height: '40px' }}
             />
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
@@ -146,7 +145,6 @@ function LandingPage() {
                 padding: '10px 20px',
                 background: 'transparent',
                 border: `1px solid ${theme.border.default}`,
-                borderRadius: '0',
                 color: theme.text.secondary
               }}
             >
@@ -162,7 +160,6 @@ function LandingPage() {
                 gap: '8px',
                 background: theme.accent.red,
                 border: 'none',
-                borderRadius: '0',
                 color: theme.text.white
               }}
             >
@@ -184,73 +181,37 @@ function LandingPage() {
           padding: '0 24px', 
           textAlign: 'center'
         }}>
-          {/* ROOK Mascot */}
-          <div style={{ marginBottom: '24px' }}>
+          {/* NEW Mascot */}
+          <div style={{ marginBottom: '32px' }}>
             <img 
-              src="/rook-mascot.png" 
-              alt="ROOK" 
+              src="/rqk-mascot.png" 
+              alt="ROOK - Your AI Game Master Assistant" 
               className="animate-float"
               style={{ 
-                height: '140px',
-                filter: `drop-shadow(0 0 30px ${theme.accent.redSubtle})`
+                height: '180px',
+                filter: `drop-shadow(0 0 40px ${theme.accent.redSubtle})`
               }}
             />
           </div>
 
-          {/* Logo Text */}
-          <div style={{ marginBottom: '16px' }}>
-            <h1 style={{
-              fontSize: 'clamp(3rem, 9vw, 7rem)',
-              fontWeight: '700',
-              color: theme.text.white,
-              letterSpacing: 'clamp(4px, 1vw, 12px)',
-              textTransform: 'uppercase',
-              margin: 0,
-              lineHeight: '1'
-            }}>
-              ROOKIE QUEST
-            </h1>
+          {/* Logo with Cityworm Font */}
+          <div style={{ marginBottom: '32px' }}>
+            <img 
+              src="/rqk-main-logo.svg" 
+              alt="Rookie Quest Keeper"
+              style={{ 
+                maxWidth: '700px',
+                width: '100%',
+                height: 'auto'
+              }}
+            />
             
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 'clamp(12px, 2vw, 24px)',
-              marginTop: '-8px'
-            }}>
-              {/* Left accent line */}
-              <div style={{
-                width: 'clamp(30px, 6vw, 80px)',
-                height: '3px',
-                background: theme.accent.red
-              }} />
-              
-              <h1 style={{
-                fontSize: 'clamp(3.5rem, 10vw, 8rem)',
-                fontWeight: '700',
-                color: theme.text.white,
-                letterSpacing: 'clamp(6px, 2vw, 20px)',
-                textTransform: 'uppercase',
-                margin: 0,
-                lineHeight: '1'
-              }}>
-                KEEPER
-              </h1>
-              
-              {/* Right accent line */}
-              <div style={{
-                width: 'clamp(30px, 6vw, 80px)',
-                height: '3px',
-                background: theme.accent.red
-              }} />
-            </div>
-
             <p style={{
               fontSize: 'clamp(0.85rem, 1.8vw, 1.1rem)',
               color: theme.accent.red,
               letterSpacing: '6px',
               textTransform: 'uppercase',
-              marginTop: '16px',
+              marginTop: '24px',
               fontWeight: '600'
             }}>
               Campaign Operating System
@@ -302,7 +263,6 @@ function LandingPage() {
                 gap: '10px',
                 background: theme.accent.red,
                 border: 'none',
-                borderRadius: '0',
                 color: theme.text.white,
                 fontWeight: '600'
               }}
@@ -321,7 +281,6 @@ function LandingPage() {
                 gap: '10px',
                 background: 'transparent',
                 border: `1px solid ${theme.border.default}`,
-                borderRadius: '0',
                 color: theme.text.secondary
               }}
             >
@@ -452,7 +411,7 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Screenshot Showcase */}
+      {/* App Preview Section */}
       <section style={{ padding: '80px 24px', background: theme.bg.panel }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
@@ -465,51 +424,18 @@ function LandingPage() {
               See <span style={{ color: theme.accent.red }}>Rookie Quest Keeper</span> in Action
             </h2>
             <p style={{ color: theme.text.secondary, fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
-              A quick look at how our tools help you run amazing games
+              Try our AI assistant ROOK right here - no signup required
             </p>
           </div>
 
-          {/* Screenshot Tabs */}
-          <div style={{ marginBottom: '32px' }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '8px',
-              flexWrap: 'wrap'
-            }}>
-              {[
-                { id: 'demo', label: 'Live Demo' },
-                { id: 'gm', label: 'GM Dashboard' },
-                { id: 'world', label: 'World Builder' },
-                { id: 'player', label: 'Player Hub' },
-                { id: 'notes', label: 'Session Notes' }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveScreenshot(tab.id)}
-                  style={{
-                    padding: '12px 24px',
-                    background: activeScreenshot === tab.id ? theme.accent.red : theme.bg.card,
-                    border: `1px solid ${activeScreenshot === tab.id ? theme.accent.red : theme.border.default}`,
-                    color: theme.text.white,
-                    fontWeight: '500',
-                    fontSize: '14px',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease'
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Screenshot Display */}
+          {/* Live Demo */}
           <div style={{
             position: 'relative',
             overflow: 'hidden',
             border: `1px solid ${theme.border.default}`,
-            background: theme.bg.black
+            background: theme.bg.black,
+            maxWidth: '900px',
+            margin: '0 auto'
           }}>
             {/* Browser Chrome */}
             <div style={{
@@ -537,38 +463,27 @@ function LandingPage() {
               </div>
             </div>
 
-            {/* Content */}
+            {/* ROOK Demo Content */}
             <div style={{
               background: theme.bg.black,
-              minHeight: '500px',
+              minHeight: '400px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              padding: '40px'
             }}>
-              {activeScreenshot === 'demo' && (
-                <div style={{ padding: '40px', textAlign: 'center' }}>
-                  <h3 style={{ color: theme.text.white, fontSize: '24px', fontWeight: '600', marginBottom: '8px' }}>
-                    Watch ROOK in Action
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '16px' }}>
+                  <img src="/rqk-mascot.png" alt="ROOK" style={{ width: '48px', height: '48px' }} />
+                  <h3 style={{ color: theme.text.white, fontSize: '24px', fontWeight: '600' }}>
+                    Try ROOK Now
                   </h3>
-                  <p style={{ color: theme.text.muted, fontSize: '14px', marginBottom: '24px' }}>
-                    See how ROOK generates NPCs with a single prompt
-                  </p>
-                  <RookDemo />
                 </div>
-              )}
-
-              {activeScreenshot === 'gm' && (
-                <img src="/screenshots/npcs.png" alt="GM Dashboard" style={{ width: '100%', height: 'auto' }} />
-              )}
-              {activeScreenshot === 'world' && (
-                <img src="/screenshots/world-builder.png" alt="World Builder" style={{ width: '100%', height: 'auto' }} />
-              )}
-              {activeScreenshot === 'player' && (
-                <img src="/screenshots/player-hub.png" alt="Player Hub" style={{ width: '100%', height: 'auto' }} />
-              )}
-              {activeScreenshot === 'notes' && (
-                <img src="/screenshots/session-notes.png" alt="Session Notes" style={{ width: '100%', height: 'auto' }} />
-              )}
+                <p style={{ color: theme.text.muted, fontSize: '14px', marginBottom: '24px' }}>
+                  See how ROOK generates NPCs with a single prompt
+                </p>
+                <RookDemo />
+              </div>
             </div>
           </div>
 
@@ -748,7 +663,7 @@ function LandingPage() {
             {/* ROOK Mascot */}
             <div style={{ textAlign: 'center' }}>
               <img 
-                src="/rook-mascot.png" 
+                src="/rqk-mascot.png" 
                 alt="ROOK AI Assistant"
                 className="animate-float"
                 style={{
@@ -859,7 +774,7 @@ function LandingPage() {
                     fontWeight: '600',
                     border: `1px solid ${theme.border.default}`
                   }}>
-                    <img src="/rook-mascot.png" alt="" style={{ width: '18px', height: '18px' }} />
+                    <img src="/rqk-mascot.png" alt="" style={{ width: '18px', height: '18px' }} />
                     {feature}
                   </span>
                 ))}
@@ -1009,7 +924,6 @@ function LandingPage() {
                 <span style={{ color: theme.text.muted }}>/month</span>
               </div>
               
-              {/* Unlimited features */}
               <div style={{
                 padding: '16px',
                 background: theme.bg.card,
@@ -1194,7 +1108,7 @@ function LandingPage() {
             marginBottom: '24px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src="/rqk-logo-text.png" alt="Rookie Quest Keeper" style={{ height: '24px' }} />
+              <img src="/rqk-mini-logo.svg" alt="RQK" style={{ height: '32px' }} />
               <span style={{ color: theme.text.muted, fontSize: '14px' }}>
                 A product of Rookie Quest
               </span>

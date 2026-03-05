@@ -37,24 +37,24 @@ test.describe('Unified Dashboard Rebrand', () => {
       await loginTestUser(page);
       await expect(page.getByText('MY CHARACTERS')).toBeVisible({ timeout: 10000 });
       
-      // Check New Character button is RED (dark minimalist design uses red accent throughout)
+      // Check New Character button is RED (dark minimalist design uses #E11D48 red accent throughout)
       const newCharBtn = page.getByTestId('new-character-btn');
       await expect(newCharBtn).toBeVisible();
       
-      // Verify it has red background color (RGB approximately 220, 38, 38)
-      await expect(newCharBtn).toHaveCSS('background-color', /rgb\(220, 38, 38\)/);
+      // Verify it has red background color #E11D48 = rgb(225, 29, 72)
+      await expect(newCharBtn).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
     });
 
     test('MY CAMPAIGNS section uses red color scheme', async ({ page }) => {
       await loginTestUser(page);
       await expect(page.getByText('MY CAMPAIGNS')).toBeVisible({ timeout: 10000 });
       
-      // Check New Campaign button is red (#DC2626)
+      // Check New Campaign button is red #E11D48
       const newCampBtn = page.getByTestId('new-campaign-btn');
       await expect(newCampBtn).toBeVisible();
       
-      // Verify it has red background color (RGB approximately 220, 38, 38)
-      await expect(newCampBtn).toHaveCSS('background-color', /rgb\(220, 38, 38\)/);
+      // Verify it has red background color #E11D48 = rgb(225, 29, 72)
+      await expect(newCampBtn).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
     });
   });
 
@@ -149,8 +149,8 @@ test.describe('Unified Dashboard Rebrand', () => {
       const loginBtn = page.getByTestId('login-btn');
       await expect(loginBtn).toBeVisible();
       
-      // Verify login button has red background (dark minimalist design)
-      await expect(loginBtn).toHaveCSS('background-color', /rgb\(220, 38, 38\)/);
+      // Verify login button has red background #E11D48 = rgb(225, 29, 72)
+      await expect(loginBtn).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
     });
   });
 

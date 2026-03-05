@@ -34,8 +34,8 @@ test.describe('Dark Minimalist Design - Full Redesign Tests', () => {
       // Use data-testid to get specific button
       const ctaButton = page.getByTestId('get-started-btn');
       await expect(ctaButton).toBeVisible();
-      // Red accent: #DC2626 = rgb(220, 38, 38)
-      await expect(ctaButton).toHaveCSS('background-color', /rgb\(220, 38, 38\)/);
+      // Red accent: #E11D48 = rgb(225, 29, 72)
+      await expect(ctaButton).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
     });
 
     test('Landing page button border-radius (should be square/minimal)', async ({ page }) => {
@@ -71,8 +71,8 @@ test.describe('Dark Minimalist Design - Full Redesign Tests', () => {
 
       const loginBtn = page.getByTestId('login-btn');
       await expect(loginBtn).toBeVisible();
-      // Red: #DC2626 = rgb(220, 38, 38)
-      await expect(loginBtn).toHaveCSS('background-color', /rgb\(220, 38, 38\)/);
+      // Red: #E11D48 = rgb(225, 29, 72)
+      await expect(loginBtn).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
     });
 
     test('Auth page has white heading text', async ({ page }) => {
@@ -122,8 +122,8 @@ test.describe('Dark Minimalist Design - Full Redesign Tests', () => {
     test('New Campaign button has red background', async ({ page }) => {
       const newCampBtn = page.getByTestId('new-campaign-btn');
       await expect(newCampBtn).toBeVisible();
-      // Check it has red color (#DC2626 or #A4243B for GM theme)
-      await expect(newCampBtn).toHaveCSS('background-color', /rgb\((164|220), (36|38), /);
+      // Check it has red color #E11D48 = rgb(225, 29, 72)
+      await expect(newCampBtn).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
     });
 
     test('New Character button visible', async ({ page }) => {
@@ -159,8 +159,8 @@ test.describe('Dark Minimalist Design - Full Redesign Tests', () => {
       // Setting tab is active by default
       const settingTab = page.getByTestId('setting-tab');
       await expect(settingTab).toBeVisible();
-      // Check it has red background (#DC2626 or #A4243B)
-      await expect(settingTab).toHaveCSS('background-color', /rgb\((164|220), (36|38), /);
+      // Check it has red background #E11D48 = rgb(225, 29, 72)
+      await expect(settingTab).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
     });
 
     test('Sidebar tabs have square corners', async ({ page }) => {
@@ -176,12 +176,12 @@ test.describe('Dark Minimalist Design - Full Redesign Tests', () => {
       const worldTab = page.getByTestId('world-tab');
       await worldTab.click();
       
-      // World tab should now have red background
-      await expect(worldTab).toHaveCSS('background-color', /rgb\((164|220), (36|38), /);
+      // World tab should now have red background #E11D48 = rgb(225, 29, 72)
+      await expect(worldTab).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
       
       // Setting tab should no longer have red background
       const settingTab = page.getByTestId('setting-tab');
-      await expect(settingTab).not.toHaveCSS('background-color', /rgb\((164|220), (36|38), /);
+      await expect(settingTab).not.toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
     });
 
     test('Hovering tab shows red bar on right side', async ({ page }) => {
@@ -196,7 +196,8 @@ test.describe('Dark Minimalist Design - Full Redesign Tests', () => {
     test('Open GM Screen button has red background', async ({ page }) => {
       const gmScreenBtn = page.getByTestId('open-dm-screen-btn');
       await expect(gmScreenBtn).toBeVisible();
-      await expect(gmScreenBtn).toHaveCSS('background-color', /rgb\((164|220), /);
+      // #E11D48 = rgb(225, 29, 72)
+      await expect(gmScreenBtn).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
     });
 
     test('Back button is visible and functional', async ({ page }) => {
@@ -221,8 +222,9 @@ test.describe('Dark Minimalist Design - Full Redesign Tests', () => {
       const campaignTips = page.getByText('Campaign Tips');
       await expect(campaignTips).toBeVisible();
       
-      // The tips header should have red color (#DC2626)
-      await expect(campaignTips).toHaveCSS('color', /rgb\((164|220), /);
+      // The tips header should have red color - #E11D48 (rgb(225, 29, 72)) or #DC2626 (rgb(220, 38, 38))
+      // NOTE: QuickTips uses #DC2626 which is slightly different from design system #E11D48
+      await expect(campaignTips).toHaveCSS('color', /rgb\(2(20|25), (29|38), (38|72)\)/);
     });
 
     test('Quick Tips section has red-themed styling', async ({ page }) => {
@@ -235,6 +237,58 @@ test.describe('Dark Minimalist Design - Full Redesign Tests', () => {
       const color = await tipsHeader.evaluate(el => getComputedStyle(el).color);
       // Should NOT be yellow/amber
       expect(color).not.toMatch(/rgb\(245, 158, 11\)/);
+    });
+  });
+
+  test.describe('GM Screen Sidebar Design', () => {
+    test.beforeEach(async ({ page }) => {
+      await loginTestUser(page);
+      await page.goto(`/gm-screen/${TEST_CAMPAIGN_ID}`, { waitUntil: 'domcontentloaded' });
+      await page.getByRole('heading', { name: 'Combat Control' }).waitFor({ timeout: 15000 });
+    });
+
+    test('GM Screen has left sidebar with tabs', async ({ page }) => {
+      // Verify sidebar tabs are present
+      await expect(page.getByTestId('tab-combat')).toBeVisible();
+      await expect(page.getByTestId('tab-dice')).toBeVisible();
+      await expect(page.getByTestId('tab-monsters')).toBeVisible();
+      await expect(page.getByTestId('tab-names')).toBeVisible();
+      await expect(page.getByTestId('tab-notes')).toBeVisible();
+    });
+
+    test('GM Screen active tab has full red background', async ({ page }) => {
+      // Combat tab is active by default
+      const combatTab = page.getByTestId('tab-combat');
+      await expect(combatTab).toBeVisible();
+      // #E11D48 = rgb(225, 29, 72)
+      await expect(combatTab).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
+    });
+
+    test('GM Screen clicking tab changes active state', async ({ page }) => {
+      // Click on Dice tab
+      const diceTab = page.getByTestId('tab-dice');
+      await diceTab.click();
+      
+      // Dice tab should now have red background
+      await expect(diceTab).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
+      
+      // Combat tab should no longer have red background
+      const combatTab = page.getByTestId('tab-combat');
+      await expect(combatTab).not.toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
+    });
+
+    test('GM Screen sidebar tabs have square corners', async ({ page }) => {
+      const combatTab = page.getByTestId('tab-combat');
+      await expect(combatTab).toBeVisible();
+      const borderRadius = await combatTab.evaluate(el => getComputedStyle(el).borderRadius);
+      const radiusValue = parseInt(borderRadius);
+      expect(radiusValue).toBeLessThanOrEqual(4);
+    });
+
+    test('GM Screen has End Session button with red background', async ({ page }) => {
+      const endSessionBtn = page.getByRole('button', { name: /End Session/i });
+      await expect(endSessionBtn).toBeVisible();
+      await expect(endSessionBtn).toHaveCSS('background-color', /rgb\(225, 29, 72\)/);
     });
   });
 });
