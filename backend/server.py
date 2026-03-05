@@ -2957,6 +2957,9 @@ async def rook_generate(request: UnseenServantRequest, username: str = Depends(g
 }'''
         }
         
+        # Add aliases for entity types
+        entity_prompts['world_place'] = entity_prompts['place_of_interest']
+        
         if request.entity_type not in entity_prompts:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid entity type: {request.entity_type}")
         
@@ -3025,7 +3028,7 @@ async def rook_generate(request: UnseenServantRequest, username: str = Depends(g
             )
             await db.locations.insert_one(new_location.model_dump())
             
-        elif request.entity_type == 'place_of_interest':
+        elif request.entity_type == 'place_of_interest' or request.entity_type == 'world_place':
             if not request.location_id:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="location_id required for place_of_interest")
             
