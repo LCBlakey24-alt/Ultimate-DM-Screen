@@ -97,16 +97,17 @@ function FloatingDiceRoller() {
 
   const clearRolls = () => setRolls([]);
 
-  // Floating button (closed state)
+  // Floating button (closed state) - Bottom LEFT for better UX
   if (!isOpen) {
     return (
       <button
         onClick={() => setIsOpen(true)}
         data-testid="dice-roller-toggle"
+        title="Dice Roller (Press R)"
         style={{
           position: 'fixed',
           bottom: '24px',
-          right: '24px',
+          left: '24px',
           width: '56px',
           height: '56px',
           background: theme.accent.red,
@@ -133,14 +134,14 @@ function FloatingDiceRoller() {
     );
   }
 
-  // Open dice roller panel
+  // Open dice roller panel - Bottom LEFT
   return (
     <div
       data-testid="dice-roller-panel"
       style={{
         position: 'fixed',
         bottom: '24px',
-        right: '24px',
+        left: '24px',
         width: isMinimized ? '200px' : '320px',
         background: theme.bg.panel,
         border: `1px solid ${theme.border}`,

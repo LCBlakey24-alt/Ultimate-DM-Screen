@@ -824,7 +824,7 @@ function CharacterBuilder() {
                       style={{ width: '100%' }}
                     >
                       {BACKGROUNDS.map(b => (
-                        <option key={b} value={b}>{b}</option>
+                        <option key={b.name} value={b.name}>{b.name}</option>
                       ))}
                     </select>
                   </div>

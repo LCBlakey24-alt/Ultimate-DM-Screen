@@ -75,12 +75,15 @@ const SPELL_LEVELS = {
   9: '9th Level'
 };
 
-// Glass morphism panel styles
+// Blue theme for player section
+const playerBlue = '#3B82F6';
+const playerBlueHover = '#60A5FA';
+const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
+
+// Dark panel styles (matching dark theme)
 const glassPanel = {
-  background: 'rgba(30, 41, 59, 0.6)',
-  backdropFilter: 'blur(16px)',
-  border: '1px solid rgba(148, 163, 184, 0.1)',
-  borderRadius: '12px'
+  background: '#1A1A1A',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
 };
 
 // Compact Ability Score Block Component
@@ -647,22 +650,16 @@ function CharacterSheetFull() {
   return (
     <div data-testid="character-sheet-full" style={{
       minHeight: '100vh',
-      background: '#0B0F19',
+      background: '#0D0D0D',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      fontFamily: 'Cityworm, Inter, sans-serif'
     }}>
-      {/* Parallax Background */}
+      {/* Subtle Blue Gradient Background */}
       <div style={{
         position: 'absolute',
         inset: 0,
-        background: 'radial-gradient(ellipse at top, rgba(59, 130, 246, 0.08) 0%, transparent 50%), radial-gradient(ellipse at bottom, rgba(168, 85, 247, 0.06) 0%, transparent 50%)',
-        pointerEvents: 'none'
-      }} />
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px)`,
-        backgroundSize: '50px 50px',
+        background: 'radial-gradient(ellipse at top, rgba(59, 130, 246, 0.06) 0%, transparent 50%)',
         pointerEvents: 'none'
       }} />
 
