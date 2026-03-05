@@ -6,7 +6,7 @@ import {
   TEST_CAMPAIGN_ID 
 } from '../fixtures/helpers';
 
-const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'https://ttrpg-combat-fix.preview.emergentagent.com';
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'https://dm-battle-maps.preview.emergentagent.com';
 
 test.describe('Map Builder Feature', () => {
   

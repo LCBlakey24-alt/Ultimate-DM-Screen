@@ -12,6 +12,7 @@ import {
   Sparkles, Link, Loader, ChevronRight, Users, BookOpen, FileText
 } from 'lucide-react';
 import PlayerNotesTab from './tabs/PlayerNotesTab';
+import { RookSuggestionPopup, useRookSuggestions, getRandomTip } from './RookSuggestions';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -26,9 +27,21 @@ function PlayerDashboard({ username, onLogout }) {
   const [inviteCode, setInviteCode] = useState('');
   const [joining, setJoining] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
+  
+  // ROOK suggestions based on selected character
+  const characterClass = selectedCharacter?.character_class || 'fighter';
+  const characterLevel = selectedCharacter?.level || 1;
+  const { currentSuggestion, showRandomTip, dismissSuggestion } = useRookSuggestions(characterClass, characterLevel);
 
   useEffect(() => {
     fetchData();
+    
+    // Show a random tip after 5 seconds on dashboard
+    const tipTimer = setTimeout(() => {
+      showRandomTip();
+    }, 5000);
+    
+    return () => clearTimeout(tipTimer);
   }, []);
 
   const fetchData = async () => {
@@ -804,6 +817,17 @@ function PlayerDashboard({ username, onLogout }) {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* ROOK AI Suggestion Popup */}
+      {currentSuggestion && (
+        <RookSuggestionPopup
+          suggestion={currentSuggestion}
+          onDismiss={dismissSuggestion}
+          position="bottom-right"
+          autoHide={true}
+          autoHideDelay={15000}
+        />
+      )}
     </div>
   );
 }

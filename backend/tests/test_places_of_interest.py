@@ -7,7 +7,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ttrpg-combat-fix.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dm-battle-maps.preview.emergentagent.com').rstrip('/')
 
 class TestPlacesOfInterest:
     """Test CRUD operations for Places of Interest within Locations"""

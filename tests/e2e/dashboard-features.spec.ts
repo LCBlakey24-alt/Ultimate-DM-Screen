@@ -14,7 +14,7 @@ test.describe('Campaign Dashboard Features', () => {
     const context = await browser.newContext();
     const page = await context.newPage();
     
-    await page.goto('https://ttrpg-combat-fix.preview.emergentagent.com/auth', { waitUntil: 'domcontentloaded' });
+    await page.goto('https://dm-battle-maps.preview.emergentagent.com/auth', { waitUntil: 'domcontentloaded' });
     
     // Click CREATE ACCOUNT button to switch to register form
     await page.getByRole('button', { name: /create account/i }).click();
@@ -23,7 +23,15 @@ test.describe('Campaign Dashboard Features', () => {
     await page.getByTestId('register-username').fill(testUsername);
     await page.getByTestId('register-password').fill(testPassword);
     await page.getByTestId('register-btn').click();
-    await expect(page).toHaveURL(/\/campaigns/, { timeout: 15000 });
+    
+    // After registration, user goes to /home, then needs to select GM role
+    await expect(page).toHaveURL(/\/(home|campaigns)/, { timeout: 15000 });
+    
+    // If on /home, click to enter as Game Master
+    if (page.url().includes('/home')) {
+      await page.getByRole('button', { name: /Enter as Game Master/i }).click();
+      await expect(page).toHaveURL(/\/campaigns/, { timeout: 10000 });
+    }
     
     // Create a test campaign
     await page.getByTestId('create-campaign-btn').click();
@@ -52,7 +60,13 @@ test.describe('Campaign Dashboard Features', () => {
     await page.getByTestId('login-email').fill(testEmail);
     await page.getByTestId('login-password').fill(testPassword);
     await page.getByTestId('login-btn').click();
-    await expect(page).toHaveURL(/\/campaigns/, { timeout: 15000 });
+    await expect(page).toHaveURL(/\/(home|campaigns)/, { timeout: 15000 });
+    
+    // If on /home, click to enter as Game Master
+    if (page.url().includes('/home')) {
+      await page.getByRole('button', { name: /Enter as Game Master/i }).click();
+      await expect(page).toHaveURL(/\/campaigns/, { timeout: 10000 });
+    }
     
     // Go to campaign dashboard
     const manageBtns = page.locator('[data-testid^="manage-campaign-btn-"]');

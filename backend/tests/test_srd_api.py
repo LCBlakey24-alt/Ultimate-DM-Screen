@@ -6,7 +6,8 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+# Use conftest.py value or default
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dm-battle-maps.preview.emergentagent.com').rstrip('/')
 
 
 @pytest.fixture

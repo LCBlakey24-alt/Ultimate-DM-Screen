@@ -1,0 +1,89 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - banner [ref=e7]:
+          - generic [ref=e8]:
+            - button [ref=e11] [cursor=pointer]:
+              - img
+            - generic [ref=e13]:
+              - img "ROOK" [ref=e14]
+              - generic [ref=e15]:
+                - generic [ref=e16]: ROOKIE QUEST
+                - generic [ref=e19]: KEEPER
+            - generic [ref=e22]:
+              - heading "Player Hub" [level=1] [ref=e23]
+              - paragraph [ref=e24]: Manage your characters and campaigns
+          - generic [ref=e25]:
+            - button [ref=e28] [cursor=pointer]:
+              - img
+            - button [ref=e31] [cursor=pointer]:
+              - generic [ref=e32]:
+                - img
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - button "Characters" [ref=e35] [cursor=pointer]:
+              - img [ref=e36]
+              - text: Characters
+            - button "Notes" [ref=e39] [cursor=pointer]:
+              - img [ref=e41]
+              - text: Notes
+          - generic [ref=e44]:
+            - button "Create New Character" [ref=e47] [cursor=pointer]:
+              - img
+              - text: Create New Character
+            - button "Join Campaign" [ref=e50] [cursor=pointer]:
+              - img
+              - text: Join Campaign
+          - generic [ref=e51]:
+            - heading "My Characters (0)" [level=2] [ref=e53]:
+              - img [ref=e54]
+              - text: My Characters
+              - generic [ref=e57]: (0)
+            - generic [ref=e59]:
+              - img [ref=e60]
+              - heading "No Characters Yet" [level=3] [ref=e63]
+              - paragraph [ref=e64]: Create your first character to join adventures
+              - button "Create Character" [ref=e67] [cursor=pointer]:
+                - img
+                - text: Create Character
+          - generic [ref=e68]:
+            - heading "My Campaigns (0)" [level=2] [ref=e70]:
+              - img [ref=e72]
+              - text: My Campaigns
+              - generic [ref=e74]: (0)
+            - generic [ref=e76]:
+              - img [ref=e78]
+              - heading "No Campaigns Joined" [level=3] [ref=e80]
+              - paragraph [ref=e81]: Ask your GM for an invite code to join their campaign
+              - button "Join Campaign" [ref=e84] [cursor=pointer]:
+                - img
+                - text: Join Campaign
+        - generic [ref=e87]:
+          - generic [ref=e88]:
+            - img [ref=e91]
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - generic [ref=e95]: ROOK Says
+                - img [ref=e97]
+              - heading "Consider Dodging!" [level=4] [ref=e99]
+            - button [ref=e100] [cursor=pointer]:
+              - img [ref=e101]
+          - paragraph [ref=e104]: The Dodge action gives all attackers disadvantage against you until your next turn.
+          - generic [ref=e105]:
+            - img [ref=e106]
+            - generic [ref=e108]: Perfect when you need to survive a round.
+      - button [ref=e110] [cursor=pointer]:
+        - img [ref=e112]
+    - generic:
+      - generic:
+        - region "Notifications alt+T"
+  - link "Made with Emergent" [active] [ref=e115] [cursor=pointer]:
+    - /url: https://app.emergent.sh/?utm_source=emergent-badge
+    - generic [ref=e116]:
+      - img [ref=e117]
+      - paragraph [ref=e118]: Made with Emergent
+```

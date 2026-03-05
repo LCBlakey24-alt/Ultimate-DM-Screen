@@ -6,13 +6,15 @@ import { Button } from '@/components/ui/button';
 import { 
   Sword, Users, Shield, Heart, Skull, SkipForward, RotateCcw, 
   Trash2, ChevronUp, ChevronDown, CircleDot, Grid, ZoomIn, ZoomOut, X,
-  ArrowLeft, Coins, Package, Target, UserPlus, Sparkles
+  ArrowLeft, Coins, Package, Target, UserPlus, Sparkles, Map, Lightbulb
 } from 'lucide-react';
 import { QuickReferencePopup, QuickReferenceModal } from '@/components/QuickReference';
 import AttackRoller from '@/components/AttackRoller';
 import CreatureAbilityCard from '@/components/CreatureAbilityCard';
 import NPCCombatRecruiter from '@/components/NPCCombatRecruiter';
 import { SimpleToken } from '@/components/CombatTokenGenerator';
+import { RookSuggestionPopup, useRookSuggestions } from '@/components/RookSuggestions';
+import MapCanvas from '@/components/MapBuilder/MapCanvas';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -52,6 +54,14 @@ function CombatPage() {
   const [attackingCreature, setAttackingCreature] = useState(null);
   const [showNPCRecruiter, setShowNPCRecruiter] = useState(false);
   const [expandedAbilities, setExpandedAbilities] = useState({});
+  
+  // Map integration state
+  const [selectedMap, setSelectedMap] = useState(null);
+  const [availableMaps, setAvailableMaps] = useState([]);
+  const [showMapSelector, setShowMapSelector] = useState(false);
+  
+  // ROOK suggestions
+  const { currentSuggestion, showSuggestion, dismissSuggestion } = useRookSuggestions('fighter', 5);
   
   // Map state
   const [mapImage, setMapImage] = useState(null);
@@ -93,7 +103,7 @@ function CombatPage() {
     setShowGrid(scenarioData.show_grid !== false);
     setGridSize(scenarioData.grid_size || 40);
     
-    // Load map
+    // Load map if specified in scenario
     if (scenarioData.map_url) {
       const img = new window.Image();
       img.crossOrigin = 'anonymous';
@@ -102,8 +112,57 @@ function CombatPage() {
       img.src = scenarioData.map_url;
     }
     
+    // Fetch available maps for this campaign
+    fetchAvailableMaps();
+    
+    // Show ROOK combat start suggestion
+    setTimeout(() => showSuggestion('combat_start'), 2000);
+    
     toast.success(`Combat started! ${loadedCombatants.length} combatants rolled initiative.`);
   }, []);
+
+  // Fetch available maps
+  const fetchAvailableMaps = async () => {
+    try {
+      const response = await axios.get(`${API}/campaigns/${campaignId}/maps`);
+      setAvailableMaps(response.data || []);
+    } catch (error) {
+      console.log('No maps available');
+    }
+  };
+
+  // Load a map into combat
+  const loadMapIntoCombat = (map) => {
+    setSelectedMap(map);
+    setShowMapSelector(false);
+    
+    // Position tokens on the map
+    if (combatants.length > 0) {
+      const newTokens = combatants.map((c, i) => {
+        const col = i % 6;
+        const row = Math.floor(i / 6);
+        return {
+          id: c.id,
+          name: c.name,
+          x: 2 + col,
+          y: 2 + row,
+          isEnemy: c.isEnemy !== false && c.type !== 'player',
+          hp: c.hp,
+          maxHp: c.maxHp
+        };
+      });
+      setTokens(newTokens);
+    }
+    
+    toast.success(`Loaded map: ${map.name}`);
+  };
+
+  // Handle token movement on map
+  const handleMapTokenMove = (tokenId, newX, newY) => {
+    setTokens(prev => prev.map(t => 
+      t.id === tokenId ? { ...t, x: newX, y: newY } : t
+    ));
+  };
 
   const nextTurn = () => {
     if (combatants.length === 0) return;
@@ -849,6 +908,120 @@ function CombatPage() {
           <Coins size={18} />
           {collectedLoot.length > 0 ? `${collectedLoot.length} Loot` : `${defeatedWithLoot.length} Loot Available`}
         </button>
+      )}
+
+      {/* Map Selector Button */}
+      {availableMaps.length > 0 && !selectedMap && (
+        <button
+          onClick={() => setShowMapSelector(true)}
+          data-testid="load-map-btn"
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            left: '24px',
+            padding: '14px 20px',
+            background: 'linear-gradient(180deg, #06b6d4 0%, #0891b2 100%)',
+            border: 'none',
+            borderRadius: '12px',
+            color: '#fff',
+            fontWeight: '700',
+            fontSize: '14px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 0 30px rgba(6, 182, 212, 0.5)',
+            zIndex: 100
+          }}
+        >
+          <Map size={18} />
+          Load Battle Map ({availableMaps.length})
+        </button>
+      )}
+
+      {/* Map Selector Modal */}
+      {showMapSelector && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.8)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            background: 'rgba(17, 24, 39, 0.95)',
+            border: '2px solid rgba(6, 182, 212, 0.3)',
+            borderRadius: '20px',
+            padding: '24px',
+            maxWidth: '600px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflow: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: '800', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Map size={24} color="#06b6d4" />
+                Select Battle Map
+              </h2>
+              <button onClick={() => setShowMapSelector(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                <X size={24} color="#64748b" />
+              </button>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+              {availableMaps.map(map => (
+                <button
+                  key={map.id}
+                  onClick={() => loadMapIntoCombat(map)}
+                  style={{
+                    background: 'rgba(6, 182, 212, 0.1)',
+                    border: '2px solid rgba(6, 182, 212, 0.3)',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <div style={{
+                    height: '80px',
+                    background: 'rgba(0,0,0,0.3)',
+                    borderRadius: '8px',
+                    marginBottom: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <Map size={32} color="#06b6d4" style={{ opacity: 0.5 }} />
+                  </div>
+                  <h3 style={{ color: '#fff', fontSize: '14px', fontWeight: '700', margin: '0 0 4px 0' }}>
+                    {map.name}
+                  </h3>
+                  <p style={{ color: '#64748b', fontSize: '11px', margin: 0 }}>
+                    {map.width}x{map.height} grid
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ROOK AI Suggestion Popup */}
+      {currentSuggestion && (
+        <RookSuggestionPopup
+          suggestion={currentSuggestion}
+          onDismiss={dismissSuggestion}
+          position="bottom-right"
+          autoHide={true}
+          autoHideDelay={12000}
+        />
       )}
 
       <QuickReferenceModal isOpen={showQuickRef} onClose={() => setShowQuickRef(false)} />
