@@ -505,28 +505,58 @@ New comprehensive player character sheet with tabbed interface replacing the old
 - Class features filtered by character level
 - Feats available for selection in edit mode
 
+## UX Improvements (March 5, 2026)
+
+### Map Builder Relocation
+- **Moved from:** GM Screen → **Moved to:** Campaign Dashboard (Maps tab)
+- Campaign Dashboard = building, prepping, creating (maps, combats, NPCs, world)
+- GM Screen = running sessions (reference tables, dice, quick info lookup only)
+
+### Navigation Fixes
+- End combat → returns to Campaign Dashboard (not campaign list)
+- End session → returns to Campaign Dashboard (not campaign list)
+
+### Dice Roller Visibility
+- Shows ONLY on gameplay pages: /campaigns, /player, /campaign/:id, /gm-screen/:id, /combat
+- Hidden on: Landing page (/), Auth (/auth), Role selection, Pricing, Admin, Account settings
+
+### Character Sheet Layout Tightening
+- More compact ability score blocks (smaller padding, font sizes)
+- Compact skill rows with ellipsis for long names
+- Smaller quick stats bar (HP, AC, Init, Speed, Prof)
+- Compact tab navigation
+
+### Spell Slots Added to Character Sheet
+- Visual spell slot tracker in Spells tab (levels 1-9)
+- Click to mark slots as used (in edit mode)
+- Shows available/max slots count
+- Integrated with spellcasting stats (ability, save DC, attack bonus)
+
 ## Completed Features (Updated March 5, 2026)
-1. ✅ **P0: Player Character Sheet Overhaul** - COMPLETED - All-in-one character sheet with tabs for stats, spells, features, equipment
+1. ✅ **P0: Player Character Sheet Overhaul** - COMPLETED - All-in-one character sheet with tabs, spell slots
 2. ✅ **P1: SRD Content Database** - COMPLETED - 39 spells, 6 classes with features, 4 races with traits, 8 feats
-3. ✅ **P3: ROOK AI Suggestions** - COMPLETED - "Did you know?" popups based on character class
-4. ✅ **P4: Map-Combat Integration** - COMPLETED - Load saved maps into combat encounters
+3. ✅ **P2: UX Improvements** - COMPLETED - Map Builder relocation, dice roller visibility, compact layouts
+4. ✅ **P3: ROOK AI Suggestions** - COMPLETED - "Did you know?" popups based on character class
+5. ✅ **P4: Map-Combat Integration** - COMPLETED - Load saved maps into combat encounters
 
 ## Upcoming Tasks (Priority Order)
-1. **P1: GM→Player Item Linking** - Items assigned by GM auto-sync to player's character sheet with functional stats
-2. **P2: Player Mode (Full Combat View)** - Player-side combat experience with actions syncing to GM view
-3. **P3: User Content Upload System** - Allow users to upload JSON files to extend content database
-4. **P4: Database Indexes** - Add MongoDB indexes for campaign_id, user_id for performance
+1. **P0: Character Builder Enhancements** - Add subclass selection, spell selection, feat selection (user requested)
+2. **P1: GM→Player Item Linking** - Items assigned by GM auto-sync to player's character sheet with functional stats
+3. **P2: Player Mode (Full Combat View)** - Player-side combat experience with actions syncing to GM view
+4. **P3: User Content Upload System** - Allow users to upload JSON files to extend content database
+5. **P4: Database Indexes** - Add MongoDB indexes for campaign_id, user_id for performance
 
 ## Future Tasks
 - Smart Note Parsing | Backend Refactoring (split server.py) | AI Combat Narrator
 
 ## Test Status (Updated March 5, 2026)
 - **Backend**: 31 tests passing (18 SRD API + 13 Character API)
-- **Frontend**: 79 E2E tests passing (24 Character Sheet + 55 existing)
+- **Frontend**: 91 E2E tests passing
 - **New Test Files Created**:
-  - `/app/tests/e2e/character-sheet-full.spec.ts` - Character Sheet Full UI tests (24 tests)
-  - `/app/backend/tests/test_character_api.py` - Character API CRUD tests (13 tests)
-  - Previous: map-builder, map-combat-integration, rook-suggestions, ui-redesign specs
+  - `/app/tests/e2e/ux-updates.spec.ts` - UX improvements tests (10 tests)
+- **Updated Test Files**:
+  - `/app/tests/e2e/gm-screen-tabs.spec.ts` - Removed Maps tab test
+  - `/app/tests/e2e/map-builder.spec.ts` - Maps now accessed from Campaign Dashboard
 
 ---
 Last Updated: March 5, 2026
