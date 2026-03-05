@@ -323,6 +323,7 @@ function RookSuggestionPopup({
             </h4>
           </div>
           <button
+            data-testid="rook-dismiss-btn"
             onClick={handleDismiss}
             style={{
               background: 'rgba(255, 255, 255, 0.1)',

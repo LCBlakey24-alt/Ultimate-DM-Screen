@@ -969,7 +969,7 @@ function CombatPage() {
                 <Map size={24} color="#06b6d4" />
                 Select Battle Map
               </h2>
-              <button onClick={() => setShowMapSelector(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+              <button data-testid="close-map-selector-btn" onClick={() => setShowMapSelector(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
                 <X size={24} color="#64748b" />
               </button>
             </div>

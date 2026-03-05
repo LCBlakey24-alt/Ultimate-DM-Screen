@@ -109,3 +109,11 @@ export async function selectEncounterAndStartCombat(page: Page) {
   // Wait for page to load - the Initiative Order heading
   await expect(page.getByRole('heading', { name: 'Initiative Order' })).toBeVisible({ timeout: 15000 });
 }
+
+// Test character for Character Sheet testing
+export const TEST_CHARACTER_ID = '5c200c1f-d584-4b3d-a3a2-e1b49b404e8d';
+
+export async function navigateToCharacterSheet(page: Page, characterId: string = TEST_CHARACTER_ID) {
+  await page.goto(`/characters/${characterId}`, { waitUntil: 'domcontentloaded' });
+  await expect(page.getByTestId('character-sheet-full')).toBeVisible({ timeout: 10000 });
+}

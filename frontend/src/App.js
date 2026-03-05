@@ -19,6 +19,7 @@ import AccountSettings from '@/components/AccountSettings';
 import MyCharacters from '@/components/MyCharacters';
 import CharacterBuilder from '@/components/CharacterBuilder';
 import CharacterSheet from '@/components/CharacterSheet';
+import CharacterSheetFull from '@/components/CharacterSheetFull';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -137,7 +138,7 @@ function App() {
             path="/characters/:characterId" 
             element={
               isAuthenticated ? 
-                <CharacterSheet /> : 
+                <CharacterSheetFull /> : 
                 <Navigate to="/auth" replace />
             } 
           />

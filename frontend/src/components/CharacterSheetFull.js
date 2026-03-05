@@ -1,0 +1,1448 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { 
+  ArrowLeft, Edit, Heart, Shield, Zap, User, Sword, Book, 
+  Sparkles, Save, X, Target, Activity, TrendingUp, Award, Link2,
+  Star, Flame, Wand2, ScrollText, Crown, Dumbbell, Brain, Eye,
+  MessageCircle, Plus, Minus, ChevronDown, ChevronUp, Check, Search,
+  BookOpen, Swords, Package, Coins, Feather, Moon, Sun, CircleDot
+} from 'lucide-react';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+import JoinCampaignModal from '@/components/JoinCampaignModal';
+import { RookSuggestionPopup, useRookSuggestions } from './RookSuggestions';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+// Skills with their linked abilities
+const SKILLS = [
+  { name: 'Acrobatics', ability: 'dexterity', icon: Activity },
+  { name: 'Animal Handling', ability: 'wisdom', icon: Heart },
+  { name: 'Arcana', ability: 'intelligence', icon: Sparkles },
+  { name: 'Athletics', ability: 'strength', icon: Dumbbell },
+  { name: 'Deception', ability: 'charisma', icon: MessageCircle },
+  { name: 'History', ability: 'intelligence', icon: Book },
+  { name: 'Insight', ability: 'wisdom', icon: Eye },
+  { name: 'Intimidation', ability: 'charisma', icon: Flame },
+  { name: 'Investigation', ability: 'intelligence', icon: Search },
+  { name: 'Medicine', ability: 'wisdom', icon: Heart },
+  { name: 'Nature', ability: 'intelligence', icon: Sun },
+  { name: 'Perception', ability: 'wisdom', icon: Eye },
+  { name: 'Performance', ability: 'charisma', icon: Star },
+  { name: 'Persuasion', ability: 'charisma', icon: MessageCircle },
+  { name: 'Religion', ability: 'intelligence', icon: Moon },
+  { name: 'Sleight of Hand', ability: 'dexterity', icon: Feather },
+  { name: 'Stealth', ability: 'dexterity', icon: Eye },
+  { name: 'Survival', ability: 'wisdom', icon: Target }
+];
+
+// Ability score data
+const ABILITIES = [
+  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#ef4444', icon: Dumbbell },
+  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#22c55e', icon: Zap },
+  { key: 'constitution', label: 'CON', fullName: 'Constitution', color: '#f97316', icon: Shield },
+  { key: 'intelligence', label: 'INT', fullName: 'Intelligence', color: '#3b82f6', icon: Brain },
+  { key: 'wisdom', label: 'WIS', fullName: 'Wisdom', color: '#a855f7', icon: Eye },
+  { key: 'charisma', label: 'CHA', fullName: 'Charisma', color: '#ec4899', icon: Star }
+];
+
+// Tab configuration
+const TABS = [
+  { id: 'overview', label: 'Overview', icon: User },
+  { id: 'abilities', label: 'Abilities & Skills', icon: Dumbbell },
+  { id: 'spells', label: 'Spells', icon: Wand2 },
+  { id: 'features', label: 'Features & Feats', icon: Crown },
+  { id: 'equipment', label: 'Equipment', icon: Swords },
+  { id: 'notes', label: 'Notes & Bio', icon: ScrollText }
+];
+
+// Spell level labels
+const SPELL_LEVELS = {
+  0: 'Cantrip',
+  1: '1st Level',
+  2: '2nd Level', 
+  3: '3rd Level',
+  4: '4th Level',
+  5: '5th Level',
+  6: '6th Level',
+  7: '7th Level',
+  8: '8th Level',
+  9: '9th Level'
+};
+
+// Glass morphism panel styles
+const glassPanel = {
+  background: 'rgba(30, 41, 59, 0.6)',
+  backdropFilter: 'blur(16px)',
+  border: '1px solid rgba(148, 163, 184, 0.1)',
+  borderRadius: '16px'
+};
+
+// Ability Score Block Component
+function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBonus, onClick, isEditing, onScoreChange }) {
+  const Icon = ability.icon;
+  const saveModifier = isProficientSave ? modifier + profBonus : modifier;
+  const saveDisplay = saveModifier >= 0 ? `+${saveModifier}` : `${saveModifier}`;
+  
+  return (
+    <div 
+      onClick={onClick}
+      data-testid={`ability-${ability.key}`}
+      style={{
+        ...glassPanel,
+        padding: '16px',
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'all 0.2s ease',
+        textAlign: 'center',
+        minWidth: '100px'
+      }}
+      className="hover:border-cyan-500/30"
+    >
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        gap: '6px',
+        marginBottom: '8px'
+      }}>
+        <Icon size={16} color={ability.color} />
+        <span style={{ 
+          color: ability.color, 
+          fontSize: '12px', 
+          fontWeight: '700',
+          letterSpacing: '1px'
+        }}>
+          {ability.label}
+        </span>
+      </div>
+      
+      {isEditing ? (
+        <Input
+          type="number"
+          value={score}
+          onChange={(e) => onScoreChange(ability.key, parseInt(e.target.value) || 10)}
+          style={{ 
+            width: '60px', 
+            textAlign: 'center', 
+            margin: '0 auto',
+            fontSize: '20px',
+            fontWeight: '800'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        />
+      ) : (
+        <div style={{ 
+          fontSize: '28px', 
+          fontWeight: '800', 
+          color: '#fff',
+          fontFamily: 'Montserrat, sans-serif',
+          lineHeight: 1
+        }}>
+          {score}
+        </div>
+      )}
+      
+      <div style={{ 
+        fontSize: '18px', 
+        fontWeight: '700', 
+        color: ability.color,
+        marginTop: '4px'
+      }}>
+        {modifier >= 0 ? `+${modifier}` : modifier}
+      </div>
+      
+      <div style={{
+        marginTop: '8px',
+        paddingTop: '8px',
+        borderTop: `1px solid ${ability.color}30`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '4px'
+      }}>
+        {isProficientSave && (
+          <div style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            background: '#22c55e'
+          }} />
+        )}
+        <span style={{ color: '#94a3b8', fontSize: '10px' }}>SAVE</span>
+        <span style={{ color: isProficientSave ? '#22c55e' : '#e2e8f0', fontSize: '14px', fontWeight: '700' }}>
+          {saveDisplay}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// Skill Row Component
+function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onToggle, isEditing }) {
+  const Icon = skill.icon;
+  const totalMod = abilityMod + (isProficient ? profBonus : 0) + (isExpert ? profBonus : 0);
+  const display = totalMod >= 0 ? `+${totalMod}` : `${totalMod}`;
+  
+  const ability = ABILITIES.find(a => a.key === skill.ability);
+  
+  return (
+    <div 
+      data-testid={`skill-${skill.name.toLowerCase().replace(/ /g, '-')}`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '8px 12px',
+        borderRadius: '8px',
+        background: isProficient ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
+        transition: 'all 0.15s ease'
+      }}
+      className="hover:bg-slate-700/30"
+    >
+      {isEditing && (
+        <button
+          onClick={() => onToggle(skill.name)}
+          style={{
+            width: '20px',
+            height: '20px',
+            borderRadius: '4px',
+            border: isProficient ? '2px solid #22c55e' : '2px solid #475569',
+            background: isProficient ? '#22c55e' : 'transparent',
+            marginRight: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer'
+          }}
+        >
+          {isProficient && <Check size={12} color="#fff" />}
+        </button>
+      )}
+      
+      <Icon size={14} color={isProficient ? '#22c55e' : '#64748b'} style={{ marginRight: '8px' }} />
+      
+      <span style={{ 
+        flex: 1,
+        color: isProficient ? '#22c55e' : '#e2e8f0',
+        fontSize: '13px',
+        fontWeight: isProficient ? '600' : '400'
+      }}>
+        {skill.name}
+      </span>
+      
+      <span style={{ 
+        color: ability?.color || '#64748b', 
+        fontSize: '10px',
+        marginRight: '12px',
+        opacity: 0.7
+      }}>
+        {ability?.label}
+      </span>
+      
+      <span style={{ 
+        color: isProficient ? '#22c55e' : '#fff',
+        fontSize: '14px',
+        fontWeight: '700',
+        minWidth: '32px',
+        textAlign: 'right'
+      }}>
+        {display}
+      </span>
+    </div>
+  );
+}
+
+// Spell Card Component
+function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
+  const [expanded, setExpanded] = useState(false);
+  
+  const levelColor = spell.level === 0 ? '#94a3b8' : 
+    spell.level <= 2 ? '#22c55e' : 
+    spell.level <= 5 ? '#3b82f6' : 
+    spell.level <= 7 ? '#a855f7' : '#f97316';
+  
+  return (
+    <div 
+      data-testid={`spell-${spell.name.toLowerCase().replace(/ /g, '-')}`}
+      style={{
+        ...glassPanel,
+        padding: '12px 16px',
+        marginBottom: '8px'
+      }}
+    >
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          cursor: 'pointer' 
+        }}
+        onClick={() => setExpanded(!expanded)}
+      >
+        {canPrepare && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onTogglePrepare(spell); }}
+            style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '6px',
+              border: isPrepared ? '2px solid #22c55e' : '2px solid #475569',
+              background: isPrepared ? 'rgba(34, 197, 94, 0.2)' : 'transparent',
+              marginRight: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            {isPrepared && <Check size={14} color="#22c55e" />}
+          </button>
+        )}
+        
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>
+              {spell.name}
+            </span>
+            {spell.concentration && (
+              <span style={{ 
+                background: '#7c3aed20',
+                color: '#a78bfa',
+                fontSize: '9px',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontWeight: '600'
+              }}>
+                CONC
+              </span>
+            )}
+            {spell.ritual && (
+              <span style={{ 
+                background: '#06b6d420',
+                color: '#22d3ee',
+                fontSize: '9px',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontWeight: '600'
+              }}>
+                RITUAL
+              </span>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
+            <span style={{ color: levelColor, fontSize: '11px' }}>
+              {SPELL_LEVELS[spell.level]}
+            </span>
+            <span style={{ color: '#64748b', fontSize: '11px' }}>
+              {spell.school}
+            </span>
+          </div>
+        </div>
+        
+        {expanded ? <ChevronUp size={18} color="#64748b" /> : <ChevronDown size={18} color="#64748b" />}
+      </div>
+      
+      {expanded && (
+        <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '12px' }}>
+            <div>
+              <span style={{ color: '#64748b', fontSize: '10px' }}>CASTING TIME</span>
+              <p style={{ color: '#e2e8f0', fontSize: '12px' }}>{spell.casting_time}</p>
+            </div>
+            <div>
+              <span style={{ color: '#64748b', fontSize: '10px' }}>RANGE</span>
+              <p style={{ color: '#e2e8f0', fontSize: '12px' }}>{spell.range}</p>
+            </div>
+            <div>
+              <span style={{ color: '#64748b', fontSize: '10px' }}>COMPONENTS</span>
+              <p style={{ color: '#e2e8f0', fontSize: '12px' }}>{spell.components?.join(', ')}</p>
+            </div>
+            <div>
+              <span style={{ color: '#64748b', fontSize: '10px' }}>DURATION</span>
+              <p style={{ color: '#e2e8f0', fontSize: '12px' }}>{spell.duration}</p>
+            </div>
+          </div>
+          <p style={{ color: '#cbd5e1', fontSize: '12px', lineHeight: '1.6' }}>
+            {spell.description}
+          </p>
+          {spell.higher_levels && (
+            <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '6px' }}>
+              <span style={{ color: '#3b82f6', fontSize: '10px', fontWeight: '600' }}>AT HIGHER LEVELS</span>
+              <p style={{ color: '#93c5fd', fontSize: '11px', marginTop: '4px' }}>{spell.higher_levels}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Feature Card Component
+function FeatureCard({ feature, source }) {
+  const [expanded, setExpanded] = useState(false);
+  
+  const sourceColors = {
+    class: { bg: '#3b82f620', text: '#60a5fa' },
+    race: { bg: '#22c55e20', text: '#4ade80' },
+    feat: { bg: '#f9731620', text: '#fb923c' },
+    background: { bg: '#a855f720', text: '#c084fc' }
+  };
+  
+  const colors = sourceColors[source] || sourceColors.class;
+  
+  return (
+    <div 
+      data-testid={`feature-${feature.name?.toLowerCase().replace(/ /g, '-')}`}
+      style={{
+        ...glassPanel,
+        padding: '12px 16px',
+        marginBottom: '8px'
+      }}
+    >
+      <div 
+        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+        onClick={() => setExpanded(!expanded)}
+      >
+        <Crown size={16} color={colors.text} style={{ marginRight: '12px' }} />
+        <div style={{ flex: 1 }}>
+          <span style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>
+            {feature.name}
+          </span>
+          <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+            <span style={{ 
+              background: colors.bg, 
+              color: colors.text, 
+              fontSize: '9px', 
+              padding: '2px 6px', 
+              borderRadius: '4px',
+              textTransform: 'uppercase',
+              fontWeight: '600'
+            }}>
+              {source}
+            </span>
+            {feature.level && (
+              <span style={{ color: '#64748b', fontSize: '11px' }}>Level {feature.level}</span>
+            )}
+            {feature.uses_per_rest && (
+              <span style={{ color: '#64748b', fontSize: '11px' }}>
+                {feature.uses_at_level?.[1] || 1}x per {feature.uses_per_rest} rest
+              </span>
+            )}
+          </div>
+        </div>
+        {expanded ? <ChevronUp size={18} color="#64748b" /> : <ChevronDown size={18} color="#64748b" />}
+      </div>
+      
+      {expanded && (
+        <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
+          <p style={{ color: '#cbd5e1', fontSize: '12px', lineHeight: '1.6' }}>
+            {feature.description}
+          </p>
+          {feature.benefits && (
+            <ul style={{ marginTop: '8px', paddingLeft: '16px' }}>
+              {feature.benefits.map((benefit, i) => (
+                <li key={i} style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '4px' }}>
+                  {benefit}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Main Component
+function CharacterSheetFull() {
+  const { characterId } = useParams();
+  const navigate = useNavigate();
+  const [character, setCharacter] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [editMode, setEditMode] = useState(false);
+  const [editData, setEditData] = useState({});
+  const [saving, setSaving] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  
+  // SRD Data
+  const [srdSpells, setSrdSpells] = useState([]);
+  const [srdClasses, setSrdClasses] = useState([]);
+  const [srdFeats, setSrdFeats] = useState([]);
+  const [loadingSrd, setLoadingSrd] = useState(true);
+  
+  // Spell filtering
+  const [spellSearch, setSpellSearch] = useState('');
+  const [spellLevelFilter, setSpellLevelFilter] = useState('all');
+  
+  // ROOK Suggestions
+  const { currentSuggestion, showRandomTip, dismissSuggestion } = useRookSuggestions(
+    character?.character_class, 
+    character?.level || 1
+  );
+
+  // Fetch character data
+  useEffect(() => {
+    fetchCharacter();
+    fetchSrdData();
+  }, [characterId]);
+
+  // Show random tip after load
+  useEffect(() => {
+    if (character && !loading) {
+      const timer = setTimeout(() => showRandomTip(), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [character, loading]);
+
+  const fetchCharacter = async () => {
+    try {
+      const response = await axios.get(`${API}/characters/${characterId}`);
+      setCharacter(response.data);
+      setEditData(response.data);
+    } catch (error) {
+      toast.error('Failed to load character');
+      navigate('/player');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchSrdData = async () => {
+    try {
+      const [spellsRes, classesRes, featsRes] = await Promise.all([
+        axios.get(`${API}/srd/spells`),
+        axios.get(`${API}/srd/classes`),
+        axios.get(`${API}/srd/feats`)
+      ]);
+      setSrdSpells(spellsRes.data.spells || []);
+      
+      const classData = classesRes.data.classes || [];
+      setSrdClasses(classData);
+      
+      // Get feats from dedicated endpoint
+      const featsData = featsRes.data.feats || [];
+      setSrdFeats(featsData);
+    } catch (error) {
+      console.error('Failed to load SRD data:', error);
+    } finally {
+      setLoadingSrd(false);
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await axios.put(`${API}/characters/${characterId}`, editData);
+      toast.success('Character updated!');
+      setCharacter(editData);
+      setEditMode(false);
+    } catch (error) {
+      toast.error('Failed to save changes');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Calculations
+  const calculateModifier = useCallback((score) => Math.floor((score - 10) / 2), []);
+  
+  const getModifierDisplay = useCallback((score) => {
+    const mod = calculateModifier(score);
+    return mod >= 0 ? `+${mod}` : `${mod}`;
+  }, [calculateModifier]);
+
+  // Get class features based on character class and level
+  const classFeatures = useMemo(() => {
+    if (!character || !srdClasses.length) return [];
+    const classData = srdClasses.find(c => 
+      c.name.toLowerCase() === character.character_class?.toLowerCase()
+    );
+    if (!classData) return [];
+    return classData.features?.filter(f => f.level <= character.level) || [];
+  }, [character, srdClasses]);
+
+  // Get available spells for class
+  const availableSpells = useMemo(() => {
+    if (!character || !srdSpells.length) return [];
+    const classLower = character.character_class?.toLowerCase();
+    return srdSpells.filter(spell => 
+      spell.classes?.includes(classLower)
+    );
+  }, [character, srdSpells]);
+
+  // Filtered spells
+  const filteredSpells = useMemo(() => {
+    let spells = availableSpells;
+    if (spellSearch) {
+      spells = spells.filter(s => 
+        s.name.toLowerCase().includes(spellSearch.toLowerCase())
+      );
+    }
+    if (spellLevelFilter !== 'all') {
+      spells = spells.filter(s => s.level === parseInt(spellLevelFilter));
+    }
+    return spells.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
+  }, [availableSpells, spellSearch, spellLevelFilter]);
+
+  // Toggle spell preparation
+  const toggleSpellPrepared = (spell) => {
+    const current = editData.spells_known || [];
+    const exists = current.find(s => s.name === spell.name);
+    if (exists) {
+      setEditData({
+        ...editData,
+        spells_known: current.filter(s => s.name !== spell.name)
+      });
+    } else {
+      setEditData({
+        ...editData,
+        spells_known: [...current, { name: spell.name, level: spell.level, school: spell.school }]
+      });
+    }
+  };
+
+  // Toggle skill proficiency
+  const toggleSkillProficiency = (skillName) => {
+    const current = editData.skill_proficiencies || [];
+    const skillKey = skillName.toLowerCase().replace(/ /g, '_');
+    if (current.includes(skillKey)) {
+      setEditData({
+        ...editData,
+        skill_proficiencies: current.filter(s => s !== skillKey)
+      });
+    } else {
+      setEditData({
+        ...editData,
+        skill_proficiencies: [...current, skillKey]
+      });
+    }
+  };
+
+  const updateAbilityScore = (ability, value) => {
+    setEditData({ ...editData, [ability]: value });
+  };
+
+  if (loading) {
+    return (
+      <div style={{ padding: '24px', minHeight: '100vh', background: '#0B0F19' }}>
+        <LoadingSkeleton type="card" count={3} />
+      </div>
+    );
+  }
+
+  if (!character) return null;
+
+  const data = editMode ? editData : character;
+  const profBonus = data.proficiency_bonus || Math.ceil(1 + data.level / 4);
+
+  return (
+    <div data-testid="character-sheet-full" style={{
+      minHeight: '100vh',
+      background: '#0B0F19',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Parallax Background */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'radial-gradient(ellipse at top, rgba(59, 130, 246, 0.08) 0%, transparent 50%), radial-gradient(ellipse at bottom, rgba(168, 85, 247, 0.06) 0%, transparent 50%)',
+        pointerEvents: 'none'
+      }} />
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px)`,
+        backgroundSize: '50px 50px',
+        pointerEvents: 'none'
+      }} />
+
+      <div style={{ position: 'relative', zIndex: 1, padding: '24px', maxWidth: '1600px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start', 
+          marginBottom: '24px',
+          flexWrap: 'wrap',
+          gap: '16px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <Button 
+              data-testid="back-btn"
+              onClick={() => navigate('/player')} 
+              style={{ 
+                background: 'rgba(30, 41, 59, 0.6)',
+                border: '1px solid rgba(148, 163, 184, 0.2)',
+                borderRadius: '12px',
+                padding: '12px'
+              }}
+            >
+              <ArrowLeft size={20} color="#94a3b8" />
+            </Button>
+            <div>
+              <h1 style={{
+                fontSize: 'clamp(24px, 4vw, 36px)',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: '800',
+                color: '#fff',
+                marginBottom: '4px'
+              }}>
+                {data.name}
+              </h1>
+              <p style={{ color: '#67e8f9', fontSize: '14px' }}>
+                Level {data.level} {data.race} {data.character_class}
+                {data.subclass && ` (${data.subclass})`}
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            {!data.campaign_id && (
+              <Button 
+                data-testid="join-campaign-btn"
+                onClick={() => setShowJoinModal(true)}
+                style={{ 
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '10px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                <Link2 size={16} />
+                Join Campaign
+              </Button>
+            )}
+            {editMode ? (
+              <>
+                <Button 
+                  data-testid="cancel-edit-btn"
+                  onClick={() => { setEditMode(false); setEditData(character); }}
+                  style={{ 
+                    background: 'transparent',
+                    border: '1px solid #475569',
+                    borderRadius: '10px',
+                    padding: '10px 16px',
+                    color: '#94a3b8'
+                  }}
+                >
+                  <X size={16} style={{ marginRight: '6px' }} />
+                  Cancel
+                </Button>
+                <Button 
+                  data-testid="save-btn"
+                  onClick={handleSave}
+                  disabled={saving}
+                  style={{ 
+                    background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '10px 16px'
+                  }}
+                >
+                  <Save size={16} style={{ marginRight: '6px' }} />
+                  {saving ? 'Saving...' : 'Save'}
+                </Button>
+              </>
+            ) : (
+              <Button 
+                data-testid="edit-btn"
+                onClick={() => setEditMode(true)}
+                style={{ 
+                  background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '10px 16px'
+                }}
+              >
+                <Edit size={16} style={{ marginRight: '6px' }} />
+                Edit
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Stats Bar */}
+        <div style={{
+          display: 'flex',
+          gap: '16px',
+          marginBottom: '24px',
+          flexWrap: 'wrap'
+        }}>
+          {/* HP */}
+          <div data-testid="hp-display" style={{
+            ...glassPanel,
+            padding: '12px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+            <Heart size={20} color="#ef4444" />
+            <div>
+              <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>HP</span>
+              {editMode ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Input
+                    type="number"
+                    value={editData.current_hit_points}
+                    onChange={(e) => setEditData({ ...editData, current_hit_points: parseInt(e.target.value) || 0 })}
+                    style={{ width: '50px', padding: '4px', textAlign: 'center' }}
+                  />
+                  <span style={{ color: '#64748b' }}>/</span>
+                  <Input
+                    type="number"
+                    value={editData.max_hit_points}
+                    onChange={(e) => setEditData({ ...editData, max_hit_points: parseInt(e.target.value) || 0 })}
+                    style={{ width: '50px', padding: '4px', textAlign: 'center' }}
+                  />
+                </div>
+              ) : (
+                <span style={{ color: '#ef4444', fontWeight: '800', fontSize: '20px' }}>
+                  {data.current_hit_points}/{data.max_hit_points}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* AC */}
+          <div data-testid="ac-display" style={{
+            ...glassPanel,
+            padding: '12px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+            <Shield size={20} color="#3b82f6" />
+            <div>
+              <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>AC</span>
+              {editMode ? (
+                <Input
+                  type="number"
+                  value={editData.armor_class}
+                  onChange={(e) => setEditData({ ...editData, armor_class: parseInt(e.target.value) || 10 })}
+                  style={{ width: '50px', padding: '4px', textAlign: 'center' }}
+                />
+              ) : (
+                <span style={{ color: '#3b82f6', fontWeight: '800', fontSize: '20px' }}>
+                  {data.armor_class}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Initiative */}
+          <div data-testid="initiative-display" style={{
+            ...glassPanel,
+            padding: '12px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+            <Zap size={20} color="#eab308" />
+            <div>
+              <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>INIT</span>
+              <span style={{ color: '#eab308', fontWeight: '800', fontSize: '20px' }}>
+                {getModifierDisplay(data.dexterity)}
+              </span>
+            </div>
+          </div>
+
+          {/* Speed */}
+          <div data-testid="speed-display" style={{
+            ...glassPanel,
+            padding: '12px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+            <Activity size={20} color="#22c55e" />
+            <div>
+              <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>SPEED</span>
+              <span style={{ color: '#22c55e', fontWeight: '800', fontSize: '20px' }}>
+                {data.speed} ft
+              </span>
+            </div>
+          </div>
+
+          {/* Proficiency */}
+          <div data-testid="prof-display" style={{
+            ...glassPanel,
+            padding: '12px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+            <Award size={20} color="#a855f7" />
+            <div>
+              <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>PROF</span>
+              <span style={{ color: '#a855f7', fontWeight: '800', fontSize: '20px' }}>
+                +{profBonus}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '24px',
+          overflowX: 'auto',
+          paddingBottom: '8px'
+        }}>
+          {TABS.map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                data-testid={`tab-${tab.id}`}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  ...glassPanel,
+                  padding: '12px 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  background: isActive 
+                    ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(168, 85, 247, 0.2) 100%)'
+                    : 'rgba(30, 41, 59, 0.6)',
+                  border: isActive 
+                    ? '1px solid rgba(59, 130, 246, 0.5)'
+                    : '1px solid rgba(148, 163, 184, 0.1)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <Icon size={18} color={isActive ? '#60a5fa' : '#64748b'} />
+                <span style={{ 
+                  color: isActive ? '#fff' : '#94a3b8',
+                  fontSize: '14px',
+                  fontWeight: isActive ? '600' : '400'
+                }}>
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Tab Content */}
+        <div style={{ minHeight: '500px' }}>
+          {/* Overview Tab */}
+          {activeTab === 'overview' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+              {/* Ability Scores */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#67e8f9', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Ability Scores
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  {ABILITIES.map(ability => (
+                    <AbilityScoreBlock
+                      key={ability.key}
+                      ability={ability}
+                      score={data[ability.key]}
+                      modifier={calculateModifier(data[ability.key])}
+                      isProficientSave={data.saving_throw_proficiencies?.includes(ability.key)}
+                      profBonus={profBonus}
+                      isEditing={editMode}
+                      onScoreChange={updateAbilityScore}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Character Info */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#67e8f9', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Character Info
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {[
+                    { label: 'Race', value: data.race },
+                    { label: 'Class', value: data.character_class },
+                    { label: 'Subclass', value: data.subclass || 'None' },
+                    { label: 'Background', value: data.background || 'None' },
+                    { label: 'Alignment', value: data.alignment },
+                    { label: 'Experience', value: `${data.experience_points || 0} XP` }
+                  ].map(item => (
+                    <div key={item.label} style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      padding: '8px 12px',
+                      background: 'rgba(30, 41, 59, 0.4)',
+                      borderRadius: '8px'
+                    }}>
+                      <span style={{ color: '#64748b', fontSize: '13px' }}>{item.label}</span>
+                      <span style={{ color: '#e2e8f0', fontSize: '13px', fontWeight: '500' }}>{item.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick Skills */}
+              <div style={{ ...glassPanel, padding: '20px', gridColumn: 'span 2' }}>
+                <h3 style={{ color: '#67e8f9', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Skills
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '4px' }}>
+                  {SKILLS.map(skill => {
+                    const abilityMod = calculateModifier(data[skill.ability]);
+                    const isProficient = data.skill_proficiencies?.includes(skill.name.toLowerCase().replace(/ /g, '_'));
+                    return (
+                      <SkillRow
+                        key={skill.name}
+                        skill={skill}
+                        abilityMod={abilityMod}
+                        profBonus={profBonus}
+                        isProficient={isProficient}
+                        isEditing={editMode}
+                        onToggle={toggleSkillProficiency}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Abilities & Skills Tab */}
+          {activeTab === 'abilities' && (
+            <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '20px' }}>
+              {/* Ability Scores - Large */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#67e8f9', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Ability Scores
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {ABILITIES.map(ability => (
+                    <AbilityScoreBlock
+                      key={ability.key}
+                      ability={ability}
+                      score={data[ability.key]}
+                      modifier={calculateModifier(data[ability.key])}
+                      isProficientSave={data.saving_throw_proficiencies?.includes(ability.key)}
+                      profBonus={profBonus}
+                      isEditing={editMode}
+                      onScoreChange={updateAbilityScore}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Skills - Full */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#67e8f9', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Skills {editMode && <span style={{ color: '#64748b', fontWeight: '400', fontSize: '12px' }}>(click to toggle proficiency)</span>}
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '4px' }}>
+                  {SKILLS.map(skill => {
+                    const abilityMod = calculateModifier(data[skill.ability]);
+                    const isProficient = (editMode ? editData : data).skill_proficiencies?.includes(skill.name.toLowerCase().replace(/ /g, '_'));
+                    return (
+                      <SkillRow
+                        key={skill.name}
+                        skill={skill}
+                        abilityMod={abilityMod}
+                        profBonus={profBonus}
+                        isProficient={isProficient}
+                        isEditing={editMode}
+                        onToggle={toggleSkillProficiency}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Spells Tab */}
+          {activeTab === 'spells' && (
+            <div>
+              {/* Spell Slots */}
+              {data.spellcasting_ability && (
+                <div style={{ ...glassPanel, padding: '16px 20px', marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <div>
+                      <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>SPELLCASTING ABILITY</span>
+                      <span style={{ color: '#a855f7', fontWeight: '700', fontSize: '16px', textTransform: 'capitalize' }}>
+                        {data.spellcasting_ability}
+                      </span>
+                    </div>
+                    <div>
+                      <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>SPELL SAVE DC</span>
+                      <span style={{ color: '#f97316', fontWeight: '700', fontSize: '16px' }}>
+                        {8 + profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}
+                      </span>
+                    </div>
+                    <div>
+                      <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>SPELL ATTACK</span>
+                      <span style={{ color: '#22c55e', fontWeight: '700', fontSize: '16px' }}>
+                        +{profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Spell Filters */}
+              <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                <div style={{ position: 'relative', flex: '1', minWidth: '200px' }}>
+                  <Search size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <Input
+                    data-testid="spell-search"
+                    placeholder="Search spells..."
+                    value={spellSearch}
+                    onChange={(e) => setSpellSearch(e.target.value)}
+                    style={{ paddingLeft: '40px' }}
+                  />
+                </div>
+                <select
+                  data-testid="spell-level-filter"
+                  value={spellLevelFilter}
+                  onChange={(e) => setSpellLevelFilter(e.target.value)}
+                  style={{
+                    ...glassPanel,
+                    padding: '10px 16px',
+                    color: '#e2e8f0',
+                    fontSize: '14px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="all">All Levels</option>
+                  {Object.entries(SPELL_LEVELS).map(([level, label]) => (
+                    <option key={level} value={level}>{label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Spell List */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '8px' }}>
+                {loadingSrd ? (
+                  <p style={{ color: '#64748b' }}>Loading spells...</p>
+                ) : filteredSpells.length === 0 ? (
+                  <p style={{ color: '#64748b' }}>No spells available for your class.</p>
+                ) : (
+                  filteredSpells.map(spell => (
+                    <SpellCard
+                      key={spell.name}
+                      spell={spell}
+                      isPrepared={data.spells_known?.some(s => s.name === spell.name)}
+                      onTogglePrepare={toggleSpellPrepared}
+                      canPrepare={editMode}
+                    />
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Features & Feats Tab */}
+          {activeTab === 'features' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '20px' }}>
+              {/* Class Features */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#60a5fa', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Class Features ({data.character_class})
+                </h3>
+                {classFeatures.length === 0 ? (
+                  <p style={{ color: '#64748b', fontSize: '14px' }}>No class features loaded.</p>
+                ) : (
+                  classFeatures.map((feature, i) => (
+                    <FeatureCard key={i} feature={feature} source="class" />
+                  ))
+                )}
+              </div>
+
+              {/* Racial Traits */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#4ade80', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Racial Traits ({data.race})
+                </h3>
+                {!data.racial_traits?.length ? (
+                  <p style={{ color: '#64748b', fontSize: '14px' }}>No racial traits recorded.</p>
+                ) : (
+                  data.racial_traits.map((trait, i) => (
+                    <FeatureCard key={i} feature={trait} source="race" />
+                  ))
+                )}
+              </div>
+
+              {/* Feats */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#fb923c', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Feats
+                </h3>
+                {!data.feats?.length ? (
+                  <p style={{ color: '#64748b', fontSize: '14px' }}>No feats selected.</p>
+                ) : (
+                  data.feats.map((feat, i) => (
+                    <FeatureCard key={i} feature={feat} source="feat" />
+                  ))
+                )}
+                
+                {/* Available Feats from SRD */}
+                {editMode && srdFeats.length > 0 && (
+                  <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
+                    <h4 style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '12px' }}>AVAILABLE FEATS (SRD)</h4>
+                    {srdFeats.filter(f => !data.feats?.some(df => df.name === f.name)).map((feat, i) => (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setEditData({
+                            ...editData,
+                            feats: [...(editData.feats || []), { name: feat.name, description: feat.description }]
+                          });
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '8px 12px',
+                          background: 'rgba(249, 115, 22, 0.1)',
+                          border: '1px solid rgba(249, 115, 22, 0.3)',
+                          borderRadius: '8px',
+                          marginBottom: '8px',
+                          width: '100%',
+                          cursor: 'pointer',
+                          textAlign: 'left'
+                        }}
+                      >
+                        <Plus size={14} color="#fb923c" />
+                        <span style={{ color: '#fb923c', fontSize: '13px' }}>{feat.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Equipment Tab */}
+          {activeTab === 'equipment' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+              {/* Currency */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#eab308', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Coins size={18} color="#eab308" />
+                  Currency
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
+                  {['copper', 'silver', 'electrum', 'gold', 'platinum'].map(coin => (
+                    <div key={coin} style={{ textAlign: 'center', padding: '12px 8px', background: 'rgba(234, 179, 8, 0.1)', borderRadius: '8px' }}>
+                      <span style={{ 
+                        color: coin === 'gold' ? '#eab308' : coin === 'platinum' ? '#94a3b8' : coin === 'copper' ? '#b45309' : coin === 'silver' ? '#9ca3af' : '#a855f7',
+                        fontSize: '10px',
+                        display: 'block',
+                        marginBottom: '4px',
+                        textTransform: 'uppercase'
+                      }}>
+                        {coin.slice(0, 2)}
+                      </span>
+                      {editMode ? (
+                        <Input
+                          type="number"
+                          value={editData.currency?.[coin] || 0}
+                          onChange={(e) => setEditData({
+                            ...editData,
+                            currency: { ...editData.currency, [coin]: parseInt(e.target.value) || 0 }
+                          })}
+                          style={{ width: '100%', textAlign: 'center', padding: '4px' }}
+                        />
+                      ) : (
+                        <span style={{ color: '#fff', fontWeight: '700', fontSize: '16px' }}>
+                          {data.currency?.[coin] || 0}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Equipment */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#ef4444', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Swords size={18} color="#ef4444" />
+                  Equipment
+                </h3>
+                {!data.equipment?.length ? (
+                  <p style={{ color: '#64748b', fontSize: '14px' }}>No equipment recorded.</p>
+                ) : (
+                  data.equipment.map((item, i) => (
+                    <div key={i} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '10px 12px',
+                      background: item.equipped ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
+                      borderRadius: '8px',
+                      marginBottom: '4px'
+                    }}>
+                      <span style={{ color: item.equipped ? '#22c55e' : '#e2e8f0', fontSize: '13px' }}>
+                        {item.name}
+                      </span>
+                      {item.equipped && (
+                        <span style={{ color: '#22c55e', fontSize: '10px', fontWeight: '600' }}>EQUIPPED</span>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Inventory */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#3b82f6', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Package size={18} color="#3b82f6" />
+                  Inventory
+                </h3>
+                {!data.inventory?.length ? (
+                  <p style={{ color: '#64748b', fontSize: '14px' }}>No items in inventory.</p>
+                ) : (
+                  data.inventory.map((item, i) => (
+                    <div key={i} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 12px',
+                      background: 'rgba(59, 130, 246, 0.05)',
+                      borderRadius: '8px',
+                      marginBottom: '4px'
+                    }}>
+                      <span style={{ color: '#e2e8f0', fontSize: '13px' }}>{item.name}</span>
+                      <span style={{ color: '#64748b', fontSize: '12px' }}>x{item.quantity || 1}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Notes & Bio Tab */}
+          {activeTab === 'notes' && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
+              {/* Personality */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#ec4899', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Personality
+                </h3>
+                {['personality_traits', 'ideals', 'bonds', 'flaws'].map(field => (
+                  <div key={field} style={{ marginBottom: '16px' }}>
+                    <label style={{ color: '#94a3b8', fontSize: '11px', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
+                      {field.replace('_', ' ')}
+                    </label>
+                    {editMode ? (
+                      <textarea
+                        value={editData[field] || ''}
+                        onChange={(e) => setEditData({ ...editData, [field]: e.target.value })}
+                        style={{
+                          width: '100%',
+                          minHeight: '60px',
+                          padding: '10px',
+                          background: 'rgba(30, 41, 59, 0.6)',
+                          border: '1px solid rgba(148, 163, 184, 0.2)',
+                          borderRadius: '8px',
+                          color: '#e2e8f0',
+                          fontSize: '13px',
+                          resize: 'vertical'
+                        }}
+                      />
+                    ) : (
+                      <p style={{ color: '#e2e8f0', fontSize: '13px', lineHeight: '1.6' }}>
+                        {data[field] || 'Not specified'}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Backstory */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#a855f7', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Backstory
+                </h3>
+                {editMode ? (
+                  <textarea
+                    value={editData.backstory || ''}
+                    onChange={(e) => setEditData({ ...editData, backstory: e.target.value })}
+                    style={{
+                      width: '100%',
+                      minHeight: '200px',
+                      padding: '12px',
+                      background: 'rgba(30, 41, 59, 0.6)',
+                      border: '1px solid rgba(148, 163, 184, 0.2)',
+                      borderRadius: '8px',
+                      color: '#e2e8f0',
+                      fontSize: '13px',
+                      lineHeight: '1.6',
+                      resize: 'vertical'
+                    }}
+                  />
+                ) : (
+                  <p style={{ color: '#e2e8f0', fontSize: '13px', lineHeight: '1.8' }}>
+                    {data.backstory || 'No backstory written yet.'}
+                  </p>
+                )}
+              </div>
+
+              {/* Notes */}
+              <div style={{ ...glassPanel, padding: '20px' }}>
+                <h3 style={{ color: '#22d3ee', fontSize: '16px', fontWeight: '700', marginBottom: '16px', fontFamily: 'Montserrat' }}>
+                  Notes
+                </h3>
+                {editMode ? (
+                  <textarea
+                    value={editData.notes || ''}
+                    onChange={(e) => setEditData({ ...editData, notes: e.target.value })}
+                    style={{
+                      width: '100%',
+                      minHeight: '200px',
+                      padding: '12px',
+                      background: 'rgba(30, 41, 59, 0.6)',
+                      border: '1px solid rgba(148, 163, 184, 0.2)',
+                      borderRadius: '8px',
+                      color: '#e2e8f0',
+                      fontSize: '13px',
+                      lineHeight: '1.6',
+                      resize: 'vertical'
+                    }}
+                  />
+                ) : (
+                  <p style={{ color: '#e2e8f0', fontSize: '13px', lineHeight: '1.8' }}>
+                    {data.notes || 'No notes yet.'}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Join Campaign Modal */}
+      <JoinCampaignModal
+        characterId={characterId}
+        characterName={character.name}
+        open={showJoinModal}
+        onOpenChange={setShowJoinModal}
+        onSuccess={() => fetchCharacter()}
+      />
+
+      {/* ROOK Suggestions */}
+      <RookSuggestionPopup
+        suggestion={currentSuggestion}
+        onDismiss={dismissSuggestion}
+        position="bottom-right"
+      />
+    </div>
+  );
+}
+
+export default CharacterSheetFull;
