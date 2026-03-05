@@ -321,6 +321,32 @@ Modern dark fantasy dashboard design combining the clarity of a professional Saa
 - **Frontend**: 116/116 E2E tests passing (100%) - Added 26 account settings tests
 - **New Test Files**: test_account_management.py, account-settings.spec.ts
 
+## UI Redesign & SRD Database ✅ (March 5, 2026)
+
+### UI Redesign - Landing Page Aesthetic
+Applied consistent design system across GM Screen and Player Dashboard:
+- **Parallax backgrounds** with grid patterns and decorative circles
+- **Glass morphism tabs** with backdrop blur and translucent borders
+- **Gradient buttons** matching landing page style
+- **Improved visual hierarchy** with better spacing and colors
+- **Design system** created at `/app/frontend/src/styles/designSystem.js`
+
+### SRD Content Database (Copyright Safe - OGL)
+Created D&D 5e SRD database at `/app/backend/data/srd/`:
+- **39 Spells**: Cantrips through level 3 (Fireball, Magic Missile, etc.)
+- **6 Classes**: Barbarian, Bard, Cleric, Fighter, Rogue, Wizard with features
+- **4 Races**: Human, Elf, Dwarf, Halfling with traits
+- **8 Feats**: Alert, Great Weapon Master, Sharpshooter, War Caster, etc.
+
+### SRD API Endpoints
+- `GET /api/srd/spells` - All spells with filtering (level, school, class, search)
+- `GET /api/srd/spells/{name}` - Specific spell details
+- `GET /api/srd/classes` - All classes with features
+- `GET /api/srd/classes/{name}` - Specific class
+- `GET /api/srd/class-features/{class}/{level}` - Features at level
+- `GET /api/srd/races` - All races with traits
+- `GET /api/srd/feats` - All feats
+
 ## Map Builder Feature ✅ (March 5, 2026)
 
 ### Overview
