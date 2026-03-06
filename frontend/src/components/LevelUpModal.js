@@ -10,19 +10,21 @@ import {
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Blue theme for player section
+// Tron Legacy Blue theme for player section
 const playerBlue = '#3B82F6';
 const playerBlueHover = '#60A5FA';
 const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
+const playerCyan = '#06B6D4';
+const playerCyanGlow = '#22D3EE';
 
-// Ability data
+// Ability data - Tron Legacy blue gradient
 const ABILITIES = [
-  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#ef4444', icon: Dumbbell },
-  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#22c55e', icon: Zap },
-  { key: 'constitution', label: 'CON', fullName: 'Constitution', color: '#f97316', icon: Shield },
-  { key: 'intelligence', label: 'INT', fullName: 'Intelligence', color: '#3b82f6', icon: Brain },
-  { key: 'wisdom', label: 'WIS', fullName: 'Wisdom', color: '#a855f7', icon: Eye },
-  { key: 'charisma', label: 'CHA', fullName: 'Charisma', color: '#ec4899', icon: Star }
+  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#3B82F6', icon: Dumbbell },
+  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#06B6D4', icon: Zap },
+  { key: 'constitution', label: 'CON', fullName: 'Constitution', color: '#0EA5E9', icon: Shield },
+  { key: 'intelligence', label: 'INT', fullName: 'Intelligence', color: '#6366F1', icon: Brain },
+  { key: 'wisdom', label: 'WIS', fullName: 'Wisdom', color: '#8B5CF6', icon: Eye },
+  { key: 'charisma', label: 'CHA', fullName: 'Charisma', color: '#A855F7', icon: Star }
 ];
 
 // Copyright-safe feats (generic versions)
@@ -318,7 +320,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
 
                   {hpRoll !== null && (
                     <div style={{
-                      background: hpRoll === hitDie ? 'rgba(34, 197, 94, 0.2)' : hpRoll === 1 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+                      background: hpRoll === hitDie ? 'rgba(6, 182, 212, 0.2)' : hpRoll === 1 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)',
                       padding: '8px 16px',
                       display: 'flex',
                       alignItems: 'center',
@@ -326,7 +328,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                     }}>
                       <span style={{ color: '#fff', fontSize: '14px' }}>Rolled:</span>
                       <span style={{ 
-                        color: hpRoll === hitDie ? '#22c55e' : hpRoll === 1 ? '#ef4444' : playerBlue,
+                        color: hpRoll === hitDie ? '#06B6D4' : hpRoll === 1 ? '#ef4444' : playerBlue,
                         fontSize: '24px',
                         fontWeight: '800'
                       }}>
@@ -350,16 +352,16 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
               {profBonusIncreased && (
                 <div style={{
                   background: '#111',
-                  border: '1px solid rgba(168, 85, 247, 0.3)',
+                  border: '1px solid rgba(139, 92, 246, 0.3)',
                   padding: '16px',
                   marginBottom: '16px',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px'
                 }}>
-                  <Award size={24} color="#a855f7" />
+                  <Award size={24} color="#8B5CF6" />
                   <div>
-                    <h4 style={{ color: '#a855f7', fontSize: '14px', fontWeight: '700' }}>Proficiency Bonus Increased!</h4>
+                    <h4 style={{ color: '#8B5CF6', fontSize: '14px', fontWeight: '700' }}>Proficiency Bonus Increased!</h4>
                     <p style={{ color: '#9CA3AF', fontSize: '13px' }}>
                       +{currentProfBonus} → +{newProfBonus}
                     </p>
@@ -727,7 +729,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                   disabled={loading}
                   data-testid="confirm-level-up-btn"
                   style={{
-                    background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                    background: 'linear-gradient(135deg, #06B6D4, #0891B2)',
                     border: 'none',
                     padding: '12px 32px',
                     display: 'flex',

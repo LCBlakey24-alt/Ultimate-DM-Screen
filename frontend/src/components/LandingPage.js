@@ -817,7 +817,7 @@ function LandingPage() {
                 Free
               </h3>
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '48px', color: theme.text.white, fontWeight: '700' }}>$0</span>
+                <span style={{ fontSize: '48px', color: theme.text.white, fontWeight: '700' }}>£0</span>
                 <span style={{ color: theme.text.muted }}>/forever</span>
               </div>
               <ul style={{ margin: '0 0 32px', padding: 0, listStyle: 'none' }}>
