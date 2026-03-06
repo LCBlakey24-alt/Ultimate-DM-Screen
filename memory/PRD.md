@@ -264,6 +264,23 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
   - Entry types: session, combat, npc, location, loot, note
   - Search and filter functionality
   - Journal tab added to Player Dashboard
+- [x] **CHARACTER LEVEL UP SYSTEM (March 2026)** - Full progression system
+  - Level up endpoint: POST /api/characters/{character_id}/level-up
+  - ASI (Ability Score Improvements) at levels 4, 8, 12, 16, 19
+  - Fighters get extra ASI at levels 6 and 14
+  - Rogues get extra ASI at level 10
+  - Choice: +2 to one ability OR +1 to two abilities
+  - Alternative: Select a Feat instead of ASI
+  - HP calculation with roll or average option
+  - Proficiency bonus auto-calculated
+  - Hit dice updated per class (d6-d12)
+  - Level Up Modal with 3-step wizard
+  - 16 copyright-safe feats available
+- [x] **SPELLS PREPARED/KNOWN TABS (March 2026)**
+  - Backend supports both spells_prepared and spells_known fields
+  - Sub-tabs to toggle between Prepared and Known views
+  - Prepare/unprepare spells with auto-save
+  - Search and level filtering for spells
 
 ### Backlog
 - [ ] Party Inventory tracking (Hero Tier)
@@ -279,6 +296,7 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 ---
 
 ## Testing Status
+- 44/44 tests passing (level up system + spells tabs)
 - 30/30 frontend tests passing (dice rolls, journal, subscription)
 - Comprehensive stress test passed (10/10 API tests)
 - Recurring Stripe subscriptions verified
@@ -286,6 +304,8 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - Promo codes work correctly with subscription pausing
 - All dice roll buttons verified working (ability checks, saves, skills, initiative)
 - Session Journal CRUD verified working
+- Level Up API: ASI, Feats, HP calculation all tested
+- Level Up Modal UI: all 3 steps tested with E2E tests
 
 ---
 
@@ -324,11 +344,11 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 ---
 
 ## Next Steps
-1. Context-Aware AI Idea Generation (enhance ROOK to use campaign data)
-2. Character Builder enhancements (subclasses, spells, feats)
-3. Continue auditing other tabs for old color references
-4. Full regression testing
-5. User acceptance testing
+1. Party Inventory (Hero Tier Feature) - shared loot tracking
+2. Landing Page Enhancements - social proof, player invites, quick start templates
+3. Session Recap AI (Quest Master Tier) - AI-powered session summaries
+4. Smart Entity Linking - auto-link NPC names, locations in notes
+5. Mobile Responsiveness Audit - GM Screen for tablets, Character Sheet for mobile
 
 ---
 
