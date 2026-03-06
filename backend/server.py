@@ -4430,6 +4430,105 @@ async def get_player_inventory(
     
     return items
 
+# ==================== PLAYER JOURNAL ENDPOINTS ====================
+
+class JournalEntry(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    character_id: Optional[str] = None
+    campaign_id: Optional[str] = None
+    title: str
+    content: str = ""
+    type: str = "session"  # session, combat, npc, location, loot, note
+    session_number: Optional[int] = None
+    tags: List[str] = []
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class JournalEntryCreate(BaseModel):
+    character_id: Optional[str] = None
+    campaign_id: Optional[str] = None
+    title: str
+    content: str = ""
+    type: str = "session"
+    session_number: Optional[int] = None
+    tags: List[str] = []
+
+@api_router.get("/player/journal")
+async def get_journal_entries(
+    character_id: Optional[str] = None,
+    campaign_id: Optional[str] = None,
+    username: str = Depends(get_current_user)
+):
+    """Get journal entries for a character or campaign"""
+    query = {'user_id': username}
+    
+    if character_id:
+        query['character_id'] = character_id
+    if campaign_id:
+        query['campaign_id'] = campaign_id
+    
+    entries = await db.player_journal.find(query, {'_id': 0}).sort('created_at', -1).to_list(100)
+    return entries
+
+@api_router.post("/player/journal")
+async def create_journal_entry(
+    entry_data: JournalEntryCreate,
+    username: str = Depends(get_current_user)
+):
+    """Create a new journal entry"""
+    entry = JournalEntry(
+        character_id=entry_data.character_id,
+        campaign_id=entry_data.campaign_id,
+        title=entry_data.title,
+        content=entry_data.content,
+        type=entry_data.type,
+        session_number=entry_data.session_number,
+        tags=entry_data.tags
+    )
+    
+    entry_dict = entry.model_dump()
+    entry_dict['user_id'] = username
+    
+    await db.player_journal.insert_one(entry_dict)
+    return {k: v for k, v in entry_dict.items() if k != '_id'}
+
+@api_router.put("/player/journal/{entry_id}")
+async def update_journal_entry(
+    entry_id: str,
+    entry_data: JournalEntryCreate,
+    username: str = Depends(get_current_user)
+):
+    """Update a journal entry"""
+    result = await db.player_journal.update_one(
+        {'id': entry_id, 'user_id': username},
+        {'$set': {
+            'title': entry_data.title,
+            'content': entry_data.content,
+            'type': entry_data.type,
+            'session_number': entry_data.session_number,
+            'tags': entry_data.tags,
+            'updated_at': datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Entry not found")
+    
+    return {"message": "Entry updated"}
+
+@api_router.delete("/player/journal/{entry_id}")
+async def delete_journal_entry(
+    entry_id: str,
+    username: str = Depends(get_current_user)
+):
+    """Delete a journal entry"""
+    result = await db.player_journal.delete_one({'id': entry_id, 'user_id': username})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Entry not found")
+    
+    return {"message": "Entry deleted"}
+
 @api_router.post("/ai/generate-character")
 async def ai_generate_character(
     request: AICharacterGenerateRequest,

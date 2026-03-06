@@ -11,6 +11,7 @@ import {
   Sparkles, Link, Loader, ChevronRight, Users, BookOpen, FileText
 } from 'lucide-react';
 import PlayerNotesTab from './tabs/PlayerNotesTab';
+import SessionJournal from './SessionJournal';
 import { RookSuggestionPopup, useRookSuggestions, getRandomTip } from './RookSuggestions';
 import { RQKLogoInline } from '@/components/ui/RQKLogo';
 
@@ -312,6 +313,32 @@ function PlayerDashboard({ username, onLogout }) {
           >
             <FileText size={18} />
             Notes
+          </button>
+          <button
+            onClick={() => setActiveTab('journal')}
+            data-testid="tab-journal"
+            style={{
+              padding: '12px 24px',
+              background: activeTab === 'journal' 
+                ? 'linear-gradient(135deg, #A855F7 0%, #7C3AED 100%)' 
+                : 'transparent',
+              border: activeTab === 'journal' 
+                ? 'none' 
+                : '1px solid #374151',
+              borderRadius: '10px',
+              color: '#ffffff',
+              fontWeight: '600',
+              fontSize: '14px',
+              fontFamily: 'Montserrat, sans-serif',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <BookOpen size={18} />
+            Journal
           </button>
         </div>
 
@@ -687,6 +714,13 @@ function PlayerDashboard({ username, onLogout }) {
         {/* Notes Tab Content */}
         {activeTab === 'notes' && (
           <PlayerNotesTab campaigns={joinedCampaigns} />
+        )}
+
+        {activeTab === 'journal' && (
+          <SessionJournal 
+            characterId={selectedCharacter?.id}
+            campaignId={null}
+          />
         )}
       </div>
 

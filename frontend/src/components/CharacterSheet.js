@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import JoinCampaignModal from '@/components/JoinCampaignModal';
+import { DiceRollButton, ClickableModifier, DamageRollButton } from '@/components/DiceRollButton';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -88,6 +89,10 @@ function CharacterSheet() {
     return mod >= 0 ? `+${mod}` : `${mod}`;
   };
 
+  const getAbilityModifier = (score) => {
+    return Math.floor((score - 10) / 2);
+  };
+
   const getSkillModifier = (skill) => {
     if (!character) return '+0';
     const abilityScore = character[skill.ability];
@@ -98,6 +103,15 @@ function CharacterSheet() {
     return total >= 0 ? `+${total}` : `${total}`;
   };
 
+  const getSkillModifierNum = (skill) => {
+    if (!character) return 0;
+    const abilityScore = character[skill.ability];
+    const abilityMod = Math.floor((abilityScore - 10) / 2);
+    const isProficient = character.skill_proficiencies?.includes(skill.name.toLowerCase().replace(/ /g, '_'));
+    const profBonus = isProficient ? character.proficiency_bonus : 0;
+    return abilityMod + profBonus;
+  };
+
   const getSavingThrowModifier = (ability) => {
     if (!character) return '+0';
     const abilityScore = character[ability];
@@ -106,6 +120,20 @@ function CharacterSheet() {
     const profBonus = isProficient ? character.proficiency_bonus : 0;
     const total = abilityMod + profBonus;
     return total >= 0 ? `+${total}` : `${total}`;
+  };
+
+  const getSavingThrowModifierNum = (ability) => {
+    if (!character) return 0;
+    const abilityScore = character[ability];
+    const abilityMod = Math.floor((abilityScore - 10) / 2);
+    const isProficient = character.saving_throw_proficiencies?.includes(ability);
+    const profBonus = isProficient ? character.proficiency_bonus : 0;
+    return abilityMod + profBonus;
+  };
+
+  const getInitiativeModifier = () => {
+    if (!character) return 0;
+    return Math.floor((character.dexterity - 10) / 2) + (character.initiative_bonus || 0);
   };
 
   if (loading) {
@@ -208,7 +236,9 @@ function CharacterSheet() {
               </CardHeader>
               <CardContent>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].map((ability) => (
+                  {['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].map((ability) => {
+                    const abilityMod = getAbilityModifier(editMode ? editData[ability] : character[ability]);
+                    return (
                     <div key={ability} style={{
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -235,16 +265,21 @@ function CharacterSheet() {
                             style={{ width: '60px', textAlign: 'center', padding: '4px' }}
                           />
                         ) : (
-                          <div style={{ fontSize: '24px', fontWeight: '800', color: '#ffffff' }}>
-                            {character[ability]}
-                          </div>
+                          <>
+                            <div style={{ fontSize: '24px', fontWeight: '800', color: '#ffffff' }}>
+                              {character[ability]}
+                            </div>
+                            <DiceRollButton 
+                              modifier={abilityMod}
+                              label={`${ability.charAt(0).toUpperCase() + ability.slice(1)} Check`}
+                              color="#67e8f9"
+                              size="small"
+                            />
+                          </>
                         )}
-                        <div style={{ fontSize: '14px', color: '#94a3b8' }}>
-                          {calculateModifier(editMode ? editData[ability] : character[ability])}
-                        </div>
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
               </CardContent>
             </Card>
@@ -311,9 +346,12 @@ function CharacterSheet() {
                       <Zap size={18} color="#eab308" />
                       <span style={{ color: '#94a3b8', fontSize: '13px' }}>Initiative</span>
                     </div>
-                    <div style={{ fontSize: '24px', fontWeight: '800', color: '#eab308' }}>
-                      {calculateModifier(character.dexterity + (character.initiative_bonus || 0))}
-                    </div>
+                    <DiceRollButton 
+                      modifier={getInitiativeModifier()}
+                      label="Initiative"
+                      color="#eab308"
+                      size="large"
+                    />
                   </div>
 
                   {/* Speed */}
@@ -368,6 +406,7 @@ function CharacterSheet() {
                         <div key={ability} style={{
                           display: 'flex',
                           justifyContent: 'space-between',
+                          alignItems: 'center',
                           padding: '8px 12px',
                           background: isProficient ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
                           borderRadius: '8px'
@@ -379,13 +418,12 @@ function CharacterSheet() {
                           }}>
                             {ability}
                           </span>
-                          <span style={{ 
-                            color: '#ffffff', 
-                            fontWeight: '700',
-                            fontSize: '14px'
-                          }}>
-                            {getSavingThrowModifier(ability)}
-                          </span>
+                          <DiceRollButton
+                            modifier={getSavingThrowModifierNum(ability)}
+                            label={`${ability.charAt(0).toUpperCase() + ability.slice(1)} Save`}
+                            color={isProficient ? '#22c55e' : '#67e8f9'}
+                            size="small"
+                          />
                         </div>
                       );
                     })}
@@ -406,6 +444,7 @@ function CharacterSheet() {
                         <div key={skill.name} style={{
                           display: 'flex',
                           justifyContent: 'space-between',
+                          alignItems: 'center',
                           padding: '6px 12px',
                           background: isProficient ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
                           borderRadius: '8px'
@@ -416,13 +455,12 @@ function CharacterSheet() {
                           }}>
                             {skill.name}
                           </span>
-                          <span style={{ 
-                            color: '#ffffff', 
-                            fontWeight: '600',
-                            fontSize: '13px'
-                          }}>
-                            {getSkillModifier(skill)}
-                          </span>
+                          <DiceRollButton
+                            modifier={getSkillModifierNum(skill)}
+                            label={skill.name}
+                            color={isProficient ? '#22c55e' : '#67e8f9'}
+                            size="small"
+                          />
                         </div>
                       );
                     })}
