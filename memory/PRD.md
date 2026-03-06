@@ -295,8 +295,15 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
   - HP calculation with roll or average option
   - Proficiency bonus auto-calculated
   - Hit dice updated per class (d6-d12)
-  - Level Up Modal with 3-step wizard
+  - Level Up Modal with mode selection (Level Up vs Multiclass)
   - 16 copyright-safe feats available
+  - **hp_gained now stored for ALL level types** (standard, ASI, feat)
+- [x] **MULTICLASSING UI (March 2026)** - Added to Level Up Modal
+  - Mode selection: players can choose to level up current class OR add a new class
+  - Displays multiclass requirements for each class
+  - Shows which classes player is eligible for based on ability scores
+  - Multiclass confirmation screen with expected gains
+  - Backend endpoints: POST /api/characters/{id}/multiclass, POST /api/characters/{id}/level-up-class
 - [x] **SPELLS PREPARED/KNOWN TABS (March 2026)**
   - Backend supports both spells_prepared and spells_known fields
   - Sub-tabs to toggle between Prepared and Known views
@@ -304,14 +311,15 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
   - Search and level filtering for spells
 
 ### Backlog
-- [ ] **Smart Entity Linking** - Auto-link NPC names, locations to their pages (SmartNoteParser exists)
 - [ ] Backend refactoring (split server.py into routers)
 - [ ] Mobile-first Combat Tracker
+- [ ] Mobile Responsiveness Audit (GM Screen, Character Sheet)
 - [ ] "Zero Prep Mode" AI generation
 - [ ] Shareable World Codex for players
 - [ ] Offline Mode
 - [ ] Ambient Soundscapes
 - [ ] Custom rule system AI assistance (help write rules)
+- [ ] Smart Entity Linking - Auto-link NPC names, locations to their pages (SmartNoteParser exists)
 
 ### Completed (March 2026 - Rule Systems & Player Features)
 - [x] **Rule System Management** (Copyright-Safe)
@@ -365,6 +373,7 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - 49/49 tests passing (Yellow Tier GM Features)
 - 44/44 tests passing (level up system + spells tabs)
 - 30/30 frontend tests passing (dice rolls, journal, subscription)
+- **27/27 tests passing (multiclass + HP storage)** - March 2026
 - Comprehensive stress test passed (10/10 API tests)
 - Recurring Stripe subscriptions verified
 - Monthly and yearly billing both working

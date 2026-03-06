@@ -6430,7 +6430,7 @@ async def add_multiclass(character_id: str, class_data: Dict[str, Any], username
     
     classes = character.get('classes', [])
     if not classes:
-        current_class = character.get('class', 'Unknown')
+        current_class = character.get('character_class', character.get('class', 'Unknown'))
         current_level = character.get('level', 1)
         classes = [{'name': current_class, 'level': current_level}]
     
