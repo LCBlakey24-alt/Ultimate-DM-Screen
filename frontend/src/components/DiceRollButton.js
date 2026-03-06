@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Dice6 } from 'lucide-react';
 
-// Player theme - Blue
+// Player theme - Blue (Tron Legacy)
 const theme = {
   primary: '#3B82F6',
+  cyan: '#06B6D4',
   hover: '#60A5FA',
   subtle: 'rgba(59, 130, 246, 0.15)',
+  border: 'rgba(6, 182, 212, 0.4)',
   crit: '#22C55E',
   fail: '#EF4444',
   text: '#FFFFFF'
@@ -15,6 +17,7 @@ const theme = {
 /**
  * Clickable dice roll button for character sheets
  * Shows modifier and rolls d20 + modifier on click
+ * Has a visible box/border to indicate clickability
  */
 export function DiceRollButton({ 
   modifier, 
@@ -24,10 +27,10 @@ export function DiceRollButton({
   disadvantage = false,
   showDice = true,
   size = 'default',  // 'small', 'default', 'large'
-  color = theme.primary
+  color = theme.cyan
 }) {
   const [rolling, setRolling] = useState(false);
-  const [lastRoll, setLastRoll] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   const rollDice = (sides) => Math.floor(Math.random() * sides) + 1;
 
@@ -47,7 +50,6 @@ export function DiceRollButton({
     }
     
     const total = finalRoll + modifier;
-    setLastRoll({ roll: finalRoll, total, advantage, disadvantage, roll1, roll2 });
     
     // Determine roll type for styling
     let rollType = 'normal';
@@ -89,9 +91,9 @@ export function DiceRollButton({
 
   // Size variants
   const sizes = {
-    small: { fontSize: '13px', padding: '4px 8px', iconSize: 12 },
-    default: { fontSize: '14px', padding: '6px 12px', iconSize: 14 },
-    large: { fontSize: '18px', padding: '8px 16px', iconSize: 18 }
+    small: { fontSize: '13px', padding: '3px 6px', iconSize: 11, gap: '4px' },
+    default: { fontSize: '14px', padding: '4px 8px', iconSize: 12, gap: '5px' },
+    large: { fontSize: '18px', padding: '6px 12px', iconSize: 16, gap: '6px' }
   };
   
   const s = sizes[size] || sizes.default;
@@ -100,35 +102,30 @@ export function DiceRollButton({
   return (
     <button
       onClick={handleRoll}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       data-testid={`dice-roll-${label.toLowerCase().replace(/\s+/g, '-')}`}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '6px',
+        justifyContent: 'center',
+        gap: s.gap,
         padding: s.padding,
-        background: rolling ? theme.subtle : 'transparent',
-        border: `1px solid transparent`,
+        background: rolling ? theme.subtle : isHovered ? theme.subtle : 'rgba(6, 182, 212, 0.08)',
+        border: `1px solid ${isHovered || rolling ? theme.cyan : theme.border}`,
         borderRadius: '4px',
-        color: theme.text,
+        color: isHovered ? theme.cyan : theme.text,
         fontSize: s.fontSize,
         fontWeight: '700',
         cursor: 'pointer',
         transition: 'all 0.15s ease',
-        transform: rolling ? 'scale(1.1)' : 'scale(1)'
-      }}
-      onMouseEnter={(e) => {
-        e.target.style.background = theme.subtle;
-        e.target.style.borderColor = color;
-      }}
-      onMouseLeave={(e) => {
-        if (!rolling) {
-          e.target.style.background = 'transparent';
-          e.target.style.borderColor = 'transparent';
-        }
+        transform: rolling ? 'scale(1.05)' : 'scale(1)',
+        minWidth: size === 'small' ? '36px' : '44px',
+        boxShadow: isHovered ? `0 0 8px ${theme.border}` : 'none'
       }}
       title={`Click to roll ${diceType}${displayModifier} for ${label}`}
     >
-      {showDice && <Dice6 size={s.iconSize} color={color} />}
+      {showDice && <Dice6 size={s.iconSize} color={isHovered ? theme.cyan : color} style={{ flexShrink: 0 }} />}
       <span>{displayModifier}</span>
     </button>
   );
@@ -136,11 +133,12 @@ export function DiceRollButton({
 
 /**
  * Inline clickable modifier (no dice icon, more compact)
+ * Still has visible box for clickability
  */
 export function ClickableModifier({ 
   modifier, 
   label, 
-  color = theme.primary 
+  color = theme.cyan 
 }) {
   return (
     <DiceRollButton 
@@ -163,6 +161,7 @@ export function DamageRollButton({
   color = '#EF4444'
 }) {
   const [rolling, setRolling] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const parseDiceFormula = (formula) => {
     // Parse formulas like "2d6+3", "1d8", "3d6-1"
@@ -206,37 +205,37 @@ export function DamageRollButton({
     setTimeout(() => setRolling(false), 300);
   };
 
+  // Damage button uses red theme
+  const damageTheme = {
+    subtle: 'rgba(239, 68, 68, 0.08)',
+    border: 'rgba(239, 68, 68, 0.4)',
+    hover: 'rgba(239, 68, 68, 0.15)'
+  };
+
   return (
     <button
       onClick={handleRoll}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       data-testid={`damage-roll-${label.toLowerCase().replace(/\s+/g, '-')}`}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '6px',
-        padding: '6px 12px',
-        background: rolling ? 'rgba(239, 68, 68, 0.15)' : 'transparent',
-        border: '1px solid transparent',
+        gap: '5px',
+        padding: '4px 8px',
+        background: rolling ? damageTheme.hover : isHovered ? damageTheme.hover : damageTheme.subtle,
+        border: `1px solid ${isHovered || rolling ? color : damageTheme.border}`,
         borderRadius: '4px',
-        color: theme.text,
-        fontSize: '14px',
+        color: isHovered ? color : theme.text,
+        fontSize: '13px',
         fontWeight: '600',
         cursor: 'pointer',
-        transition: 'all 0.15s ease'
-      }}
-      onMouseEnter={(e) => {
-        e.target.style.background = 'rgba(239, 68, 68, 0.15)';
-        e.target.style.borderColor = color;
-      }}
-      onMouseLeave={(e) => {
-        if (!rolling) {
-          e.target.style.background = 'transparent';
-          e.target.style.borderColor = 'transparent';
-        }
+        transition: 'all 0.15s ease',
+        boxShadow: isHovered ? `0 0 8px ${damageTheme.border}` : 'none'
       }}
       title={`Click to roll ${diceFormula} ${damageType} damage`}
     >
-      <Dice6 size={14} color={color} />
+      <Dice6 size={12} color={isHovered ? color : '#EF4444'} style={{ flexShrink: 0 }} />
       <span>{diceFormula}</span>
     </button>
   );
