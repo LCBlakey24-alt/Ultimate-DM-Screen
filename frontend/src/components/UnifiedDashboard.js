@@ -74,11 +74,11 @@ function UnifiedDashboard({ username, onLogout }) {
       const [charsRes, campsRes, userRes] = await Promise.all([
         axios.get(`${API}/characters`),
         axios.get(`${API}/campaigns`),
-        axios.get(`${API}/user/profile`).catch(() => ({ data: {} }))
+        axios.get(`${API}/account/profile`).catch(() => ({ data: {} }))
       ]);
       setCharacters(charsRes.data || []);
       setCampaigns(campsRes.data || []);
-      setReferralCode(userRes.data?.referral_code || '');
+      setReferralCode(userRes.data?.subscription?.referral_code || userRes.data?.referral_code || '');
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
