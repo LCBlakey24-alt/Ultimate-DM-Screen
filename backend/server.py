@@ -299,6 +299,11 @@ class PlayerCharacter(BaseModel):
     spell_slots: Dict[str, int] = {}  # {"1": 2, "2": 1} - slots per level
     spell_slots_remaining: Dict[str, int] = {}
     spells_known: List[Dict[str, Any]] = []  # [{"name": "Fireball", "level": 3, "school": "evocation"}]
+    spells_prepared: List[Dict[str, Any]] = []  # Spells currently prepared for the day
+    
+    # Level Progression Tracking
+    level_progression: Dict[str, Any] = {}  # {"4": {"type": "asi", "choices": {"strength": 2}}, "8": {"type": "feat", "feat_name": "Alert"}}
+    asi_increases: Dict[str, int] = {}  # Total ASI bonuses applied {"strength": 2, "dexterity": 2}
     
     # Equipment & Inventory
     equipment: List[Dict[str, Any]] = []  # [{"name": "Longsword", "equipped": true}]
@@ -389,6 +394,11 @@ class PlayerCharacterUpdate(BaseModel):
     spell_slots: Optional[Dict[str, int]] = None
     spell_slots_remaining: Optional[Dict[str, int]] = None
     spells_known: Optional[List[Dict[str, Any]]] = None
+    spells_prepared: Optional[List[Dict[str, Any]]] = None
+    
+    # Level Progression
+    level_progression: Optional[Dict[str, Any]] = None
+    asi_increases: Optional[Dict[str, int]] = None
     
     # Equipment
     equipment: Optional[List[Dict[str, Any]]] = None
@@ -4216,6 +4226,165 @@ async def update_character(
     
     updated_character = await db.player_characters.find_one({'id': character_id}, {'_id': 0})
     return updated_character
+
+
+# Level Up Request Model
+class LevelUpRequest(BaseModel):
+    new_level: int
+    choice_type: str  # "asi" or "feat"
+    # For ASI: {"ability1": "strength", "ability2": "dexterity"} or {"ability1": "strength", "ability2": "strength"} for +2 to one
+    asi_choices: Optional[Dict[str, str]] = None
+    # For Feat: {"name": "Alert", "description": "..."}
+    feat_choice: Optional[Dict[str, str]] = None
+    # Optional HP roll result (if not using average)
+    hp_roll: Optional[int] = None
+
+@api_router.post("/characters/{character_id}/level-up")
+async def level_up_character(
+    character_id: str,
+    level_up: LevelUpRequest,
+    username: str = Depends(get_current_user)
+):
+    """Handle character level up with ASI or Feat choice"""
+    # Verify ownership
+    existing = await db.player_characters.find_one({'id': character_id, 'user_id': username})
+    if not existing:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Character not found"
+        )
+    
+    current_level = existing.get('level', 1)
+    
+    # Validate level progression
+    if level_up.new_level != current_level + 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Can only level up from {current_level} to {current_level + 1}"
+        )
+    
+    if level_up.new_level > 20:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Maximum level is 20"
+        )
+    
+    # ASI/Feat levels are typically 4, 8, 12, 16, 19 (with variations by class)
+    asi_levels = [4, 8, 12, 16, 19]  # Standard ASI levels
+    # Fighters get extra at 6, 14; Rogues at 10
+    fighter_extra_asi = [6, 14]
+    rogue_extra_asi = [10]
+    
+    char_class = existing.get('character_class', '').lower()
+    all_asi_levels = asi_levels.copy()
+    if char_class == 'fighter':
+        all_asi_levels.extend(fighter_extra_asi)
+    elif char_class == 'rogue':
+        all_asi_levels.extend(rogue_extra_asi)
+    all_asi_levels.sort()
+    
+    is_asi_level = level_up.new_level in all_asi_levels
+    
+    # Build update data
+    update_data = {
+        'level': level_up.new_level,
+        'proficiency_bonus': 2 + ((level_up.new_level - 1) // 4),
+        'updated_at': datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Calculate HP increase
+    hit_die_map = {
+        'barbarian': 12, 'fighter': 10, 'paladin': 10, 'ranger': 10,
+        'bard': 8, 'cleric': 8, 'druid': 8, 'monk': 8, 'rogue': 8, 'warlock': 8,
+        'sorcerer': 6, 'wizard': 6
+    }
+    hit_die = hit_die_map.get(char_class, 8)
+    con_mod = (existing.get('constitution', 10) - 10) // 2
+    
+    if level_up.hp_roll is not None:
+        # Use rolled value (bounded to valid range)
+        hp_increase = max(1, min(level_up.hp_roll, hit_die)) + con_mod
+    else:
+        # Use average (round up)
+        hp_increase = (hit_die // 2 + 1) + con_mod
+    
+    hp_increase = max(1, hp_increase)  # Minimum 1 HP per level
+    update_data['max_hit_points'] = existing.get('max_hit_points', 10) + hp_increase
+    update_data['current_hit_points'] = update_data['max_hit_points']  # Heal to full on level up
+    update_data['hit_dice'] = f"{level_up.new_level}d{hit_die}"
+    update_data['hit_dice_remaining'] = level_up.new_level
+    
+    # Handle ASI/Feat choice if at appropriate level
+    level_progression = existing.get('level_progression', {})
+    asi_increases = existing.get('asi_increases', {})
+    feats = existing.get('feats', [])
+    
+    if is_asi_level:
+        if level_up.choice_type == 'asi' and level_up.asi_choices:
+            # Apply ASI (+1 to two abilities or +2 to one)
+            ability1 = level_up.asi_choices.get('ability1')
+            ability2 = level_up.asi_choices.get('ability2')
+            
+            if ability1:
+                current_score1 = existing.get(ability1, 10)
+                new_score1 = min(20, current_score1 + 1)
+                update_data[ability1] = new_score1
+                asi_increases[ability1] = asi_increases.get(ability1, 0) + 1
+            
+            if ability2:
+                current_score2 = existing.get(ability2, 10)
+                # If same ability, check it wasn't already maxed
+                if ability2 == ability1:
+                    current_score2 = update_data.get(ability1, current_score2)
+                new_score2 = min(20, current_score2 + 1)
+                update_data[ability2] = new_score2
+                asi_increases[ability2] = asi_increases.get(ability2, 0) + 1
+            
+            level_progression[str(level_up.new_level)] = {
+                'type': 'asi',
+                'choices': level_up.asi_choices
+            }
+            
+        elif level_up.choice_type == 'feat' and level_up.feat_choice:
+            # Add feat
+            new_feat = {
+                'name': level_up.feat_choice.get('name', 'Unknown Feat'),
+                'description': level_up.feat_choice.get('description', '')
+            }
+            feats.append(new_feat)
+            update_data['feats'] = feats
+            
+            level_progression[str(level_up.new_level)] = {
+                'type': 'feat',
+                'feat_name': new_feat['name']
+            }
+    else:
+        # Not an ASI level, just record the level up
+        level_progression[str(level_up.new_level)] = {
+            'type': 'standard',
+            'hp_gained': hp_increase
+        }
+    
+    update_data['level_progression'] = level_progression
+    update_data['asi_increases'] = asi_increases
+    
+    # Update character
+    await db.player_characters.update_one(
+        {'id': character_id, 'user_id': username},
+        {'$set': update_data}
+    )
+    
+    updated_character = await db.player_characters.find_one({'id': character_id}, {'_id': 0})
+    return {
+        'character': updated_character,
+        'level_up_summary': {
+            'new_level': level_up.new_level,
+            'hp_gained': hp_increase,
+            'is_asi_level': is_asi_level,
+            'choice_made': level_up.choice_type if is_asi_level else None
+        }
+    }
+
 
 @api_router.delete("/characters/{character_id}")
 async def delete_character(

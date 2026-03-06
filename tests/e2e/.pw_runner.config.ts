@@ -2,16 +2,16 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: '/app/tests/e2e',
-  outputDir: '/root/.emergent/automation_output/20260306_094705/test-results',
+  outputDir: '/root/.emergent/automation_output/20260306_141713/test-results',
   timeout: 60000,
   retries: 0,
   workers: 1,
   reporter: [
     ['line'],
-    ['json', { outputFile: '/root/.emergent/automation_output/20260306_094705/results.json' }],
+    ['json', { outputFile: '/root/.emergent/automation_output/20260306_141713/results.json' }],
   ],
   use: {
-    baseURL: 'https://hero-player-hub.preview.emergentagent.com',
+    baseURL: 'https://rook-quest-keeper.preview.emergentagent.com',
     screenshot: 'only-on-failure',
     trace: 'off',
     headless: true,

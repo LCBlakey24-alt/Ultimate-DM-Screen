@@ -1,100 +1,92 @@
 <analysis>**original_problem_statement:**
-The user's core objective is to build a TTRPG application, Rookie Quest Keeper (ROOK). The project has evolved from a UI/UX rebrand to a focus on implementing a sustainable revenue model and unique, AI-driven features to differentiate it from competitors.
+The user's core objective is to build a TTRPG application, Rookie Quest Keeper (ROOK). The project has evolved from a UI/UX rebrand to a focus on implementing a sustainable revenue model and unique, AI-driven features.
 
 PRODUCT REQUIREMENTS:
 1.  **UI/UX System:**
-    *   Maintain the established dark minimalist theme: dark grey/black background (), white text.
-    *   Use a red accent color () for all GM-facing tools and general UI.
-    *   Use a blue accent color for all Player-facing features (Character Builder, Player Dashboard, Character Sheet).
-    *   Use the  font for headings and key elements.
-    *   Ensure all UI elements have sharp, square corners (0px border-radius).
-2.  **Revenue Model (New):**
-    *   Implement a 3-tier subscription model with Stripe:
-        *   **Hero (Player):** .99/month
-        *   **Quest Master (GM):** .99/month
-        *   **Legendary (Both):** .99/month
-    *   Support yearly billing with a discount.
-    *   Enhance the admin panel to create promo codes with specific tiers, usage limits, and durations.
-    *   Grandfather existing promo codes (e.g., ) to have permanent Legendary access.
-    *   Implement feature-gating logic based on a user's subscription tier.
-3.  **Feature Implementation (User Approved Priority):**
-    *   **Phase 1 (Revenue Foundation):** Complete pricing tiers, Stripe integration, and feature gating.
-    *   **Phase 2 (Player Features):** Implement Session Journal, Unlimited Characters (for paid tiers), and Party Inventory.
-    *   **Phase 3 (GM Killer Features):**
-        *   **Session Mode:** A streamlined UI for live play. (Started)
-        *   **Session Recap AI:** AI-powered summary of session events.
-        *   **Smart Entity Linking:** Automatically link text (e.g., NPC names) to their corresponding pages.
-4.  **Bug Fixes & Housekeeping:**
-    *   Address all bugs reported by the user or found by the testing agent.
-    *   Perform a site-wide audit to remove any outdated assets, colors, or text.
-    *   Keep the backend refactor ( split) in the future backlog.
+    *   Maintain the established dark minimalist theme with  font and sharp corners.
+    *   Use a red accent color for GM-facing tools and a blue accent color for Player-facing features.
+2.  **Revenue Model:**
+    *   A fully implemented 3-tier subscription model using Stripe for recurring payments in GBP (£).
+    *   Tiers: Hero (Player), Quest Master (GM), and Legendary (Both).
+    *   Support for yearly billing with a discount.
+    *   Admin panel for creating promo codes with specific tiers, usage limits, and durations.
+    *   Logic to handle promo code application for users with active Stripe subscriptions (pause/resume).
+3.  **Feature Implementation:**
+    *   **Phase 1 (Revenue):** Implement Stripe recurring subscriptions and feature gating. (DONE)
+    *   **Phase 2 (Player Features):** Implement Session Journal, Unlimited Characters (gated), and Party Inventory. (Session Journal DONE, Party Inventory PENDING)
+    *   **Phase 3 (GM Killer Features):** Session Recap AI, Smart Entity Linking. (PENDING)
+    *   **Character Progression:** Players must be able to level characters to 20, including Feats and Ability Score Improvements. (IN PROGRESS)
+    *   **Spells Management:** The character sheet needs separate tabs for Prepared and Known spells. (IN PROGRESS)
+4.  **UX/Advertising Enhancements:**
+    *   Improve the landing page with social proof (Join X GMs).
+    *   Implement a Player Invite System and Quick Start campaign templates.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application has a consistent dark theme with red (GM) and blue (Player) accent colors. The backend and frontend have been updated to support a new 3-tier pricing model, including changes to the database schema, API endpoints, Admin Page UI, and the main Pricing Page. The  is fully functional with comprehensive SRD data. The ROOK AI is now context-aware, pulling campaign data for better suggestions. The main dashboard sidebar has been reorganized with collapsible groups. Numerous bugs have been fixed, and a site-wide cleanup of outdated UI elements has been completed. The implementation of Session Mode, the first of the new killer features, has just begun.
+The application features a dark, minimalist theme with the required color-coding. The core revenue model is complete, with a fully functional, live, recurring Stripe subscription system configured for GBP (£). This includes robust webhook handling for the entire subscription lifecycle and a system to pause/resume subscriptions when promo codes are applied. Feature gating based on subscription tier is in place.
+
+On the feature side, the  is functional. Clickable dice rollers have been added to the character sheet for a better user experience. The UI has been cleaned up by removing redundant pages (, ) and moving the Admin link to the main dashboard. The Sparkle mascot has been removed from most major pages. The initial UI for spell management sub-tabs and character leveling has been added, but the underlying logic is not yet complete.
 
 **Last working item**:
-- **Last item agent was working:** The agent was executing a large, multi-part task to implement the new pricing model and begin building new features. The very last action was creating the file  to start the Session Mode feature.
+- **Last item agent was working:** Implementing a batch of user-requested features: removing the mascot, updating landing page prices to GBP, adding UI for Prepared/Known spell tabs, and adding a basic level-up input on the character sheet.
 - **Status:** IN PROGRESS
 - **Agent Testing Done:** N
 - **Which testing method agent to use?** both
 - **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-- **Issue 1: Campaign setting save not persisting (P0)**
-    - **Description:** A bug identified by the testing agent where saving settings for a newly created campaign fails because the  is not included in the initial database document.
-    - **Attempted fixes:** A fix was implemented in  to use  during the upsert operation.
-    - **Next debug checklist:**
-        1.  Immediately run the  to verify the fix and check for any regressions before proceeding with new feature development.
-    - **Why fix this issue and what will be achieved with the fix?** This breaks a core user workflow. Fixing it ensures that GMs can correctly configure their campaigns from the start.
-    - **Status:** TESTING PENDING
-    - **Is recurring issue?** N
-    - **Should Test frontend/backend/both after fix?** both
-    - **Blocked on other issue:** None.
+There are no outstanding critical bugs. The previous major issue with one-time payments has been fully resolved by implementing recurring subscriptions.
 
 **In progress Task List**:
-- **Task 1: Complete New Revenue Model & Session Mode Feature (P0)**
-    - **Description:** This is the large, active task to implement the new pricing structure and the first of the user's desired differentiator features.
-    - **Where to resume:**
-        1.  Integrate the new  into the application's router in .
-        2.  Build out the UI and functionality for the Session Mode page.
-        3.  Implement **feature gating** logic throughout the frontend to restrict access to features based on the user's subscription tier.
-    - **What will be achieved with this?** This will complete the foundational work for the new revenue model and deliver the first major new feature requested by the user.
+- **Task 1: Complete Character Leveling System (P0)**
+    - **Where to resume:** A basic level input field was added to . The next step is to design and implement the complete level-up workflow, likely through a modal, that allows users to make choices like Ability Score Improvements (ASIs) or selecting a feat at the appropriate levels (4, 8, 12, etc.). This requires significant frontend logic and backend changes to store the character's progression choices.
+    - **What will be achieved with this?** This will enable the core gameplay loop of character progression, a fundamental feature for a TTRPG tool.
     - **Status:** IN PROGRESS
     - **Should Test frontend/backend/both after fix?** both
-    - **Blocked on something:** The Campaign setting save bug should be verified as fixed before investing significant effort here.
+    - **Blocked on something:** None
+
+- **Task 2: Finalize Spells Tab Functionality (P1)**
+    - **Where to resume:** UI sub-tabs for Prepared and Known spells have been added to . The backend character model needs to be updated to store these two lists (, ) separately. The frontend component then needs to be updated to fetch, display, and manage these distinct lists based on the active sub-tab.
+    - **What will be achieved with this?** A key quality-of-life improvement for players managing spellcasting characters.
+    - **Status:** IN PROGRESS
+    - **Should Test frontend/backend/both after fix?** both
+    - **Blocked on something:** None
+
+- **Task 3: Implement Landing Page & Onboarding Enhancements (P1)**
+    - **Where to resume:** A backend endpoint () exists. The frontend work needs to be done.
+        1.  **Social Proof:** Fetch data from the stats endpoint and display it on .
+        2.  **Player Invite System:** Create backend routes to generate and validate unique invite links for campaigns. Build the UI for GMs to create/copy links and for players to join.
+        3.  **Quick Start Templates:** Plan and implement a system for creating pre-populated campaign templates that users can clone.
+    - **What will be achieved with this?** Improved user acquisition, easier onboarding for new groups, and a more engaging initial experience.
+    - **Status:** IN PROGRESS
+    - **Should Test frontend/backend/both after fix?** both
+    - **Blocked on something:** None
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-    - **P1: Player Companion Features (Hero Tier):** Implement the  and  to add value to the player-focused subscription.
-    - **P1: Session Recap AI (Quest Master Tier):** Enhance the ROOK AI to generate summaries of game sessions based on notes and logs.
-    - **P2: Smart Entity Linking:** Implement auto-linking of text to world entities (NPCs, locations, etc.) to improve usability.
+    - **P1: Party Inventory:** A shared inventory/loot tracking system for the player party.
+    - **P1: Session Recap AI:** An AI feature to generate summaries of game sessions from notes.
+    - **P2: Mobile Responsiveness Audit:** Focus on the GM Screen for tablets and the Character Sheet for mobile phones.
+    - **P2: Smart Entity Linking:** Automatically link text in notes to entity pages (NPCs, locations).
 - **Future Tasks:**
-    - Backend Refactoring (split ).
+    - Backend refactoring (split ).
     - Mobile-first Combat Tracker.
-    - Zero Prep Mode AI generation.
+    - Zero Prep Mode AI content generation.
     - Shareable World Codex for players.
-    - Offline Mode.
-    - Ambient Soundscapes.
+    - Offline Mode & Ambient Soundscapes.
+    - Gift Subscriptions & Lifetime Deal options.
 
 **Completed work in this session**
-- **New Revenue Model Foundation:**
-    - Updated backend models (, ) and API endpoints in  for a 3-tier system.
-    - Rewrote  to reflect the new tiers.
-    - Updated  to allow creation of tiered promo codes.
-    - Updated Stripe checkout logic to handle the new plans.
-- ** Overhaul:** Replaced hardcoded data with a fully functional reference section fetching live SRD data.
-- **Context-Aware ROOK AI:** Modified the AI backend to use campaign-specific data for more relevant suggestions.
-- **UI/UX Overhaul & Bug Fixes:**
-    - Reorganized the  sidebar with collapsible groups.
-    - Re-themed the Dice Roller and moved it to a more practical location.
-    - Applied a blue theme to all Player-facing components (, , etc.).
-    - Fixed a critical bug preventing campaign settings from being saved.
-    - Completed a site-wide audit to remove outdated UI colors and assets.
+- **Stripe Recurring Subscriptions Implemented:** The entire payment system was rebuilt to use native Stripe recurring subscriptions, replacing the old one-time payment method. This includes creating products/prices in Live mode, handling GBP (£) currency, a robust webhook for all subscription events, and a cancellation endpoint.
+- **Promo Code Logic Enhanced:** The system can now handle a user with an active Stripe subscription applying a promo code by pausing and later resuming their subscription.
+- **Major UI/UX Cleanup:** Removed the redundant  page, moved the Admin link to the main  dashboard, and deprecated the old  page.
+- **Clickable Dice Rollers:** Added to the full character sheet for ability scores, skills, and saving throws.
+- **Session Journal Feature:** A new  component and corresponding backend endpoints were created and integrated into the Player Dashboard.
+- **Mascot Removal:** The Sparkle mascot was removed from , , and the main logo component.
 
 **Earlier issues found/mentioned but not fixed**
-- None.
+- **Mascot Remnants:** The mascot component  is still referenced in . A global search and removal should be performed to ensure it's completely gone.
 
 **Known issue recurrence from previous fork**
 - None.
@@ -103,74 +95,78 @@ The application has a consistent dark theme with red (GM) and blue (Player) acce
 
 
 **Key Technical Concepts**
-- **Frontend:** React, Tailwind CSS, Shadcn UI, .
-- **Backend:** FastAPI, MongoDB (), Pydantic models.
-- **Revenue:** Stripe for subscriptions, with a custom 3-tier model (, , ) and advanced promo code logic implemented.
+- **Revenue:** Migrated from a simple payment wrapper to the native  Python library to handle full recurring subscriptions (), including lifecycle webhooks, cancellation, and pausing/resuming for promo codes.
+- **Feature Gating:** A  (React Context) and  hook provide an app-wide mechanism to check a user's subscription tier and control access to features.
 
 **key DB schema**
-- ****: Schema updated to include  (String),  (Int), and  (Int).
-- ****: Now correctly includes  on initial creation to fix an upsert bug.
+- ****: The schema now contains , , and  to track and manage Stripe subscriptions.
 
 **changes in tech stack**
-- None.
+- The  Python library was added to  to support the new recurring payment implementation.
 
 **All files of reference**
-- ****: Contains all new pricing/promo logic, AI context, and bug fixes.
-- ****: Completely new implementation for the 3-tier model.
-- ****: UI for creating tiered promo codes.
-- ****: Contains the latest sidebar navigation structure.
-- ****: The starting point for the next task.
+- : Contains the complete, new implementation for Stripe recurring subscriptions, webhooks, and promo code logic.
+- : The primary file for recent player-facing changes like clickable dice rollers and the level-up input.
+- : Contains the new UI for the Prepared vs Known spells feature.
+- : The central logic for frontend feature gating.
+- : The entry point where the  is wrapped and routing changes were made.
+- : Now configured with the user's **LIVE** Stripe API key and webhook secret.
 
 **Areas that need refactoring**:
--  is over 4,400 lines and is the top candidate for refactoring into FastAPI routers. The user has approved this for the future backlog.
+-  is critically oversized and complex due to the addition of comprehensive Stripe logic. Refactoring it into separate routers (e.g., for auth, campaigns, payments) is a high-priority future task.
+- The existence of both  and  has caused bugs and confusion. Their roles should be clarified, and code should be consolidated if possible.
 
 **key api endpoints**
-- : Returns the new 3-tier pricing structure.
-- : Creates promo codes with new tier/duration/uses fields.
-- : Handles checkout for the new plans.
-- : Now context-aware.
-- : Bug fix applied to this endpoint.
+- : Creates a recurring Stripe subscription checkout.
+- : A critical endpoint that handles all subscription lifecycle events from Stripe.
+- : Allows a user to cancel their recurring subscription.
+- : A new endpoint for fetching public site statistics.
+-  & : New CRUD endpoints for the Session Journal feature.
 
 **Critical Info for New Agent**
-- **Your first action must be to verify the pending bug fix.** Run the  to confirm that the Campaign setting save issue is resolved before writing any new code.
-- **Your main task is to complete the in-progress work.** This involves:
-    1.  Building the Session Mode feature, starting with .
-    2.  Implementing **feature gating** across the application to enforce the new subscription tiers. This is a critical and un-started part of the current task.
-- Once the current task is complete and tested, proceed with the user-approved feature list, starting with Player Companion features () to add value to the new paid tiers.
+- **The Stripe integration is LIVE.** It is configured with the user's production keys and processes real payments in GBP (£). Exercise extreme caution when modifying any payment-related code in .
+- Your immediate priorities are to complete the three **in-progress tasks**:
+    1.  **Character Leveling:** Build the full workflow for Ability Score Improvements and Feats.
+    2.  **Spells Tab Logic:** Implement the backend and frontend logic for managing prepared vs. known spells.
+    3.  **Landing Page Enhancements:** Build out the Player Invite System and Quick Start Templates.
+- After implementing these features, the user has requested a comprehensive stress test of the entire application flow, from campaign creation to player actions.
 
 **documents and test reports created in this job**
--  (updated multiple times)
+-  (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Asks for ideas to differentiate ROOK. (Status: Actioned)
-2.  **User:** Approves new features, defines new 3-tier pricing, and specifies promo code requirements. (Status: Actioned)
-3.  **User:** Confirms pricing details and promo code admin requirements. (Status: Actioned)
-4.  **User:** Continue will all updates (Status: **In Progress**)
-5.  **User:** Continue (Status: **In Progress**)
-6.  **User:** We carnt be having bugs or issues so that needs dealing with first.... Also gives new sidebar grouping rules and other UI theme changes. (Status: Actioned)
-7.  **User:** Confirms the plan. (Status: Actioned)
-8.  **User:** Reports bugs with character builder and asks to move dice roller. (Status: Actioned)
-9.  **User:** Asks for a scan of all pages for outdated UI elements. (Status: Actioned)
-10. **User:** Asks for an explanation of backend refactoring. (Status: Actioned)
+1.  **User:** Asks for guidance on setting up the Stripe webhook endpoint URL.
+2.  **User:** Asks how to copy sandbox settings to the live Stripe site.
+3.  **User:** Asks agent to check if the live configuration is complete.
+4.  **User:** Asks for guidance on switching to live keys and doing a practice purchase.
+5.  **User:** Provides the **sandbox** webhook secret for the live setup.
+6.  **User:** Agrees to auto-create products, provides the **live API key**, and requests to change currency to GBP (£).
+7.  **User:** Asks for the step-by-step guide to create a new webhook again.
+8.  **User:** Provides the correct **live webhook secret**.
+9.  **User:** Asks for site improvement suggestions.
+10. **User:** Approves suggestions and requests to start on advertising/UX features.
+11. **User:** Provides a new list of tasks: remove mascot, update pricing to £, implement full character leveling to 20, and add prepared/known spells tabs.
 
 **Project Health Check:**
-- **Broken:** The fix for the campaign setting save bug is unverified and blocks confident forward progress.
-- **Mocked:**  is an empty placeholder file.
+- **Broken:**
+    - The character leveling system is non-functional beyond a simple level display. The core logic for ASIs and feats is missing.
+    - The spells tab has UI for prepared/known spells, but no backend logic to support it.
+- **Mocked:** None.
 
 **3rd Party Integrations**
-- **Stripe:** For payments. Backend logic has been updated for the new 3-tier pricing model.
+- **Stripe:** Uses the native  Python library for recurring subscriptions. It is configured with the user's **LIVE** API keys and webhook secret.
 - **resend:** For emails.
 - **Emergent LLM Key (via ):** Used for OpenAI text generation (ROOK AI).
 
 **Testing status**
-- **Testing agent used after significant changes:** YES. It was last used to validate sidebar changes, where it discovered the campaign setting save bug. It has *not* been run since the fix was implemented.
-- **Test files created:** Yes, a test suite exists.
-- **Known regressions:** The campaign setting save issue was a known regression. A fix has been implemented but awaits verification.
+- **Testing agent used after significant changes:** YES. The agent was used to validate the Stripe implementation and other fixes.
+- **Test files created:** Yes, a test suite exists and has been updated.
+- **Known regressions:** None. The last test run passed, but it was before the recent (and incomplete) feature work.
 
 **Credentials to test flow:**
-- Register a new user through the standard flow on the landing page.
+- Register a new user through the standard flow. Note that purchasing a subscription will now use the **LIVE** Stripe system and attempt a real transaction.
 
 **What agent forgot to execute**
-- The agent did not run the testing agent to verify the fix for the Campaign setting save bug before moving on. This is the most critical un-finished step and should be the immediate first action.
-- The agent started the Session Mode feature but was interrupted before fully integrating the new page or building its functionality.
-- The agent has not yet started implementing the **feature gating** logic, which is a critical part of the new revenue model task.</analysis>
+- The agent has not completed the full implementation for character leveling (missing ASIs/feats) or the spells tab (missing backend logic).
+- A final check for the mascot image across all files was not performed; it likely still exists in .
+- The comprehensive stress test requested by the user has not been performed.</analysis>

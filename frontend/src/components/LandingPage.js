@@ -627,26 +627,14 @@ function LandingPage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: '1fr 1fr', 
-            gap: '60px', 
-            alignItems: 'center'
+            gridTemplateColumns: '1fr', 
+            gap: '40px', 
+            alignItems: 'center',
+            maxWidth: '600px',
+            margin: '0 auto'
           }}>
-            {/* ROOK Mascot */}
-            <div style={{ textAlign: 'center' }}>
-              <img 
-                src="/rqk-mascot.png" 
-                alt="ROOK AI Assistant"
-                className="animate-float"
-                style={{
-                  width: '100%',
-                  maxWidth: '350px',
-                  filter: `drop-shadow(0 0 40px ${theme.accent.redSubtle})`
-                }}
-              />
-            </div>
-            
             {/* ROOK Info */}
-            <div>
+            <div style={{ textAlign: 'center' }}>
               <span style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -745,7 +733,7 @@ function LandingPage() {
                     fontWeight: '600',
                     border: `1px solid ${theme.border.default}`
                   }}>
-                    <img src="/rqk-mascot.png" alt="" style={{ width: '18px', height: '18px' }} />
+                    <Sparkles size={14} />
                     {feature}
                   </span>
                 ))}
@@ -891,7 +879,7 @@ function LandingPage() {
                 <Crown size={24} /> Adventurer
               </h3>
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '48px', color: theme.text.white, fontWeight: '700' }}>$3.99</span>
+                <span style={{ fontSize: '48px', color: theme.text.white, fontWeight: '700' }}>£3.99</span>
                 <span style={{ color: theme.text.muted }}>/month</span>
               </div>
               

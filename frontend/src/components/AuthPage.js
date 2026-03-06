@@ -181,17 +181,6 @@ function AuthPage({ onLogin }) {
         maxWidth: '420px',
         gap: '40px'
       }}>
-        {/* ROOK Mascot */}
-        <img 
-          src="/rqk-mascot.png" 
-          alt="ROOK" 
-          className="animate-float"
-          style={{ 
-            height: '120px',
-            filter: `drop-shadow(0 0 30px ${theme.accent.redSubtle})`
-          }} 
-        />
-
         {/* Logo */}
         <div style={{ textAlign: 'center' }}>
           <h1 style={{

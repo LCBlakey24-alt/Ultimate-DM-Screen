@@ -79,7 +79,7 @@ export const RookDemo = () => {
         alignItems: 'center',
         gap: '12px'
       }}>
-        <img src="/rqk-mascot.png" alt="ROOK" style={{ height: '32px' }} />
+        <Sparkles size={28} color="#E11D48" />
         <div>
           <div style={{ 
             color: '#E11D48', 

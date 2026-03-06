@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import JoinCampaignModal from '@/components/JoinCampaignModal';
+import LevelUpModal from '@/components/LevelUpModal';
 import { RookSuggestionPopup, useRookSuggestions } from './RookSuggestions';
 import { DiceRollButton } from '@/components/DiceRollButton';
 
@@ -478,6 +479,7 @@ function CharacterSheetFull() {
   const [editData, setEditData] = useState({});
   const [saving, setSaving] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showLevelUpModal, setShowLevelUpModal] = useState(false);
   
   // SRD Data
   const [srdSpells, setSrdSpells] = useState([]);
@@ -488,6 +490,7 @@ function CharacterSheetFull() {
   // Spell filtering
   const [spellSearch, setSpellSearch] = useState('');
   const [spellLevelFilter, setSpellLevelFilter] = useState('all');
+  const [spellViewMode, setSpellViewMode] = useState('prepared'); // 'prepared' or 'known'
   
   // ROOK Suggestions
   const { currentSuggestion, showRandomTip, dismissSuggestion } = useRookSuggestions(
@@ -703,14 +706,47 @@ function CharacterSheetFull() {
               }}>
                 {data.name}
               </h1>
-              <p style={{ color: '#67e8f9', fontSize: '14px' }}>
-                Level {data.level} {data.race} {data.character_class}
+              <p style={{ color: '#67e8f9', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                Level {editMode ? (
+                  <Input
+                    type="number"
+                    min="1"
+                    max="20"
+                    value={editData.level}
+                    onChange={(e) => {
+                      const newLevel = Math.min(20, Math.max(1, parseInt(e.target.value) || 1));
+                      setEditData({ ...editData, level: newLevel, proficiency_bonus: Math.ceil(newLevel / 4) + 1 });
+                    }}
+                    style={{ width: '50px', padding: '2px 6px', textAlign: 'center', fontSize: '14px', display: 'inline-block' }}
+                  />
+                ) : (
+                  data.level
+                )} {data.race} {data.character_class}
                 {data.subclass && ` (${data.subclass})`}
               </p>
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            {/* Level Up Button - Only show if not at max level and not in edit mode */}
+            {!editMode && data.level < 20 && (
+              <Button 
+                data-testid="level-up-btn"
+                onClick={() => setShowLevelUpModal(true)}
+                style={{ 
+                  background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '10px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                <TrendingUp size={16} />
+                Level Up
+              </Button>
+            )}
             {!data.campaign_id && (
               <Button 
                 data-testid="join-campaign-btn"
@@ -1104,6 +1140,12 @@ function CharacterSheetFull() {
                         {data.spellcasting_ability ? `+${profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}` : '—'}
                       </span>
                     </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: '#64748b', fontSize: '11px' }}>Prepared</span>
+                      <span style={{ color: '#3b82f6', fontWeight: '700', fontSize: '14px' }}>
+                        {data.spells_prepared?.length || 0} / {Math.max(1, calculateModifier(data[data.spellcasting_ability] || 10) + (data.level || 1))}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -1178,54 +1220,185 @@ function CharacterSheetFull() {
               </div>
 
               {/* Spell Filters */}
-              <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                <div style={{ position: 'relative', flex: '1', minWidth: '200px' }}>
-                  <Search size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                  <Input
-                    data-testid="spell-search"
-                    placeholder="Search spells..."
-                    value={spellSearch}
-                    onChange={(e) => setSpellSearch(e.target.value)}
-                    style={{ paddingLeft: '40px' }}
-                  />
+              <div style={{ marginBottom: '20px' }}>
+                {/* Sub-tabs: Prepared vs Known */}
+                <div style={{ display: 'flex', gap: '0', marginBottom: '16px' }}>
+                  <button
+                    onClick={() => setSpellViewMode('prepared')}
+                    data-testid="spells-tab-prepared"
+                    style={{
+                      flex: 1,
+                      padding: '12px 24px',
+                      background: spellViewMode === 'prepared' ? 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' : 'rgba(30, 41, 59, 0.5)',
+                      border: 'none',
+                      color: spellViewMode === 'prepared' ? '#fff' : '#94a3b8',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    PREPARED SPELLS ({data.spells_prepared?.length || 0})
+                  </button>
+                  <button
+                    onClick={() => setSpellViewMode('known')}
+                    data-testid="spells-tab-known"
+                    style={{
+                      flex: 1,
+                      padding: '12px 24px',
+                      background: spellViewMode === 'known' ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)' : 'rgba(30, 41, 59, 0.5)',
+                      border: 'none',
+                      color: spellViewMode === 'known' ? '#fff' : '#94a3b8',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    ALL KNOWN SPELLS ({data.spells_known?.length || 0})
+                  </button>
                 </div>
-                <select
-                  data-testid="spell-level-filter"
-                  value={spellLevelFilter}
-                  onChange={(e) => setSpellLevelFilter(e.target.value)}
-                  style={{
-                    ...glassPanel,
-                    padding: '10px 16px',
-                    color: '#e2e8f0',
-                    fontSize: '14px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value="all">All Levels</option>
-                  {Object.entries(SPELL_LEVELS).map(([level, label]) => (
-                    <option key={level} value={level}>{label}</option>
-                  ))}
-                </select>
+
+                {/* Search and Filter */}
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ position: 'relative', flex: '1', minWidth: '200px' }}>
+                    <Search size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <Input
+                      data-testid="spell-search"
+                      placeholder="Search spells..."
+                      value={spellSearch}
+                      onChange={(e) => setSpellSearch(e.target.value)}
+                      style={{ paddingLeft: '40px' }}
+                    />
+                  </div>
+                  <select
+                    data-testid="spell-level-filter"
+                    value={spellLevelFilter}
+                    onChange={(e) => setSpellLevelFilter(e.target.value)}
+                    style={{
+                      ...glassPanel,
+                      padding: '10px 16px',
+                      color: '#e2e8f0',
+                      fontSize: '14px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="all">All Levels</option>
+                    {Object.entries(SPELL_LEVELS).map(([level, label]) => (
+                      <option key={level} value={level}>{label}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              {/* Spell List */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '8px' }}>
-                {loadingSrd ? (
-                  <p style={{ color: '#64748b' }}>Loading spells...</p>
-                ) : filteredSpells.length === 0 ? (
-                  <p style={{ color: '#64748b' }}>No spells available for your class.</p>
-                ) : (
-                  filteredSpells.map(spell => (
-                    <SpellCard
-                      key={spell.name}
-                      spell={spell}
-                      isPrepared={data.spells_known?.some(s => s.name === spell.name)}
-                      onTogglePrepare={toggleSpellPrepared}
-                      canPrepare={editMode}
-                    />
-                  ))
-                )}
-              </div>
+              {/* Prepared Spells View */}
+              {spellViewMode === 'prepared' && (
+                <div>
+                  {(!data.spells_prepared || data.spells_prepared.length === 0) ? (
+                    <div style={{ 
+                      ...glassPanel, 
+                      padding: '40px', 
+                      textAlign: 'center',
+                      borderStyle: 'dashed'
+                    }}>
+                      <Wand2 size={48} color="#3b82f6" style={{ marginBottom: '16px', opacity: 0.5 }} />
+                      <h4 style={{ color: '#e2e8f0', marginBottom: '8px' }}>No Spells Prepared</h4>
+                      <p style={{ color: '#64748b', fontSize: '14px' }}>
+                        Go to "All Known Spells" to prepare spells for your adventure.
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '8px' }}>
+                      {data.spells_prepared
+                        .filter(spell => {
+                          const matchesSearch = spell.name.toLowerCase().includes(spellSearch.toLowerCase());
+                          const matchesLevel = spellLevelFilter === 'all' || spell.level === parseInt(spellLevelFilter);
+                          return matchesSearch && matchesLevel;
+                        })
+                        .map(spell => (
+                          <SpellCard
+                            key={spell.name}
+                            spell={spell}
+                            isPrepared={true}
+                            onTogglePrepare={(s) => {
+                              // Unprepare the spell
+                              const newPrepared = (data.spells_prepared || []).filter(sp => sp.name !== s.name);
+                              const newData = { ...editData, spells_prepared: newPrepared };
+                              setEditData(newData);
+                              if (!editMode) {
+                                // Auto-save when not in edit mode
+                                axios.put(`${API}/characters/${characterId}`, newData)
+                                  .then(() => {
+                                    setCharacter(newData);
+                                    toast.success(`${s.name} unprepared`);
+                                  })
+                                  .catch(() => toast.error('Failed to update spells'));
+                              }
+                            }}
+                            canPrepare={true}
+                          />
+                        ))
+                      }
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Known Spells View */}
+              {spellViewMode === 'known' && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '8px' }}>
+                  {loadingSrd ? (
+                    <p style={{ color: '#64748b' }}>Loading spells...</p>
+                  ) : filteredSpells.length === 0 ? (
+                    <p style={{ color: '#64748b' }}>No spells available for your class.</p>
+                  ) : (
+                    filteredSpells.map(spell => {
+                      const isKnown = data.spells_known?.some(s => s.name === spell.name);
+                      const isPrepared = data.spells_prepared?.some(s => s.name === spell.name);
+                      return (
+                        <SpellCard
+                          key={spell.name}
+                          spell={spell}
+                          isPrepared={isPrepared}
+                          onTogglePrepare={(s) => {
+                            if (isPrepared) {
+                              // Unprepare
+                              const newPrepared = (data.spells_prepared || []).filter(sp => sp.name !== s.name);
+                              const newData = { ...editData, spells_prepared: newPrepared };
+                              setEditData(newData);
+                              if (!editMode) {
+                                axios.put(`${API}/characters/${characterId}`, newData)
+                                  .then(() => {
+                                    setCharacter(newData);
+                                    toast.success(`${s.name} unprepared`);
+                                  })
+                                  .catch(() => toast.error('Failed to update spells'));
+                              }
+                            } else {
+                              // Prepare
+                              const newPrepared = [...(data.spells_prepared || []), s];
+                              const newKnown = data.spells_known?.some(sp => sp.name === s.name) 
+                                ? data.spells_known 
+                                : [...(data.spells_known || []), s];
+                              const newData = { ...editData, spells_prepared: newPrepared, spells_known: newKnown };
+                              setEditData(newData);
+                              if (!editMode) {
+                                axios.put(`${API}/characters/${characterId}`, newData)
+                                  .then(() => {
+                                    setCharacter(newData);
+                                    toast.success(`${s.name} prepared!`);
+                                  })
+                                  .catch(() => toast.error('Failed to update spells'));
+                              }
+                            }
+                          }}
+                          canPrepare={true}
+                        />
+                      );
+                    })
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -1516,6 +1689,17 @@ function CharacterSheetFull() {
         open={showJoinModal}
         onOpenChange={setShowJoinModal}
         onSuccess={() => fetchCharacter()}
+      />
+
+      {/* Level Up Modal */}
+      <LevelUpModal
+        character={character}
+        open={showLevelUpModal}
+        onClose={() => setShowLevelUpModal(false)}
+        onLevelUp={(updatedCharacter) => {
+          setCharacter(updatedCharacter);
+          setEditData(updatedCharacter);
+        }}
       />
 
       {/* ROOK Suggestions */}
