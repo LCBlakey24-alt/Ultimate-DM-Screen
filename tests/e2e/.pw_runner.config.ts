@@ -2,16 +2,16 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: '/app/tests/e2e',
-  outputDir: '/root/.emergent/automation_output/20260306_211631/test-results',
+  outputDir: '/root/.emergent/automation_output/20260306_221947/test-results',
   timeout: 60000,
   retries: 0,
   workers: 1,
   reporter: [
     ['line'],
-    ['json', { outputFile: '/root/.emergent/automation_output/20260306_211631/results.json' }],
+    ['json', { outputFile: '/root/.emergent/automation_output/20260306_221947/results.json' }],
   ],
   use: {
-    baseURL: 'https://rook-campaign-hub.preview.emergentagent.com',
+    baseURL: 'https://rook-ttrpg.preview.emergentagent.com',
     screenshot: 'only-on-failure',
     trace: 'off',
     headless: true,

@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { 
   TrendingUp, Heart, Shield, Star, Dumbbell, Brain, Eye,
-  Zap, Check, X, Sparkles, Award, ChevronRight, Dice6
+  Zap, Check, X, Sparkles, Award, ChevronRight, Dice6,
+  Plus, AlertCircle, Users, Swords, BookOpen
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -51,21 +52,81 @@ const AVAILABLE_FEATS = [
 const HIT_DIE_MAP = {
   'barbarian': 12, 'fighter': 10, 'paladin': 10, 'ranger': 10,
   'bard': 8, 'cleric': 8, 'druid': 8, 'monk': 8, 'rogue': 8, 'warlock': 8,
-  'sorcerer': 6, 'wizard': 6
+  'sorcerer': 6, 'wizard': 6, 'artificer': 8
+};
+
+// Class icons
+const CLASS_ICONS = {
+  'barbarian': Swords, 'fighter': Shield, 'paladin': Shield, 'ranger': Swords,
+  'bard': Sparkles, 'cleric': Heart, 'druid': BookOpen, 'monk': Users,
+  'rogue': Swords, 'sorcerer': Sparkles, 'warlock': Sparkles, 'wizard': BookOpen,
+  'artificer': Shield
+};
+
+// Default available classes for multiclassing
+const DEFAULT_CLASSES = [
+  'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk',
+  'Paladin', 'Ranger', 'Rogue', 'Sorcerer', 'Warlock', 'Wizard', 'Artificer'
+];
+
+// Multiclass requirements
+const MULTICLASS_REQUIREMENTS = {
+  'Barbarian': { strength: 13 },
+  'Bard': { charisma: 13 },
+  'Cleric': { wisdom: 13 },
+  'Druid': { wisdom: 13 },
+  'Fighter': { strength: 13 },
+  'Monk': { dexterity: 13, wisdom: 13 },
+  'Paladin': { strength: 13, charisma: 13 },
+  'Ranger': { dexterity: 13, wisdom: 13 },
+  'Rogue': { dexterity: 13 },
+  'Sorcerer': { charisma: 13 },
+  'Warlock': { charisma: 13 },
+  'Wizard': { intelligence: 13 },
+  'Artificer': { intelligence: 13 }
 };
 
 function LevelUpModal({ character, open, onClose, onLevelUp }) {
-  const [step, setStep] = useState(1); // 1: Overview, 2: Choice (ASI/Feat), 3: Confirm
+  // Steps: 0: Mode Selection (normal/multiclass), 1: Overview, 2: Choice (ASI/Feat), 3: Confirm
+  // For multiclass: 0: Mode Selection, 1: Class Selection, 2: Confirm
+  const [mode, setMode] = useState(null); // 'levelup' or 'multiclass'
+  const [step, setStep] = useState(0); 
   const [choiceType, setChoiceType] = useState(null); // 'asi' or 'feat'
   const [asiChoices, setAsiChoices] = useState({ ability1: '', ability2: '' });
   const [selectedFeat, setSelectedFeat] = useState(null);
   const [hpRoll, setHpRoll] = useState(null);
   const [isRolling, setIsRolling] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  // Multiclass state
+  const [selectedNewClass, setSelectedNewClass] = useState(null);
+  const [availableClasses, setAvailableClasses] = useState([]);
+
+  // Reset state when modal opens/closes
+  useEffect(() => {
+    if (open) {
+      setMode(null);
+      setStep(0);
+      setChoiceType(null);
+      setAsiChoices({ ability1: '', ability2: '' });
+      setSelectedFeat(null);
+      setHpRoll(null);
+      setSelectedNewClass(null);
+    }
+  }, [open]);
 
   const currentLevel = character?.level || 1;
   const newLevel = currentLevel + 1;
   const charClass = character?.character_class?.toLowerCase() || 'fighter';
+  const canMulticlass = currentLevel < 20;
+  
+  // Get character's current classes (for multiclass characters)
+  const characterClasses = useMemo(() => {
+    if (character?.classes && character.classes.length > 0) {
+      return character.classes;
+    }
+    return [{ name: character?.character_class || 'Fighter', level: currentLevel }];
+  }, [character, currentLevel]);
   
   // Determine if this is an ASI level
   const asiLevels = useMemo(() => {
@@ -88,10 +149,43 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
   const currentProfBonus = 2 + Math.floor((currentLevel - 1) / 4);
   const profBonusIncreased = newProfBonus > currentProfBonus;
 
+  // Fetch available classes for multiclassing
+  useEffect(() => {
+    if (mode === 'multiclass') {
+      const currentClassNames = characterClasses.map(c => c.name.toLowerCase());
+      const available = DEFAULT_CLASSES
+        .filter(name => !currentClassNames.includes(name.toLowerCase()))
+        .map(name => ({
+          name,
+          requirements: MULTICLASS_REQUIREMENTS[name] || {}
+        }));
+      setAvailableClasses(available);
+    }
+  }, [mode, characterClasses]);
+
+  // Check if character meets multiclass requirements
+  const checkRequirements = (requirements) => {
+    if (!requirements || Object.keys(requirements).length === 0) return { met: true, failed: [] };
+    
+    const failed = [];
+    for (const [ability, minScore] of Object.entries(requirements)) {
+      const charScore = character?.[ability] || 10;
+      if (charScore < minScore) {
+        failed.push({ ability, required: minScore, current: charScore });
+      }
+    }
+    
+    return { met: failed.length === 0, failed };
+  };
+
+  // Also check if character meets their current class's multiclass OUT requirements
+  const meetsCurrentClassRequirements = useMemo(() => {
+    const currentClassReqs = MULTICLASS_REQUIREMENTS[character?.character_class] || {};
+    return checkRequirements(currentClassReqs);
+  }, [character]);
+
   const rollHitDie = () => {
     setIsRolling(true);
-    
-    // Animate dice roll
     let rollCount = 0;
     const interval = setInterval(() => {
       setHpRoll(Math.floor(Math.random() * hitDie) + 1);
@@ -114,7 +208,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
   };
 
   const useAverageHp = () => {
-    setHpRoll(null); // null means use average
+    setHpRoll(null);
     toast.success(`Using average: +${averageHp} HP`);
   };
 
@@ -124,7 +218,6 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
     } else if (!asiChoices.ability2) {
       setAsiChoices({ ...asiChoices, ability2: ability });
     } else {
-      // Reset and start over
       setAsiChoices({ ability1: ability, ability2: '' });
     }
   };
@@ -137,6 +230,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
     }
   };
 
+  // Regular level up
   const handleLevelUp = async () => {
     setLoading(true);
     try {
@@ -175,7 +269,51 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
     }
   };
 
+  // Multiclass - add new class
+  const handleMulticlass = async () => {
+    if (!selectedNewClass) return;
+    
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${API}/characters/${character.id}/multiclass`,
+        { class_name: selectedNewClass.name }
+      );
+
+      toast.success(`Multiclassed into ${selectedNewClass.name}!`, {
+        description: `You are now a ${character.character_class}/${selectedNewClass.name}`
+      });
+
+      onLevelUp(response.data);
+      onClose();
+    } catch (error) {
+      toast.error('Multiclass failed', {
+        description: error.response?.data?.detail || 'Please try again'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!open) return null;
+
+  const getClassIcon = (className) => {
+    const IconComponent = CLASS_ICONS[className?.toLowerCase()] || Shield;
+    return IconComponent;
+  };
+
+  // Calculate total steps for progress bar
+  const getTotalSteps = () => {
+    if (mode === 'multiclass') return 2;
+    if (mode === 'levelup') return isAsiLevel ? 4 : 3;
+    return 1;
+  };
+
+  const getCurrentStep = () => {
+    if (!mode) return 1;
+    if (mode === 'multiclass') return step;
+    return step;
+  };
 
   return (
     <div 
@@ -224,7 +362,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
               </div>
               <div>
                 <h2 style={{ color: '#fff', fontSize: '24px', fontWeight: '800', fontFamily: 'Montserrat' }}>
-                  Level Up!
+                  {mode === 'multiclass' ? 'Multiclass' : 'Level Up!'}
                 </h2>
                 <p style={{ color: '#9CA3AF', fontSize: '14px' }}>
                   {character?.name} • Level {currentLevel} → {newLevel}
@@ -233,6 +371,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
             </div>
             <button
               onClick={onClose}
+              data-testid="close-modal-btn"
               style={{
                 background: 'transparent',
                 border: 'none',
@@ -246,25 +385,303 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
           </div>
 
           {/* Progress Steps */}
-          <div style={{ display: 'flex', gap: '8px', marginTop: '20px' }}>
-            {[1, 2, 3].map(s => (
-              <div
-                key={s}
-                style={{
-                  flex: 1,
-                  height: '4px',
-                  background: step >= s ? playerBlue : 'rgba(255, 255, 255, 0.1)',
-                  transition: 'background 0.3s'
-                }}
-              />
-            ))}
-          </div>
+          {mode && (
+            <div style={{ display: 'flex', gap: '8px', marginTop: '20px' }}>
+              {Array.from({ length: getTotalSteps() }, (_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    flex: 1,
+                    height: '4px',
+                    background: getCurrentStep() >= i + 1 ? playerBlue : 'rgba(255, 255, 255, 0.1)',
+                    transition: 'background 0.3s'
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Content */}
         <div style={{ padding: '24px' }}>
+          {/* Step 0: Mode Selection */}
+          {step === 0 && !mode && (
+            <div>
+              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '20px' }}>
+                Choose Your Path
+              </h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Level Up Current Class */}
+                <button
+                  onClick={() => { setMode('levelup'); setStep(1); }}
+                  data-testid="choose-levelup-btn"
+                  style={{
+                    padding: '20px',
+                    background: '#111',
+                    border: '2px solid ' + playerBlue,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px'
+                  }}
+                >
+                  <div style={{
+                    width: '56px',
+                    height: '56px',
+                    background: playerBlueSubtle,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <TrendingUp size={28} color={playerBlue} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '4px' }}>
+                      Level Up {character?.character_class}
+                    </div>
+                    <div style={{ color: '#9CA3AF', fontSize: '13px' }}>
+                      Continue advancing in your current class to level {newLevel}
+                    </div>
+                  </div>
+                  <ChevronRight size={20} color={playerBlue} />
+                </button>
+
+                {/* Multiclass Option */}
+                <button
+                  onClick={() => { 
+                    if (meetsCurrentClassRequirements.met && canMulticlass) {
+                      setMode('multiclass'); 
+                      setStep(1); 
+                    }
+                  }}
+                  data-testid="choose-multiclass-btn"
+                  disabled={!meetsCurrentClassRequirements.met || !canMulticlass}
+                  style={{
+                    padding: '20px',
+                    background: '#111',
+                    border: '2px solid ' + (meetsCurrentClassRequirements.met && canMulticlass ? '#22C55E' : '#6B7280'),
+                    cursor: meetsCurrentClassRequirements.met && canMulticlass ? 'pointer' : 'not-allowed',
+                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    opacity: meetsCurrentClassRequirements.met && canMulticlass ? 1 : 0.6
+                  }}
+                >
+                  <div style={{
+                    width: '56px',
+                    height: '56px',
+                    background: meetsCurrentClassRequirements.met && canMulticlass 
+                      ? 'rgba(34, 197, 94, 0.15)' 
+                      : 'rgba(107, 114, 128, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <Plus size={28} color={meetsCurrentClassRequirements.met && canMulticlass ? '#22C55E' : '#6B7280'} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '4px' }}>
+                      Multiclass into a New Class
+                    </div>
+                    <div style={{ color: '#9CA3AF', fontSize: '13px' }}>
+                      {meetsCurrentClassRequirements.met 
+                        ? 'Add a new class to your character (must meet ability requirements)'
+                        : `Need ${meetsCurrentClassRequirements.failed.map(f => `${ABILITIES.find(a => a.key === f.ability)?.fullName || f.ability} ${f.required}+`).join(', ')} to multiclass out`
+                      }
+                    </div>
+                  </div>
+                  {meetsCurrentClassRequirements.met && canMulticlass ? (
+                    <ChevronRight size={20} color="#22C55E" />
+                  ) : (
+                    <AlertCircle size={20} color="#6B7280" />
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* MULTICLASS FLOW */}
+          {mode === 'multiclass' && step === 1 && (
+            <div>
+              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}>
+                Choose New Class
+              </h3>
+              <p style={{ color: '#9CA3AF', fontSize: '14px', marginBottom: '20px' }}>
+                Select a class to add. You must meet the ability score requirements.
+              </p>
+
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '8px',
+                maxHeight: '400px',
+                overflowY: 'auto'
+              }}>
+                {availableClasses.map((cls) => {
+                  const reqCheck = checkRequirements(cls.requirements);
+                  const isSelected = selectedNewClass?.name === cls.name;
+                  const ClassIcon = getClassIcon(cls.name);
+                  
+                  return (
+                    <button
+                      key={cls.name}
+                      onClick={() => reqCheck.met && setSelectedNewClass(cls)}
+                      data-testid={`multiclass-${cls.name.toLowerCase()}`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '14px',
+                        background: isSelected ? playerBlueSubtle : '#111',
+                        border: `2px solid ${isSelected ? playerBlue : reqCheck.met ? 'rgba(255,255,255,0.1)' : 'rgba(239, 68, 68, 0.3)'}`,
+                        cursor: reqCheck.met ? 'pointer' : 'not-allowed',
+                        opacity: reqCheck.met ? 1 : 0.5,
+                        textAlign: 'left'
+                      }}
+                    >
+                      <ClassIcon size={24} color={isSelected ? playerBlue : '#9CA3AF'} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ color: '#fff', fontWeight: '600', marginBottom: '2px' }}>
+                          {cls.name}
+                        </div>
+                        <div style={{ color: '#6B7280', fontSize: '12px' }}>
+                          Requires: {Object.entries(cls.requirements).map(([ability, score]) => (
+                            <span key={ability} style={{ marginRight: '8px' }}>
+                              {ABILITIES.find(a => a.key === ability)?.fullName || ability} {score}+
+                            </span>
+                          ))}
+                          {Object.keys(cls.requirements).length === 0 && 'None'}
+                        </div>
+                      </div>
+                      {reqCheck.met ? (
+                        isSelected && <Check size={20} color="#22C55E" />
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <AlertCircle size={16} color="#EF4444" />
+                          <span style={{ color: '#EF4444', fontSize: '11px' }}>
+                            {reqCheck.failed.map(f => `${f.ability} ${f.current}/${f.required}`).join(', ')}
+                          </span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>
+                <Button
+                  onClick={() => { setMode(null); setStep(0); setSelectedNewClass(null); }}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: '#9CA3AF',
+                    padding: '12px 24px'
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={() => setStep(2)}
+                  disabled={!selectedNewClass}
+                  data-testid="confirm-multiclass-selection-btn"
+                  style={{
+                    background: selectedNewClass ? '#22C55E' : '#475569',
+                    border: 'none',
+                    padding: '12px 24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: selectedNewClass ? 'pointer' : 'not-allowed'
+                  }}
+                >
+                  Continue
+                  <ChevronRight size={18} />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* MULTICLASS CONFIRMATION */}
+          {mode === 'multiclass' && step === 2 && (
+            <div>
+              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '20px' }}>
+                Confirm Multiclass
+              </h3>
+
+              <div style={{
+                background: '#111',
+                border: '1px solid rgba(34, 197, 94, 0.3)',
+                padding: '20px',
+                marginBottom: '20px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                  <Plus size={24} color="#22C55E" />
+                  <div>
+                    <h4 style={{ color: '#fff', fontSize: '16px', fontWeight: '700' }}>
+                      Adding {selectedNewClass?.name}
+                    </h4>
+                    <p style={{ color: '#9CA3AF', fontSize: '14px' }}>
+                      {character?.name} will become a {character?.character_class} {currentLevel} / {selectedNewClass?.name} 1
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px' }}>
+                  <p style={{ color: '#9CA3AF', fontSize: '13px', marginBottom: '8px' }}>
+                    You will gain:
+                  </p>
+                  <ul style={{ color: '#fff', fontSize: '14px', paddingLeft: '20px', margin: 0 }}>
+                    <li>Hit points based on {selectedNewClass?.name}'s hit die</li>
+                    <li>Multiclass proficiencies for {selectedNewClass?.name}</li>
+                    <li>1st level {selectedNewClass?.name} features</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Button
+                  onClick={() => setStep(1)}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: '#9CA3AF',
+                    padding: '12px 24px'
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={handleMulticlass}
+                  disabled={loading}
+                  data-testid="confirm-multiclass-btn"
+                  style={{
+                    background: 'linear-gradient(135deg, #22C55E, #16A34A)',
+                    border: 'none',
+                    padding: '12px 32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  {loading ? (
+                    <>Processing...</>
+                  ) : (
+                    <>
+                      <Check size={18} />
+                      Confirm Multiclass
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* NORMAL LEVEL UP FLOW */}
           {/* Step 1: Overview */}
-          {step === 1 && (
+          {mode === 'levelup' && step === 1 && (
             <div>
               <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '20px' }}>
                 Level {newLevel} Benefits
@@ -287,7 +704,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <Button
                     onClick={rollHitDie}
                     disabled={isRolling}
@@ -391,7 +808,18 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                 </div>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '24px' }}>
+                <Button
+                  onClick={() => { setMode(null); setStep(0); }}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: '#9CA3AF',
+                    padding: '12px 24px'
+                  }}
+                >
+                  Back
+                </Button>
                 <Button
                   onClick={() => setStep(isAsiLevel ? 2 : 3)}
                   data-testid="next-step-btn"
@@ -412,7 +840,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
           )}
 
           {/* Step 2: ASI or Feat Choice */}
-          {step === 2 && isAsiLevel && (
+          {mode === 'levelup' && step === 2 && isAsiLevel && (
             <div>
               {/* Choice Toggle */}
               <div style={{ display: 'flex', gap: '0', marginBottom: '24px' }}>
@@ -636,7 +1064,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
           )}
 
           {/* Step 3: Confirmation */}
-          {step === 3 && (
+          {mode === 'levelup' && step === 3 && (
             <div>
               <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '20px' }}>
                 Confirm Level Up

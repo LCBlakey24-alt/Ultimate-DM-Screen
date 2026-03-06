@@ -4507,7 +4507,8 @@ async def level_up_character(
             
             level_progression[str(level_up.new_level)] = {
                 'type': 'asi',
-                'choices': level_up.asi_choices
+                'choices': level_up.asi_choices,
+                'hp_gained': hp_increase
             }
             
         elif level_up.choice_type == 'feat' and level_up.feat_choice:
@@ -4521,7 +4522,8 @@ async def level_up_character(
             
             level_progression[str(level_up.new_level)] = {
                 'type': 'feat',
-                'feat_name': new_feat['name']
+                'feat_name': new_feat['name'],
+                'hp_gained': hp_increase
             }
     else:
         # Not an ASI level, just record the level up
