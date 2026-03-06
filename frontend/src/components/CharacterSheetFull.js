@@ -15,6 +15,7 @@ import {
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import JoinCampaignModal from '@/components/JoinCampaignModal';
 import LevelUpModal from '@/components/LevelUpModal';
+import DiceRollTooltip from '@/components/DiceRollTooltip';
 import { RookSuggestionPopup, useRookSuggestions } from './RookSuggestions';
 import { DiceRollButton } from '@/components/DiceRollButton';
 
@@ -1714,6 +1715,9 @@ function CharacterSheetFull() {
         onDismiss={dismissSuggestion}
         position="bottom-right"
       />
+
+      {/* First-time dice roll tooltip */}
+      <DiceRollTooltip />
     </div>
   );
 }

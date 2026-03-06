@@ -5634,6 +5634,95 @@ async def seed_default_progression_data(username: str = Depends(get_current_user
     }
 
 
+# ==================== AI SESSION RECAP ====================
+
+class SessionRecapRequest(BaseModel):
+    campaign_id: str
+    notes: str
+    style: str = "narrative"  # narrative, bullet, detailed
+    sections: List[str] = ["summary", "keyEvents", "npcsEncountered", "combatHighlights", "lootObtained", "nextSessionHooks"]
+
+@api_router.post("/ai/session-recap")
+async def generate_session_recap(request: SessionRecapRequest, username: str = Depends(get_current_user)):
+    """Generate an AI-powered session recap from notes"""
+    
+    # Build prompt based on style and sections
+    sections_text = ", ".join(request.sections)
+    
+    style_instructions = {
+        "narrative": "Write in a flowing narrative style, like a story being told by a bard.",
+        "bullet": "Use concise bullet points for each key element.",
+        "detailed": "Provide a detailed, comprehensive log with timestamps and full descriptions."
+    }
+    
+    prompt = f"""You are a Game Master's assistant. Generate a session recap from the following notes.
+
+Style: {style_instructions.get(request.style, style_instructions['narrative'])}
+
+Include these sections (if relevant content exists): {sections_text}
+
+Session Notes:
+{request.notes}
+
+Generate a well-formatted recap that captures the key events, NPCs, locations, combat highlights, and any plot developments. Make it useful for both the GM to reference later and to share with players as a "previously on" summary.
+
+Format the output in Markdown."""
+
+    try:
+        # Try to use ROOK AI
+        from emergentintegrations.llm.chat import chat, UserMessage
+        
+        emergent_api_key = os.environ.get('EMERGENT_API_KEY')
+        if not emergent_api_key:
+            raise Exception("No API key")
+        
+        response = await asyncio.to_thread(
+            chat,
+            api_key=emergent_api_key,
+            messages=[UserMessage(content=prompt)],
+            model="gpt-4o-mini"
+        )
+        
+        content = response.content
+        
+    except Exception as e:
+        logging.warning(f"AI recap generation failed: {e}")
+        # Fallback to simple extraction
+        lines = request.notes.split('\n')
+        content = f"# Session Recap\n\n"
+        content += f"*Auto-generated summary*\n\n"
+        content += "## Key Events\n"
+        for line in lines[:10]:
+            if line.strip():
+                content += f"- {line.strip()}\n"
+        content += "\n## Next Session\n- Continue from current situation\n"
+    
+    recap = {
+        "content": content,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "style": request.style,
+        "word_count": len(content.split())
+    }
+    
+    # Optionally save to database
+    recap['campaign_id'] = request.campaign_id
+    recap['generated_by'] = username
+    recap['id'] = str(uuid.uuid4())
+    await db.session_recaps.insert_one(recap)
+    
+    return recap
+
+@api_router.get("/ai/session-recaps/{campaign_id}")
+async def get_session_recaps(campaign_id: str, username: str = Depends(get_current_user)):
+    """Get all session recaps for a campaign"""
+    recaps = await db.session_recaps.find(
+        {'campaign_id': campaign_id},
+        {'_id': 0}
+    ).sort('generated_at', -1).to_list(50)
+    return {"recaps": recaps}
+
+
+
 
 # Include the router in the main app
 app.include_router(api_router)

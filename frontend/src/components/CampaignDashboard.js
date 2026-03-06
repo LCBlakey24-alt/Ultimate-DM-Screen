@@ -17,6 +17,8 @@ import ItemCreatorTab from '@/components/tabs/ItemCreatorTab';
 import QuickReferenceTab from '@/components/tabs/QuickReferenceTab';
 import WorldBuilderTab from '@/components/tabs/WorldBuilderTab';
 import MapsTab from '@/components/tabs/MapsTab';
+import PartyInventory from '@/components/PartyInventory';
+import SessionRecapAI from '@/components/SessionRecapAI';
 import QuickTips, { TIPS } from '@/components/QuickTips';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -129,6 +131,8 @@ function CampaignDashboard({ username, onLogout }) {
   const standaloneTabs = [
     { id: 'reference', icon: ScrollText, label: 'References' },
     { id: 'items', icon: Package, label: 'Inventory' },
+    { id: 'party-loot', icon: Package, label: 'Party Loot' },
+    { id: 'session-recap', icon: Sparkles, label: 'AI Recap' },
     { id: 'players', icon: Users, label: 'Players' },
     { id: 'ingame-notes', icon: FileText, label: 'Notes' },
   ];
@@ -438,6 +442,8 @@ function CampaignDashboard({ username, onLogout }) {
             {activeTab === 'maps' && <MapsTab campaignId={campaignId} />}
             {activeTab === 'encounter-gen' && <EncounterGeneratorTab campaignId={campaignId} />}
             {activeTab === 'items' && <ItemCreatorTab campaignId={campaignId} />}
+            {activeTab === 'party-loot' && <PartyInventory campaignId={campaignId} />}
+            {activeTab === 'session-recap' && <SessionRecapAI campaignId={campaignId} />}
             {activeTab === 'reference' && <QuickReferenceTab campaignId={campaignId} />}
             {activeTab === 'calendar' && <CalendarTab campaignId={campaignId} />}
             {activeTab === 'ingame-notes' && <InGameNotesTab campaignId={campaignId} />}
