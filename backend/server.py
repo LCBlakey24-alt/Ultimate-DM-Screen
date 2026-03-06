@@ -5722,6 +5722,129 @@ async def get_session_recaps(campaign_id: str, username: str = Depends(get_curre
     return {"recaps": recaps}
 
 
+# ==================== SESSION TIMELINE ROUTES ====================
+
+class TimelineEvent(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    campaign_id: str
+    type: str = "session"  # session, combat, npc_met, location, quest, death, level_up, major, milestone
+    title: str
+    description: str = ""
+    session_number: Optional[int] = None
+    in_game_date: str = ""
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class TimelineEventCreate(BaseModel):
+    type: str = "session"
+    title: str
+    description: str = ""
+    session_number: Optional[int] = None
+    in_game_date: str = ""
+
+@api_router.post("/campaigns/{campaign_id}/timeline", status_code=status.HTTP_201_CREATED)
+async def create_timeline_event(campaign_id: str, event_data: TimelineEventCreate, username: str = Depends(get_current_user)):
+    """Add an event to the campaign timeline"""
+    await verify_campaign_ownership(campaign_id, username)
+    
+    event = TimelineEvent(campaign_id=campaign_id, **event_data.model_dump())
+    doc = event.model_dump()
+    await db.timeline_events.insert_one(doc)
+    # Remove _id before returning
+    doc.pop('_id', None)
+    return doc
+
+@api_router.get("/campaigns/{campaign_id}/timeline")
+async def get_timeline_events(campaign_id: str, username: str = Depends(get_current_user)):
+    """Get all timeline events for a campaign"""
+    await verify_campaign_ownership(campaign_id, username)
+    
+    events = await db.timeline_events.find(
+        {'campaign_id': campaign_id},
+        {'_id': 0}
+    ).sort('session_number', -1).to_list(500)
+    return {"events": events}
+
+@api_router.delete("/campaigns/{campaign_id}/timeline/{event_id}")
+async def delete_timeline_event(campaign_id: str, event_id: str, username: str = Depends(get_current_user)):
+    """Delete a timeline event"""
+    await verify_campaign_ownership(campaign_id, username)
+    
+    result = await db.timeline_events.delete_one({'id': event_id, 'campaign_id': campaign_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+    return {'message': 'Timeline event deleted successfully'}
+
+
+# ==================== NPC RELATIONSHIP WEB ROUTES ====================
+
+class NPCRelationship(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    campaign_id: str
+    source_id: str  # NPC who has the relationship
+    target_id: str  # NPC they're related to
+    relationship_type: str = "neutral"  # ally, enemy, family, romantic, business, rival, neutral, servant
+    description: str = ""
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class NPCRelationshipCreate(BaseModel):
+    source_id: str
+    target_id: str
+    relationship_type: str = "neutral"
+    description: str = ""
+
+@api_router.post("/campaigns/{campaign_id}/npc-relationships", status_code=status.HTTP_201_CREATED)
+async def create_npc_relationship(campaign_id: str, rel_data: NPCRelationshipCreate, username: str = Depends(get_current_user)):
+    """Create a relationship between two NPCs"""
+    await verify_campaign_ownership(campaign_id, username)
+    
+    # Validate that both NPCs exist
+    source = await db.npcs.find_one({'id': rel_data.source_id, 'campaign_id': campaign_id})
+    target = await db.npcs.find_one({'id': rel_data.target_id, 'campaign_id': campaign_id})
+    
+    if not source or not target:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="One or both NPCs not found")
+    
+    # Check if relationship already exists
+    existing = await db.npc_relationships.find_one({
+        'campaign_id': campaign_id,
+        '$or': [
+            {'source_id': rel_data.source_id, 'target_id': rel_data.target_id},
+            {'source_id': rel_data.target_id, 'target_id': rel_data.source_id}
+        ]
+    })
+    
+    if existing:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Relationship already exists between these NPCs")
+    
+    relationship = NPCRelationship(campaign_id=campaign_id, **rel_data.model_dump())
+    doc = relationship.model_dump()
+    await db.npc_relationships.insert_one(doc)
+    # Remove _id before returning
+    doc.pop('_id', None)
+    return doc
+
+@api_router.get("/campaigns/{campaign_id}/npc-relationships")
+async def get_npc_relationships(campaign_id: str, username: str = Depends(get_current_user)):
+    """Get all NPC relationships for a campaign"""
+    await verify_campaign_ownership(campaign_id, username)
+    
+    relationships = await db.npc_relationships.find(
+        {'campaign_id': campaign_id},
+        {'_id': 0}
+    ).to_list(500)
+    return relationships
+
+@api_router.delete("/campaigns/{campaign_id}/npc-relationships/{relationship_id}")
+async def delete_npc_relationship(campaign_id: str, relationship_id: str, username: str = Depends(get_current_user)):
+    """Delete an NPC relationship"""
+    await verify_campaign_ownership(campaign_id, username)
+    
+    result = await db.npc_relationships.delete_one({'id': relationship_id, 'campaign_id': campaign_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Relationship not found")
+    return {'message': 'NPC relationship deleted successfully'}
 
 
 # Include the router in the main app

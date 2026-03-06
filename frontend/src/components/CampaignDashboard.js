@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map, ChevronDown, ChevronRight, Package } from 'lucide-react';
+import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map, ChevronDown, ChevronRight, Package, Dice6, Clock, Network } from 'lucide-react';
 import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
 import GodsTab from '@/components/tabs/GodsTab';
 import NPCsTab from '@/components/tabs/NPCsTab';
@@ -20,6 +20,9 @@ import MapsTab from '@/components/tabs/MapsTab';
 import PartyInventory from '@/components/PartyInventory';
 import SessionRecapAI from '@/components/SessionRecapAI';
 import QuickTips, { TIPS } from '@/components/QuickTips';
+import NPCRelationshipWeb from '@/components/NPCRelationshipWeb';
+import RandomGeneratorTables from '@/components/RandomGeneratorTables';
+import SessionTimeline from '@/components/SessionTimeline';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -112,7 +115,9 @@ function CampaignDashboard({ username, onLogout }) {
         { id: 'gods', icon: Church, label: 'Gods' },
         { id: 'locations', icon: MapPin, label: 'Locations' },
         { id: 'npcs', icon: UserCircle, label: 'NPCs' },
+        { id: 'npc-web', icon: Network, label: 'NPC Web' },
         { id: 'calendar', icon: Calendar, label: 'Calendar' },
+        { id: 'timeline', icon: Clock, label: 'Timeline' },
       ]
     },
     {
@@ -125,12 +130,20 @@ function CampaignDashboard({ username, onLogout }) {
         { id: 'encounter-gen', icon: Sparkles, label: 'Encounter Gen' },
       ]
     },
+    {
+      id: 'tools',
+      label: 'GM Tools',
+      icon: Wand2,
+      tabs: [
+        { id: 'random-gen', icon: Dice6, label: 'Generators' },
+        { id: 'reference', icon: ScrollText, label: 'References' },
+        { id: 'items', icon: Package, label: 'Inventory' },
+      ]
+    },
   ];
 
   // Standalone tabs (shown individually, not in groups)
   const standaloneTabs = [
-    { id: 'reference', icon: ScrollText, label: 'References' },
-    { id: 'items', icon: Package, label: 'Inventory' },
     { id: 'party-loot', icon: Package, label: 'Party Loot' },
     { id: 'session-recap', icon: Sparkles, label: 'AI Recap' },
     { id: 'players', icon: Users, label: 'Players' },
@@ -436,6 +449,7 @@ function CampaignDashboard({ username, onLogout }) {
             {activeTab === 'world' && <WorldBuilderTab campaignId={campaignId} />}
             {activeTab === 'gods' && <GodsTab campaignId={campaignId} />}
             {activeTab === 'npcs' && <NPCsTab campaignId={campaignId} />}
+            {activeTab === 'npc-web' && <NPCRelationshipWeb campaignId={campaignId} />}
             {activeTab === 'locations' && <LocationsTab campaignId={campaignId} />}
             {activeTab === 'players' && <PlayersTab campaignId={campaignId} />}
             {activeTab === 'combat-creator' && <CombatCreatorTab campaignId={campaignId} />}
@@ -446,6 +460,8 @@ function CampaignDashboard({ username, onLogout }) {
             {activeTab === 'session-recap' && <SessionRecapAI campaignId={campaignId} />}
             {activeTab === 'reference' && <QuickReferenceTab campaignId={campaignId} />}
             {activeTab === 'calendar' && <CalendarTab campaignId={campaignId} />}
+            {activeTab === 'timeline' && <SessionTimeline campaignId={campaignId} />}
+            {activeTab === 'random-gen' && <RandomGeneratorTables campaignId={campaignId} />}
             {activeTab === 'ingame-notes' && <InGameNotesTab campaignId={campaignId} />}
           </div>
         </div>
