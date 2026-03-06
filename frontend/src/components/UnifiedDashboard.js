@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { 
   User, Crown, Plus, ChevronRight, Star, Link2, Settings,
-  Users, MapPin, LogOut
+  Users, MapPin, LogOut, Shield
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -46,10 +46,17 @@ function UnifiedDashboard({ username, onLogout }) {
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     fetchAllData();
   }, []);
+
+  useEffect(() => {
+    // Check if user is admin
+    const adminUsers = ['rookiequestadmin', 'criticalfusion', 'admin'];
+    setIsAdmin(adminUsers.some(admin => username?.toLowerCase().includes(admin)));
+  }, [username]);
 
   const fetchAllData = async () => {
     try {
@@ -152,6 +159,27 @@ function UnifiedDashboard({ username, onLogout }) {
         </div>
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {/* Admin Button - Only for admins */}
+          {isAdmin && (
+            <Button
+              onClick={() => navigate('/admin')}
+              data-testid="admin-btn"
+              style={{
+                background: theme.accent.redSubtle,
+                border: `1px solid ${theme.accent.red}`,
+                color: theme.accent.red,
+                padding: '8px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontWeight: '600'
+              }}
+            >
+              <Shield size={16} />
+              Admin
+            </Button>
+          )}
+
           {/* Review Button */}
           <Button
             onClick={() => setShowReviewModal(true)}

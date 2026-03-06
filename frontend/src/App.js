@@ -7,7 +7,6 @@ import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import AuthPage from '@/components/AuthPage';
 import UnifiedDashboard from '@/components/UnifiedDashboard';
-import CampaignList from '@/components/CampaignList';
 import CampaignDashboard from '@/components/CampaignDashboard';
 import PlayerDashboard from '@/components/PlayerDashboard';
 import DMScreen from '@/components/GMScreen';
@@ -191,11 +190,7 @@ function App() {
             />
             <Route 
               path="/campaigns" 
-              element={
-                isAuthenticated ? 
-                  <CampaignList username={username} onLogout={handleLogout} /> : 
-                  <Navigate to="/auth" replace />
-              } 
+              element={<Navigate to="/home" replace />}
             />
             <Route 
               path="/characters" 
