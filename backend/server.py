@@ -1887,7 +1887,7 @@ async def cancel_subscription(username: str = Depends(get_current_user)):
 # ==================== PROMO CODE ROUTES ====================
 
 # Admin usernames - these users can access admin features
-ADMIN_USERNAMES = ["rookiequestadmin", "criticalfusion", "admin"]
+ADMIN_USERNAMES = ["rookiequestadmin", "criticalfusion", "admin", "gmtest"]
 
 async def verify_admin(username: str):
     """Check if user is admin"""
@@ -5847,6 +5847,674 @@ async def delete_npc_relationship(campaign_id: str, relationship_id: str, userna
     return {'message': 'NPC relationship deleted successfully'}
 
 
+# ==================== RULE SYSTEM & CONTENT MANAGEMENT ====================
+
+class RuleSystem(BaseModel):
+    """A complete rule system (e.g., D&D 5e 2014, D&D 5e 2024, Custom Sci-Fi)"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str  # "D&D 5e 2014", "D&D 5e 2024", "Starfinder", "Custom Sci-Fi"
+    short_code: str  # "5e2014", "5e2024", "custom_scifi"
+    description: str = ""
+    is_official: bool = False  # True for official systems, False for custom
+    owner_id: Optional[str] = None  # For custom systems, who created it
+    base_system: Optional[str] = None  # Parent system (e.g., custom sci-fi based on 5e2024)
+    # Core mechanics
+    ability_scores: List[str] = Field(default_factory=lambda: ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"])
+    skills: List[Dict[str, Any]] = Field(default_factory=list)  # [{name, ability, description}]
+    # Feature flags
+    has_spells: bool = True
+    has_classes: bool = True
+    has_races: bool = True
+    max_level: int = 20
+    # Metadata
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class RuleSystemCreate(BaseModel):
+    name: str
+    short_code: str
+    description: str = ""
+    base_system: Optional[str] = None
+    ability_scores: List[str] = Field(default_factory=lambda: ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"])
+    skills: List[Dict[str, Any]] = Field(default_factory=list)
+    has_spells: bool = True
+    has_classes: bool = True
+    has_races: bool = True
+    max_level: int = 20
+
+class GameClass(BaseModel):
+    """A character class within a rule system"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    system_id: str  # Which rule system this belongs to
+    name: str
+    description: str = ""
+    hit_die: int = 8  # d6, d8, d10, d12
+    primary_ability: str = ""  # "Strength", "Dexterity", etc.
+    saving_throw_proficiencies: List[str] = Field(default_factory=list)
+    armor_proficiencies: List[str] = Field(default_factory=list)
+    weapon_proficiencies: List[str] = Field(default_factory=list)
+    tool_proficiencies: List[str] = Field(default_factory=list)
+    skill_choices: Dict[str, Any] = Field(default_factory=dict)  # {count: 2, options: ["Acrobatics", ...]}
+    starting_equipment: List[str] = Field(default_factory=list)
+    spellcasting_ability: Optional[str] = None  # "Intelligence", "Wisdom", "Charisma", or None
+    spellcasting_type: Optional[str] = None  # "full", "half", "third", "pact", None
+    subclass_level: int = 3  # Level at which subclass is chosen
+    # Multiclass requirements
+    multiclass_requirements: Dict[str, int] = Field(default_factory=dict)  # {"Strength": 13} or {"Strength": 13, "Charisma": 13}
+    multiclass_proficiencies: List[str] = Field(default_factory=list)
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class GameSubclass(BaseModel):
+    """A subclass/archetype within a class"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    system_id: str
+    class_id: str
+    name: str
+    description: str = ""
+    features: List[Dict[str, Any]] = Field(default_factory=list)  # [{level, name, description}]
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class GameRace(BaseModel):
+    """A playable race/species"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    system_id: str
+    name: str
+    description: str = ""
+    size: str = "Medium"
+    speed: int = 30
+    ability_score_increases: Dict[str, int] = Field(default_factory=dict)
+    traits: List[Dict[str, Any]] = Field(default_factory=list)
+    languages: List[str] = Field(default_factory=list)
+    darkvision: int = 0
+    subraces: List[Dict[str, Any]] = Field(default_factory=list)
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class ClassLevelFeature(BaseModel):
+    """Features gained at specific class levels"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    system_id: str
+    class_id: str
+    level: int
+    name: str
+    description: str = ""
+    has_choices: bool = False
+    choice_type: Optional[str] = None
+    choice_count: int = 1
+    choice_options: List[str] = Field(default_factory=list)
+    grants_spell_slots: bool = False
+    spell_slots: Dict[str, int] = Field(default_factory=dict)
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class GameSpell(BaseModel):
+    """A spell in the system"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    system_id: str
+    name: str
+    level: int  # 0 for cantrips
+    school: str = ""
+    casting_time: str = ""
+    range: str = ""
+    components: str = ""
+    duration: str = ""
+    description: str = ""
+    higher_levels: str = ""
+    classes: List[str] = Field(default_factory=list)
+    ritual: bool = False
+    concentration: bool = False
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class GameItem(BaseModel):
+    """An item (weapon, armor, equipment, magic item)"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    system_id: str
+    name: str
+    type: str = "equipment"
+    rarity: str = "common"
+    description: str = ""
+    weight: float = 0
+    cost: str = ""
+    damage: str = ""
+    damage_type: str = ""
+    properties: List[str] = Field(default_factory=list)
+    armor_class: int = 0
+    armor_type: str = ""
+    stealth_disadvantage: bool = False
+    strength_requirement: int = 0
+    requires_attunement: bool = False
+    attunement_requirements: str = ""
+    magic_properties: str = ""
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class GameFeat(BaseModel):
+    """A feat or special ability"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    system_id: str
+    name: str
+    description: str = ""
+    prerequisites: str = ""
+    benefits: List[str] = Field(default_factory=list)
+    ability_score_increase: Dict[str, int] = Field(default_factory=dict)
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class GameMonster(BaseModel):
+    """A monster/creature stat block"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    system_id: str
+    name: str
+    size: str = "Medium"
+    type: str = ""
+    alignment: str = ""
+    armor_class: int = 10
+    hit_points: int = 10
+    hit_dice: str = ""
+    speed: Dict[str, int] = Field(default_factory=lambda: {"walk": 30})
+    ability_scores: Dict[str, int] = Field(default_factory=lambda: {"str": 10, "dex": 10, "con": 10, "int": 10, "wis": 10, "cha": 10})
+    challenge_rating: str = "0"
+    xp: int = 0
+    traits: List[Dict[str, str]] = Field(default_factory=list)
+    actions: List[Dict[str, str]] = Field(default_factory=list)
+    description: str = ""
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class ContentUpload(BaseModel):
+    """Request for bulk content upload"""
+    system_id: str
+    content_type: str
+    data: List[Dict[str, Any]]
+    overwrite_existing: bool = False
+
+
+# ==================== RULE SYSTEM ROUTES ====================
+
+@api_router.get("/rule-systems")
+async def get_rule_systems(username: str = Depends(get_current_user)):
+    """Get all available rule systems (official + user's custom)"""
+    systems = await db.rule_systems.find(
+        {'$or': [{'is_official': True}, {'owner_id': username}]},
+        {'_id': 0}
+    ).to_list(100)
+    return {"systems": systems}
+
+@api_router.get("/rule-systems/{system_id}")
+async def get_rule_system(system_id: str, username: str = Depends(get_current_user)):
+    """Get a specific rule system with all its content counts"""
+    system = await db.rule_systems.find_one({'id': system_id}, {'_id': 0})
+    if not system:
+        raise HTTPException(status_code=404, detail="Rule system not found")
+    
+    counts = {
+        'classes': await db.game_classes.count_documents({'system_id': system_id}),
+        'subclasses': await db.game_subclasses.count_documents({'system_id': system_id}),
+        'races': await db.game_races.count_documents({'system_id': system_id}),
+        'spells': await db.game_spells.count_documents({'system_id': system_id}),
+        'items': await db.game_items.count_documents({'system_id': system_id}),
+        'feats': await db.game_feats.count_documents({'system_id': system_id}),
+        'monsters': await db.game_monsters.count_documents({'system_id': system_id}),
+        'features': await db.class_level_features.count_documents({'system_id': system_id}),
+    }
+    return {"system": system, "content_counts": counts}
+
+@api_router.post("/rule-systems", status_code=status.HTTP_201_CREATED)
+async def create_rule_system(system_data: RuleSystemCreate, username: str = Depends(get_current_user)):
+    """Create a new custom rule system"""
+    existing = await db.rule_systems.find_one({'short_code': system_data.short_code})
+    if existing:
+        raise HTTPException(status_code=400, detail="A system with this short code already exists")
+    
+    system = RuleSystem(**system_data.model_dump(), is_official=False, owner_id=username)
+    doc = system.model_dump()
+    await db.rule_systems.insert_one(doc)
+    doc.pop('_id', None)
+    return doc
+
+@api_router.put("/rule-systems/{system_id}")
+async def update_rule_system(system_id: str, update_data: Dict[str, Any], username: str = Depends(get_current_user)):
+    """Update a custom rule system (only owner can update)"""
+    system = await db.rule_systems.find_one({'id': system_id})
+    if not system:
+        raise HTTPException(status_code=404, detail="Rule system not found")
+    if system.get('is_official'):
+        raise HTTPException(status_code=403, detail="Cannot modify official rule systems")
+    if system.get('owner_id') != username:
+        raise HTTPException(status_code=403, detail="Only the owner can modify this rule system")
+    
+    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+    await db.rule_systems.update_one({'id': system_id}, {'$set': update_data})
+    updated = await db.rule_systems.find_one({'id': system_id}, {'_id': 0})
+    return updated
+
+
+# ==================== CONTENT ROUTES ====================
+
+@api_router.get("/rule-systems/{system_id}/classes")
+async def get_system_classes(system_id: str, username: str = Depends(get_current_user)):
+    classes = await db.game_classes.find({'system_id': system_id}, {'_id': 0}).to_list(100)
+    return {"classes": classes}
+
+@api_router.get("/rule-systems/{system_id}/classes/{class_id}")
+async def get_class_details(system_id: str, class_id: str, username: str = Depends(get_current_user)):
+    game_class = await db.game_classes.find_one({'id': class_id, 'system_id': system_id}, {'_id': 0})
+    if not game_class:
+        raise HTTPException(status_code=404, detail="Class not found")
+    subclasses = await db.game_subclasses.find({'class_id': class_id, 'system_id': system_id}, {'_id': 0}).to_list(50)
+    features = await db.class_level_features.find({'class_id': class_id, 'system_id': system_id}, {'_id': 0}).sort('level', 1).to_list(100)
+    return {"class": game_class, "subclasses": subclasses, "features": features}
+
+@api_router.get("/rule-systems/{system_id}/races")
+async def get_system_races(system_id: str, username: str = Depends(get_current_user)):
+    races = await db.game_races.find({'system_id': system_id}, {'_id': 0}).to_list(100)
+    return {"races": races}
+
+@api_router.get("/rule-systems/{system_id}/spells")
+async def get_system_spells(system_id: str, class_name: Optional[str] = None, level: Optional[int] = None, username: str = Depends(get_current_user)):
+    query = {'system_id': system_id}
+    if class_name:
+        query['classes'] = class_name
+    if level is not None:
+        query['level'] = level
+    spells = await db.game_spells.find(query, {'_id': 0}).sort('level', 1).to_list(1000)
+    return {"spells": spells}
+
+@api_router.get("/rule-systems/{system_id}/items")
+async def get_system_items(system_id: str, item_type: Optional[str] = None, username: str = Depends(get_current_user)):
+    query = {'system_id': system_id}
+    if item_type:
+        query['type'] = item_type
+    items = await db.game_items.find(query, {'_id': 0}).to_list(1000)
+    return {"items": items}
+
+@api_router.get("/rule-systems/{system_id}/feats")
+async def get_system_feats(system_id: str, username: str = Depends(get_current_user)):
+    feats = await db.game_feats.find({'system_id': system_id}, {'_id': 0}).to_list(200)
+    return {"feats": feats}
+
+@api_router.get("/rule-systems/{system_id}/monsters")
+async def get_system_monsters(system_id: str, cr: Optional[str] = None, username: str = Depends(get_current_user)):
+    query = {'system_id': system_id}
+    if cr:
+        query['challenge_rating'] = cr
+    monsters = await db.game_monsters.find(query, {'_id': 0}).to_list(1000)
+    return {"monsters": monsters}
+
+
+# ==================== BULK UPLOAD ROUTES ====================
+
+async def is_admin(username: str) -> bool:
+    """Check if user is an admin"""
+    user = await db.users.find_one({'username': username}, {'_id': 0})
+    return user.get('is_admin', False) if user else False
+
+@api_router.post("/rule-systems/{system_id}/upload")
+async def bulk_upload_content(system_id: str, upload: ContentUpload, username: str = Depends(get_current_user)):
+    """Bulk upload content to a rule system"""
+    system = await db.rule_systems.find_one({'id': system_id})
+    if not system:
+        raise HTTPException(status_code=404, detail="Rule system not found")
+    
+    if system.get('is_official') and not await is_admin(username):
+        raise HTTPException(status_code=403, detail="Only admins can upload to official rule systems")
+    
+    if not system.get('is_official') and system.get('owner_id') != username:
+        raise HTTPException(status_code=403, detail="Only the owner can upload to this rule system")
+    
+    collection_map = {
+        'classes': db.game_classes,
+        'subclasses': db.game_subclasses,
+        'races': db.game_races,
+        'spells': db.game_spells,
+        'items': db.game_items,
+        'feats': db.game_feats,
+        'monsters': db.game_monsters,
+        'features': db.class_level_features,
+    }
+    
+    if upload.content_type not in collection_map:
+        raise HTTPException(status_code=400, detail=f"Invalid content type: {upload.content_type}")
+    
+    collection = collection_map[upload.content_type]
+    created, updated, errors = 0, 0, []
+    
+    for i, item in enumerate(upload.data):
+        try:
+            item['system_id'] = system_id
+            if 'id' not in item:
+                item['id'] = str(uuid.uuid4())
+            if 'created_at' not in item:
+                item['created_at'] = datetime.now(timezone.utc).isoformat()
+            
+            existing = await collection.find_one({'system_id': system_id, 'name': item.get('name', '')})
+            if existing:
+                if upload.overwrite_existing:
+                    await collection.update_one({'system_id': system_id, 'name': item['name']}, {'$set': item})
+                    updated += 1
+                else:
+                    errors.append(f"Item {i}: '{item.get('name', 'Unknown')}' already exists")
+            else:
+                await collection.insert_one(item)
+                created += 1
+        except Exception as e:
+            errors.append(f"Item {i}: {str(e)}")
+    
+    return {"success": len(errors) == 0, "content_type": upload.content_type, "total_records": len(upload.data), "created": created, "updated": updated, "errors": errors}
+
+@api_router.post("/rule-systems/{system_id}/upload-file")
+async def upload_content_file(system_id: str, content_type: str, file: UploadFile = File(...), overwrite: bool = False, username: str = Depends(get_current_user)):
+    """Upload content from a JSON or CSV file"""
+    system = await db.rule_systems.find_one({'id': system_id})
+    if not system:
+        raise HTTPException(status_code=404, detail="Rule system not found")
+    
+    if system.get('is_official') and not await is_admin(username):
+        raise HTTPException(status_code=403, detail="Only admins can upload to official rule systems")
+    
+    if not system.get('is_official') and system.get('owner_id') != username:
+        raise HTTPException(status_code=403, detail="Only the owner can upload to this rule system")
+    
+    content = await file.read()
+    filename = file.filename.lower()
+    
+    try:
+        if filename.endswith('.json'):
+            data = json.loads(content.decode('utf-8'))
+            if isinstance(data, dict) and 'data' in data:
+                data = data['data']
+        elif filename.endswith('.csv'):
+            import csv
+            import io
+            reader = csv.DictReader(io.StringIO(content.decode('utf-8')))
+            data = list(reader)
+            for item in data:
+                for key, value in item.items():
+                    if isinstance(value, str):
+                        if value.isdigit():
+                            item[key] = int(value)
+                        elif value.replace('.', '').isdigit():
+                            item[key] = float(value)
+                        elif value.lower() == 'true':
+                            item[key] = True
+                        elif value.lower() == 'false':
+                            item[key] = False
+        else:
+            raise HTTPException(status_code=400, detail="File must be .json or .csv")
+        
+        if not isinstance(data, list):
+            data = [data]
+        
+        upload = ContentUpload(system_id=system_id, content_type=content_type, data=data, overwrite_existing=overwrite)
+        return await bulk_upload_content(system_id, upload, username)
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON: {str(e)}")
+
+
+# ==================== AI WITH RULE SYSTEM AWARENESS ====================
+
+async def get_campaign_rule_system(campaign_id: str) -> Dict[str, Any]:
+    """Get the rule system for a campaign"""
+    campaign = await db.campaigns.find_one({'id': campaign_id}, {'_id': 0})
+    if not campaign:
+        return None
+    
+    system_name = campaign.get('system', '5e 2024 Compatible')
+    if '2014' in system_name.lower():
+        system = await db.rule_systems.find_one({'short_code': '5e2014'}, {'_id': 0})
+    elif '2024' in system_name.lower():
+        system = await db.rule_systems.find_one({'short_code': '5e2024'}, {'_id': 0})
+    else:
+        system = await db.rule_systems.find_one({'name': {'$regex': system_name, '$options': 'i'}}, {'_id': 0})
+    return system
+
+@api_router.post("/ai/generate-with-rules")
+async def ai_generate_with_rules(request: Dict[str, Any], username: str = Depends(get_current_user)):
+    """AI generation that respects the campaign's rule system"""
+    campaign_id = request.get('campaign_id')
+    prompt_type = request.get('type')
+    context = request.get('context', '')
+    
+    if not campaign_id:
+        raise HTTPException(status_code=400, detail="campaign_id is required")
+    
+    campaign = await db.campaigns.find_one({'id': campaign_id}, {'_id': 0})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    rule_system = await get_campaign_rule_system(campaign_id)
+    system_name = campaign.get('system', '5e 2024 Compatible')
+    
+    system_context = ""
+    if rule_system:
+        system_id = rule_system.get('id')
+        classes = await db.game_classes.find({'system_id': system_id}, {'_id': 0, 'name': 1}).to_list(5)
+        races = await db.game_races.find({'system_id': system_id}, {'_id': 0, 'name': 1}).to_list(5)
+        if classes or races:
+            system_context = f"\n\nAvailable in this system:\n"
+            if classes:
+                system_context += f"Classes: {', '.join(c['name'] for c in classes)}\n"
+            if races:
+                system_context += f"Races: {', '.join(r['name'] for r in races)}\n"
+    
+    rule_instructions = f"You are a TTRPG assistant for a campaign using the {system_name} rules.\n\n"
+    
+    if '2024' in system_name.lower():
+        rule_instructions += """IMPORTANT 2024 RULES:
+- Backgrounds now grant origin feats at level 1
+- Species (not races) have flexible ability scores
+- Weapon mastery properties are available
+- Updated spell lists and class features
+- Simplified exhaustion system (1-6 levels)
+"""
+    elif '2014' in system_name.lower():
+        rule_instructions += """IMPORTANT 2014 RULES:
+- Races grant fixed ability score increases
+- Use original feat and class feature lists
+- Original spell lists and components
+- Original exhaustion rules with specific penalties
+"""
+    
+    rule_instructions += system_context
+    
+    prompts = {
+        'npc': f"{rule_instructions}\n\nGenerate an NPC. Context: {context}\n\nProvide: name, race/species, class, background, personality, and a secret.",
+        'encounter': f"{rule_instructions}\n\nGenerate a combat encounter. Context: {context}\n\nProvide: enemies, quantity, tactics, and loot.",
+        'item': f"{rule_instructions}\n\nGenerate a magic item. Context: {context}\n\nProvide: name, rarity, effects using {system_name} rules.",
+        'location': f"{rule_instructions}\n\nGenerate a location. Context: {context}\n\nProvide: name, description, features, and secrets.",
+        'plot_hook': f"{rule_instructions}\n\nGenerate a plot hook. Context: {context}\n\nProvide: hook, complications, NPCs, and rewards.",
+    }
+    
+    prompt = prompts.get(prompt_type, f"{rule_instructions}\n\n{context}")
+    
+    try:
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+        
+        chat = LlmChat(
+            api_key=llm_key,
+            session_id=f"ai-gen-{username}-{uuid.uuid4().hex[:8]}",
+            system_message="You are a creative TTRPG game master assistant. Generate content that is engaging, balanced, and fits the specified rule system."
+        ).with_model("openai", "gpt-5.2")
+        
+        user_msg = UserMessage(text=prompt)
+        response = await chat.send_message(user_msg)
+        response_text = response.strip() if isinstance(response, str) else str(response)
+        
+        return {"result": response_text, "rule_system": system_name}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
+
+
+# ==================== CHARACTER MULTICLASS SUPPORT ====================
+
+@api_router.post("/characters/{character_id}/multiclass")
+async def add_multiclass(character_id: str, class_data: Dict[str, Any], username: str = Depends(get_current_user)):
+    """Add a new class to a character (multiclassing)"""
+    character = await db.characters.find_one({'id': character_id, 'owner': username}, {'_id': 0})
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    new_class_name = class_data.get('class_name')
+    if not new_class_name:
+        raise HTTPException(status_code=400, detail="class_name is required")
+    
+    campaign_id = character.get('campaign_id')
+    rule_system = await get_campaign_rule_system(campaign_id) if campaign_id else None
+    
+    game_class = None
+    if rule_system:
+        game_class = await db.game_classes.find_one({
+            'system_id': rule_system.get('id'),
+            'name': {'$regex': f'^{new_class_name}$', '$options': 'i'}
+        }, {'_id': 0})
+    
+    if game_class and game_class.get('multiclass_requirements'):
+        for ability, min_score in game_class['multiclass_requirements'].items():
+            char_score = character.get('ability_scores', {}).get(ability.lower()[:3], 10)
+            if char_score < min_score:
+                raise HTTPException(status_code=400, detail=f"Multiclassing into {new_class_name} requires {ability} {min_score}. You have {char_score}.")
+    
+    classes = character.get('classes', [])
+    if not classes:
+        current_class = character.get('class', 'Unknown')
+        current_level = character.get('level', 1)
+        classes = [{'name': current_class, 'level': current_level}]
+    
+    existing_class = next((c for c in classes if c['name'].lower() == new_class_name.lower()), None)
+    if existing_class:
+        raise HTTPException(status_code=400, detail=f"Character already has levels in {new_class_name}")
+    
+    classes.append({'name': new_class_name, 'level': 1, 'subclass': None})
+    total_level = sum(c['level'] for c in classes)
+    
+    new_proficiencies = []
+    if game_class and game_class.get('multiclass_proficiencies'):
+        new_proficiencies = game_class['multiclass_proficiencies']
+    
+    current_proficiencies = character.get('proficiencies', [])
+    updated_proficiencies = list(set(current_proficiencies + new_proficiencies))
+    
+    await db.characters.update_one(
+        {'id': character_id},
+        {'$set': {'classes': classes, 'level': total_level, 'proficiencies': updated_proficiencies, 'updated_at': datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    updated = await db.characters.find_one({'id': character_id}, {'_id': 0})
+    return updated
+
+@api_router.post("/characters/{character_id}/level-up-class")
+async def level_up_specific_class(character_id: str, class_data: Dict[str, Any], username: str = Depends(get_current_user)):
+    """Level up a specific class for a multiclass character"""
+    import random
+    character = await db.characters.find_one({'id': character_id, 'owner': username}, {'_id': 0})
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    class_name = class_data.get('class_name')
+    if not class_name:
+        raise HTTPException(status_code=400, detail="class_name is required")
+    
+    classes = character.get('classes', [])
+    if not classes:
+        if character.get('class', '').lower() == class_name.lower():
+            classes = [{'name': character['class'], 'level': character.get('level', 1)}]
+        else:
+            raise HTTPException(status_code=400, detail=f"Character doesn't have levels in {class_name}")
+    
+    class_found = False
+    for c in classes:
+        if c['name'].lower() == class_name.lower():
+            c['level'] += 1
+            class_found = True
+            break
+    
+    if not class_found:
+        raise HTTPException(status_code=400, detail=f"Character doesn't have levels in {class_name}")
+    
+    total_level = sum(c['level'] for c in classes)
+    campaign_id = character.get('campaign_id')
+    rule_system = await get_campaign_rule_system(campaign_id) if campaign_id else None
+    
+    hit_die = 8
+    if rule_system:
+        game_class = await db.game_classes.find_one({
+            'system_id': rule_system.get('id'),
+            'name': {'$regex': f'^{class_name}$', '$options': 'i'}
+        }, {'_id': 0})
+        if game_class:
+            hit_die = game_class.get('hit_die', 8)
+    
+    con_mod = (character.get('ability_scores', {}).get('con', 10) - 10) // 2
+    hp_roll = random.randint(1, hit_die)
+    hp_gain = max(1, hp_roll + con_mod)
+    new_max_hp = character.get('max_hp', 10) + hp_gain
+    
+    await db.characters.update_one(
+        {'id': character_id},
+        {'$set': {'classes': classes, 'level': total_level, 'max_hp': new_max_hp, 'current_hp': new_max_hp, 'updated_at': datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    updated = await db.characters.find_one({'id': character_id}, {'_id': 0})
+    return {"character": updated, "hp_gained": hp_gain, "hp_roll": hp_roll, "class_leveled": class_name}
+
+
+# ==================== INITIALIZE DEFAULT RULE SYSTEMS ====================
+
+async def initialize_rule_systems():
+    """Create default rule systems if they don't exist"""
+    existing = await db.rule_systems.count_documents({})
+    if existing > 0:
+        return
+    
+    skills_5e = [
+        {"name": "Acrobatics", "ability": "Dexterity"},
+        {"name": "Animal Handling", "ability": "Wisdom"},
+        {"name": "Arcana", "ability": "Intelligence"},
+        {"name": "Athletics", "ability": "Strength"},
+        {"name": "Deception", "ability": "Charisma"},
+        {"name": "History", "ability": "Intelligence"},
+        {"name": "Insight", "ability": "Wisdom"},
+        {"name": "Intimidation", "ability": "Charisma"},
+        {"name": "Investigation", "ability": "Intelligence"},
+        {"name": "Medicine", "ability": "Wisdom"},
+        {"name": "Nature", "ability": "Intelligence"},
+        {"name": "Perception", "ability": "Wisdom"},
+        {"name": "Performance", "ability": "Charisma"},
+        {"name": "Persuasion", "ability": "Charisma"},
+        {"name": "Religion", "ability": "Intelligence"},
+        {"name": "Sleight of Hand", "ability": "Dexterity"},
+        {"name": "Stealth", "ability": "Dexterity"},
+        {"name": "Survival", "ability": "Wisdom"},
+    ]
+    
+    system_2014 = RuleSystem(
+        id="5e-2014",
+        name="D&D 5e 2014 (PHB)",
+        short_code="5e2014",
+        description="Dungeons & Dragons 5th Edition (2014 Player's Handbook rules)",
+        is_official=True,
+        skills=skills_5e,
+    )
+    
+    system_2024 = RuleSystem(
+        id="5e-2024",
+        name="D&D 5e 2024 (One D&D)",
+        short_code="5e2024",
+        description="Dungeons & Dragons 5th Edition (2024 revised rules with weapon mastery, new species, etc.)",
+        is_official=True,
+        skills=skills_5e,
+    )
+    
+    await db.rule_systems.insert_many([system_2014.model_dump(), system_2024.model_dump()])
+    logger.info("Initialized default rule systems (5e 2014 and 5e 2024)")
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
@@ -5867,10 +6535,12 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize Stripe products on startup"""
+    """Initialize Stripe products and rule systems on startup"""
     logger.info("Starting up - initializing Stripe products...")
     await setup_stripe_products()
     logger.info("Stripe products initialized")
+    await initialize_rule_systems()
+    logger.info("Rule systems initialized")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

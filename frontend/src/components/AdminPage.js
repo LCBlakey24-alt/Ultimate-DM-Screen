@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Plus, Trash2, Copy, Users, Gift, Shield, Key, Star, Check, X, Sword, User } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Copy, Users, Gift, Shield, Key, Star, Check, X, Sword, User, BookOpen } from 'lucide-react';
+import RuleSystemManager from './RuleSystemManager';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -373,6 +374,29 @@ function AdminPage({ username }) {
           >
             <Star size={18} />
             REVIEWS ({reviews.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('rules')}
+            style={{
+              flex: 1,
+              padding: '16px',
+              background: activeTab === 'rules' ? theme.legendary.subtle : theme.bg.dark,
+              border: 'none',
+              borderBottom: activeTab === 'rules' ? `2px solid ${theme.legendary.primary}` : `1px solid ${theme.border}`,
+              color: activeTab === 'rules' ? theme.legendary.primary : theme.text.muted,
+              fontSize: '14px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              fontFamily: 'Cityworm, sans-serif',
+              letterSpacing: '1px'
+            }}
+          >
+            <BookOpen size={18} />
+            RULE SYSTEMS
           </button>
         </div>
 
@@ -804,6 +828,11 @@ function AdminPage({ username }) {
             </div>
           )}
         </div>
+
+        {/* Rule Systems Tab */}
+        {activeTab === 'rules' && (
+          <RuleSystemManager />
+        )}
       </div>
     </div>
   );
