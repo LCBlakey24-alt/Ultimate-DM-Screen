@@ -816,16 +816,16 @@ async def setup_stripe_products():
             # Create monthly price
             monthly_price = stripe.Price.create(
                 product=product.id,
-                unit_amount=int(plan['price_monthly'] * 100),  # Convert to cents
-                currency='usd',
+                unit_amount=int(plan['price_monthly'] * 100),  # Convert to pence
+                currency='gbp',
                 recurring={'interval': 'month'}
             )
             
             # Create yearly price
             yearly_price = stripe.Price.create(
                 product=product.id,
-                unit_amount=int(plan['price_yearly'] * 100),  # Convert to cents
-                currency='usd',
+                unit_amount=int(plan['price_yearly'] * 100),  # Convert to pence
+                currency='gbp',
                 recurring={'interval': 'year'}
             )
             

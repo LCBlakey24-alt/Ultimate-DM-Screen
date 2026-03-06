@@ -340,7 +340,7 @@ function PricingPage({ username, onLogout }) {
                 <div style={{ padding: '20px', textAlign: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '4px' }}>
                     <span style={{ color: planColor, fontSize: '36px', fontWeight: '800' }}>
-                      ${price}
+                      £{price}
                     </span>
                     {price > 0 && (
                       <span style={{ color: theme.text.muted, fontSize: '14px' }}>
@@ -350,7 +350,7 @@ function PricingPage({ username, onLogout }) {
                   </div>
                   {billingCycle === 'yearly' && price > 0 && (
                     <p style={{ color: theme.text.muted, fontSize: '12px', marginTop: '4px' }}>
-                      (${(price / 12).toFixed(2)}/month)
+                      (£{(price / 12).toFixed(2)}/month)
                     </p>
                   )}
                 </div>
