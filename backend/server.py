@@ -1279,9 +1279,75 @@ async def get_user_subscription(username: str) -> dict:
     
     subscription = user.get('subscription', SubscriptionTier().model_dump())
     
-    # Check if referral premium has expired
+    # Check if promo code access has expired
+    promo_expires = subscription.get('promo_expires_at')
+    if promo_expires and subscription.get('promo_code_used'):
+        expires_dt = datetime.fromisoformat(promo_expires.replace('Z', '+00:00'))
+        if datetime.now(timezone.utc) >= expires_dt:
+            # Promo expired - check if they have a paused Stripe subscription to resume
+            paused_sub_id = subscription.get('paused_stripe_subscription')
+            
+            if paused_sub_id:
+                try:
+                    api_key = os.environ.get('STRIPE_API_KEY')
+                    stripe.api_key = api_key
+                    
+                    # Resume the paused subscription
+                    stripe.Subscription.modify(
+                        paused_sub_id,
+                        pause_collection=''  # Removes pause, resumes billing
+                    )
+                    
+                    # Get the subscription to find the tier
+                    stripe_sub = stripe.Subscription.retrieve(paused_sub_id)
+                    # Get tier from metadata or default to the plan they were on
+                    original_tier = stripe_sub.metadata.get('plan_id', 'player')
+                    
+                    subscription['tier'] = original_tier
+                    subscription['subscription_status'] = 'active'
+                    subscription['stripe_subscription_id'] = paused_sub_id
+                    subscription['paused_stripe_subscription'] = None
+                    subscription['promo_expires_at'] = None
+                    
+                    await db.users.update_one(
+                        {'username': username},
+                        {'$set': {
+                            'subscription.tier': original_tier,
+                            'subscription.subscription_status': 'active',
+                            'subscription.stripe_subscription_id': paused_sub_id,
+                            'subscription.paused_stripe_subscription': None,
+                            'subscription.promo_expires_at': None
+                        }}
+                    )
+                    logger.info(f"Resumed Stripe subscription for {username} after promo expired")
+                except Exception as e:
+                    logger.error(f"Failed to resume subscription for {username}: {e}")
+                    # Fall back to free tier
+                    subscription['tier'] = 'free'
+                    subscription['subscription_status'] = 'expired'
+                    await db.users.update_one(
+                        {'username': username},
+                        {'$set': {
+                            'subscription.tier': 'free',
+                            'subscription.subscription_status': 'expired'
+                        }}
+                    )
+            else:
+                # No paused subscription, revert to free
+                subscription['tier'] = 'free'
+                subscription['subscription_status'] = 'expired'
+                await db.users.update_one(
+                    {'username': username},
+                    {'$set': {
+                        'subscription.tier': 'free',
+                        'subscription.subscription_status': 'expired',
+                        'subscription.promo_expires_at': None
+                    }}
+                )
+    
+    # Check if referral/other premium has expired (legacy check)
     premium_expires = subscription.get('premium_expires_at')
-    if premium_expires and subscription.get('tier') == 'adventurer':
+    if premium_expires and not subscription.get('promo_code_used') and subscription.get('tier') != 'free':
         expires_dt = datetime.fromisoformat(premium_expires.replace('Z', '+00:00'))
         if datetime.now(timezone.utc) >= expires_dt:
             # Premium expired, revert to free
@@ -1751,6 +1817,23 @@ async def apply_promo_code(request: ApplyPromoCodeRequest, username: str = Depen
     if user and user.get('subscription', {}).get('promo_code_used'):
         raise HTTPException(status_code=400, detail="You have already used a promo code")
     
+    # Check if user has an active Stripe subscription - pause it to avoid double charges
+    stripe_subscription_id = user.get('subscription', {}).get('stripe_subscription_id') if user else None
+    if stripe_subscription_id:
+        try:
+            api_key = os.environ.get('STRIPE_API_KEY')
+            stripe.api_key = api_key
+            
+            # Pause the subscription (won't charge during pause)
+            stripe.Subscription.modify(
+                stripe_subscription_id,
+                pause_collection={'behavior': 'void'}  # Pauses billing
+            )
+            logger.info(f"Paused Stripe subscription {stripe_subscription_id} for user {username} due to promo code")
+        except Exception as e:
+            logger.warning(f"Could not pause Stripe subscription: {e}")
+            # Continue anyway - the promo code benefit takes priority
+    
     # Apply promo code with duration
     tier = promo.get('tier_granted', 'legendary')
     duration_days = promo.get('duration_days', -1)  # Default to lifetime if not specified
@@ -1764,15 +1847,21 @@ async def apply_promo_code(request: ApplyPromoCodeRequest, username: str = Depen
     update_data = {
         'subscription.tier': tier,
         'subscription.subscription_status': 'active',
-        'subscription.promo_code_used': code
+        'subscription.promo_code_used': code,
+        'subscription.promo_applied_at': datetime.now(timezone.utc).isoformat()
     }
     
     if premium_expires_at:
         update_data['subscription.premium_expires_at'] = premium_expires_at
+        update_data['subscription.promo_expires_at'] = premium_expires_at
     else:
         # For lifetime, remove any existing expiration
         update_data['subscription.premium_expires_at'] = None
         update_data['subscription.lifetime_access'] = True
+    
+    # Track if they had a paused subscription to resume later
+    if stripe_subscription_id:
+        update_data['subscription.paused_stripe_subscription'] = stripe_subscription_id
     
     await db.users.update_one(
         {'username': username},

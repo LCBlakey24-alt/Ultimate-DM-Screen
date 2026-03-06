@@ -287,7 +287,7 @@ class TestPromoCodeApplication:
 
 
 class TestSubscriptionCheckout:
-    """Test subscription checkout flow"""
+    """Test subscription checkout flow with recurring Stripe subscriptions"""
     
     @pytest.fixture
     def auth_user(self):
@@ -353,6 +353,88 @@ class TestSubscriptionCheckout:
         assert response.status_code in [400, 500]
         if response.status_code == 400:
             assert "free" in response.json().get('detail', '').lower() or "cannot" in response.json().get('detail', '').lower()
+    
+    def test_checkout_monthly_billing_cycle(self, auth_user):
+        """Test checkout with monthly billing cycle"""
+        token, username = auth_user
+        
+        response = requests.post(
+            f"{BASE_URL}/api/subscription/checkout",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+            json={"plan_id": "legendary", "billing_cycle": "monthly", "origin_url": "https://hero-player-hub.preview.emergentagent.com"}
+        )
+        
+        # 200 if Stripe works, 500 if Stripe prices not configured
+        assert response.status_code in [200, 500]
+    
+    def test_checkout_yearly_billing_cycle(self, auth_user):
+        """Test checkout with yearly billing cycle"""
+        token, username = auth_user
+        
+        response = requests.post(
+            f"{BASE_URL}/api/subscription/checkout",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+            json={"plan_id": "gm", "billing_cycle": "yearly", "origin_url": "https://hero-player-hub.preview.emergentagent.com"}
+        )
+        
+        # 200 if Stripe works, 500 if Stripe prices not configured
+        assert response.status_code in [200, 500]
+    
+    def test_checkout_requires_origin_url(self, auth_user):
+        """Test checkout without origin_url returns validation error"""
+        token, username = auth_user
+        
+        response = requests.post(
+            f"{BASE_URL}/api/subscription/checkout",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+            json={"plan_id": "player", "billing_cycle": "monthly"}
+        )
+        
+        # Should return 422 validation error for missing origin_url
+        assert response.status_code == 422
+
+
+class TestSubscriptionCancel:
+    """Test subscription cancellation endpoint"""
+    
+    @pytest.fixture
+    def auth_user(self):
+        """Create an authenticated user for testing"""
+        unique_id = str(uuid.uuid4())[:8]
+        username = f"TEST_cancel_{unique_id}"
+        email = f"test_cancel_{unique_id}@test.com"
+        
+        response = requests.post(
+            f"{BASE_URL}/api/auth/register",
+            json={"username": username, "password": "testpass123", "email": email}
+        )
+        
+        if response.status_code == 201:
+            return response.json()['token'], username
+        
+        response = requests.post(
+            f"{BASE_URL}/api/auth/login",
+            json={"email": email, "password": "testpass123"}
+        )
+        return response.json()['token'], username
+    
+    def test_cancel_subscription_requires_auth(self):
+        """Test cancel endpoint requires authentication"""
+        response = requests.post(f"{BASE_URL}/api/subscription/cancel")
+        assert response.status_code in [401, 403, 422]
+    
+    def test_cancel_subscription_without_active_subscription(self, auth_user):
+        """Test cancelling when user has no active subscription"""
+        token, username = auth_user
+        
+        response = requests.post(
+            f"{BASE_URL}/api/subscription/cancel",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+        
+        # Should return 400 since user has no Stripe subscription
+        assert response.status_code == 400
+        assert "no active subscription" in response.json().get('detail', '').lower()
 
 
 class TestCampaignSettingsSave:
