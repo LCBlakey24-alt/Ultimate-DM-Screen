@@ -236,18 +236,43 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
   - Background feature details
   - Optional feat selection
 - [x] Campaign setting save persistence fixed
+- [x] **New 3-Tier Pricing Model (March 2026)**
+  - Free ($0): 1 character, join campaigns, 3 AI calls/month
+  - Hero ($3.99/mo): Unlimited characters, 50 AI calls, player tools
+  - Quest Master ($3.99/mo): Unlimited campaigns, unlimited AI, GM tools
+  - Legendary ($5.99/mo): Everything combined
+- [x] **Session Mode Feature** - Streamlined GM interface for live play
+  - Initiative Tracker with add/remove combatants
+  - Quick Dice Roller (d4-d100 + Advantage)
+  - Session Notes panel
+  - Conditions Reference (D&D conditions)
+- [x] **Feature Gating System** - useSubscription hook restricts features by tier
+  - Session Mode: GM/Legendary only
+  - Unlimited Characters: Hero/Legendary only
+  - Campaign Creation: GM/Legendary only
+- [x] **Promo Code Fix** - Fixed endpoint from /subscription/apply-promo to /promo-codes/apply
 
 ### Backlog
-- [ ] Character Builder enhancements (subclass, spells, feats)
-- [ ] Custom content import system
-- [ ] AI-powered smart note parsing
-- [ ] Backend refactoring (split server.py)
+- [ ] **Player Companion Features (Hero Tier)**
+  - Session Journal
+  - Party Inventory tracking
+- [ ] **Session Recap AI (Quest Master Tier)** - AI-powered session summaries
+- [ ] **Smart Entity Linking** - Auto-link NPC names, locations to their pages
+- [ ] Backend refactoring (split server.py into routers)
+- [ ] Mobile-first Combat Tracker
+- [ ] "Zero Prep Mode" AI generation
+- [ ] Shareable World Codex for players
+- [ ] Offline Mode
+- [ ] Ambient Soundscapes
 
 ---
 
 ## Testing Status
-- 48/48 tests passing (28 frontend + 20 backend)
-- QuickReferenceTab SRD data verified
+- 64/64 tests passing (46 frontend + 18 backend)
+- 4-tier pricing system verified
+- Session Mode feature fully tested
+- Feature gating working correctly
+- Promo code endpoint fixed and verified
 - All design requirements verified
 - Sidebar tabs working correctly on both dashboards
 
