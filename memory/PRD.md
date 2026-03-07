@@ -340,6 +340,14 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
   - Pin places of interest (Tavern, Shop, Temple, Blacksmith, Guild, Library, etc.)
   - Multiple maps per location supported
   - Backend: CRUD for /api/campaigns/{id}/local-maps and pins
+- [x] **Party Location Tracker (GM Screen)** - Live gameplay location management
+  - New "Location" tab in GM Screen sidebar
+  - Select current party location from world map pins
+  - View all places of interest in current location (from local maps)
+  - See travel distances to all nearby destinations
+  - Switch between travel modes to see different travel times
+  - "Travel" button to quickly move party to new location
+  - Summary bar shows current location, # of places, and # of routes
 - [x] **Landing Page Update** - Added "Interactive World Maps" feature to carousel
   - Showcases pin cities & landmarks
   - Highlights travel time calculator
@@ -399,6 +407,7 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - 30/30 frontend tests passing (dice rolls, journal, subscription)
 - **27/27 tests passing (multiclass + HP storage)** - March 2026
 - **38/38 tests passing (World Map & Local Map features)** - March 2026
+- **36/36 tests passing (Party Location Tracker)** - March 2026
 - Comprehensive stress test passed (10/10 API tests)
 - Recurring Stripe subscriptions verified
 - Monthly and yearly billing both working
@@ -409,6 +418,7 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - Level Up Modal UI: all 3 steps tested with E2E tests
 - **NEW: GM Features tested with 18 backend + 31 frontend tests**
 - **NEW: World Maps tested with 26 backend + 12 frontend tests**
+- **NEW: Party Location Tracker tested with 14 backend + 22 frontend tests**
 
 ## Design System
 ### Tron Aries (GM Side) - Red/Orange Theme
