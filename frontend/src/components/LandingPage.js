@@ -310,11 +310,12 @@ function LandingPage() {
             <span style={{ color: theme.player.cyan }}>character sheets, journals, party tools</span> for players.
           </p>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons with Tron Border Effects */}
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '32px' }}>
             <Button 
               onClick={() => navigate('/auth')}
               data-testid="hero-cta-btn"
+              className="tron-border-spin-red tron-border-spin-fast"
               style={{ 
                 padding: '16px 32px', 
                 fontSize: '16px',
@@ -333,6 +334,7 @@ function LandingPage() {
             </Button>
             <Button 
               onClick={() => navigate('/auth')}
+              className="tron-border-spin-blue tron-border-spin-fast"
               style={{ 
                 padding: '16px 32px', 
                 fontSize: '16px',

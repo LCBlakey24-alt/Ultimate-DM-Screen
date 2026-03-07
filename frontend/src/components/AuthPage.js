@@ -209,21 +209,22 @@ function AuthPage({ onLogin }) {
           }}>
             KEEPER
           </h2>
-          <div style={{
-            width: '60px',
-            height: '3px',
-            background: theme.accent.red,
-            margin: '16px auto 0'
-          }} />
+          {/* Animated dual color line */}
+          <div style={{ position: 'relative', marginTop: '16px', display: 'flex', justifyContent: 'center', gap: '4px' }}>
+            <div className="tron-border-spin-red" style={{ width: '30px', height: '3px' }} />
+            <div className="tron-border-spin-blue" style={{ width: '30px', height: '3px' }} />
+          </div>
         </div>
 
-        {/* Auth Card */}
-        <div style={{
-          background: theme.bg.panel,
-          border: `1px solid ${theme.border}`,
-          padding: '32px',
-          width: '100%'
-        }}>
+        {/* Auth Card with Tron Border Effect */}
+        <div 
+          className="tron-border-spin-dual"
+          style={{
+            background: theme.bg.panel,
+            padding: '32px',
+            width: '100%'
+          }}
+        >
           {/* Login Form */}
           {mode === 'login' && (
             <>
