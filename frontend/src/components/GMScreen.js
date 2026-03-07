@@ -303,11 +303,6 @@ function GMScreen({ username }) {
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <img 
-              src="/rqk-logo-mascot.png" 
-              alt="Rookie Quest Keeper" 
-              style={{ height: '36px' }}
-            />
             <div style={{ width: '1px', height: '30px', background: theme.border }} />
             <div>
               <h1 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>

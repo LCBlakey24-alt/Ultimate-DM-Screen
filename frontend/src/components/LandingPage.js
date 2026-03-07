@@ -156,11 +156,15 @@ function LandingPage() {
           alignItems: 'center' 
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img 
-              src="/rqk-logo-mascot.png" 
-              alt="Rookie Quest Keeper" 
-              style={{ height: '44px' }}
-            />
+            <span style={{ 
+              fontFamily: 'Cityworm, sans-serif',
+              fontSize: '20px',
+              fontWeight: '700',
+              color: theme.text.white,
+              letterSpacing: '2px'
+            }}>
+              RQK
+            </span>
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
             <Button 
@@ -207,17 +211,6 @@ function LandingPage() {
         }}>
           {/* Logo and Text */}
           <div style={{ marginBottom: '32px' }}>
-            {/* Mascot Logo */}
-            <img 
-              src="/rqk-logo-mascot.png" 
-              alt="Rookie Quest Keeper" 
-              style={{ 
-                height: '180px',
-                marginBottom: '24px',
-                filter: 'drop-shadow(0 0 30px rgba(225, 29, 72, 0.3))'
-              }}
-            />
-            
             <h1 style={{
               fontFamily: 'Cityworm, sans-serif',
               fontSize: 'clamp(2.5rem, 8vw, 5rem)',
@@ -1244,7 +1237,15 @@ function LandingPage() {
             marginBottom: '24px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src="/rqk-logo-mascot.png" alt="Rookie Quest Keeper" style={{ height: '36px' }} />
+              <span style={{ 
+                fontFamily: 'Cityworm, sans-serif',
+                fontSize: '16px',
+                fontWeight: '700',
+                color: theme.text.white,
+                letterSpacing: '2px'
+              }}>
+                RQK
+              </span>
               <span style={{ color: theme.text.muted, fontSize: '14px' }}>
                 A product of Rookie Quest
               </span>
