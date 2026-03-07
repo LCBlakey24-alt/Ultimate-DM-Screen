@@ -47,6 +47,9 @@ if RESEND_API_KEY and RESEND_API_KEY != 'your_resend_api_key_here':
 # Security
 security = HTTPBearer()
 
+# Admin usernames - these users can access admin features and get auto-upgraded to legendary tier
+ADMIN_USERNAMES = ["rookiequestadmin", "criticalfusion", "admin", "gmtest"]
+
 # Create the main app without a prefix
 app = FastAPI()
 
@@ -1996,9 +1999,6 @@ async def cancel_subscription(username: str = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=str(e))
 
 # ==================== PROMO CODE ROUTES ====================
-
-# Admin usernames - these users can access admin features
-ADMIN_USERNAMES = ["rookiequestadmin", "criticalfusion", "admin", "gmtest"]
 
 async def verify_admin(username: str):
     """Check if user is admin"""
@@ -7173,6 +7173,13 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# Health check endpoint for Kubernetes
+@app.get("/health")
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint for deployment readiness"""
+    return {"status": "healthy", "service": "rook-backend"}
 
 @app.on_event("startup")
 async def startup_event():
