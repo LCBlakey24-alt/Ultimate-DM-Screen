@@ -321,6 +321,30 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - [ ] Custom rule system AI assistance (help write rules)
 - [ ] Smart Entity Linking - Auto-link NPC names, locations to their pages (SmartNoteParser exists)
 
+### Completed (March 2026 - Interactive World Maps)
+- [x] **World Map System** - Upload and manage world/region maps
+  - Upload map images (PNG, JPG up to 10MB)
+  - Configure scale (e.g., "1 inch = 50 miles")
+  - Pin locations on the map (cities, towns, villages, landmarks)
+  - Link pins to existing Locations from World Builder
+  - Create travel paths between locations
+  - Terrain types affect travel time (road, trail, wilderness, mountain, swamp, desert, water)
+  - Backend: CRUD for /api/campaigns/{id}/world-maps, pins, and paths
+- [x] **Travel Calculator** - Calculate travel time between locations
+  - Multiple travel modes: Walking (24 mi/day), Horseback (48), Cart (16), Ship (72), Flying (96)
+  - Terrain modifiers apply to travel time
+  - Show "nearby locations" from current position with travel times
+  - Backend: POST /api/campaigns/{id}/world-maps/{id}/calculate-travel
+- [x] **Local Maps** - City/town/village maps with places of interest
+  - Link to existing campaign Locations
+  - Pin places of interest (Tavern, Shop, Temple, Blacksmith, Guild, Library, etc.)
+  - Multiple maps per location supported
+  - Backend: CRUD for /api/campaigns/{id}/local-maps and pins
+- [x] **Landing Page Update** - Added "Interactive World Maps" feature to carousel
+  - Showcases pin cities & landmarks
+  - Highlights travel time calculator
+  - Mentions terrain modifiers
+
 ### Completed (March 2026 - Rule Systems & Player Features)
 - [x] **Rule System Management** (Copyright-Safe)
   - Generic rule systems (no official D&D content pre-loaded)
@@ -374,6 +398,7 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - 44/44 tests passing (level up system + spells tabs)
 - 30/30 frontend tests passing (dice rolls, journal, subscription)
 - **27/27 tests passing (multiclass + HP storage)** - March 2026
+- **38/38 tests passing (World Map & Local Map features)** - March 2026
 - Comprehensive stress test passed (10/10 API tests)
 - Recurring Stripe subscriptions verified
 - Monthly and yearly billing both working
@@ -383,6 +408,7 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - Level Up API: ASI, Feats, HP calculation all tested
 - Level Up Modal UI: all 3 steps tested with E2E tests
 - **NEW: GM Features tested with 18 backend + 31 frontend tests**
+- **NEW: World Maps tested with 26 backend + 12 frontend tests**
 
 ## Design System
 ### Tron Aries (GM Side) - Red/Orange Theme
