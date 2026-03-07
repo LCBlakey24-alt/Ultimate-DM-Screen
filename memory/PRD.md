@@ -321,6 +321,26 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - [ ] Custom rule system AI assistance (help write rules)
 - [ ] Smart Entity Linking - Auto-link NPC names, locations to their pages (SmartNoteParser exists)
 
+### Completed (March 2026 - UX Enhancements)
+- [x] **Professional Screen Animations**
+  - Fade-in animations for page loads
+  - Staggered list animations (cards appear sequentially)
+  - Hover lift effects on cards with shadow
+  - Smooth transitions on all interactive elements
+  - CSS classes: card-animated, hover-lift, transition-smooth, stagger-1 to stagger-8
+- [x] **NPC Quick Reference (GM Screen)**
+  - New "NPCs" tab in GM Screen sidebar
+  - Search NPCs by name, role, or occupation
+  - Filter by location
+  - Expand/collapse NPC cards to show quick stats
+  - View full NPC details in modal
+  - Shows secrets (GM only), personality, motivation
+- [x] **Mobile Navigation Toggle**
+  - Toggle bar appears on screens under 768px
+  - Switch between "PLAYER HUB" and "GM SIDE" with one tap
+  - Highlights active section (blue for Player, red for GM)
+  - Fixes issue where GM Side was hidden on mobile
+
 ### Completed (March 2026 - Interactive World Maps)
 - [x] **World Map System** - Upload and manage world/region maps
   - Upload map images (PNG, JPG up to 10MB)
@@ -408,6 +428,7 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - **27/27 tests passing (multiclass + HP storage)** - March 2026
 - **38/38 tests passing (World Map & Local Map features)** - March 2026
 - **36/36 tests passing (Party Location Tracker)** - March 2026
+- **18/18 tests passing (Animations, NPC Reference, Mobile Nav)** - March 2026
 - Comprehensive stress test passed (10/10 API tests)
 - Recurring Stripe subscriptions verified
 - Monthly and yearly billing both working
@@ -419,6 +440,7 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - **NEW: GM Features tested with 18 backend + 31 frontend tests**
 - **NEW: World Maps tested with 26 backend + 12 frontend tests**
 - **NEW: Party Location Tracker tested with 14 backend + 22 frontend tests**
+- **NEW: UX Enhancements tested with 6 backend + 12 frontend tests**
 
 ## Design System
 ### Tron Aries (GM Side) - Red/Orange Theme
