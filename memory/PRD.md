@@ -331,6 +331,26 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
   - CSS animations with pointer-events: none to preserve UI interactivity
   - Reduced motion support for accessibility (@media prefers-reduced-motion)
   - 17/17 tests passed confirming all features work correctly
+- [x] **Interactive Map System (March 2026)**
+  - World Maps: Upload map images, add location pins, create paths between locations
+  - Local Maps: Upload city/dungeon maps, add POI pins (shops, taverns, temples)
+  - Pin Selection Highlighting: Visual glow and border when pins are selected
+  - Pin Info Panel: Shows pin details, description, connected routes
+  - Path Creation Flow: Visual feedback with pulsing animation for source pin
+  - Travel Calculator: Calculate travel time based on distance, terrain, and travel mode
+  - Travel Modes: Walking, Horseback, Cart, Ship, Flying with different speeds
+  - Nearby Locations: Show destinations connected to current location with distances
+  - 40/40 tests passed (28 frontend + 12 backend)
+- [x] **Rook's Tips - First-Time User Guide (March 2026)**
+  - RookGuide component shows helpful tips when users open tabs for the first time
+  - Dashboard Guides: Player Hub and GM Command Center welcome messages
+  - Campaign Tab Guides: Settings, World Map, Local Maps, NPCs, Locations, etc.
+  - Guide Content: Icon, title, bullet-point tips, themed colors (cyan for player, red for GM)
+  - LocalStorage Persistence: Dismissed guides stored in 'rook_guides_dismissed' key
+  - Dismiss Functionality: "Got it, thanks!" button to hide guide permanently
+  - Animation: Smooth fade-in/out with slide effect
+  - Variants: 'card' (large info panel) and 'tooltip' (small floating tip)
+  - resetAllGuides() utility function for testing/admin purposes
 - [x] **Professional Screen Animations**
   - Fade-in animations for page loads
   - Staggered list animations (cards appear sequentially)
