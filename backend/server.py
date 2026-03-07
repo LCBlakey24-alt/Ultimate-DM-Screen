@@ -1033,11 +1033,17 @@ SUBSCRIPTION_PLANS = {
 # Initialize Stripe products and prices on startup
 async def setup_stripe_products():
     """Create or fetch Stripe products and prices for subscription plans"""
+    # STRIPE DISABLED - Return immediately
+    if not STRIPE_ENABLED:
+        logger.info("Stripe is disabled - skipping product setup")
+        return
+    
     api_key = os.environ.get('STRIPE_API_KEY')
     if not api_key:
         logger.warning("STRIPE_API_KEY not set - subscriptions will not work")
         return
     
+    import stripe  # Import only if enabled
     stripe.api_key = api_key
     
     for plan_id, plan in SUBSCRIPTION_PLANS.items():
