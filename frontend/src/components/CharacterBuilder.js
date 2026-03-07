@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { UpgradePrompt } from '@/components/ui/UpgradePrompt';
 import { 
   ArrowLeft, ArrowRight, User, Sparkles, Loader, Wand2, 
   Check, Shield, Heart, Swords, BookOpen, Image, Dices
@@ -295,6 +296,8 @@ function CharacterBuilder() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [creating, setCreating] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [upgradeInfo, setUpgradeInfo] = useState(null);
   
   // AI Generation state
   const [aiPrompt, setAiPrompt] = useState('');
@@ -535,7 +538,18 @@ function CharacterBuilder() {
       toast.success('Character created!');
       navigate('/player');
     } catch (error) {
-      toast.error('Failed to create character');
+      // Check if it's a tier limit error
+      if (error.response?.status === 403 && error.response?.data?.detail?.error === 'character_limit_reached') {
+        const detail = error.response.data.detail;
+        setUpgradeInfo({
+          currentCount: detail.current_count,
+          limit: detail.limit,
+          suggestedTier: detail.upgrade_tier || 'player'
+        });
+        setShowUpgradePrompt(true);
+      } else {
+        toast.error('Failed to create character');
+      }
     } finally {
       setCreating(false);
     }
@@ -559,7 +573,7 @@ function CharacterBuilder() {
       minHeight: '100vh',
       background: '#0D0D0D',
       padding: '24px',
-      fontFamily: 'Cityworm, Inter, sans-serif'
+      fontFamily: 'Excluded, sans-serif'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Header */}
@@ -570,7 +584,7 @@ function CharacterBuilder() {
           <div style={{ flex: 1 }}>
             <h1 style={{
               fontSize: '28px',
-              fontFamily: 'Montserrat, sans-serif',
+              fontFamily: 'Excluded, sans-serif',
               fontWeight: '800',
               color: '#ffffff'
             }}>
@@ -659,7 +673,7 @@ function CharacterBuilder() {
                       color: '#fff', 
                       fontSize: '18px', 
                       fontWeight: '700',
-                      fontFamily: 'Montserrat, sans-serif'
+                      fontFamily: 'Excluded, sans-serif'
                     }}>
                       ROOK
                     </h3>
@@ -755,7 +769,7 @@ function CharacterBuilder() {
                   color: '#fff', 
                   fontSize: '18px', 
                   fontWeight: '700',
-                  fontFamily: 'Montserrat, sans-serif',
+                  fontFamily: 'Excluded, sans-serif',
                   marginBottom: '20px'
                 }}>
                   Basic Info
@@ -1570,6 +1584,17 @@ function CharacterBuilder() {
           .step-connector { display: none !important; }
         }
       `}</style>
+
+      {/* Upgrade Prompt Modal */}
+      {showUpgradePrompt && upgradeInfo && (
+        <UpgradePrompt
+          type="character"
+          currentCount={upgradeInfo.currentCount}
+          limit={upgradeInfo.limit}
+          suggestedTier={upgradeInfo.suggestedTier}
+          onClose={() => setShowUpgradePrompt(false)}
+        />
+      )}
     </div>
   );
 }

@@ -99,7 +99,7 @@ function ReviewModal({ isOpen, onClose }) {
             <h2 style={{ 
               color: '#fff', 
               fontSize: '24px', 
-              fontFamily: 'Montserrat, sans-serif',
+              fontFamily: 'Excluded, sans-serif',
               fontWeight: '700',
               marginBottom: '4px'
             }}>

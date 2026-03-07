@@ -310,7 +310,7 @@ function RandomGeneratorTables({ campaignId }) {
             fontSize: '18px', 
             fontWeight: '700',
             margin: 0,
-            fontFamily: 'Cityworm, sans-serif'
+            fontFamily: 'Excluded, sans-serif'
           }}>
             RANDOM GENERATORS
           </h3>

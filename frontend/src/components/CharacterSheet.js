@@ -151,7 +151,7 @@ function CharacterSheet() {
       minHeight: '100vh',
       background: '#0D0D0D',
       padding: '24px',
-      fontFamily: 'Cityworm, Inter, sans-serif'
+      fontFamily: 'Excluded, sans-serif'
     }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Header */}
@@ -163,7 +163,7 @@ function CharacterSheet() {
             <div>
               <h1 style={{
                 fontSize: 'clamp(28px, 5vw, 40px)',
-                fontFamily: 'Cityworm, Montserrat, sans-serif',
+                fontFamily: 'Excluded, sans-serif',
                 fontWeight: '800',
                 color: '#ffffff',
                 marginBottom: '4px'

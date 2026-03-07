@@ -92,7 +92,7 @@ function MyCharacters({ username, onLogout }) {
             <div>
               <h1 style={{
                 fontSize: 'clamp(28px, 5vw, 36px)',
-                fontFamily: 'Montserrat, sans-serif',
+                fontFamily: 'Excluded, sans-serif',
                 fontWeight: '800',
                 color: '#ffffff',
                 marginBottom: '4px'
@@ -155,7 +155,7 @@ function MyCharacters({ username, onLogout }) {
                       <div style={{ flex: 1 }}>
                         <h3 style={{
                           fontSize: '22px',
-                          fontFamily: 'Montserrat, sans-serif',
+                          fontFamily: 'Excluded, sans-serif',
                           fontWeight: '700',
                           color: '#ffffff',
                           marginBottom: '6px'

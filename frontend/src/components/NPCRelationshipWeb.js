@@ -263,7 +263,7 @@ function NPCRelationshipWeb({ campaignId }) {
               fontSize: '18px', 
               fontWeight: '700',
               margin: 0,
-              fontFamily: 'Cityworm, sans-serif'
+              fontFamily: 'Excluded, sans-serif'
             }}>
               NPC RELATIONSHIP WEB
             </h3>

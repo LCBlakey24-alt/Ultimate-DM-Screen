@@ -361,7 +361,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                 <TrendingUp size={24} color="#fff" />
               </div>
               <div>
-                <h2 style={{ color: '#fff', fontSize: '24px', fontWeight: '800', fontFamily: 'Montserrat' }}>
+                <h2 style={{ color: '#fff', fontSize: '24px', fontWeight: '800', fontFamily: 'Excluded' }}>
                   {mode === 'multiclass' ? 'Multiclass' : 'Level Up!'}
                 </h2>
                 <p style={{ color: '#9CA3AF', fontSize: '14px' }}>

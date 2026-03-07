@@ -303,7 +303,7 @@ function MapBuilder({ campaignId, onClose, initialMap, onMapSaved }) {
             color: '#fff',
             fontSize: '20px',
             fontWeight: '800',
-            fontFamily: 'Montserrat, sans-serif'
+            fontFamily: 'Excluded, sans-serif'
           }}>
             Map Builder
           </h1>

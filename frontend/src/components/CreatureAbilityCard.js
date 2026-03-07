@@ -477,7 +477,7 @@ function CreatureAbilityCard({ creature, onRollResult, compact = false }) {
                 color: '#fff', 
                 fontSize: '22px', 
                 fontWeight: '800',
-                fontFamily: 'Montserrat'
+                fontFamily: 'Excluded'
               }}>
                 {lastRoll.totalDamage}
               </span>

@@ -190,7 +190,7 @@ function SessionRecapAI({ campaignId, sessionNotes = '', onSaveRecap }) {
             fontSize: '18px', 
             fontWeight: '700',
             margin: 0,
-            fontFamily: 'Cityworm, sans-serif'
+            fontFamily: 'Excluded, sans-serif'
           }}>
             AI SESSION RECAP
           </h3>

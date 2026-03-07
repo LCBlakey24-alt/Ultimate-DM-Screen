@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Scroll, Plus, LogOut, Trash2, Settings, Crown, Sparkles, Shield, Star, User } from 'lucide-react';
 import QuickTips, { TIPS } from '@/components/QuickTips';
 import ReviewModal from '@/components/ReviewModal';
+import { UpgradePrompt } from '@/components/ui/UpgradePrompt';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -43,6 +44,7 @@ function CampaignList({ username, onLogout }) {
   const [subscription, setSubscription] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -109,16 +111,6 @@ function CampaignList({ username, onLogout }) {
       return;
     }
 
-    // Check tier-based campaign limits
-    const tier = subscription?.tier || 'free';
-    const canCreate = tier === 'gm' || tier === 'legendary';
-    
-    if (!canCreate) {
-      toast.error('Creating campaigns requires Quest Master or Legendary tier. Upgrade to unlock this feature!');
-      navigate('/pricing');
-      return;
-    }
-
     try {
       const response = await axios.post(`${API}/campaigns`, newCampaign);
       toast.success('Campaign created!');
@@ -126,7 +118,13 @@ function CampaignList({ username, onLogout }) {
       setNewCampaign({ name: '', description: '', system: '5e 2024 Compatible' });
       setShowCreateDialog(false);
     } catch (error) {
-      toast.error('Failed to create campaign');
+      // Check if it's a tier limit error from backend
+      if (error.response?.status === 403 && error.response?.data?.detail?.error === 'campaign_limit_reached') {
+        setShowCreateDialog(false);
+        setShowUpgradePrompt(true);
+      } else {
+        toast.error('Failed to create campaign');
+      }
     }
   };
 
@@ -612,6 +610,17 @@ function CampaignList({ username, onLogout }) {
         isOpen={showReviewModal} 
         onClose={() => setShowReviewModal(false)} 
       />
+
+      {/* Upgrade Prompt Modal */}
+      {showUpgradePrompt && (
+        <UpgradePrompt
+          type="campaign"
+          currentCount={campaigns.length}
+          limit={0}
+          suggestedTier="gm"
+          onClose={() => setShowUpgradePrompt(false)}
+        />
+      )}
     </div>
   );
 }

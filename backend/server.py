@@ -2277,6 +2277,29 @@ async def delete_promo_code(code_id: str, username: str = Depends(get_current_us
 
 @api_router.post("/campaigns", response_model=Campaign, status_code=status.HTTP_201_CREATED)
 async def create_campaign(campaign_data: CampaignCreate, username: str = Depends(get_current_user)):
+    # Check subscription tier limits
+    subscription = await get_user_subscription(username)
+    tier = subscription.get('tier', 'free') if subscription else 'free'
+    tier_limits = SUBSCRIPTION_PLANS.get(tier, SUBSCRIPTION_PLANS['free'])
+    
+    # Count existing campaigns owned by user
+    campaign_count = await db.campaigns.count_documents({'dm_user_id': username})
+    
+    # Check campaign limit (-1 means unlimited)
+    campaign_limit = tier_limits.get('campaigns', 0)
+    if campaign_limit != -1 and campaign_count >= campaign_limit:
+        tier_name = tier_limits.get('name', 'Free')
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "error": "campaign_limit_reached",
+                "message": f"Your {tier_name} plan allows {campaign_limit} campaign(s). Upgrade to Quest Master or Legendary for unlimited campaigns!",
+                "current_count": campaign_count,
+                "limit": campaign_limit,
+                "upgrade_tier": "gm"
+            }
+        )
+    
     campaign_dict = campaign_data.model_dump()
     campaign_obj = Campaign(dm_user_id=username, **campaign_dict)
     doc = campaign_obj.model_dump()
@@ -4640,6 +4663,29 @@ async def create_character(
     username: str = Depends(get_current_user)
 ):
     """Create a new player character"""
+    # Check subscription tier limits
+    subscription = await get_user_subscription(username)
+    tier = subscription.get('tier', 'free') if subscription else 'free'
+    tier_limits = SUBSCRIPTION_PLANS.get(tier, SUBSCRIPTION_PLANS['free'])
+    
+    # Count existing characters owned by user
+    character_count = await db.player_characters.count_documents({'user_id': username})
+    
+    # Check character limit (-1 means unlimited)
+    character_limit = tier_limits.get('characters', 1)
+    if character_limit != -1 and character_count >= character_limit:
+        tier_name = tier_limits.get('name', 'Free')
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "error": "character_limit_reached",
+                "message": f"Your {tier_name} plan allows {character_limit} character(s). Upgrade to Hero or Legendary for unlimited characters!",
+                "current_count": character_count,
+                "limit": character_limit,
+                "upgrade_tier": "player"
+            }
+        )
+    
     # Calculate max HP if not provided
     max_hp = character.max_hit_points
     if max_hp is None:
@@ -5220,6 +5266,18 @@ async def ai_generate_character(
     AI Character Generator: Create a complete character from a description.
     The Unseen Servant manifests your character concept into reality.
     """
+    # Check AI usage limits
+    can_use_ai = await check_premium_feature(username, 'ai')
+    if not can_use_ai:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail={
+                "error": "ai_limit_reached",
+                "message": "You've reached your monthly AI generation limit. Upgrade for more AI calls!",
+                "upgrade_tier": "player"
+            }
+        )
+    
     description = request.description.strip()
     
     if not description or len(description) < 10:
@@ -5298,6 +5356,9 @@ Use point buy values (8-15 before racial modifiers, total around 72 points)."""
         
         character_data = json.loads(response_text)
         
+        # Increment AI usage counter on success
+        await increment_ai_usage(username)
+        
         return {
             "success": True,
             "character": character_data,
@@ -5310,6 +5371,8 @@ Use point buy values (8-15 before racial modifiers, total around 72 points)."""
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="AI returned invalid format. Please try again with a more specific description."
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"AI character generation failed: {e}")
         raise HTTPException(
@@ -5333,6 +5396,18 @@ async def ai_generate_portrait(
     AI Portrait Generator: Create a character portrait image.
     Returns base64 encoded image data.
     """
+    # Check AI usage limits
+    can_use_ai = await check_premium_feature(username, 'ai')
+    if not can_use_ai:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail={
+                "error": "ai_limit_reached",
+                "message": "You've reached your monthly AI generation limit. Upgrade for more AI calls!",
+                "upgrade_tier": "player"
+            }
+        )
+    
     # Build portrait prompt
     appearance_desc = request.appearance if request.appearance else "fantasy adventurer"
     
@@ -5360,6 +5435,8 @@ No text, no watermarks, professional fantasy art."""
         
         if images and len(images) > 0:
             image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            # Increment AI usage counter on success
+            await increment_ai_usage(username)
             return {
                 "success": True,
                 "image_base64": image_base64,
@@ -5371,6 +5448,8 @@ No text, no watermarks, professional fantasy art."""
                 detail="No image was generated"
             )
             
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Portrait generation failed: {e}")
         raise HTTPException(

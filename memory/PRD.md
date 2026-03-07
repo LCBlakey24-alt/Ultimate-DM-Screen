@@ -10,6 +10,20 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 
 ## Recent Major Updates (March 2026)
 
+### FREE TIER RESTRICTIONS IMPLEMENTED (March 7, 2026)
+- **Backend enforcement:** Character and campaign limits enforced on creation endpoints
+- **Upgrade prompts:** Beautiful modal prompts appear when limits are reached
+- **Campaign limits:** Free users (0 campaigns), Quest Master/Legendary (unlimited)
+- **Character limits:** Free users (1 character), Hero/Legendary (unlimited)
+- **AI call tracking:** Usage tracked per month, reset monthly
+- **Frontend component:** `UpgradePrompt.js` with contextual messaging and tier suggestions
+
+### CUSTOM FONT - EXCLUDED (March 7, 2026)
+- **New brand font:** Replaced all Cityworm/Montserrat/Inter references with "Excluded" font
+- **Font files:** `/public/fonts/Excluded.ttf` and `/public/fonts/ExcludedItalic.ttf`
+- **Global application:** Font applied via index.html @font-face and index.css body rule
+- **51 files updated:** All fontFamily references across the codebase
+
 ### STRIPE INTEGRATION RE-ENABLED (March 7, 2026)
 - **Issue resolved:** Previously deployment was blocked due to cached expired Stripe API key
 - **Solution:** Re-integrated Stripe using `emergentintegrations` library with fresh API key

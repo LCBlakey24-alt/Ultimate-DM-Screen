@@ -51,7 +51,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }) {
             color: theme.text.white, 
             fontSize: '18px', 
             fontWeight: '700',
-            fontFamily: 'Cityworm, Inter, sans-serif'
+            fontFamily: 'Excluded, sans-serif'
           }}>
             Keyboard Shortcuts
           </h2>
