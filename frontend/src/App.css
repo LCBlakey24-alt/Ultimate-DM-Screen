@@ -778,3 +778,234 @@ select option {
 .parchment-dark { background: var(--bg-panel); border: 1px solid var(--border-default); }
 .card-glow { background: var(--bg-card); border: 1px solid var(--border-default); padding: 20px; transition: all 0.2s ease; }
 .card-glow:hover { background: var(--bg-hover); }
+
+
+/* ============================================
+   PROFESSIONAL ANIMATIONS
+   ============================================ */
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fadeInDown {
+  from { 
+    opacity: 0; 
+    transform: translateY(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fadeInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes fadeInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes slideInUp {
+  from { 
+    transform: translateY(100%); 
+  }
+  to { 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Animation Classes */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.5s ease-out forwards;
+}
+
+.animate-fade-in-left {
+  animation: fadeInLeft 0.5s ease-out forwards;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.5s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.4s ease-out forwards;
+}
+
+/* Staggered Animations for Lists */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.4s; }
+
+/* Initially hidden for staggered animations */
+.animate-stagger {
+  opacity: 0;
+}
+
+/* Smooth Transitions for Interactive Elements */
+.transition-smooth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-colors {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.transition-transform {
+  transition: transform 0.2s ease;
+}
+
+/* Hover Effects */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(225, 29, 72, 0.3);
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Page Transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Card Animations */
+.card-animated {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* Tab Content Animation */
+.tab-content-enter {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.tab-content-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Modal Animation */
+.modal-backdrop {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.modal-content {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+/* Loading Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Button Press Effect */
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+/* Mobile Toggle Animation */
+.mobile-toggle {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-toggle-active {
+  background: var(--accent-red);
+  color: white;
+}
+
+/* Slide Panel Animation */
+.slide-panel {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-panel-hidden {
+  transform: translateX(-100%);
+}
+
+.slide-panel-visible {
+  transform: translateX(0);
+}

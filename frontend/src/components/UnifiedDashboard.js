@@ -48,6 +48,8 @@ const theme = {
 };
 
 function UnifiedDashboard({ username, onLogout }) {
+  // Mobile view toggle: 'player' or 'gm'
+  const [mobileView, setMobileView] = useState('player');
   const navigate = useNavigate();
   const [characters, setCharacters] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
@@ -253,6 +255,70 @@ function UnifiedDashboard({ username, onLogout }) {
         </div>
       </header>
 
+      {/* Mobile Navigation Toggle */}
+      <div 
+        className="animate-fade-in"
+        style={{
+          display: 'none',
+          padding: '12px 20px',
+          background: theme.bg.panel,
+          borderBottom: `1px solid ${theme.border}`,
+          gap: '0'
+        }}
+        id="mobile-nav-toggle"
+      >
+        <style>{`
+          @media (max-width: 768px) {
+            #mobile-nav-toggle { display: flex !important; }
+            #player-section { display: ${mobileView === 'player' ? 'block' : 'none'} !important; }
+            #gm-section { display: ${mobileView === 'gm' ? 'block' : 'none'} !important; }
+          }
+        `}</style>
+        <button
+          onClick={() => setMobileView('player')}
+          className="transition-smooth"
+          style={{
+            flex: 1,
+            padding: '12px',
+            background: mobileView === 'player' ? theme.player.primary : 'transparent',
+            border: `1px solid ${mobileView === 'player' ? theme.player.primary : theme.border}`,
+            borderRight: 'none',
+            color: mobileView === 'player' ? '#fff' : theme.text.muted,
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
+        >
+          <Sword size={16} />
+          PLAYER HUB
+        </button>
+        <button
+          onClick={() => setMobileView('gm')}
+          className="transition-smooth"
+          style={{
+            flex: 1,
+            padding: '12px',
+            background: mobileView === 'gm' ? theme.gm.primary : 'transparent',
+            border: `1px solid ${mobileView === 'gm' ? theme.gm.primary : theme.border}`,
+            color: mobileView === 'gm' ? '#fff' : theme.text.muted,
+            fontSize: '13px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
+        >
+          <Crown size={16} />
+          GM SIDE
+        </button>
+      </div>
+
       {/* Main Content - Split Design */}
       <div style={{
         flex: 1,
@@ -261,14 +327,18 @@ function UnifiedDashboard({ username, onLogout }) {
         minHeight: 'calc(100vh - 70px)'
       }}>
         {/* LEFT: Characters - Tron Legacy BLUE */}
-        <div style={{ 
-          background: theme.player.subtle,
-          borderRight: `1px solid ${theme.player.border}`,
-          padding: '24px',
-          position: 'relative',
-          overflow: 'hidden',
-          minHeight: '400px'
-        }}>
+        <div 
+          id="player-section"
+          className="animate-fade-in-left"
+          style={{ 
+            background: theme.player.subtle,
+            borderRight: `1px solid ${theme.player.border}`,
+            padding: '24px',
+            position: 'relative',
+            overflow: 'hidden',
+            minHeight: '400px'
+          }}
+        >
           {/* Glow effect */}
           <div style={{
             position: 'absolute',
@@ -372,29 +442,27 @@ function UnifiedDashboard({ username, onLogout }) {
                   </Button>
                 </div>
               ) : (
-                characters.map(char => (
+                characters.map((char, index) => (
                   <div
                     key={char.id}
                     onClick={() => navigate(`/characters/${char.id}`)}
                     data-testid={`character-${char.id}`}
+                    className={`card-animated stagger-${Math.min(index + 1, 8)} hover-lift transition-smooth`}
                     style={{
                       background: theme.bg.card,
                       border: `1px solid ${theme.player.border}`,
                       borderLeft: `3px solid ${theme.player.cyan}`,
                       padding: '20px 24px',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = theme.bg.hover;
                       e.currentTarget.style.borderColor = theme.player.cyan;
                       e.currentTarget.style.boxShadow = theme.player.glow;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = theme.bg.card;
                       e.currentTarget.style.borderColor = theme.player.border;
                       e.currentTarget.style.boxShadow = 'none';
                     }}
@@ -427,13 +495,17 @@ function UnifiedDashboard({ username, onLogout }) {
         </div>
 
         {/* RIGHT: Campaigns - Tron Aries RED */}
-        <div style={{ 
-          background: theme.gm.subtle,
-          padding: '24px',
-          position: 'relative',
-          overflow: 'hidden',
-          minHeight: '400px'
-        }}>
+        <div 
+          id="gm-section"
+          className="animate-fade-in-right"
+          style={{ 
+            background: theme.gm.subtle,
+            padding: '24px',
+            position: 'relative',
+            overflow: 'hidden',
+            minHeight: '400px'
+          }}
+        >
           {/* Glow effect */}
           <div style={{
             position: 'absolute',
@@ -537,29 +609,27 @@ function UnifiedDashboard({ username, onLogout }) {
                   </Button>
                 </div>
               ) : (
-                campaigns.map(campaign => (
+                campaigns.map((campaign, index) => (
                   <div
                     key={campaign.id}
                     onClick={() => navigate(`/campaign/${campaign.id}`)}
                     data-testid={`campaign-${campaign.id}`}
+                    className={`card-animated stagger-${Math.min(index + 1, 8)} hover-lift transition-smooth`}
                     style={{
                       background: theme.bg.card,
                       border: `1px solid ${theme.gm.border}`,
                       borderLeft: `3px solid ${theme.gm.primary}`,
                       padding: '20px 24px',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = theme.bg.hover;
                       e.currentTarget.style.borderColor = theme.gm.primary;
                       e.currentTarget.style.boxShadow = theme.gm.glow;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = theme.bg.card;
                       e.currentTarget.style.borderColor = theme.gm.border;
                       e.currentTarget.style.boxShadow = 'none';
                     }}
