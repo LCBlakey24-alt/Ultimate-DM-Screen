@@ -151,6 +151,11 @@ function UnifiedDashboard({ username, onLogout }) {
         alignItems: 'center'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <img 
+            src="/rqk-logo-mascot.png" 
+            alt="Rookie Quest Keeper" 
+            style={{ height: '40px' }}
+          />
           <h1 style={{
             fontWeight: '700',
             fontSize: '20px',

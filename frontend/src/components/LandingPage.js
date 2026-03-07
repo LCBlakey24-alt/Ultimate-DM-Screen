@@ -157,9 +157,9 @@ function LandingPage() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img 
-              src="/rqk-mini-logo.svg" 
-              alt="RQK" 
-              style={{ height: '40px' }}
+              src="/rqk-logo-mascot.png" 
+              alt="Rookie Quest Keeper" 
+              style={{ height: '44px' }}
             />
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
@@ -205,8 +205,19 @@ function LandingPage() {
           padding: '0 24px', 
           textAlign: 'center'
         }}>
-          {/* Text Logo with Cityworm Font */}
+          {/* Logo and Text */}
           <div style={{ marginBottom: '32px' }}>
+            {/* Mascot Logo */}
+            <img 
+              src="/rqk-logo-mascot.png" 
+              alt="Rookie Quest Keeper" 
+              style={{ 
+                height: '180px',
+                marginBottom: '24px',
+                filter: 'drop-shadow(0 0 30px rgba(225, 29, 72, 0.3))'
+              }}
+            />
+            
             <h1 style={{
               fontFamily: 'Cityworm, sans-serif',
               fontSize: 'clamp(2.5rem, 8vw, 5rem)',
@@ -1233,7 +1244,7 @@ function LandingPage() {
             marginBottom: '24px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src="/rqk-mini-logo.svg" alt="RQK" style={{ height: '32px' }} />
+              <img src="/rqk-logo-mascot.png" alt="Rookie Quest Keeper" style={{ height: '36px' }} />
               <span style={{ color: theme.text.muted, fontSize: '14px' }}>
                 A product of Rookie Quest
               </span>
