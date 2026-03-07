@@ -322,6 +322,15 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - [ ] Smart Entity Linking - Auto-link NPC names, locations to their pages (SmartNoteParser exists)
 
 ### Completed (March 2026 - UX Enhancements)
+- [x] **Tron Light Cycle Background Effects (March 2026)**
+  - Reusable TronBackground component with variant support (blue, red, both, landing)
+  - Blue/cyan light trails for Player sections (Tron Legacy aesthetic)
+  - Red light trails for GM sections (Tron Aries aesthetic)
+  - Animated grid overlay with subtle glow effects
+  - Applied to: Landing Page, Auth Page, Unified Dashboard, Character Sheet, Campaign Dashboard, GM Screen
+  - CSS animations with pointer-events: none to preserve UI interactivity
+  - Reduced motion support for accessibility (@media prefers-reduced-motion)
+  - 17/17 tests passed confirming all features work correctly
 - [x] **Professional Screen Animations**
   - Fade-in animations for page loads
   - Staggered list animations (cards appear sequentially)
