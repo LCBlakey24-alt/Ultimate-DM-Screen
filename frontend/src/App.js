@@ -20,6 +20,7 @@ import MyCharacters from '@/components/MyCharacters';
 import CharacterBuilder from '@/components/CharacterBuilder';
 import CharacterSheet from '@/components/CharacterSheet';
 import CharacterSheetFull from '@/components/CharacterSheetFull';
+import CampaignList from '@/components/CampaignList';
 import { KeyboardShortcutsModal, ShortcutsHint } from '@/components/KeyboardShortcuts';
 import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 import { SubscriptionProvider } from '@/hooks/useSubscription';
@@ -190,7 +191,11 @@ function App() {
             />
             <Route 
               path="/campaigns" 
-              element={<Navigate to="/home" replace />}
+              element={
+                isAuthenticated ? 
+                  <CampaignList username={username} onLogout={handleLogout} /> :
+                  <Navigate to="/auth" replace />
+              }
             />
             <Route 
               path="/characters" 

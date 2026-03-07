@@ -564,7 +564,7 @@ function CharacterBuilder() {
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-          <Button onClick={() => navigate('/player')} className="btn-icon">
+          <Button onClick={() => navigate('/')} className="btn-icon">
             <ArrowLeft size={20} />
           </Button>
           <div style={{ flex: 1 }}>

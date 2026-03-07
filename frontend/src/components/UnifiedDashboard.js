@@ -257,16 +257,17 @@ function UnifiedDashboard({ username, onLogout }) {
       <div style={{
         flex: 1,
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
         minHeight: 'calc(100vh - 70px)'
       }}>
         {/* LEFT: Characters - Tron Legacy BLUE */}
         <div style={{ 
           background: theme.player.subtle,
           borderRight: `1px solid ${theme.player.border}`,
-          padding: '32px',
+          padding: '24px',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          minHeight: '400px'
         }}>
           {/* Glow effect */}
           <div style={{
@@ -428,9 +429,10 @@ function UnifiedDashboard({ username, onLogout }) {
         {/* RIGHT: Campaigns - Tron Aries RED */}
         <div style={{ 
           background: theme.gm.subtle,
-          padding: '32px',
+          padding: '24px',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          minHeight: '400px'
         }}>
           {/* Glow effect */}
           <div style={{
