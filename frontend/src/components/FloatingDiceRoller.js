@@ -6,9 +6,9 @@ const themes = {
   player: {
     bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F', hover: '#2A2A2A' },
     accent: {
-      primary: '#3B82F6',
-      secondary: '#06B6D4',
-      hover: '#60A5FA',
+      primary: '#2A9D8F',
+      secondary: '#2A9D8F',
+      hover: '#3DB5A6',
       subtle: 'rgba(59, 130, 246, 0.15)',
       glow: 'rgba(59, 130, 246, 0.4)'
     },
@@ -18,8 +18,8 @@ const themes = {
   gm: {
     bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F', hover: '#2A2A2A' },
     accent: {
-      primary: '#DC2626',
-      secondary: '#EF4444',
+      primary: '#B91C1C',
+      secondary: '#DC2626',
       hover: '#F87171',
       subtle: 'rgba(220, 38, 38, 0.15)',
       glow: 'rgba(220, 38, 38, 0.4)'

@@ -1,5 +1,5 @@
 /* Quest Keeper - Dark Minimalist Design System v7.0 */
-/* New Color Scheme: Navy Blue/Red Theme with Eros Book Font */
+/* New Color Scheme: Teal/Black/Red Theme with Eros Book Font */
 
 /* Custom Font - Eros Book */
 @font-face {
@@ -10,16 +10,21 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Eros Book';
-  src: url('../public/fonts/ErosBookRegular.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+/* Inter as fallback only */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
+
+/* Global font weight override - ensure no bold */
+* {
+  font-weight: 400 !important;
 }
 
-/* Inter as fallback only */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400 !important;
+}
+
+strong, b {
+  font-weight: 400 !important;
+}
 
 /* ==================== TRON BORDER LIGHT TRACE EFFECT ==================== */
 /* Animated light that travels around the border of elements */

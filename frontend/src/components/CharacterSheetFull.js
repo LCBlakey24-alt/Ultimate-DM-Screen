@@ -56,8 +56,8 @@ const SKILLS = [
 
 // Ability score data - Tron Legacy Blue theme for players
 const ABILITIES = [
-  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#3B82F6', icon: Dumbbell },
-  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#06B6D4', icon: Zap },
+  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#2A9D8F', icon: Dumbbell },
+  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#2A9D8F', icon: Zap },
   { key: 'constitution', label: 'CON', fullName: 'Constitution', color: '#0EA5E9', icon: Shield },
   { key: 'intelligence', label: 'INT', fullName: 'Intelligence', color: '#6366F1', icon: Brain },
   { key: 'wisdom', label: 'WIS', fullName: 'Wisdom', color: '#8B5CF6', icon: Eye },
@@ -87,17 +87,17 @@ const SPELL_LEVELS = {
 };
 
 // Blue theme for player section - Tron Legacy aesthetic
-const playerBlue = '#3B82F6';
-const playerBlueHover = '#60A5FA';
+const playerBlue = '#2A9D8F';
+const playerBlueHover = '#3DB5A6';
 const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
-const playerCyan = '#06B6D4';     // Tron Legacy cyan for highlights
+const playerCyan = '#2A9D8F';     // Tron Legacy cyan for highlights
 const playerCyanGlow = '#22D3EE'; // Brighter cyan for glows
-const playerSuccess = '#06B6D4';  // Use cyan instead of green for success states
-const playerHP = '#EF4444';       // Keep red for HP (damage is universal)
+const playerSuccess = '#2A9D8F';  // Use cyan instead of green for success states
+const playerHP = '#DC2626';       // Keep red for HP (damage is universal)
 
 // Dark panel styles (matching dark theme)
 const glassPanel = {
-  background: '#243B5A',
+  background: '#1A1A1A',
   border: '1px solid rgba(255, 255, 255, 0.1)',
 };
 
@@ -202,8 +202,8 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
             width: '16px',
             height: '16px',
             borderRadius: '3px',
-            border: isProficient ? '2px solid #06B6D4' : '2px solid #475569',
-            background: isProficient ? '#06B6D4' : 'transparent',
+            border: isProficient ? '2px solid #2A9D8F' : '2px solid #475569',
+            background: isProficient ? '#2A9D8F' : 'transparent',
             marginRight: '8px',
             display: 'flex',
             alignItems: 'center',
@@ -216,11 +216,11 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
         </button>
       )}
       
-      <Icon size={12} color={isProficient ? '#06B6D4' : '#64748b'} style={{ marginRight: '6px', flexShrink: 0 }} />
+      <Icon size={12} color={isProficient ? '#2A9D8F' : '#64748b'} style={{ marginRight: '6px', flexShrink: 0 }} />
       
       <span style={{ 
         flex: 1,
-        color: isProficient ? '#06B6D4' : '#e2e8f0',
+        color: isProficient ? '#2A9D8F' : '#e2e8f0',
         fontSize: '12px',
         fontWeight: isProficient ? '600' : '400',
         whiteSpace: 'nowrap',
@@ -243,7 +243,7 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
       <DiceRollButton 
         modifier={totalMod}
         label={skill.name}
-        color={isProficient ? '#06B6D4' : '#fff'}
+        color={isProficient ? '#2A9D8F' : '#fff'}
         size="small"
         showDice={false}
       />
@@ -257,8 +257,8 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
   
   // Tron Legacy blue gradient for spell levels
   const levelColor = spell.level === 0 ? '#94a3b8' : 
-    spell.level <= 2 ? '#06B6D4' : 
-    spell.level <= 5 ? '#3B82F6' : 
+    spell.level <= 2 ? '#2A9D8F' : 
+    spell.level <= 5 ? '#2A9D8F' : 
     spell.level <= 7 ? '#6366F1' : '#8B5CF6';
   
   return (
@@ -285,7 +285,7 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
               width: '24px',
               height: '24px',
               borderRadius: '6px',
-              border: isPrepared ? '2px solid #06B6D4' : '2px solid #475569',
+              border: isPrepared ? '2px solid #2A9D8F' : '2px solid #475569',
               background: isPrepared ? 'rgba(6, 182, 212, 0.2)' : 'transparent',
               marginRight: '12px',
               display: 'flex',
@@ -294,7 +294,7 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
               cursor: 'pointer'
             }}
           >
-            {isPrepared && <Check size={14} color="#06B6D4" />}
+            {isPrepared && <Check size={14} color="#2A9D8F" />}
           </button>
         )}
         
@@ -382,7 +382,7 @@ function FeatureCard({ feature, source }) {
   
   // Tron Legacy blue palette for feature sources
   const sourceColors = {
-    class: { bg: 'rgba(59, 130, 246, 0.12)', text: '#60A5FA' },
+    class: { bg: 'rgba(59, 130, 246, 0.12)', text: '#3DB5A6' },
     race: { bg: 'rgba(6, 182, 212, 0.12)', text: '#22D3EE' },
     feat: { bg: 'rgba(99, 102, 241, 0.12)', text: '#818CF8' },
     background: { bg: 'rgba(139, 92, 246, 0.12)', text: '#A78BFA' }
@@ -705,7 +705,7 @@ function CharacterSheetFull() {
   return (
     <div data-testid="character-sheet-full" style={{
       minHeight: '100vh',
-      background: '#0F1F33',
+      background: '#0D0D0D',
       fontFamily: 'Eros Book, sans-serif'
     }}>
       {/* Subtle Blue Gradient Background */}
@@ -777,7 +777,7 @@ function CharacterSheetFull() {
                 data-testid="level-up-btn"
                 onClick={() => setShowLevelUpModal(true)}
                 style={{ 
-                  background: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
+                  background: 'linear-gradient(135deg, #2A9D8F 0%, #0891B2 100%)',
                   border: 'none',
                   borderRadius: '0px',
                   padding: '10px 16px',
@@ -795,7 +795,7 @@ function CharacterSheetFull() {
                 data-testid="join-campaign-btn"
                 onClick={() => setShowJoinModal(true)}
                 style={{ 
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                  background: 'linear-gradient(135deg, #2A9D8F 0%, #2563EB 100%)',
                   border: 'none',
                   borderRadius: '0px',
                   padding: '10px 16px',
@@ -829,7 +829,7 @@ function CharacterSheetFull() {
                   onClick={handleSave}
                   disabled={saving}
                   style={{ 
-                    background: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
+                    background: 'linear-gradient(135deg, #2A9D8F 0%, #0891B2 100%)',
                     border: 'none',
                     borderRadius: '0px',
                     padding: '10px 16px'
@@ -862,7 +862,7 @@ function CharacterSheetFull() {
           ...glassPanel,
           padding: '10px 16px',
           marginBottom: '12px',
-          background: 'linear-gradient(180deg, #243B5A 0%, #1E3A5F 100%)',
+          background: 'linear-gradient(180deg, #1A1A1A 0%, #121212 100%)',
           borderBottom: '2px solid rgba(59, 130, 246, 0.3)'
         }}>
           {/* Character Info Row */}
@@ -1056,10 +1056,10 @@ function CharacterSheetFull() {
               alignItems: 'center',
               gap: '6px'
             }}>
-              <Activity size={14} color="#06B6D4" />
+              <Activity size={14} color="#2A9D8F" />
               <div>
                 <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>SPEED</span>
-                <span style={{ color: '#06B6D4', fontWeight: '700', fontSize: '14px' }}>
+                <span style={{ color: '#2A9D8F', fontWeight: '700', fontSize: '14px' }}>
                   {data.speed}ft
                 </span>
               </div>
@@ -1206,12 +1206,12 @@ function CharacterSheetFull() {
                         background: isProficient ? 'rgba(6, 182, 212, 0.08)' : 'transparent',
                         borderRadius: '3px',
                         cursor: editMode ? 'pointer' : 'default',
-                        borderLeft: isProficient ? '2px solid #06B6D4' : '2px solid transparent'
+                        borderLeft: isProficient ? '2px solid #2A9D8F' : '2px solid transparent'
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', minWidth: 0 }}>
                         <span style={{ 
-                          color: isProficient ? '#06B6D4' : '#94a3b8', 
+                          color: isProficient ? '#2A9D8F' : '#94a3b8', 
                           fontSize: '10px',
                           fontWeight: isProficient ? '600' : '400',
                           textDecoration: isProficient ? 'underline' : 'none',
@@ -1228,7 +1228,7 @@ function CharacterSheetFull() {
                       <DiceRollButton 
                         modifier={totalMod}
                         label={skill.name}
-                        color={isProficient ? '#06B6D4' : '#64748b'}
+                        color={isProficient ? '#2A9D8F' : '#64748b'}
                         size="small"
                         showDice={false}
                       />
@@ -1939,13 +1939,13 @@ function CharacterSheetFull() {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: '#64748b', fontSize: '11px' }}>Attack Bonus</span>
-                      <span style={{ color: '#06B6D4', fontWeight: '700', fontSize: '14px' }}>
+                      <span style={{ color: '#2A9D8F', fontWeight: '700', fontSize: '14px' }}>
                         {data.spellcasting_ability ? `+${profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}` : '—'}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: '#64748b', fontSize: '11px' }}>Prepared</span>
-                      <span style={{ color: '#3B82F6', fontWeight: '700', fontSize: '14px' }}>
+                      <span style={{ color: '#2A9D8F', fontWeight: '700', fontSize: '14px' }}>
                         {data.spells_prepared?.length || 0} / {Math.max(1, calculateModifier(data[data.spellcasting_ability] || 10) + (data.level || 1))}
                       </span>
                     </div>

@@ -280,14 +280,14 @@ function GMScreen({ username }) {
   const theme = {
     bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F', hover: '#2A2A2A' },
     accent: { 
-      primary: '#DC2626',      // Main red
-      secondary: '#EF4444',    // Light red
+      primary: '#B91C1C',      // Main red
+      secondary: '#DC2626',    // Light red
       tertiary: '#991B1B',     // Dark red
       hover: '#F87171',
       subtle: 'rgba(220, 38, 38, 0.15)',
       glow: '0 0 20px rgba(220, 38, 38, 0.4)',
       // Legacy compatibility
-      red: '#DC2626', 
+      red: '#B91C1C', 
       redHover: '#F87171', 
       redSubtle: 'rgba(220, 38, 38, 0.15)',
       orange: '#F97316'

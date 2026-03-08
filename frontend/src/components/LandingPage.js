@@ -13,50 +13,50 @@ import TronBackground from '@/components/TronBackground';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-// Navy Blue/Red Theme - New Color Scheme
+// Teal/Black/Red Theme - New Color Scheme
 const theme = {
   bg: {
-    black: '#0A1628',      // Darkest navy
-    dark: '#0F1F33',       // Very dark navy
-    panel: '#1E3A5F',      // Dark navy
-    card: '#243B5A',       // Medium dark navy
-    hover: '#2D4A6E',      // Hover navy
-    elevated: '#345678'
+    black: '#0D0D0D',      // Pure black
+    dark: '#121212',       // Slightly lighter black
+    panel: '#1A1A1A',      // Panel background
+    card: '#1A6B64',       // Dark teal
+    hover: '#2A9D8F',      // Light teal
+    elevated: '#222222'
   },
   // GM Side - Reds
   gm: {
-    primary: '#DC2626',
-    hover: '#EF4444',
-    subtle: 'rgba(220, 38, 38, 0.15)',
-    border: 'rgba(220, 38, 38, 0.4)',
-    glow: '0 0 30px rgba(220, 38, 38, 0.3)'
+    primary: '#B91C1C',
+    hover: '#B91C1C',
+    subtle: 'rgba(185, 28, 28, 0.15)',
+    border: 'rgba(185, 28, 28, 0.4)',
+    glow: '0 0 30px rgba(185, 28, 28, 0.3)'
   },
-  // Player Side - Blues
+  // Player Side - Teals
   player: {
-    primary: '#6B8CAE',
-    cyan: '#5A7A9A',
-    hover: '#8BA3C0',
-    subtle: 'rgba(107, 140, 174, 0.15)',
-    border: 'rgba(107, 140, 174, 0.4)',
-    glow: '0 0 30px rgba(107, 140, 174, 0.3)'
+    primary: '#2A9D8F',
+    cyan: '#1A6B64',
+    hover: '#3DB5A6',
+    subtle: 'rgba(42, 157, 143, 0.15)',
+    border: 'rgba(42, 157, 143, 0.4)',
+    glow: '0 0 30px rgba(42, 157, 143, 0.3)'
   },
   // Accent colors
   accent: {
-    red: '#DC2626',
-    redHover: '#EF4444',
-    redSubtle: 'rgba(220, 38, 38, 0.15)',
-    redBorder: 'rgba(220, 38, 38, 0.4)'
+    red: '#B91C1C',
+    redHover: '#B91C1C',
+    redSubtle: 'rgba(185, 28, 28, 0.15)',
+    redBorder: 'rgba(185, 28, 28, 0.4)'
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#C4D4E8',
-    muted: '#8BA3C0',
-    dim: '#5A7A9A'
+    secondary: '#B8B8B8',
+    muted: '#808080',
+    dim: '#666666'
   },
   border: {
-    dark: 'rgba(107, 140, 174, 0.1)',
-    default: 'rgba(107, 140, 174, 0.2)',
-    hover: 'rgba(107, 140, 174, 0.3)'
+    dark: 'rgba(255, 255, 255, 0.06)',
+    default: 'rgba(255, 255, 255, 0.1)',
+    hover: 'rgba(255, 255, 255, 0.15)'
   }
 };
 
@@ -203,7 +203,7 @@ function LandingPage() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '8px',
-                background: 'linear-gradient(135deg, #E11D48, #06B6D4)',
+                background: 'linear-gradient(135deg, #B91C1C, #2A9D8F)',
                 border: 'none',
                 color: theme.text.white
               }}
@@ -257,7 +257,7 @@ function LandingPage() {
             <p style={{
               fontFamily: 'Cityworm, sans-serif',
               fontSize: 'clamp(0.9rem, 2vw, 1.2rem)',
-              background: 'linear-gradient(90deg, #E11D48, #06B6D4)',
+              background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               letterSpacing: '6px',
@@ -273,7 +273,7 @@ function LandingPage() {
           <div style={{
             width: '120px',
             height: '2px',
-            background: 'linear-gradient(90deg, #E11D48, #06B6D4)',
+            background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
             margin: '32px auto'
           }} />
 
@@ -828,7 +828,7 @@ function LandingPage() {
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <p style={{
-              background: 'linear-gradient(90deg, #E11D48, #06B6D4)',
+              background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               fontSize: '16px',
@@ -1118,7 +1118,7 @@ function LandingPage() {
               padding: '32px',
               background: `linear-gradient(135deg, ${theme.gm.subtle}, ${theme.player.subtle})`,
               border: '2px solid transparent',
-              borderImage: 'linear-gradient(135deg, #E11D48, #06B6D4) 1',
+              borderImage: 'linear-gradient(135deg, #B91C1C, #2A9D8F) 1',
               position: 'relative',
               display: 'flex',
               flexDirection: 'column'
@@ -1128,7 +1128,7 @@ function LandingPage() {
                 top: '-12px',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                background: 'linear-gradient(90deg, #E11D48, #06B6D4)',
+                background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
                 color: '#fff',
                 padding: '4px 16px',
                 fontSize: '11px',
@@ -1140,7 +1140,7 @@ function LandingPage() {
               <div style={{ marginBottom: '20px', marginTop: '8px' }}>
                 <h3 style={{ 
                   fontSize: '20px', 
-                  background: 'linear-gradient(90deg, #E11D48, #06B6D4)',
+                  background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   fontWeight: '700', 
@@ -1181,7 +1181,7 @@ function LandingPage() {
                 style={{ 
                   width: '100%', 
                   padding: '12px',
-                  background: 'linear-gradient(135deg, #E11D48, #06B6D4)',
+                  background: 'linear-gradient(135deg, #B91C1C, #2A9D8F)',
                   border: 'none',
                   color: '#fff',
                   fontWeight: '600',

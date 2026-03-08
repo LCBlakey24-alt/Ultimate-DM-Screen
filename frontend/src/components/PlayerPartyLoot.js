@@ -13,9 +13,9 @@ const API = `${BACKEND_URL}/api`;
 
 // Player Theme - Blue (Tron Legacy)
 const theme = {
-  primary: '#3B82F6',
-  cyan: '#06B6D4',
-  hover: '#60A5FA',
+  primary: '#2A9D8F',
+  cyan: '#2A9D8F',
+  hover: '#3DB5A6',
   subtle: 'rgba(59, 130, 246, 0.15)',
   glow: '0 0 20px rgba(6, 182, 212, 0.3)',
   bg: '#0D0D0D',
@@ -31,8 +31,8 @@ const theme = {
 };
 
 const ITEM_TYPES = {
-  weapon: { icon: Swords, color: '#EF4444' },
-  armor: { icon: Shield, color: '#3B82F6' },
+  weapon: { icon: Swords, color: '#DC2626' },
+  armor: { icon: Shield, color: '#2A9D8F' },
   potion: { icon: Heart, color: '#EC4899' },
   scroll: { icon: Wand2, color: '#8B5CF6' },
   wondrous: { icon: Sparkles, color: '#F59E0B' },
@@ -279,7 +279,7 @@ function PlayerPartyLoot({ campaignId, characterId, characterName }) {
                               <span style={{
                                 fontSize: '10px',
                                 padding: '2px 6px',
-                                background: item.rarity === 'rare' ? '#3B82F6' :
+                                background: item.rarity === 'rare' ? '#2A9D8F' :
                                            item.rarity === 'very_rare' ? '#8B5CF6' :
                                            item.rarity === 'legendary' ? '#F59E0B' :
                                            item.rarity === 'uncommon' ? '#22C55E' : theme.muted,

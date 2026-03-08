@@ -28,7 +28,7 @@ const GUIDE_CONTENT = {
       "Hit '+ New Campaign' to start a fresh adventure.",
       "Each campaign has its own world, NPCs, locations, and maps!"
     ],
-    color: '#E11D48' // Red for GM
+    color: '#B91C1C' // Red for GM
   },
   
   // Campaign Dashboard Tabs
@@ -40,7 +40,7 @@ const GUIDE_CONTENT = {
       "This is the first thing players see when they join your campaign.",
       "You can update these anytime as your world evolves."
     ],
-    color: '#E11D48'
+    color: '#B91C1C'
   },
   'world': {
     title: "World Builder",
@@ -50,7 +50,7 @@ const GUIDE_CONTENT = {
       "Use the AI to help generate descriptions and history.",
       "Link locations together to create an interconnected world."
     ],
-    color: '#E11D48'
+    color: '#B91C1C'
   },
   'world-map': {
     title: "World Map",
@@ -142,7 +142,7 @@ const GUIDE_CONTENT = {
       "Add NPCs, shops, and secrets to each location.",
       "Locations can be linked to map pins for visual navigation."
     ],
-    color: '#E11D48'
+    color: '#B91C1C'
   },
   'npcs': {
     title: "NPC Manager",
@@ -152,7 +152,7 @@ const GUIDE_CONTENT = {
       "Use the AI to generate NPC backstories and motivations.",
       "Assign NPCs to locations so you always know who's where."
     ],
-    color: '#E11D48'
+    color: '#B91C1C'
   },
   'npc-web': {
     title: "NPC Relationship Web",
@@ -192,7 +192,7 @@ const GUIDE_CONTENT = {
       "Define domains, holy symbols, and commandments.",
       "Link clerics and paladins to their patron deities."
     ],
-    color: '#E11D48'
+    color: '#B91C1C'
   },
   'players': {
     title: "Player Management",
@@ -202,7 +202,7 @@ const GUIDE_CONTENT = {
       "See which characters are in your campaign.",
       "Manage player access and permissions."
     ],
-    color: '#E11D48'
+    color: '#B91C1C'
   },
   'combat-creator': {
     title: "Combat Setup",
@@ -262,7 +262,7 @@ const GUIDE_CONTENT = {
       "Schedule festivals, holidays, and important dates.",
       "Never lose track of how many days have passed!"
     ],
-    color: '#E11D48'
+    color: '#B91C1C'
   },
   'ingame-notes': {
     title: "Session Notes",
@@ -318,7 +318,7 @@ const GUIDE_CONTENT = {
       "Use the dice roller for any rolls you need.",
       "Everything updates in real-time!"
     ],
-    color: '#E11D48'
+    color: '#B91C1C'
   }
 };
 

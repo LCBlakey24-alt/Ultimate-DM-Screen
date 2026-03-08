@@ -9,8 +9,8 @@ import { toast } from 'sonner';
 
 // GM Theme - Red (Tron Aries)
 const theme = {
-  primary: '#E11D48',
-  hover: '#F43F5E',
+  primary: '#B91C1C',
+  hover: '#DC2626',
   subtle: 'rgba(225, 29, 72, 0.15)',
   glow: '0 0 20px rgba(225, 29, 72, 0.3)',
   bg: '#0D0D0D',

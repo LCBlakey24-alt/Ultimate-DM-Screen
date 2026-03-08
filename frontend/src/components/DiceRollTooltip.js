@@ -58,7 +58,7 @@ export function DiceRollTooltip() {
           top: position.y,
           transform: 'translateX(-50%)',
           background: 'linear-gradient(135deg, #1A1A1A, #2A2A2A)',
-          border: '2px solid #06B6D4',
+          border: '2px solid #2A9D8F',
           padding: '20px 24px',
           maxWidth: '320px',
           zIndex: 9999,
@@ -77,7 +77,7 @@ export function DiceRollTooltip() {
             height: 0,
             borderLeft: '10px solid transparent',
             borderRight: '10px solid transparent',
-            borderBottom: '10px solid #06B6D4'
+            borderBottom: '10px solid #2A9D8F'
           }}
         />
         
@@ -108,10 +108,10 @@ export function DiceRollTooltip() {
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <Dice6 size={20} color="#06B6D4" />
+            <Dice6 size={20} color="#2A9D8F" />
           </div>
           <h3 style={{ 
-            color: '#06B6D4', 
+            color: '#2A9D8F', 
             fontSize: '16px', 
             fontWeight: '700',
             margin: 0
@@ -126,7 +126,7 @@ export function DiceRollTooltip() {
           lineHeight: '1.6',
           margin: '0 0 16px'
         }}>
-          Any <span style={{ color: '#06B6D4', fontWeight: '600' }}>blue box with a number</span> is 
+          Any <span style={{ color: '#2A9D8F', fontWeight: '600' }}>blue box with a number</span> is 
           clickable! Click ability modifiers, skill bonuses, saves, or attack rolls to instantly roll dice.
         </p>
 
@@ -150,7 +150,7 @@ export function DiceRollTooltip() {
             width: '100%',
             marginTop: '16px',
             padding: '10px',
-            background: '#06B6D4',
+            background: '#2A9D8F',
             border: 'none',
             color: '#000',
             fontWeight: '600',

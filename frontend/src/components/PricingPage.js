@@ -11,7 +11,7 @@ const API = `${BACKEND_URL}/api`;
 // Theme
 const theme = {
   bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F' },
-  accent: { red: '#E11D48', blue: '#3B82F6', gold: '#F59E0B' },
+  accent: { red: '#B91C1C', blue: '#2A9D8F', gold: '#F59E0B' },
   text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
   border: 'rgba(255, 255, 255, 0.1)'
 };

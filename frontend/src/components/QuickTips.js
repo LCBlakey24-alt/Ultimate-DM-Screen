@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Lightbulb, X, ChevronDown, ChevronUp } from 'lucide-react';
 
-// Dark Minimalist Theme Colors - #E11D48
+// Dark Minimalist Theme Colors - #B91C1C
 const theme = {
-  accent: '#E11D48',
+  accent: '#B91C1C',
   accentSubtle: 'rgba(225, 29, 72, 0.15)',
   accentBorder: 'rgba(225, 29, 72, 0.3)',
   text: '#FFFFFF',

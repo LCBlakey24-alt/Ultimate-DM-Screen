@@ -13,44 +13,44 @@ import { RookGuide } from '@/components/RookGuide';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Navy Blue/Red Theme - New Color Scheme
+// Teal/Black/Red Theme - New Color Scheme
 const theme = {
   bg: {
-    black: '#0A1628',      // Darkest navy
-    dark: '#0F1F33',       // Very dark navy
-    panel: '#1E3A5F',      // Dark navy
-    card: '#243B5A',       // Medium dark navy
-    hover: '#2D4A6E'       // Hover navy
+    black: '#0D0D0D',      // Pure black
+    dark: '#121212',       // Slightly lighter black
+    panel: '#1A1A1A',      // Panel background
+    card: '#1A6B64',       // Dark teal
+    hover: '#2A9D8F'       // Light teal
   },
-  // Player/Character Side - Blues from the palette
+  // Player/Character Side - Teals
   player: {
-    primary: '#6B8CAE',    // Light steel blue
-    secondary: '#5A7A9A',  // Medium steel blue
-    tertiary: '#3B5A7C',   // Medium blue
-    hover: '#8BA3C0',
-    subtle: 'rgba(107, 140, 174, 0.12)',
-    border: 'rgba(107, 140, 174, 0.35)',
-    glow: '0 0 40px rgba(107, 140, 174, 0.2)',
-    gradient: 'linear-gradient(180deg, rgba(107, 140, 174, 0.15) 0%, transparent 100%)',
-    cyan: '#6B8CAE'
+    primary: '#2A9D8F',    // Light teal
+    secondary: '#1A6B64',  // Dark teal
+    tertiary: '#145852',   // Darker teal
+    hover: '#3DB5A6',
+    subtle: 'rgba(42, 157, 143, 0.12)',
+    border: 'rgba(42, 157, 143, 0.35)',
+    glow: '0 0 40px rgba(42, 157, 143, 0.2)',
+    gradient: 'linear-gradient(180deg, rgba(42, 157, 143, 0.15) 0%, transparent 100%)',
+    cyan: '#2A9D8F'
   },
-  // GM/Campaign Side - Reds from the palette
+  // GM/Campaign Side - Reds
   gm: {
-    primary: '#DC2626',    // Bright red
-    secondary: '#B91C3C',  // Medium burgundy
-    tertiary: '#8B1538',   // Dark burgundy
-    hover: '#EF4444',
-    subtle: 'rgba(220, 38, 38, 0.12)',
-    border: 'rgba(220, 38, 38, 0.35)',
-    glow: '0 0 40px rgba(220, 38, 38, 0.2)',
-    gradient: 'linear-gradient(180deg, rgba(220, 38, 38, 0.15) 0%, transparent 100%)'
+    primary: '#B91C1C',    // Bright red
+    secondary: '#7F1D1D',  // Medium red
+    tertiary: '#4A0E0E',   // Dark maroon
+    hover: '#B91C1C',
+    subtle: 'rgba(185, 28, 28, 0.12)',
+    border: 'rgba(185, 28, 28, 0.35)',
+    glow: '0 0 40px rgba(185, 28, 28, 0.2)',
+    gradient: 'linear-gradient(180deg, rgba(185, 28, 28, 0.15) 0%, transparent 100%)'
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#C4D4E8',  // Light blue-gray
-    muted: '#8BA3C0'       // Muted blue
+    secondary: '#B8B8B8',
+    muted: '#808080'
   },
-  border: 'rgba(107, 140, 174, 0.2)'
+  border: 'rgba(255, 255, 255, 0.1)'
 };
 
 function UnifiedDashboard({ username, onLogout }) {
@@ -302,7 +302,7 @@ function UnifiedDashboard({ username, onLogout }) {
               style={{
                 background: 'linear-gradient(135deg, rgba(225, 29, 72, 0.2), rgba(6, 182, 212, 0.2))',
                 border: '1px solid',
-                borderImage: 'linear-gradient(135deg, #E11D48, #06B6D4) 1',
+                borderImage: 'linear-gradient(135deg, #B91C1C, #2A9D8F) 1',
                 color: theme.text.white,
                 padding: '8px 16px',
                 display: 'flex',
@@ -654,7 +654,7 @@ function UnifiedDashboard({ username, onLogout }) {
                           transition: 'all 0.2s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.color = '#EF4444';
+                          e.currentTarget.style.color = '#DC2626';
                           e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
                         }}
                         onMouseLeave={(e) => {
@@ -854,7 +854,7 @@ function UnifiedDashboard({ username, onLogout }) {
                           transition: 'all 0.2s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.color = '#EF4444';
+                          e.currentTarget.style.color = '#DC2626';
                           e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
                         }}
                         onMouseLeave={(e) => {
@@ -968,7 +968,7 @@ function UnifiedDashboard({ username, onLogout }) {
                 disabled={submittingReview}
                 style={{
                   flex: 1,
-                  background: 'linear-gradient(135deg, #E11D48, #06B6D4)',
+                  background: 'linear-gradient(135deg, #B91C1C, #2A9D8F)',
                   border: 'none',
                   color: '#fff',
                   padding: '12px',
@@ -1025,7 +1025,7 @@ function UnifiedDashboard({ username, onLogout }) {
               textAlign: 'center'
             }}>
               <code style={{ 
-                background: 'linear-gradient(90deg, #E11D48, #06B6D4)',
+                background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 fontSize: '18px',
@@ -1040,7 +1040,7 @@ function UnifiedDashboard({ username, onLogout }) {
               onClick={copyReferralCode}
               style={{
                 width: '100%',
-                background: 'linear-gradient(135deg, #E11D48, #06B6D4)',
+                background: 'linear-gradient(135deg, #B91C1C, #2A9D8F)',
                 border: 'none',
                 color: '#fff',
                 padding: '14px',

@@ -13,28 +13,28 @@ const API = `${BACKEND_URL}/api`;
 // Dark Minimalist Theme - Updated color scheme
 const theme = {
   bg: {
-    black: '#0A1628',      // Darkest navy
-    dark: '#0F1F33',       // Very dark navy
-    panel: '#1E3A5F',      // Dark navy
-    card: '#243B5A',       // Medium dark navy
-    hover: '#2D4A6E'       // Hover navy
+    black: '#0D0D0D',      // Pure black
+    dark: '#121212',       // Slightly lighter black
+    panel: '#1A1A1A',      // Panel background
+    card: '#1A6B64',       // Dark teal
+    hover: '#2A9D8F'       // Light teal
   },
   accent: {
-    primary: '#DC2626',      // Main red
-    secondary: '#B91C3C',    // Medium burgundy
-    tertiary: '#8B1538',     // Dark burgundy
-    hover: '#EF4444',
-    subtle: 'rgba(220, 38, 38, 0.15)',
-    red: '#DC2626',
-    redHover: '#EF4444',
-    redSubtle: 'rgba(220, 38, 38, 0.15)'
+    primary: '#B91C1C',      // Bright red
+    secondary: '#7F1D1D',    // Medium red
+    tertiary: '#4A0E0E',     // Dark maroon
+    hover: '#B91C1C',
+    subtle: 'rgba(185, 28, 28, 0.15)',
+    red: '#B91C1C',
+    redHover: '#B91C1C',
+    redSubtle: 'rgba(185, 28, 28, 0.15)'
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#C4D4E8',
-    muted: '#8BA3C0'
+    secondary: '#B8B8B8',
+    muted: '#808080'
   },
-  border: 'rgba(107, 140, 174, 0.2)'
+  border: 'rgba(255, 255, 255, 0.1)'
 };
 
 function AuthPage({ onLogin }) {

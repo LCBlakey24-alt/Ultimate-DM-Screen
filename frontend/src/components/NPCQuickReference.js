@@ -12,8 +12,8 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme
 const theme = {
-  primary: '#E11D48',
-  hover: '#F43F5E',
+  primary: '#B91C1C',
+  hover: '#DC2626',
   subtle: 'rgba(225, 29, 72, 0.15)',
   bg: '#0D0D0D',
   card: '#1F1F1F',
@@ -24,7 +24,7 @@ const theme = {
   border: 'rgba(255, 255, 255, 0.1)',
   success: '#22C55E',
   warning: '#F59E0B',
-  cyan: '#06B6D4'
+  cyan: '#2A9D8F'
 };
 
 function NPCQuickReference({ campaignId, currentLocationId }) {
@@ -325,7 +325,7 @@ function NPCQuickReference({ campaignId, currentLocationId }) {
                         }}>
                           <div style={{ color: theme.muted, fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</div>
                           <div style={{ 
-                            color: npc.status === 'alive' ? theme.success : npc.status === 'dead' ? '#EF4444' : theme.warning, 
+                            color: npc.status === 'alive' ? theme.success : npc.status === 'dead' ? '#DC2626' : theme.warning, 
                             fontSize: '12px', 
                             fontWeight: '600', 
                             marginTop: '2px',
@@ -392,7 +392,7 @@ function NPCQuickReference({ campaignId, currentLocationId }) {
                         padding: '8px 10px'
                       }}>
                         <div style={{ 
-                          color: '#EF4444', 
+                          color: '#DC2626', 
                           fontSize: '10px', 
                           textTransform: 'uppercase', 
                           letterSpacing: '0.5px',
@@ -536,7 +536,7 @@ function NPCQuickReference({ campaignId, currentLocationId }) {
                   <div style={{ background: theme.bg, padding: '10px' }}>
                     <div style={{ color: theme.muted, fontSize: '10px', textTransform: 'uppercase' }}>Status</div>
                     <div style={{ 
-                      color: selectedNpc.status === 'alive' ? theme.success : '#EF4444', 
+                      color: selectedNpc.status === 'alive' ? theme.success : '#DC2626', 
                       fontSize: '14px', 
                       fontWeight: '600',
                       textTransform: 'capitalize'
@@ -590,7 +590,7 @@ function NPCQuickReference({ campaignId, currentLocationId }) {
                   padding: '12px'
                 }}>
                   <div style={{ 
-                    color: '#EF4444', 
+                    color: '#DC2626', 
                     fontSize: '11px', 
                     textTransform: 'uppercase', 
                     marginBottom: '6px',

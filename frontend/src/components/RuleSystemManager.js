@@ -14,8 +14,8 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme - Red (Tron Aries)
 const theme = {
-  primary: '#E11D48',
-  hover: '#F43F5E',
+  primary: '#B91C1C',
+  hover: '#DC2626',
   subtle: 'rgba(225, 29, 72, 0.15)',
   glow: '0 0 20px rgba(225, 29, 72, 0.3)',
   bg: '#0D0D0D',
@@ -30,13 +30,13 @@ const theme = {
 };
 
 const CONTENT_TYPES = [
-  { id: 'classes', label: 'Classes', icon: Users, color: '#3B82F6' },
+  { id: 'classes', label: 'Classes', icon: Users, color: '#2A9D8F' },
   { id: 'subclasses', label: 'Subclasses', icon: Users, color: '#6366F1' },
   { id: 'races', label: 'Races/Species', icon: Users, color: '#8B5CF6' },
   { id: 'spells', label: 'Spells', icon: Sparkles, color: '#EC4899' },
   { id: 'items', label: 'Items', icon: Package, color: '#F59E0B' },
   { id: 'feats', label: 'Feats', icon: Shield, color: '#22C55E' },
-  { id: 'monsters', label: 'Monsters', icon: Swords, color: '#EF4444' },
+  { id: 'monsters', label: 'Monsters', icon: Swords, color: '#DC2626' },
   { id: 'features', label: 'Class Features', icon: Wand2, color: '#14B8A6' },
 ];
 

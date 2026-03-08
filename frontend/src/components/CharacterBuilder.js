@@ -116,11 +116,11 @@ const RACES = [
 ];
 
 const CLASSES = [
-  { name: 'Barbarian', color: '#DC2626', hitDie: 'd12', primary: 'STR' },
+  { name: 'Barbarian', color: '#B91C1C', hitDie: 'd12', primary: 'STR' },
   { name: 'Bard', color: '#EC4899', hitDie: 'd8', primary: 'CHA' },
   { name: 'Cleric', color: '#F59E0B', hitDie: 'd8', primary: 'WIS' },
   { name: 'Druid', color: '#22C55E', hitDie: 'd8', primary: 'WIS' },
-  { name: 'Fighter', color: '#EF4444', hitDie: 'd10', primary: 'STR/DEX' },
+  { name: 'Fighter', color: '#DC2626', hitDie: 'd10', primary: 'STR/DEX' },
   { name: 'Monk', color: '#14B8A6', hitDie: 'd8', primary: 'DEX/WIS' },
   { name: 'Paladin', color: '#FBBF24', hitDie: 'd10', primary: 'STR/CHA' },
   { name: 'Ranger', color: '#10B981', hitDie: 'd10', primary: 'DEX/WIS' },
@@ -494,7 +494,7 @@ function CharacterBuilder() {
       userContent.classes.forEach(c => {
         customClasses.push({
           name: c.name,
-          color: c.color || '#06B6D4',
+          color: c.color || '#2A9D8F',
           hitDie: c.hit_die || 'd8',
           primary: c.primary_ability || 'Varies',
           source: c.source || 'My Rulesets',
@@ -944,10 +944,10 @@ function CharacterBuilder() {
     }
   };
 
-  // Blue theme for player section - New Navy/Steel Blue palette
-  const playerBlue = '#6B8CAE';
-  const playerBlueHover = '#8BA3C0';
-  const playerBlueSubtle = 'rgba(107, 140, 174, 0.15)';
+  // Teal theme for player section
+  const playerBlue = '#2A9D8F';
+  const playerBlueHover = '#3DB5A6';
+  const playerBlueSubtle = 'rgba(42, 157, 143, 0.15)';
 
   const getClassColor = () => {
     return CLASSES.find(c => c.name === characterData.character_class)?.color || playerBlue;
@@ -960,9 +960,10 @@ function CharacterBuilder() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0F1F33',
+      background: '#0D0D0D',
       padding: '24px',
-      fontFamily: "'Eros Book', sans-serif"
+      fontFamily: "'Eros Book', 'Inter', sans-serif",
+      fontWeight: 400
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Header */}
@@ -980,12 +981,12 @@ function CharacterBuilder() {
               Create Character
             </h1>
             {selectedEdition && (
-              <p style={{ color: '#06B6D4', fontSize: '13px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <p style={{ color: '#2A9D8F', fontSize: '13px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 Using <strong>{selectedEdition} Rules</strong>
                 {userContent?.has_custom_content && (
                   <span style={{ 
                     background: 'rgba(6, 182, 212, 0.2)', 
-                    border: '1px solid #06B6D4',
+                    border: '1px solid #2A9D8F',
                     padding: '2px 8px',
                     fontSize: '11px',
                     marginLeft: '8px'
@@ -1028,7 +1029,7 @@ function CharacterBuilder() {
                 style={{
                   padding: '32px 48px',
                   background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(59, 130, 246, 0.1))',
-                  border: '2px solid #06B6D4',
+                  border: '2px solid #2A9D8F',
                   borderRadius: '12px',
                   cursor: 'pointer',
                   transition: 'all 0.3s'
@@ -1042,7 +1043,7 @@ function CharacterBuilder() {
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                <div style={{ color: '#06B6D4', fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
+                <div style={{ color: '#2A9D8F', fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
                   2014
                 </div>
                 <div style={{ color: '#9CA3AF', fontSize: '14px' }}>
@@ -1050,7 +1051,7 @@ function CharacterBuilder() {
                 </div>
                 {contentSummary?.['2014'] && (contentSummary['2014'].races > 0 || contentSummary['2014'].classes > 0) && (
                   <div style={{ 
-                    color: '#06B6D4', 
+                    color: '#2A9D8F', 
                     fontSize: '12px', 
                     marginTop: '12px',
                     background: 'rgba(6, 182, 212, 0.1)',
@@ -1554,7 +1555,7 @@ function CharacterBuilder() {
                     { id: 'custom', label: 'Custom', desc: 'Point Buy', color: '#9CA3AF' },
                     { id: 'standard', label: 'Standard', desc: '15,14,13,12,10,8', color: '#22D3EE' },
                     { id: 'recommended', label: 'Recommended', desc: `Best for ${characterData.character_class}`, color: '#10B981' },
-                    { id: 'rolled', label: 'Roll Dice', desc: '4d6 drop lowest', color: '#3B82F6' }
+                    { id: 'rolled', label: 'Roll Dice', desc: '4d6 drop lowest', color: '#2A9D8F' }
                   ].map(method => (
                     <button
                       key={method.id}
@@ -1608,7 +1609,7 @@ function CharacterBuilder() {
                       disabled={isRolling}
                       style={{
                         padding: '8px 16px',
-                        background: 'linear-gradient(135deg, #3B82F6, #06B6D4)',
+                        background: 'linear-gradient(135deg, #2A9D8F, #2A9D8F)',
                         border: 'none',
                         borderRadius: '8px',
                         color: '#fff',
@@ -1628,7 +1629,7 @@ function CharacterBuilder() {
               
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
                   {[
-                    { key: 'strength', label: 'STR', icon: Swords, color: '#EF4444' },
+                    { key: 'strength', label: 'STR', icon: Swords, color: '#DC2626' },
                     { key: 'dexterity', label: 'DEX', icon: ArrowRight, color: '#22D3EE' },
                     { key: 'constitution', label: 'CON', icon: Heart, color: '#F59E0B' },
                     { key: 'intelligence', label: 'INT', icon: BookOpen, color: '#8B5CF6' },
@@ -1788,8 +1789,8 @@ function CharacterBuilder() {
                   border: `1px solid ${playerBlue}30`
                 }}>
                   <div style={{ textAlign: 'center' }}>
-                    <Heart size={24} style={{ color: '#EF4444', marginBottom: '4px' }} />
-                    <div style={{ color: '#EF4444', fontSize: '24px', fontWeight: '800' }}>
+                    <Heart size={24} style={{ color: '#DC2626', marginBottom: '4px' }} />
+                    <div style={{ color: '#DC2626', fontSize: '24px', fontWeight: '800' }}>
                       {parseInt(CLASSES.find(c => c.name === characterData.character_class)?.hitDie?.slice(1) || 8) + 
                        Math.floor((characterData.constitution - 10) / 2)}
                     </div>

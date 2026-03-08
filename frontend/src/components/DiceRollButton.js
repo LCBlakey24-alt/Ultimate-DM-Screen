@@ -4,13 +4,13 @@ import { Dice6 } from 'lucide-react';
 
 // Player theme - Blue (Tron Legacy)
 const theme = {
-  primary: '#3B82F6',
-  cyan: '#06B6D4',
-  hover: '#60A5FA',
+  primary: '#2A9D8F',
+  cyan: '#2A9D8F',
+  hover: '#3DB5A6',
   subtle: 'rgba(59, 130, 246, 0.15)',
   border: 'rgba(6, 182, 212, 0.4)',
   crit: '#22C55E',
-  fail: '#EF4444',
+  fail: '#DC2626',
   text: '#FFFFFF'
 };
 
@@ -77,7 +77,7 @@ export function DiceRollButton({
     } else if (rollType === 'fail') {
       toast.error(`NAT 1! ${message}`, { 
         description,
-        style: { background: '#7F1D1D', border: '2px solid #EF4444' }
+        style: { background: '#7F1D1D', border: '2px solid #DC2626' }
       });
     } else {
       toast(message, { 
@@ -158,7 +158,7 @@ export function DamageRollButton({
   diceFormula,  // e.g., "2d6+3"
   label = 'Damage',
   damageType = 'slashing',
-  color = '#EF4444'
+  color = '#DC2626'
 }) {
   const [rolling, setRolling] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -235,7 +235,7 @@ export function DamageRollButton({
       }}
       title={`Click to roll ${diceFormula} ${damageType} damage`}
     >
-      <Dice6 size={12} color={isHovered ? color : '#EF4444'} style={{ flexShrink: 0 }} />
+      <Dice6 size={12} color={isHovered ? color : '#DC2626'} style={{ flexShrink: 0 }} />
       <span>{diceFormula}</span>
     </button>
   );

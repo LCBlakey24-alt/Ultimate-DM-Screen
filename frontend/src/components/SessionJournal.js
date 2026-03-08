@@ -14,8 +14,8 @@ const API = `${BACKEND_URL}/api`;
 
 // Player Theme - Blue
 const theme = {
-  primary: '#3B82F6',
-  hover: '#60A5FA',
+  primary: '#2A9D8F',
+  hover: '#3DB5A6',
   subtle: 'rgba(59, 130, 246, 0.15)',
   bg: '#0D0D0D',
   card: '#1F1F1F',
@@ -27,8 +27,8 @@ const theme = {
 };
 
 const ENTRY_TYPES = [
-  { id: 'session', label: 'Session Summary', icon: Calendar, color: '#3B82F6' },
-  { id: 'combat', label: 'Combat', icon: Swords, color: '#EF4444' },
+  { id: 'session', label: 'Session Summary', icon: Calendar, color: '#2A9D8F' },
+  { id: 'combat', label: 'Combat', icon: Swords, color: '#DC2626' },
   { id: 'npc', label: 'NPC Met', icon: User, color: '#22C55E' },
   { id: 'location', label: 'Location', icon: MapPin, color: '#F59E0B' },
   { id: 'loot', label: 'Loot/Item', icon: Star, color: '#A855F7' },
@@ -525,8 +525,8 @@ function SessionJournal({ characterId, campaignId }) {
                                 style={{
                                   padding: '6px 12px',
                                   background: 'transparent',
-                                  border: `1px solid #EF4444`,
-                                  color: '#EF4444',
+                                  border: `1px solid #DC2626`,
+                                  color: '#DC2626',
                                   fontSize: '13px'
                                 }}
                               >

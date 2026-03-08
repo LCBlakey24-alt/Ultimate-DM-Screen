@@ -5,6 +5,7 @@
 body {
     margin: 0;
     font-family: 'Eros Book', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -15,28 +16,28 @@ code {
 
 @layer base {
     :root {
-        /* Navy Blue/Red Theme - New Color Scheme */
-        --background: 215 55% 13%;  /* Very dark navy #0F1F33 */
-        --foreground: 210 40% 90%;
-        --card: 215 45% 18%;  /* Dark navy #1E3A5F */
-        --card-foreground: 210 40% 90%;
-        --popover: 215 45% 18%;
-        --popover-foreground: 210 40% 90%;
-        --primary: 355 85% 48%;  /* Bright red #DC2626 */
+        /* Teal/Black/Red Theme - New Color Scheme */
+        --background: 180 8% 5%;  /* Black #0D0D0D */
+        --foreground: 180 5% 90%;
+        --card: 175 40% 12%;  /* Dark teal #1A6B64 */
+        --card-foreground: 180 5% 90%;
+        --popover: 175 40% 12%;
+        --popover-foreground: 180 5% 90%;
+        --primary: 0 75% 42%;  /* Bright red #B91C1C */
         --primary-foreground: 0 0% 100%;
-        --secondary: 210 35% 35%;  /* Medium blue #3B5A7C */
-        --secondary-foreground: 210 40% 90%;
-        --muted: 210 30% 45%;  /* Light steel blue #6B8CAE */
-        --muted-foreground: 210 20% 60%;
-        --accent: 350 75% 42%;  /* Medium burgundy #B91C3C */
+        --secondary: 174 55% 35%;  /* Light teal #2A9D8F */
+        --secondary-foreground: 0 0% 100%;
+        --muted: 175 30% 25%;
+        --muted-foreground: 180 10% 60%;
+        --accent: 0 65% 20%;  /* Dark maroon #4A0E0E */
         --accent-foreground: 0 0% 100%;
         --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 98%;
-        --border: 210 35% 25%;
-        --input: 210 35% 25%;
-        --ring: 355 85% 48%;
-        --chart-1: 355 85% 48%;
-        --chart-2: 210 35% 55%;
+        --border: 175 30% 20%;
+        --input: 175 30% 20%;
+        --ring: 0 75% 42%;
+        --chart-1: 0 75% 42%;
+        --chart-2: 174 55% 35%;
         --chart-3: 38 92% 50%;
         --chart-4: 160 60% 45%;
         --chart-5: 340 75% 55%;
@@ -44,8 +45,8 @@ code {
     }
     
     .dark {
-        --background: 215 55% 13%;
-        --foreground: 210 40% 90%;
+        --background: 180 8% 5%;
+        --foreground: 180 5% 90%;
         --card: 222 47% 9%;
         --card-foreground: 220 14% 91%;
         --popover: 222 47% 9%;

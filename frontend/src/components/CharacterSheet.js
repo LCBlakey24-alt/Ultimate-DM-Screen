@@ -170,7 +170,7 @@ function CharacterSheet() {
               }}>
                 {character.name}
               </h1>
-              <p style={{ color: '#3B82F6', fontSize: '16px' }}>
+              <p style={{ color: '#2A9D8F', fontSize: '16px' }}>
                 Level {character.level} {character.race} {character.character_class}
               </p>
             </div>

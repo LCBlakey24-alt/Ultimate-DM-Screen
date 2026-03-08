@@ -79,10 +79,10 @@ export const RookDemo = () => {
         alignItems: 'center',
         gap: '12px'
       }}>
-        <Sparkles size={28} color="#E11D48" />
+        <Sparkles size={28} color="#B91C1C" />
         <div>
           <div style={{ 
-            color: '#E11D48', 
+            color: '#B91C1C', 
             fontWeight: '700', 
             fontSize: '16px',
             fontFamily: 'Cityworm, sans-serif'
@@ -160,7 +160,7 @@ export const RookDemo = () => {
           padding: '12px',
           background: currentStage.type === 'generating'
             ? 'linear-gradient(135deg, #0891b2 0%, #0284c7 100%)'
-            : 'linear-gradient(135deg, #22D3EE 0%, #3B82F6 100%)',
+            : 'linear-gradient(135deg, #22D3EE 0%, #2A9D8F 100%)',
           border: 'none',
           borderRadius: '10px',
           color: '#ffffff',
@@ -219,12 +219,12 @@ export const RookDemo = () => {
                 width: '48px',
                 height: '48px',
                 background: 'rgba(225, 29, 72, 0.15)',
-                border: '1px solid #E11D48',
+                border: '1px solid #B91C1C',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <User size={24} color="#E11D48" />
+                <User size={24} color="#B91C1C" />
               </div>
               <div>
                 <div style={{ color: '#ffffff', fontWeight: '700', fontSize: '16px' }}>

@@ -8,7 +8,7 @@ import { getFeatureRequirement } from '@/hooks/useSubscription';
 const theme = {
   bg: { panel: '#1A1A1A', dark: '#0D0D0D' },
   text: { white: '#FFFFFF', muted: '#808080' },
-  accent: { red: '#E11D48', cyan: '#06B6D4' },
+  accent: { red: '#B91C1C', cyan: '#2A9D8F' },
   border: 'rgba(255, 255, 255, 0.1)'
 };
 
@@ -190,7 +190,7 @@ export function UpgradePrompt({
           <div style={{
             width: '64px',
             height: '64px',
-            background: 'linear-gradient(135deg, #E11D48 0%, #F43F5E 100%)',
+            background: 'linear-gradient(135deg, #B91C1C 0%, #DC2626 100%)',
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
@@ -239,7 +239,7 @@ export function UpgradePrompt({
             onClick={() => navigate('/pricing')}
             style={{
               width: '100%',
-              background: 'linear-gradient(90deg, #E11D48 0%, #F43F5E 100%)',
+              background: 'linear-gradient(90deg, #B91C1C 0%, #DC2626 100%)',
               border: 'none',
               color: '#fff',
               padding: '14px 24px',
@@ -346,7 +346,7 @@ export function UpgradePrompt({
 /**
  * LimitIndicator - Shows current usage vs limit
  */
-export function LimitIndicator({ current, limit, label, color = '#E11D48' }) {
+export function LimitIndicator({ current, limit, label, color = '#B91C1C' }) {
   const percentage = limit > 0 ? (current / limit) * 100 : 0;
   const isAtLimit = current >= limit;
   
