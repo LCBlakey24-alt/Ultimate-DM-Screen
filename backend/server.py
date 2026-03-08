@@ -6125,9 +6125,9 @@ async def create_character(
         dexterity_modifier = (character.dexterity - 10) // 2
         armor_class = 10 + dexterity_modifier
     
-    # Prepare character data, excluding fields that will be calculated
+    # Prepare character data, excluding fields that will be calculated or explicitly set
     char_data = character.model_dump()
-    excluded_fields = ['max_hit_points', 'current_hit_points', 'proficiency_bonus', 'armor_class', 'spells_known', 'cantrips_known', 'feats']
+    excluded_fields = ['max_hit_points', 'current_hit_points', 'proficiency_bonus', 'armor_class', 'spells_known', 'cantrips_known', 'feats', 'edition']
     char_data = {k: v for k, v in char_data.items() if k not in excluded_fields}
     
     new_character = PlayerCharacter(

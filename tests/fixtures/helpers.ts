@@ -79,7 +79,7 @@ export const TEST_CUSTOM_CREATURE_ID = '7bc77fba-92ff-47bc-83dc-cf3e5ac1703a';
 export const TEST_USER = { 
   email: 'lcblakey24@outlook.com',
   username: 'lcblakey24',
-  password: 'Trigger24?!'
+  password: 'LCBlakey24?!'
 };
 
 export async function loginTestUser(page: Page) {

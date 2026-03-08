@@ -18,7 +18,9 @@ import {
   isSpellcaster,
   HIT_DICE,
   SUBCLASS_LEVELS_2014,
-  SUBCLASS_LEVELS_2024
+  SUBCLASS_LEVELS_2024,
+  SRD_RACES_2014,
+  SRD_RACES_2024
 } from '../data/editionRules';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -432,7 +434,20 @@ function CharacterBuilder() {
   
   // Merge default options with user's personal content AND campaign content
   const getMergedRaces = () => {
-    const defaultRaces = RACES.map(r => ({ ...r, isCustom: false, source: 'Standard' }));
+    // Get edition-specific SRD races first
+    const editionRaces = selectedEdition === '2024' ? SRD_RACES_2024 : SRD_RACES_2014;
+    const srdRaces = editionRaces.map(r => ({
+      ...r,
+      isCustom: false,
+      isEditionDefault: true,
+      source: `SRD ${selectedEdition || '2014'}`
+    }));
+    
+    // Get all other default races
+    const otherDefaultRaces = RACES
+      .filter(r => !editionRaces.find(sr => sr.name === r.name))
+      .map(r => ({ ...r, isCustom: false, source: 'Standard' }));
+    
     const customRaces = [];
     
     // Add user's personal content first
@@ -466,7 +481,8 @@ function CharacterBuilder() {
       });
     }
     
-    return [...customRaces, ...defaultRaces];
+    // Return: custom first, then edition-specific SRD, then other defaults
+    return [...customRaces, ...srdRaces, ...otherDefaultRaces];
   };
   
   const getMergedClasses = () => {
@@ -663,6 +679,13 @@ function CharacterBuilder() {
 
   // Check if class is a spellcaster
   const isCaster = ['Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Warlock', 'Wizard'].includes(characterData.character_class);
+  
+  // Calculate spell/cantrip limits based on class and level using edition rules
+  const cantripLimit = getCantripsKnown(characterData.character_class, characterData.level) || 0;
+  const spellsKnownLimit = getSpellsKnown(characterData.character_class, characterData.level) || 0;
+  
+  // For prepared spell classes (Cleric, Druid, Paladin, Wizard), they prepare spells differently
+  const isPreparedCaster = ['Cleric', 'Druid', 'Paladin', 'Wizard'].includes(characterData.character_class);
   
   // Use merged content (custom + defaults)
   const mergedRaces = getMergedRaces();
@@ -1821,42 +1844,49 @@ function CharacterBuilder() {
                 </div>
 
                 {/* Spells for Casters */}
-                {isCaster && availableCantrips.length > 0 && (
+                {isCaster && availableCantrips.length > 0 && cantripLimit > 0 && (
                   <div style={{ marginBottom: '32px' }}>
                     <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <Wand2 size={20} style={{ color: playerBlue }} />
                       Select Cantrips
                     </h3>
                     <p style={{ color: '#808080', fontSize: '13px', marginBottom: '12px' }}>
-                      Choose your starting cantrips (select 2-3)
+                      As a level {characterData.level} {characterData.character_class}, you know <strong style={{ color: playerBlue }}>{cantripLimit}</strong> cantrip{cantripLimit !== 1 ? 's' : ''}
                     </p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {availableCantrips.map(cantrip => (
-                        <button
-                          key={cantrip}
-                          onClick={() => {
-                            const current = characterData.selectedCantrips || [];
-                            if (current.includes(cantrip)) {
-                              handleChange('selectedCantrips', current.filter(c => c !== cantrip));
-                            } else if (current.length < 4) {
-                              handleChange('selectedCantrips', [...current, cantrip]);
-                            }
-                          }}
-                          style={{
-                            padding: '8px 16px',
-                            background: characterData.selectedCantrips?.includes(cantrip) ? playerBlueSubtle : '#1F1F1F',
-                            border: characterData.selectedCantrips?.includes(cantrip) ? `1px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
-                            color: characterData.selectedCantrips?.includes(cantrip) ? playerBlue : '#B3B3B3',
-                            fontSize: '13px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          {cantrip}
-                        </button>
-                      ))}
+                      {availableCantrips.map(cantrip => {
+                        const isSelected = characterData.selectedCantrips?.includes(cantrip);
+                        const atLimit = (characterData.selectedCantrips?.length || 0) >= cantripLimit;
+                        const isDisabled = !isSelected && atLimit;
+                        return (
+                          <button
+                            key={cantrip}
+                            disabled={isDisabled}
+                            onClick={() => {
+                              const current = characterData.selectedCantrips || [];
+                              if (current.includes(cantrip)) {
+                                handleChange('selectedCantrips', current.filter(c => c !== cantrip));
+                              } else if (current.length < cantripLimit) {
+                                handleChange('selectedCantrips', [...current, cantrip]);
+                              }
+                            }}
+                            style={{
+                              padding: '8px 16px',
+                              background: isSelected ? playerBlueSubtle : '#1F1F1F',
+                              border: isSelected ? `1px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
+                              color: isDisabled ? '#555' : (isSelected ? playerBlue : '#B3B3B3'),
+                              fontSize: '13px',
+                              cursor: isDisabled ? 'not-allowed' : 'pointer',
+                              opacity: isDisabled ? 0.5 : 1
+                            }}
+                          >
+                            {cantrip}
+                          </button>
+                        );
+                      })}
                     </div>
-                    <p style={{ color: '#808080', fontSize: '11px', marginTop: '8px' }}>
-                      Selected: {characterData.selectedCantrips?.length || 0}
+                    <p style={{ color: (characterData.selectedCantrips?.length || 0) >= cantripLimit ? '#22c55e' : '#808080', fontSize: '11px', marginTop: '8px' }}>
+                      Selected: {characterData.selectedCantrips?.length || 0} / {cantripLimit}
                     </p>
                   </div>
                 )}
@@ -1867,36 +1897,53 @@ function CharacterBuilder() {
                     <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '12px' }}>
                       Select 1st Level Spells
                     </h3>
-                    <p style={{ color: '#808080', fontSize: '13px', marginBottom: '12px' }}>
-                      Choose your prepared/known spells (select 2-4)
-                    </p>
+                    {isPreparedCaster ? (
+                      <p style={{ color: '#808080', fontSize: '13px', marginBottom: '12px' }}>
+                        As a {characterData.character_class}, you <strong>prepare</strong> spells each day. 
+                        Choose spells to add to your spellbook/known spells (you can prepare a subset of these later).
+                      </p>
+                    ) : (
+                      <p style={{ color: '#808080', fontSize: '13px', marginBottom: '12px' }}>
+                        As a level {characterData.level} {characterData.character_class}, you know <strong style={{ color: playerBlue }}>{spellsKnownLimit || 'up to 4'}</strong> spell{spellsKnownLimit !== 1 ? 's' : ''}
+                      </p>
+                    )}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {availableSpells.map(spell => (
-                        <button
-                          key={spell}
-                          onClick={() => {
-                            const current = characterData.selectedSpells || [];
-                            if (current.includes(spell)) {
-                              handleChange('selectedSpells', current.filter(s => s !== spell));
-                            } else if (current.length < 6) {
-                              handleChange('selectedSpells', [...current, spell]);
-                            }
-                          }}
-                          style={{
-                            padding: '8px 16px',
-                            background: characterData.selectedSpells?.includes(spell) ? playerBlueSubtle : '#1F1F1F',
-                            border: characterData.selectedSpells?.includes(spell) ? `1px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
-                            color: characterData.selectedSpells?.includes(spell) ? playerBlue : '#B3B3B3',
-                            fontSize: '13px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          {spell}
-                        </button>
-                      ))}
+                      {availableSpells.map(spell => {
+                        const isSelected = characterData.selectedSpells?.includes(spell);
+                        // For prepared casters, allow selecting all spells (spellbook). For known-spell classes, use the limit.
+                        const spellLimit = isPreparedCaster ? 6 : (spellsKnownLimit || 4);
+                        const atLimit = (characterData.selectedSpells?.length || 0) >= spellLimit;
+                        const isDisabled = !isSelected && atLimit;
+                        return (
+                          <button
+                            key={spell}
+                            disabled={isDisabled}
+                            onClick={() => {
+                              const current = characterData.selectedSpells || [];
+                              if (current.includes(spell)) {
+                                handleChange('selectedSpells', current.filter(s => s !== spell));
+                              } else if (current.length < spellLimit) {
+                                handleChange('selectedSpells', [...current, spell]);
+                              }
+                            }}
+                            style={{
+                              padding: '8px 16px',
+                              background: isSelected ? playerBlueSubtle : '#1F1F1F',
+                              border: isSelected ? `1px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
+                              color: isDisabled ? '#555' : (isSelected ? playerBlue : '#B3B3B3'),
+                              fontSize: '13px',
+                              cursor: isDisabled ? 'not-allowed' : 'pointer',
+                              opacity: isDisabled ? 0.5 : 1
+                            }}
+                          >
+                            {spell}
+                          </button>
+                        );
+                      })}
                     </div>
                     <p style={{ color: '#808080', fontSize: '11px', marginTop: '8px' }}>
                       Selected: {characterData.selectedSpells?.length || 0}
+                      {!isPreparedCaster && spellsKnownLimit > 0 && ` / ${spellsKnownLimit}`}
                     </p>
                   </div>
                 )}

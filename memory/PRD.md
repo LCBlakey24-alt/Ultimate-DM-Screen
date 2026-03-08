@@ -10,6 +10,25 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 
 ## Recent Major Updates (March 2026)
 
+### EDITION-AWARE CHARACTER CREATION (March 8, 2026)
+- **Edition selection**: Players choose 2014 or 2024 rules at the start of character creation
+- **Edition-specific subclass levels**:
+  - 2014: Class-specific (Cleric/Sorcerer/Warlock at 1, Druid/Wizard at 2, others at 3)
+  - 2024: All classes get subclass at level 3
+- **Spell/cantrip limits**: Now calculated from rules tables, not hardcoded
+  - Shows exact cantrip count based on class and level
+  - Prepared vs known spell distinction for different class types
+- **Edition-specific SRD races**: Shows appropriate races for selected edition
+- **Backend validation**: Rejects illegal subclass selection before unlock level
+- **Proper HP calculation**: Uses correct hit dice per class (d12 Barbarian, d6 Wizard, etc.)
+- **Data payload fix**: Fixed `max_hp` → `max_hit_points` mismatch between frontend/backend
+- **New data file**: `frontend/src/data/editionRules.js` contains all edition-specific rules
+
+### JSON UPLOAD INSTRUCTIONS (March 8, 2026)
+- **Upload modal enhanced**: Shows required/optional fields for each content type
+- **Dynamic instructions**: Changes based on selected content type (classes, races, spells, etc.)
+- **Better sample JSON**: Realistic examples with Blood Hunter, Dhampir, custom spells
+
 ### DYNAMIC COMBAT TAB FEATURES (March 8, 2026)
 - **Class-specific abilities**: Combat tab now dynamically displays actions, bonus actions, reactions, and passives based on character class and level
 - **Data source**: `frontend/src/data/classFeatures.js` contains comprehensive feature data for all 12 D&D 5e classes
