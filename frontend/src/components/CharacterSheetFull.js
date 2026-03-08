@@ -788,7 +788,7 @@ function CharacterSheetFull() {
           </div>
         </div>
 
-        {/* ALWAYS VISIBLE SECTION - Core Stats + Key Skills */}
+        {/* ALWAYS VISIBLE SECTION - All Core Stats in One Unified Bar */}
         <div style={{
           ...glassPanel,
           padding: '10px 16px',
@@ -796,22 +796,22 @@ function CharacterSheetFull() {
           background: 'linear-gradient(180deg, #1A1A1A 0%, #141414 100%)',
           borderBottom: '2px solid rgba(59, 130, 246, 0.3)'
         }}>
-          {/* Row 1: Core Combat Stats + Key Skills */}
+          {/* Single unified row - all boxes line up */}
           <div style={{
             display: 'flex',
-            gap: '8px',
+            gap: '6px',
             flexWrap: 'wrap',
             alignItems: 'center'
           }}>
             {/* HP */}
             <div data-testid="hp-display" style={{
-              padding: '6px 12px',
+              padding: '6px 10px',
               background: 'rgba(239, 68, 68, 0.1)',
               border: '1px solid rgba(239, 68, 68, 0.3)',
               borderRadius: '6px',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px'
+              gap: '6px'
             }}>
               <Heart size={14} color="#ef4444" />
               <div>
@@ -822,18 +822,18 @@ function CharacterSheetFull() {
                       type="number"
                       value={editData.current_hit_points}
                       onChange={(e) => setEditData({ ...editData, current_hit_points: parseInt(e.target.value) || 0 })}
-                      style={{ width: '35px', padding: '2px', textAlign: 'center', fontSize: '13px' }}
+                      style={{ width: '32px', padding: '2px', textAlign: 'center', fontSize: '12px' }}
                     />
-                    <span style={{ color: '#64748b', fontSize: '11px' }}>/</span>
+                    <span style={{ color: '#64748b', fontSize: '10px' }}>/</span>
                     <Input
                       type="number"
                       value={editData.max_hit_points}
                       onChange={(e) => setEditData({ ...editData, max_hit_points: parseInt(e.target.value) || 0 })}
-                      style={{ width: '35px', padding: '2px', textAlign: 'center', fontSize: '13px' }}
+                      style={{ width: '32px', padding: '2px', textAlign: 'center', fontSize: '12px' }}
                     />
                   </div>
                 ) : (
-                  <span style={{ color: '#ef4444', fontWeight: '700', fontSize: '15px' }}>
+                  <span style={{ color: '#ef4444', fontWeight: '700', fontSize: '14px' }}>
                     {data.current_hit_points}/{data.max_hit_points}
                   </span>
                 )}
@@ -842,7 +842,7 @@ function CharacterSheetFull() {
 
             {/* AC */}
             <div data-testid="ac-display" style={{
-              padding: '6px 12px',
+              padding: '6px 10px',
               background: 'rgba(59, 130, 246, 0.1)',
               border: '1px solid rgba(59, 130, 246, 0.3)',
               borderRadius: '6px',
@@ -858,10 +858,10 @@ function CharacterSheetFull() {
                     type="number"
                     value={editData.armor_class}
                     onChange={(e) => setEditData({ ...editData, armor_class: parseInt(e.target.value) || 10 })}
-                    style={{ width: '35px', padding: '2px', textAlign: 'center', fontSize: '13px' }}
+                    style={{ width: '32px', padding: '2px', textAlign: 'center', fontSize: '12px' }}
                   />
                 ) : (
-                  <span style={{ color: '#3b82f6', fontWeight: '700', fontSize: '15px' }}>
+                  <span style={{ color: '#3b82f6', fontWeight: '700', fontSize: '14px' }}>
                     {data.armor_class}
                   </span>
                 )}
@@ -870,7 +870,7 @@ function CharacterSheetFull() {
 
             {/* Initiative */}
             <div data-testid="initiative-display" style={{
-              padding: '6px 12px',
+              padding: '6px 10px',
               background: 'rgba(234, 179, 8, 0.1)',
               border: '1px solid rgba(234, 179, 8, 0.3)',
               borderRadius: '6px',
@@ -892,7 +892,7 @@ function CharacterSheetFull() {
 
             {/* Speed */}
             <div data-testid="speed-display" style={{
-              padding: '6px 12px',
+              padding: '6px 10px',
               background: 'rgba(6, 182, 212, 0.1)',
               border: '1px solid rgba(6, 182, 212, 0.3)',
               borderRadius: '6px',
@@ -903,7 +903,7 @@ function CharacterSheetFull() {
               <Activity size={14} color="#06B6D4" />
               <div>
                 <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>SPEED</span>
-                <span style={{ color: '#06B6D4', fontWeight: '700', fontSize: '15px' }}>
+                <span style={{ color: '#06B6D4', fontWeight: '700', fontSize: '14px' }}>
                   {data.speed}ft
                 </span>
               </div>
@@ -911,7 +911,7 @@ function CharacterSheetFull() {
 
             {/* Proficiency */}
             <div data-testid="prof-display" style={{
-              padding: '6px 12px',
+              padding: '6px 10px',
               background: 'rgba(139, 92, 246, 0.1)',
               border: '1px solid rgba(139, 92, 246, 0.3)',
               borderRadius: '6px',
@@ -922,17 +922,16 @@ function CharacterSheetFull() {
               <Award size={14} color="#8B5CF6" />
               <div>
                 <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>PROF</span>
-                <span style={{ color: '#8B5CF6', fontWeight: '700', fontSize: '15px' }}>
+                <span style={{ color: '#8B5CF6', fontWeight: '700', fontSize: '14px' }}>
                   +{profBonus}
                 </span>
               </div>
             </div>
 
             {/* Divider */}
-            <div style={{ width: '1px', height: '36px', background: 'rgba(148, 163, 184, 0.2)', margin: '0 4px' }} />
+            <div style={{ width: '1px', height: '32px', background: 'rgba(148, 163, 184, 0.3)', margin: '0 2px' }} />
 
-            {/* Key Skills - Always Visible */}
-            <span style={{ color: '#64748b', fontSize: '9px', marginRight: '2px' }}>KEY</span>
+            {/* Key Skills */}
             {['Perception', 'Investigation', 'Insight', 'Stealth', 'Athletics', 'Acrobatics'].map(skillName => {
               const skill = SKILLS.find(s => s.name === skillName);
               if (!skill) return null;
@@ -946,45 +945,36 @@ function CharacterSheetFull() {
                   key={skillName}
                   data-testid={`quick-skill-${skillName.toLowerCase()}`}
                   style={{
-                    padding: '4px 8px',
+                    padding: '6px 8px',
                     background: isProficient ? 'rgba(6, 182, 212, 0.1)' : 'rgba(30, 41, 59, 0.5)',
-                    border: isProficient ? '1px solid rgba(6, 182, 212, 0.3)' : '1px solid rgba(148, 163, 184, 0.1)',
-                    borderRadius: '4px',
+                    border: isProficient ? '1px solid rgba(6, 182, 212, 0.3)' : '1px solid rgba(148, 163, 184, 0.15)',
+                    borderRadius: '6px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '4px'
                   }}
                 >
-                  <Icon size={11} color={isProficient ? '#06B6D4' : '#64748b'} />
-                  <span style={{ 
-                    color: isProficient ? '#06B6D4' : '#94a3b8', 
-                    fontSize: '10px',
-                    fontWeight: isProficient ? '600' : '400',
-                    textDecoration: isProficient ? 'underline' : 'none'
-                  }}>
-                    {skillName.slice(0, 4)}
-                  </span>
-                  <DiceRollButton 
-                    modifier={totalMod}
-                    label={skillName}
-                    color={isProficient ? '#06B6D4' : '#94a3b8'}
-                    size="small"
-                    showDice={false}
-                  />
+                  <Icon size={12} color={isProficient ? '#06B6D4' : '#64748b'} />
+                  <div>
+                    <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>
+                      {skillName.slice(0, 4).toUpperCase()}
+                    </span>
+                    <DiceRollButton 
+                      modifier={totalMod}
+                      label={skillName}
+                      color={isProficient ? '#06B6D4' : '#94a3b8'}
+                      size="small"
+                      showDice={false}
+                    />
+                  </div>
                 </div>
               );
             })}
-          </div>
 
-          {/* Row 2: Saving Throws - directly under core stats */}
-          <div style={{
-            display: 'flex',
-            gap: '6px',
-            marginTop: '10px',
-            flexWrap: 'wrap',
-            alignItems: 'center'
-          }}>
-            <span style={{ color: '#f59e0b', fontSize: '9px', fontWeight: '600', marginRight: '4px' }}>SAVES</span>
+            {/* Divider */}
+            <div style={{ width: '1px', height: '32px', background: 'rgba(148, 163, 184, 0.3)', margin: '0 2px' }} />
+
+            {/* Saving Throws */}
             {ABILITIES.map(ability => {
               const mod = calculateModifier(data[ability.key]);
               const isProficient = data.saving_throw_proficiencies?.includes(ability.key);
@@ -994,30 +984,33 @@ function CharacterSheetFull() {
                   key={`save-${ability.key}`}
                   data-testid={`save-${ability.key}`}
                   style={{
-                    padding: '4px 10px',
+                    padding: '6px 8px',
                     background: isProficient ? `${ability.color}15` : 'rgba(30, 41, 59, 0.5)',
-                    border: isProficient ? `1px solid ${ability.color}40` : '1px solid rgba(148, 163, 184, 0.1)',
-                    borderRadius: '4px',
+                    border: isProficient ? `1px solid ${ability.color}40` : '1px solid rgba(148, 163, 184, 0.15)',
+                    borderRadius: '6px',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px'
+                    gap: '4px'
                   }}
                 >
-                  <span style={{ 
-                    color: isProficient ? ability.color : '#94a3b8', 
-                    fontSize: '10px',
-                    fontWeight: isProficient ? '600' : '400',
-                    textDecoration: isProficient ? 'underline' : 'none'
-                  }}>
-                    {ability.label}
-                  </span>
-                  <DiceRollButton 
-                    modifier={saveMod}
-                    label={`${ability.fullName} Save`}
-                    color={isProficient ? ability.color : '#64748b'}
-                    size="small"
-                    showDice={false}
-                  />
+                  <ability.icon size={12} color={isProficient ? ability.color : '#64748b'} />
+                  <div>
+                    <span style={{ 
+                      color: '#94a3b8', 
+                      fontSize: '8px', 
+                      display: 'block', 
+                      letterSpacing: '0.5px'
+                    }}>
+                      {ability.label}
+                    </span>
+                    <DiceRollButton 
+                      modifier={saveMod}
+                      label={`${ability.fullName} Save`}
+                      color={isProficient ? ability.color : '#64748b'}
+                      size="small"
+                      showDice={false}
+                    />
+                  </div>
                 </div>
               );
             })}
