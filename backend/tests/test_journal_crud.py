@@ -8,7 +8,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://rook-sheet-staging.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://rook-campaign-core.preview.emergentagent.com').rstrip('/')
 TEST_EMAIL = 'stress_test_1772651200@test.com'
 TEST_PASSWORD = 'TestPass123!'
 

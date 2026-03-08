@@ -18,6 +18,15 @@ import LevelUpModal from '@/components/LevelUpModal';
 import DiceRollTooltip from '@/components/DiceRollTooltip';
 import { RookSuggestionPopup, useRookSuggestions } from './RookSuggestions';
 import { DiceRollButton } from '@/components/DiceRollButton';
+import { 
+  getClassActions, 
+  getClassBonusActions, 
+  getClassReactions, 
+  getClassPassives,
+  getClassActionModifiers,
+  getHighestFeatureVersion,
+  getClassHitDie 
+} from '@/data/classFeatures';
 import TronBackground from '@/components/TronBackground';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -549,7 +558,7 @@ function CharacterSheetFull() {
     return calculateModifier(score);
   }, [calculateModifier]);
 
-  // Get class features based on character class and level
+  // Get class features based on character class and level (from SRD for the Character tab)
   const classFeatures = useMemo(() => {
     if (!character || !srdClasses.length) return [];
     const classData = srdClasses.find(c => 
@@ -558,6 +567,66 @@ function CharacterSheetFull() {
     if (!classData) return [];
     return classData.features?.filter(f => f.level <= character.level) || [];
   }, [character, srdClasses]);
+
+  // Get dynamic combat features from classFeatures.js for the Combat tab
+  const combatFeatures = useMemo(() => {
+    if (!character) return { actions: [], bonusActions: [], reactions: [], passives: [], actionModifiers: [] };
+    
+    // Get the primary class and level
+    const primaryClass = character.character_class?.toLowerCase();
+    const primaryLevel = character.level || 1;
+    
+    // Get features for primary class
+    let actions = getClassActions(primaryClass, primaryLevel);
+    let bonusActions = getClassBonusActions(primaryClass, primaryLevel);
+    let reactions = getClassReactions(primaryClass, primaryLevel);
+    let passives = getClassPassives(primaryClass, primaryLevel);
+    let actionModifiers = getClassActionModifiers(primaryClass, primaryLevel);
+    
+    // Handle multiclass - aggregate features from all classes
+    if (character.multiclass_levels && Object.keys(character.multiclass_levels).length > 0) {
+      Object.entries(character.multiclass_levels).forEach(([className, classLevel]) => {
+        const mcActions = getClassActions(className.toLowerCase(), classLevel);
+        const mcBonusActions = getClassBonusActions(className.toLowerCase(), classLevel);
+        const mcReactions = getClassReactions(className.toLowerCase(), classLevel);
+        const mcPassives = getClassPassives(className.toLowerCase(), classLevel);
+        const mcActionModifiers = getClassActionModifiers(className.toLowerCase(), classLevel);
+        
+        // Merge without duplicates (by name)
+        const mergeUnique = (existing, newItems) => {
+          const names = new Set(existing.map(f => f.name));
+          return [...existing, ...newItems.filter(f => !names.has(f.name))];
+        };
+        
+        actions = mergeUnique(actions, mcActions);
+        bonusActions = mergeUnique(bonusActions, mcBonusActions);
+        reactions = mergeUnique(reactions, mcReactions);
+        passives = mergeUnique(passives, mcPassives);
+        actionModifiers = mergeUnique(actionModifiers, mcActionModifiers);
+      });
+    }
+    
+    // Deduplicate scaling features (e.g., take highest Sneak Attack version)
+    const dedupeScaling = (features) => {
+      const grouped = {};
+      features.forEach(f => {
+        // Check if this is a scaling feature (name contains parentheses like "Sneak Attack (2d6)")
+        const baseName = f.name.replace(/\s*\([^)]*\)$/, '');
+        if (!grouped[baseName] || f.level > grouped[baseName].level) {
+          grouped[baseName] = f;
+        }
+      });
+      return Object.values(grouped);
+    };
+    
+    return {
+      actions,
+      bonusActions,
+      reactions,
+      passives,
+      actionModifiers: dedupeScaling(actionModifiers)
+    };
+  }, [character]);
 
   // Get available spells for class
   const availableSpells = useMemo(() => {
@@ -1301,8 +1370,52 @@ function CharacterSheetFull() {
                     </>
                   )}
 
+                  {/* Class Actions */}
+                  {combatFeatures.actions.length > 0 && (
+                    <>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>CLASS ACTIONS</div>
+                      {combatFeatures.actions.map((action, i) => (
+                        <div key={`class-action-${i}`} style={{
+                          padding: '8px 10px',
+                          background: 'rgba(99, 102, 241, 0.1)',
+                          borderRadius: '6px',
+                          borderLeft: '3px solid #6366f1',
+                          marginBottom: '4px'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <span style={{ color: '#818cf8', fontSize: '12px', fontWeight: '500' }}>{action.name}</span>
+                            {action.uses && <span style={{ color: '#64748b', fontSize: '9px', background: 'rgba(99, 102, 241, 0.2)', padding: '2px 6px', borderRadius: '4px' }}>{action.uses}</span>}
+                          </div>
+                          <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginTop: '2px' }}>{action.description}</span>
+                        </div>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Action Modifiers (like Sneak Attack, Divine Smite) */}
+                  {combatFeatures.actionModifiers.length > 0 && (
+                    <>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>ATTACK MODIFIERS</div>
+                      {combatFeatures.actionModifiers.map((mod, i) => (
+                        <div key={`action-mod-${i}`} style={{
+                          padding: '8px 10px',
+                          background: 'rgba(236, 72, 153, 0.1)',
+                          borderRadius: '6px',
+                          borderLeft: '3px solid #ec4899',
+                          marginBottom: '4px'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <span style={{ color: '#f472b6', fontSize: '12px', fontWeight: '500' }}>{mod.name}</span>
+                            {mod.uses && <span style={{ color: '#64748b', fontSize: '9px', background: 'rgba(236, 72, 153, 0.2)', padding: '2px 6px', borderRadius: '4px' }}>{mod.uses}</span>}
+                          </div>
+                          <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginTop: '2px' }}>{mod.description}</span>
+                        </div>
+                      ))}
+                    </>
+                  )}
+
                   {/* Standard Actions */}
-                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>OTHER ACTIONS</div>
+                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>STANDARD ACTIONS</div>
                   {[
                     { name: 'Dash', desc: 'Double movement' },
                     { name: 'Disengage', desc: 'No opportunity attacks' },
@@ -1332,24 +1445,48 @@ function CharacterSheetFull() {
                   <Zap size={16} /> BONUS ACTIONS
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {/* Class-specific bonus actions */}
-                  {data.bonus_actions?.length > 0 ? (
-                    data.bonus_actions.map((action, i) => (
-                      <div key={i} style={{
-                        padding: '8px 10px',
-                        background: 'rgba(245, 158, 11, 0.1)',
-                        borderRadius: '6px',
-                        borderLeft: '3px solid #f59e0b'
-                      }}>
-                        <span style={{ color: '#fbbf24', fontSize: '12px', fontWeight: '500', display: 'block' }}>{action.name}</span>
-                        {action.description && <span style={{ color: '#94a3b8', fontSize: '10px' }}>{action.description}</span>}
-                      </div>
-                    ))
+                  {/* Dynamic Class Bonus Actions from classFeatures.js */}
+                  {combatFeatures.bonusActions.length > 0 ? (
+                    <>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginBottom: '2px' }}>CLASS FEATURES</div>
+                      {combatFeatures.bonusActions.map((action, i) => (
+                        <div key={`class-ba-${i}`} style={{
+                          padding: '8px 10px',
+                          background: 'rgba(245, 158, 11, 0.1)',
+                          borderRadius: '6px',
+                          borderLeft: '3px solid #f59e0b',
+                          marginBottom: '4px'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <span style={{ color: '#fbbf24', fontSize: '12px', fontWeight: '500' }}>{action.name}</span>
+                            {action.uses && <span style={{ color: '#64748b', fontSize: '9px', background: 'rgba(245, 158, 11, 0.2)', padding: '2px 6px', borderRadius: '4px' }}>{action.uses}</span>}
+                          </div>
+                          <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginTop: '2px' }}>{action.description}</span>
+                        </div>
+                      ))}
+                    </>
                   ) : (
                     <div style={{ color: '#64748b', fontSize: '11px', padding: '12px', textAlign: 'center', border: '1px dashed rgba(148, 163, 184, 0.2)', borderRadius: '6px' }}>
-                      No class bonus actions.
-                      <br/><span style={{ fontSize: '9px' }}>Add in Edit mode or via class features.</span>
+                      No class bonus actions at this level.
                     </div>
+                  )}
+
+                  {/* Custom bonus actions from character data */}
+                  {data.bonus_actions?.length > 0 && (
+                    <>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>CUSTOM</div>
+                      {data.bonus_actions.map((action, i) => (
+                        <div key={`custom-ba-${i}`} style={{
+                          padding: '8px 10px',
+                          background: 'rgba(245, 158, 11, 0.08)',
+                          borderRadius: '6px',
+                          borderLeft: '3px solid #b45309'
+                        }}>
+                          <span style={{ color: '#fbbf24', fontSize: '12px', fontWeight: '500', display: 'block' }}>{action.name}</span>
+                          {action.description && <span style={{ color: '#94a3b8', fontSize: '10px' }}>{action.description}</span>}
+                        </div>
+                      ))}
+                    </>
                   )}
 
                   {/* Two-Weapon Fighting (if has offhand) */}
@@ -1423,20 +1560,66 @@ function CharacterSheetFull() {
                     <span style={{ color: '#94a3b8', fontSize: '10px' }}>When enemy leaves your reach</span>
                   </div>
 
-                  {/* Class-specific reactions */}
-                  {data.reactions?.length > 0 ? (
-                    data.reactions.map((reaction, i) => (
-                      <div key={i} style={{
-                        padding: '8px 10px',
-                        background: 'rgba(59, 130, 246, 0.1)',
-                        borderRadius: '6px',
-                        borderLeft: '3px solid #3b82f6'
-                      }}>
-                        <span style={{ color: '#60a5fa', fontSize: '12px', fontWeight: '500', display: 'block' }}>{reaction.name}</span>
-                        {reaction.description && <span style={{ color: '#94a3b8', fontSize: '10px' }}>{reaction.description}</span>}
+                  {/* Dynamic Class Reactions from classFeatures.js */}
+                  {combatFeatures.reactions.length > 0 && (
+                    <>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>CLASS FEATURES</div>
+                      {combatFeatures.reactions.map((reaction, i) => (
+                        <div key={`class-react-${i}`} style={{
+                          padding: '8px 10px',
+                          background: 'rgba(59, 130, 246, 0.1)',
+                          borderRadius: '6px',
+                          borderLeft: '3px solid #3b82f6',
+                          marginBottom: '4px'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <span style={{ color: '#60a5fa', fontSize: '12px', fontWeight: '500' }}>{reaction.name}</span>
+                            {reaction.uses && <span style={{ color: '#64748b', fontSize: '9px', background: 'rgba(59, 130, 246, 0.2)', padding: '2px 6px', borderRadius: '4px' }}>{reaction.uses}</span>}
+                          </div>
+                          <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginTop: '2px' }}>{reaction.description}</span>
+                        </div>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Custom reactions from character data */}
+                  {data.reactions?.length > 0 && (
+                    <>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>CUSTOM</div>
+                      {data.reactions.map((reaction, i) => (
+                        <div key={`custom-react-${i}`} style={{
+                          padding: '8px 10px',
+                          background: 'rgba(59, 130, 246, 0.08)',
+                          borderRadius: '6px',
+                          borderLeft: '3px solid #1d4ed8'
+                        }}>
+                          <span style={{ color: '#60a5fa', fontSize: '12px', fontWeight: '500', display: 'block' }}>{reaction.name}</span>
+                          {reaction.description && <span style={{ color: '#94a3b8', fontSize: '10px' }}>{reaction.description}</span>}
+                        </div>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Passive Abilities Section */}
+                  {combatFeatures.passives.length > 0 && (
+                    <>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '12px', marginBottom: '4px' }}>PASSIVE ABILITIES</div>
+                      <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                        {combatFeatures.passives.map((passive, i) => (
+                          <div key={`passive-${i}`} style={{
+                            padding: '6px 10px',
+                            background: 'rgba(34, 197, 94, 0.08)',
+                            borderRadius: '4px',
+                            marginBottom: '4px',
+                            borderLeft: '2px solid #22c55e'
+                          }}>
+                            <span style={{ color: '#4ade80', fontSize: '11px', fontWeight: '500', display: 'block' }}>{passive.name}</span>
+                            <span style={{ color: '#64748b', fontSize: '9px' }}>{passive.description}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))
-                  ) : null}
+                    </>
+                  )}
 
                   {/* Combat Resources */}
                   <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '12px', marginBottom: '4px' }}>COMBAT RESOURCES</div>

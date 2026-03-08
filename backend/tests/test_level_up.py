@@ -7,7 +7,7 @@ import requests
 import uuid
 from datetime import datetime
 
-BASE_URL = "https://rook-sheet-staging.preview.emergentagent.com"
+BASE_URL = "https://rook-campaign-core.preview.emergentagent.com"
 
 # Test user credentials
 TEST_USER_EMAIL = "leveltest@test.com"
