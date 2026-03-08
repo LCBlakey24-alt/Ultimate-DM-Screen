@@ -50,7 +50,7 @@ if RESEND_API_KEY and RESEND_API_KEY != 'your_resend_api_key_here':
 security = HTTPBearer()
 
 # Admin usernames - these users can access admin features and get auto-upgraded to legendary tier
-ADMIN_USERNAMES = ["rookiequestadmin", "criticalfusion", "admin", "gmtest", "lcblakey24"]
+ADMIN_USERNAMES = ["lcblakey24"]
 
 # Create the main app without a prefix
 app = FastAPI()
