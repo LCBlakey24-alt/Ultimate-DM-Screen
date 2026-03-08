@@ -8305,9 +8305,20 @@ async def add_multiclass(character_id: str, class_data: Dict[str, Any], username
     current_proficiencies = character.get('proficiencies', [])
     updated_proficiencies = list(set(current_proficiencies + new_proficiencies))
     
+    # Build multiclass_levels dict for frontend compatibility
+    multiclass_levels = {}
+    for cls in classes:
+        multiclass_levels[cls['name']] = cls['level']
+    
     await collection.update_one(
         {'id': character_id},
-        {'$set': {'classes': classes, 'level': total_level, 'proficiencies': updated_proficiencies, 'updated_at': datetime.now(timezone.utc).isoformat()}}
+        {'$set': {
+            'classes': classes, 
+            'level': total_level, 
+            'proficiencies': updated_proficiencies,
+            'multiclass_levels': multiclass_levels,
+            'updated_at': datetime.now(timezone.utc).isoformat()
+        }}
     )
     
     updated = await collection.find_one({'id': character_id}, {'_id': 0})
@@ -8368,9 +8379,21 @@ async def level_up_specific_class(character_id: str, class_data: Dict[str, Any],
     hp_gain = max(1, hp_roll + con_mod)
     new_max_hp = character.get('max_hp', 10) + hp_gain
     
+    # Build multiclass_levels dict for frontend compatibility
+    multiclass_levels = {}
+    for cls in classes:
+        multiclass_levels[cls['name']] = cls['level']
+    
     await collection.update_one(
         {'id': character_id},
-        {'$set': {'classes': classes, 'level': total_level, 'max_hp': new_max_hp, 'current_hp': new_max_hp, 'updated_at': datetime.now(timezone.utc).isoformat()}}
+        {'$set': {
+            'classes': classes, 
+            'level': total_level, 
+            'max_hp': new_max_hp, 
+            'current_hp': new_max_hp,
+            'multiclass_levels': multiclass_levels,
+            'updated_at': datetime.now(timezone.utc).isoformat()
+        }}
     )
     
     updated = await collection.find_one({'id': character_id}, {'_id': 0})

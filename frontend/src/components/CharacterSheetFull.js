@@ -796,7 +796,94 @@ function CharacterSheetFull() {
           background: 'linear-gradient(180deg, #1A1A1A 0%, #141414 100%)',
           borderBottom: '2px solid rgba(59, 130, 246, 0.3)'
         }}>
-          {/* Single unified row - all boxes line up */}
+          {/* Character Info Row */}
+          <div style={{
+            display: 'flex',
+            gap: '6px',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            marginBottom: '10px',
+            paddingBottom: '10px',
+            borderBottom: '1px solid rgba(148, 163, 184, 0.15)'
+          }}>
+            {/* Name */}
+            <div style={{
+              padding: '6px 12px',
+              background: 'rgba(103, 232, 249, 0.1)',
+              border: '1px solid rgba(103, 232, 249, 0.3)',
+              borderRadius: '6px'
+            }}>
+              <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>NAME</span>
+              <span style={{ color: '#67e8f9', fontWeight: '700', fontSize: '14px' }}>{data.name}</span>
+            </div>
+
+            {/* Race */}
+            <div style={{
+              padding: '6px 12px',
+              background: 'rgba(34, 197, 94, 0.1)',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              borderRadius: '6px'
+            }}>
+              <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>RACE</span>
+              <span style={{ color: '#22c55e', fontWeight: '600', fontSize: '13px' }}>{data.race}</span>
+            </div>
+
+            {/* Class */}
+            <div style={{
+              padding: '6px 12px',
+              background: 'rgba(168, 85, 247, 0.1)',
+              border: '1px solid rgba(168, 85, 247, 0.3)',
+              borderRadius: '6px'
+            }}>
+              <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>CLASS</span>
+              <span style={{ color: '#a855f7', fontWeight: '600', fontSize: '13px' }}>
+                Lvl {data.level} {data.character_class}
+              </span>
+            </div>
+
+            {/* Subclass (if applicable) */}
+            {data.subclass && (
+              <div style={{
+                padding: '6px 12px',
+                background: 'rgba(236, 72, 153, 0.1)',
+                border: '1px solid rgba(236, 72, 153, 0.3)',
+                borderRadius: '6px'
+              }}>
+                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>SUBCLASS</span>
+                <span style={{ color: '#ec4899', fontWeight: '600', fontSize: '13px' }}>{data.subclass}</span>
+              </div>
+            )}
+
+            {/* Background */}
+            {data.background && (
+              <div style={{
+                padding: '6px 12px',
+                background: 'rgba(251, 146, 60, 0.1)',
+                border: '1px solid rgba(251, 146, 60, 0.3)',
+                borderRadius: '6px'
+              }}>
+                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>BACKGROUND</span>
+                <span style={{ color: '#fb923c', fontWeight: '600', fontSize: '13px' }}>{data.background}</span>
+              </div>
+            )}
+
+            {/* Multiclass info (if applicable) */}
+            {data.multiclass_levels && Object.keys(data.multiclass_levels).length > 0 && (
+              <div style={{
+                padding: '6px 12px',
+                background: 'rgba(234, 179, 8, 0.1)',
+                border: '1px solid rgba(234, 179, 8, 0.3)',
+                borderRadius: '6px'
+              }}>
+                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>MULTICLASS</span>
+                <span style={{ color: '#eab308', fontWeight: '600', fontSize: '12px' }}>
+                  {Object.entries(data.multiclass_levels).map(([cls, lvl]) => `${cls} ${lvl}`).join(' / ')}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Stats Row - all boxes line up */}
           <div style={{
             display: 'flex',
             gap: '6px',
