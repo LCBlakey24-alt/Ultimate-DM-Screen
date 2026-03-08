@@ -10,6 +10,21 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 
 ## Recent Major Updates (March 2026)
 
+### DYNAMIC COMBAT TAB FEATURES (March 8, 2026)
+- **Class-specific abilities**: Combat tab now dynamically displays actions, bonus actions, reactions, and passives based on character class and level
+- **Data source**: `frontend/src/data/classFeatures.js` contains comprehensive feature data for all 12 D&D 5e classes
+- **Implementation**: `combatFeatures` useMemo hook in `CharacterSheetFull.js` filters and aggregates features
+- **Multiclass support**: Aggregates features from all classes without duplicates for multiclass characters
+- **Level filtering**: Only shows features the character has actually unlocked at their current level
+- **Feature types displayed**:
+  - CLASS ACTIONS (Divine Sense, Lay on Hands, Channel Divinity, Action Surge, Wild Shape, etc.)
+  - ATTACK MODIFIERS (Divine Smite, Sneak Attack, Reckless Attack, Stunning Strike)
+  - BONUS ACTIONS (Rage, Second Wind, Cunning Action, Ki abilities, Bardic Inspiration)
+  - REACTIONS (Deflect Missiles, Uncanny Dodge, Indomitable, Slow Fall)
+  - PASSIVE ABILITIES (Fighting Style, Extra Attack, Evasion, Unarmored Defense)
+- **Uses tracking**: Shows uses per rest (short/long) for limited abilities
+- **Test coverage**: 19 new E2E tests in `tests/e2e/combat-tab-class-features.spec.ts`
+
 ### FREE TIER RESTRICTIONS IMPLEMENTED (March 7, 2026)
 - **Backend enforcement:** Character and campaign limits enforced on creation endpoints
 - **Upgrade prompts:** Beautiful modal prompts appear when limits are reached
