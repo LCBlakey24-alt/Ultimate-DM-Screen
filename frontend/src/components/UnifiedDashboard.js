@@ -334,6 +334,35 @@ function UnifiedDashboard({ username, onLogout }) {
             Review
           </Button>
 
+          {/* Upload JSON Button */}
+          <label
+            data-testid="upload-json-btn"
+            style={{
+              background: 'linear-gradient(135deg, #10B981, #059669)',
+              border: 'none',
+              color: '#fff',
+              padding: '8px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              borderRadius: '8px',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: uploadingRuleset ? 'not-allowed' : 'pointer',
+              opacity: uploadingRuleset ? 0.6 : 1
+            }}
+          >
+            <Upload size={16} />
+            {uploadingRuleset ? 'Uploading...' : 'Upload JSON'}
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleRulesetUpload}
+              disabled={uploadingRuleset}
+              style={{ display: 'none' }}
+            />
+          </label>
+
           <Button
             onClick={() => setShowReferralModal(true)}
             data-testid="referral-btn"
@@ -536,185 +565,6 @@ function UnifiedDashboard({ username, onLogout }) {
 
             {/* Rook Guide for Player Section */}
             <RookGuide guideId="dashboard-player" variant="card" />
-
-            {/* My Rulesets Panel - Collapsible */}
-            <div style={{
-              background: theme.bg.card,
-              border: `1px solid ${theme.player.border}`,
-              borderRadius: '12px',
-              overflow: 'hidden',
-              marginBottom: '16px'
-            }}>
-              <button
-                onClick={() => setShowRulesetPanel(!showRulesetPanel)}
-                style={{
-                  width: '100%',
-                  padding: '16px 20px',
-                  background: 'transparent',
-                  border: 'none',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  color: theme.text.white
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <BookOpen size={20} style={{ color: theme.player.cyan }} />
-                  <span style={{ fontWeight: '600', fontSize: '15px' }}>My Rulesets</span>
-                  {contentSummary && (
-                    <span style={{ 
-                      fontSize: '12px', 
-                      color: theme.text.muted,
-                      background: theme.bg.panel,
-                      padding: '2px 8px',
-                      borderRadius: '10px'
-                    }}>
-                      {(contentSummary['2014']?.races || 0) + (contentSummary['2024']?.races || 0)} races, {' '}
-                      {(contentSummary['2014']?.classes || 0) + (contentSummary['2024']?.classes || 0)} classes
-                    </span>
-                  )}
-                </div>
-                <ChevronRight 
-                  size={20} 
-                  style={{ 
-                    color: theme.text.muted,
-                    transform: showRulesetPanel ? 'rotate(90deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.2s'
-                  }} 
-                />
-              </button>
-              
-              {showRulesetPanel && (
-                <div style={{ 
-                  padding: '0 20px 20px',
-                  borderTop: `1px solid ${theme.border}`
-                }}>
-                  <p style={{ 
-                    color: theme.text.muted, 
-                    fontSize: '13px', 
-                    margin: '16px 0',
-                    lineHeight: '1.5'
-                  }}>
-                    Upload custom races, classes, backgrounds, and feats. These will be available when you create characters.
-                  </p>
-                  
-                  {/* Edition Selector */}
-                  <div style={{ marginBottom: '16px' }}>
-                    <label style={{ 
-                      display: 'block', 
-                      color: theme.player.cyan, 
-                      fontSize: '12px', 
-                      fontWeight: '600',
-                      marginBottom: '8px',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
-                    }}>
-                      Select Rules Edition
-                    </label>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button
-                        onClick={() => setSelectedEdition('2014')}
-                        style={{
-                          flex: 1,
-                          padding: '12px',
-                          background: selectedEdition === '2014' ? theme.player.subtle : 'transparent',
-                          border: `2px solid ${selectedEdition === '2014' ? theme.player.cyan : theme.border}`,
-                          borderRadius: '8px',
-                          color: selectedEdition === '2014' ? theme.player.cyan : theme.text.muted,
-                          fontWeight: '600',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        2014 Rules
-                        {contentSummary?.['2014'] && (
-                          <span style={{ display: 'block', fontSize: '11px', marginTop: '4px', fontWeight: '400' }}>
-                            {contentSummary['2014'].races} races, {contentSummary['2014'].classes} classes
-                          </span>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => setSelectedEdition('2024')}
-                        style={{
-                          flex: 1,
-                          padding: '12px',
-                          background: selectedEdition === '2024' ? theme.player.subtle : 'transparent',
-                          border: `2px solid ${selectedEdition === '2024' ? theme.player.cyan : theme.border}`,
-                          borderRadius: '8px',
-                          color: selectedEdition === '2024' ? theme.player.cyan : theme.text.muted,
-                          fontWeight: '600',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        2024 Rules
-                        {contentSummary?.['2024'] && (
-                          <span style={{ display: 'block', fontSize: '11px', marginTop: '4px', fontWeight: '400' }}>
-                            {contentSummary['2024'].races} races, {contentSummary['2024'].classes} classes
-                          </span>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Upload Button */}
-                  <label style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '12px 20px',
-                    background: `linear-gradient(135deg, ${theme.player.primary}, ${theme.player.cyan})`,
-                    borderRadius: '8px',
-                    color: '#fff',
-                    fontWeight: '600',
-                    cursor: uploadingRuleset ? 'not-allowed' : 'pointer',
-                    opacity: uploadingRuleset ? 0.6 : 1
-                  }}>
-                    <FileJson size={18} />
-                    {uploadingRuleset ? 'Uploading...' : `Upload to ${selectedEdition} Rules`}
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={handleRulesetUpload}
-                      disabled={uploadingRuleset}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
-                  
-                  {/* JSON Format Help */}
-                  <details style={{ marginTop: '16px' }}>
-                    <summary style={{ 
-                      color: theme.player.cyan, 
-                      fontSize: '12px', 
-                      cursor: 'pointer',
-                      fontWeight: '500'
-                    }}>
-                      JSON Format Help
-                    </summary>
-                    <pre style={{ 
-                      background: theme.bg.panel, 
-                      padding: '12px', 
-                      borderRadius: '6px',
-                      fontSize: '10px',
-                      color: theme.text.muted,
-                      overflow: 'auto',
-                      marginTop: '8px'
-                    }}>
-{`{
-  "ruleset_name": "My Custom Races",
-  "races": [
-    { "name": "Custom Race", "ability_bonuses": {"strength": 2} }
-  ],
-  "classes": [
-    { "name": "Custom Class", "hit_die": "d10", "primary_ability": "Strength" }
-  ]
-}`}
-                    </pre>
-                  </details>
-                </div>
-              )}
-            </div>
 
             {/* Character List */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
