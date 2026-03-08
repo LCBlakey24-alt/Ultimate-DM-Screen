@@ -2993,7 +2993,24 @@ async def bulk_upload_campaign_content(campaign_id: str, data: BulkContentUpload
     """Upload a complete ruleset with races, classes, subclasses, backgrounds, and feats"""
     await verify_campaign_membership(campaign_id, username)
     
-    # Create the ruleset first
+    # Check for potential duplicates and warn the user
+    warnings = []
+    
+    # Check existing race names
+    existing_races = await db.campaign_races.find({'campaign_id': campaign_id}, {'name': 1, '_id': 0}).to_list(1000)
+    existing_race_names = {r['name'].lower() for r in existing_races}
+    for race_data in data.races:
+        if race_data.name.lower() in existing_race_names:
+            warnings.append(f"Race '{race_data.name}' already exists - will create duplicate")
+    
+    # Check existing class names
+    existing_classes = await db.campaign_classes.find({'campaign_id': campaign_id}, {'name': 1, '_id': 0}).to_list(1000)
+    existing_class_names = {c['name'].lower() for c in existing_classes}
+    for class_data in data.classes:
+        if class_data.name.lower() in existing_class_names:
+            warnings.append(f"Class '{class_data.name}' already exists - will create duplicate")
+    
+    # Create the ruleset
     ruleset = CampaignRuleset(
         campaign_id=campaign_id,
         name=data.ruleset_name,
@@ -3073,7 +3090,8 @@ async def bulk_upload_campaign_content(campaign_id: str, data: BulkContentUpload
     return {
         "message": f"Ruleset '{data.ruleset_name}' uploaded successfully!",
         "ruleset_id": ruleset_id,
-        "counts": counts
+        "counts": counts,
+        "warnings": warnings if warnings else None
     }
 
 @api_router.get("/campaigns/{campaign_id}/content")

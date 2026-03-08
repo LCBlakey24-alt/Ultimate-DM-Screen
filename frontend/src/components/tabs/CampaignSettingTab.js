@@ -168,11 +168,18 @@ function CampaignSettingTab({ campaignId }) {
       }
 
       // Upload to API
-      await axios.post(`${API}/campaigns/${campaignId}/content/bulk-upload`, data);
+      const response = await axios.post(`${API}/campaigns/${campaignId}/content/bulk-upload`, data);
       
-      toast.success(`Ruleset "${data.ruleset_name}" uploaded! ${
-        (data.races?.length || 0) + (data.classes?.length || 0) + (data.subclasses?.length || 0) + (data.backgrounds?.length || 0) + (data.feats?.length || 0)
-      } items added.`);
+      const itemCount = (data.races?.length || 0) + (data.classes?.length || 0) + (data.subclasses?.length || 0) + (data.backgrounds?.length || 0) + (data.feats?.length || 0);
+      toast.success(`Ruleset "${data.ruleset_name}" uploaded! ${itemCount} items added.`);
+      
+      // Show warnings about duplicates if any
+      if (response.data.warnings?.length > 0) {
+        toast.warning(
+          `Duplicate content detected:\n${response.data.warnings.join('\n')}`,
+          { duration: 8000 }
+        );
+      }
       
       fetchCampaignContent();
     } catch (error) {
@@ -573,13 +580,81 @@ function CampaignSettingTab({ campaignId }) {
             <BookOpen size={18} style={{ color: '#F59E0B' }} />
             Character Creation Content
           </h3>
-          <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>
-            Upload JSON rulesets with races, classes, subclasses, backgrounds, and feats. 
-            Players in your campaign can use these options when creating characters.
-            <br/><br/>
-            <strong style={{ color: '#F59E0B' }}>Tip:</strong> Ask ChatGPT to create a JSON file with your ruleset! 
-            Example prompt: "Create a JSON file with D&D 5e 2014 PHB races and classes in this format: {'{'}ruleset_name, races: [{'{'}name, ability_bonuses, traits...{'}'}], classes: [...]{'}'}".
-          </p>
+          
+          {/* Guidance Section */}
+          <div style={{ 
+            background: 'rgba(245, 158, 11, 0.1)', 
+            border: '1px solid rgba(245, 158, 11, 0.3)',
+            borderRadius: '8px',
+            padding: '16px',
+            marginBottom: '16px'
+          }}>
+            <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
+              <strong style={{ color: '#F59E0B' }}>How it works:</strong> Upload JSON rulesets containing custom races, classes, subclasses, backgrounds, and feats. 
+              Players in your campaign will see these options when creating characters.
+            </p>
+            
+            <details style={{ marginTop: '12px' }}>
+              <summary style={{ 
+                color: '#F59E0B', 
+                fontSize: '13px', 
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}>
+                Important Notes & JSON Format
+              </summary>
+              <div style={{ marginTop: '12px', fontSize: '12px', color: '#94a3b8' }}>
+                <p style={{ marginBottom: '8px' }}>
+                  <strong style={{ color: '#22D3EE' }}>Multiple Rulesets Stack:</strong> Each upload creates a separate ruleset. 
+                  If you upload a second file, it adds to (not replaces) existing content. Delete old rulesets to remove their content.
+                </p>
+                <p style={{ marginBottom: '8px' }}>
+                  <strong style={{ color: '#22D3EE' }}>Avoid Duplicates:</strong> If multiple rulesets contain the same race/class name, 
+                  players will see duplicates in the character creator. Use unique names or delete old rulesets first.
+                </p>
+                <p style={{ marginBottom: '8px' }}>
+                  <strong style={{ color: '#22D3EE' }}>Copyright Notice:</strong> Only upload content you have rights to use. 
+                  You are responsible for ensuring your uploads don't infringe on copyrights.
+                </p>
+                <div style={{ 
+                  background: '#0A0A0A', 
+                  padding: '12px', 
+                  borderRadius: '6px',
+                  fontFamily: 'monospace',
+                  fontSize: '11px',
+                  marginTop: '12px',
+                  overflowX: 'auto'
+                }}>
+                  <code style={{ color: '#94a3b8' }}>
+{`{
+  "ruleset_name": "My Custom Ruleset",
+  "ruleset_description": "Optional description",
+  "races": [
+    {
+      "name": "Custom Race",
+      "ability_bonuses": {"strength": 2, "charisma": 1},
+      "traits": ["Darkvision", "Fire Resistance"],
+      "description": "A powerful custom race"
+    }
+  ],
+  "classes": [
+    {
+      "name": "Custom Class",
+      "hit_die": "d10",
+      "primary_ability": "Strength",
+      "saving_throws": ["Strength", "Constitution"],
+      "description": "A mighty warrior class"
+    }
+  ],
+  "subclasses": [],
+  "backgrounds": [],
+  "feats": []
+}`}
+                  </code>
+                </div>
+              </div>
+            </details>
+          </div>
           
           {/* Upload JSON button */}
           <div style={{ marginBottom: '16px' }}>
@@ -612,43 +687,60 @@ function CampaignSettingTab({ campaignId }) {
           {campaignContent.rulesets?.length > 0 && (
             <div>
               <h4 style={{ fontSize: '13px', color: '#808080', marginBottom: '10px' }}>
-                Uploaded Rulesets
+                Uploaded Rulesets ({campaignContent.rulesets.length})
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-                {campaignContent.rulesets.map(rs => (
-                  <div 
-                    key={rs.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '12px',
-                      background: '#1A1A1A',
-                      borderRadius: '8px',
-                      border: '1px solid #F59E0B33'
-                    }}
-                  >
-                    <div>
-                      <span style={{ color: '#F59E0B', fontSize: '14px', fontWeight: '600' }}>{rs.name}</span>
-                      {rs.description && (
-                        <p style={{ color: '#666', fontSize: '12px', margin: '4px 0 0 0' }}>{rs.description}</p>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => handleDeleteRuleset(rs.id, rs.name)}
+                {campaignContent.rulesets.map(rs => {
+                  // Count items in this ruleset
+                  const raceCount = campaignContent.races?.filter(r => r.ruleset_id === rs.id).length || 0;
+                  const classCount = campaignContent.classes?.filter(c => c.ruleset_id === rs.id).length || 0;
+                  const subclassCount = campaignContent.subclasses?.filter(s => s.ruleset_id === rs.id).length || 0;
+                  const bgCount = campaignContent.backgrounds?.filter(b => b.ruleset_id === rs.id).length || 0;
+                  const featCount = campaignContent.feats?.filter(f => f.ruleset_id === rs.id).length || 0;
+                  const totalItems = raceCount + classCount + subclassCount + bgCount + featCount;
+                  
+                  return (
+                    <div 
+                      key={rs.id}
                       style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#666',
-                        cursor: 'pointer',
-                        padding: '4px'
+                        padding: '12px',
+                        background: '#1A1A1A',
+                        borderRadius: '8px',
+                        border: '1px solid #F59E0B33'
                       }}
-                      title="Delete ruleset and all its content"
                     >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ flex: 1 }}>
+                          <span style={{ color: '#F59E0B', fontSize: '14px', fontWeight: '600' }}>{rs.name}</span>
+                          {rs.description && (
+                            <p style={{ color: '#666', fontSize: '12px', margin: '4px 0 0 0' }}>{rs.description}</p>
+                          )}
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px', fontSize: '11px', color: '#666' }}>
+                            {raceCount > 0 && <span>{raceCount} race{raceCount !== 1 ? 's' : ''}</span>}
+                            {classCount > 0 && <span>{classCount} class{classCount !== 1 ? 'es' : ''}</span>}
+                            {subclassCount > 0 && <span>{subclassCount} subclass{subclassCount !== 1 ? 'es' : ''}</span>}
+                            {bgCount > 0 && <span>{bgCount} background{bgCount !== 1 ? 's' : ''}</span>}
+                            {featCount > 0 && <span>{featCount} feat{featCount !== 1 ? 's' : ''}</span>}
+                            {totalItems === 0 && <span style={{ color: '#F59E0B' }}>Empty ruleset</span>}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteRuleset(rs.id, rs.name)}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#666',
+                            cursor: 'pointer',
+                            padding: '4px'
+                          }}
+                          title="Delete ruleset and all its content"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

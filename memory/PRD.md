@@ -271,6 +271,20 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - [ ] None
 
 ### Completed (March 2026)
+- [x] **COMPREHENSIVE STRESS TEST (March 2026)** - 72/72 tests passed
+  - Backend API: 49/49 tests passed - All CRUD endpoints for NPCs, Locations, Gods, Timeline, Combat, Notes, Characters
+  - Frontend E2E: 23/23 tests passed - All dashboards, tabs, navigation, forms working correctly
+  - AI generation working (NPC, Location, Quest generation)
+  - Character creation flow fully functional with custom campaign content
+
+- [x] **RULESET UPLOAD UX IMPROVEMENTS (March 2026)**
+  - Added expandable guidance section explaining how multiple rulesets stack
+  - Backend now detects duplicate race/class names and returns warnings
+  - Frontend shows duplicate warnings in toast notifications  
+  - Improved ruleset list to show content counts per ruleset (races, classes, subclasses, backgrounds, feats)
+  - Added JSON format example in collapsible section
+  - Added copyright notice reminding users to only upload content they have rights to
+
 - [x] **STRUCTURED RULESET INTEGRATION FOR CHARACTER CREATOR (March 2026)** - Full custom content system
   - GMs can upload JSON rulesets with custom races, classes, subclasses, backgrounds, and feats
   - Backend API: POST /api/campaigns/{id}/content/bulk-upload, GET /api/campaigns/{id}/content
