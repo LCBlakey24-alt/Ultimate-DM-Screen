@@ -50,7 +50,7 @@ if RESEND_API_KEY and RESEND_API_KEY != 'your_resend_api_key_here':
 security = HTTPBearer()
 
 # Admin usernames - these users can access admin features and get auto-upgraded to legendary tier
-ADMIN_USERNAMES = ["rookiequestadmin", "criticalfusion", "admin", "gmtest"]
+ADMIN_USERNAMES = ["rookiequestadmin", "criticalfusion", "admin", "gmtest", "lcblakey24"]
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -97,12 +97,16 @@ class Campaign(BaseModel):
     name: str
     description: str = ""
     system: str = "5e 2024 Compatible"  # TTRPG system
+    world_setting: str = "custom"  # e.g., "forgotten_realms", "eberron", "greyhawk", "custom"
+    world_setting_notes: str = ""  # Additional notes about the setting for AI context
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class CampaignCreate(BaseModel):
     name: str
     description: str = ""
     system: str = "5e 2024 Compatible"
+    world_setting: str = "custom"
+    world_setting_notes: str = ""
 
 class CampaignSetting(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -115,6 +119,10 @@ class CampaignSetting(BaseModel):
 class CampaignSettingUpdate(BaseModel):
     content: Optional[str] = None
     dm_rules: Optional[str] = None
+
+class CampaignWorldSettingUpdate(BaseModel):
+    world_setting: str = "custom"  # forgotten_realms, eberron, greyhawk, dragonlance, ravenloft, spelljammer, planescape, custom
+    world_setting_notes: str = ""  # Additional context for the AI
 
 class God(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -2526,6 +2534,82 @@ async def update_campaign_setting(campaign_id: str, setting_data: CampaignSettin
             setting['content'] = ""
     return setting
 
+@api_router.put("/campaigns/{campaign_id}/world-setting")
+async def update_campaign_world_setting(campaign_id: str, data: CampaignWorldSettingUpdate, username: str = Depends(get_current_user)):
+    """Update campaign's world setting for AI context"""
+    await verify_campaign_ownership(campaign_id, username)
+    
+    valid_settings = ['forgotten_realms', 'eberron', 'greyhawk', 'dragonlance', 'ravenloft', 'spelljammer', 'planescape', 'custom']
+    if data.world_setting not in valid_settings:
+        raise HTTPException(status_code=400, detail=f"Invalid world setting. Must be one of: {', '.join(valid_settings)}")
+    
+    await db.campaigns.update_one(
+        {'id': campaign_id},
+        {'$set': {
+            'world_setting': data.world_setting,
+            'world_setting_notes': data.world_setting_notes
+        }}
+    )
+    
+    campaign = await db.campaigns.find_one({'id': campaign_id}, {'_id': 0})
+    
+    # Human-readable names for settings
+    setting_names = {
+        'forgotten_realms': 'Forgotten Realms',
+        'eberron': 'Eberron',
+        'greyhawk': 'Greyhawk',
+        'dragonlance': 'Dragonlance',
+        'ravenloft': 'Ravenloft',
+        'spelljammer': 'Spelljammer',
+        'planescape': 'Planescape',
+        'custom': 'Custom Setting'
+    }
+    
+    return {
+        "message": f"World setting updated to {setting_names.get(data.world_setting, data.world_setting)}",
+        "world_setting": data.world_setting,
+        "world_setting_name": setting_names.get(data.world_setting, data.world_setting),
+        "world_setting_notes": data.world_setting_notes
+    }
+
+@api_router.get("/campaigns/{campaign_id}/world-setting")
+async def get_campaign_world_setting(campaign_id: str, username: str = Depends(get_current_user)):
+    """Get campaign's world setting"""
+    await verify_campaign_ownership(campaign_id, username)
+    
+    campaign = await db.campaigns.find_one({'id': campaign_id}, {'_id': 0, 'world_setting': 1, 'world_setting_notes': 1, 'name': 1})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    setting_names = {
+        'forgotten_realms': 'Forgotten Realms',
+        'eberron': 'Eberron',
+        'greyhawk': 'Greyhawk',
+        'dragonlance': 'Dragonlance',
+        'ravenloft': 'Ravenloft',
+        'spelljammer': 'Spelljammer',
+        'planescape': 'Planescape',
+        'custom': 'Custom Setting'
+    }
+    
+    world_setting = campaign.get('world_setting', 'custom')
+    
+    return {
+        "world_setting": world_setting,
+        "world_setting_name": setting_names.get(world_setting, 'Custom Setting'),
+        "world_setting_notes": campaign.get('world_setting_notes', ''),
+        "available_settings": [
+            {"id": "forgotten_realms", "name": "Forgotten Realms", "description": "The classic D&D setting - Sword Coast, Waterdeep, Baldur's Gate"},
+            {"id": "eberron", "name": "Eberron", "description": "Magipunk noir - Dragonmarks, warforged, the Last War"},
+            {"id": "greyhawk", "name": "Greyhawk", "description": "Original D&D setting - Flanaess, City of Greyhawk"},
+            {"id": "dragonlance", "name": "Dragonlance", "description": "Epic fantasy - Krynn, Dragon Highlords, War of the Lance"},
+            {"id": "ravenloft", "name": "Ravenloft", "description": "Gothic horror - Domains of Dread, Darklords, the Mists"},
+            {"id": "spelljammer", "name": "Spelljammer", "description": "Fantasy space - Wildspace, spelljamming ships"},
+            {"id": "planescape", "name": "Planescape", "description": "Planar adventures - Sigil, the Outer Planes, factions"},
+            {"id": "custom", "name": "Custom Setting", "description": "Your own homebrew world"}
+        ]
+    }
+
 # ==================== GODS ROUTES ====================
 
 @api_router.post("/campaigns/{campaign_id}/gods", response_model=God, status_code=status.HTTP_201_CREATED)
@@ -4245,20 +4329,54 @@ async def generate_ai_content(request: AIGenerationRequest, username: str = Depe
         
         # Get campaign context if campaign_id provided
         system_context = ""
+        world_context = ""
         if hasattr(request, 'campaign_id') and request.campaign_id:
             campaign = await db.campaigns.find_one({'id': request.campaign_id})
             if campaign:
                 system_context = f" for {campaign.get('system', '5e Compatible')} system"
+                
+                # Build world setting context
+                world_setting = campaign.get('world_setting', 'custom')
+                world_notes = campaign.get('world_setting_notes', '')
+                
+                # Pre-defined world setting descriptions
+                world_settings_lore = {
+                    'forgotten_realms': """This campaign is set in the Forgotten Realms (Faerûn). Use established lore, locations, deities, and factions from this setting. Reference places like Waterdeep, Baldur's Gate, Neverwinter, the Sword Coast, Icewind Dale, etc. Use Forgotten Realms deities like Mystra, Torm, Lathander, Kelemvor, Bane, etc. Reference factions like the Harpers, Zhentarim, Lords' Alliance, Emerald Enclave, and Order of the Gauntlet.""",
+                    
+                    'eberron': """This campaign is set in Eberron. Use established lore including the Five Nations, Dragonmarked Houses, the Last War, and manifest zones. Reference places like Sharn, Khorvaire, Xen'drik, and the Mournland. Use Eberron's unique elements like warforged, artificers, lightning rail, and the Draconic Prophecy. Include the Sovereign Host and the Dark Six pantheon.""",
+                    
+                    'greyhawk': """This campaign is set in Greyhawk (Oerth). Use established lore from this classic setting including the Free City of Greyhawk, the Flanaess, and its history. Reference deities like Pelor, St. Cuthbert, Heironeous, and Vecna. Include the Circle of Eight and other classic Greyhawk elements.""",
+                    
+                    'dragonlance': """This campaign is set in Dragonlance (Krynn). Use the established lore including the War of the Lance, Dragon Highlords, and the Cataclysm. Reference locations like Ansalon, Solace, and Palanthas. Use Krynn's unique elements like kender, draconians, and the gods of Krynn.""",
+                    
+                    'ravenloft': """This campaign is set in Ravenloft, the Domains of Dread. Create dark, gothic horror content appropriate for this setting. Reference the Mists, Darklords, and the nature of the Demiplane of Dread. Maintain an atmosphere of horror, tragedy, and moral ambiguity.""",
+                    
+                    'spelljammer': """This campaign uses Spelljammer elements - fantasy space travel between worlds. Include wildspace, spelljamming ships, the Astral Sea, and creatures appropriate for space-faring adventures. Reference various crystal spheres and the phlogiston.""",
+                    
+                    'planescape': """This campaign is set in Planescape, dealing with the planes of existence. Reference Sigil, the City of Doors, and the various Outer Planes. Include factions like the Harmonium, Sensates, and Athar. Use planar philosophy and factional conflicts.""",
+                    
+                    'custom': """This is a custom/homebrew setting. Generate original content that fits a fantasy TTRPG world without referencing specific copyrighted settings."""
+                }
+                
+                base_world_context = world_settings_lore.get(world_setting, world_settings_lore['custom'])
+                
+                # Add custom notes if provided
+                if world_notes:
+                    world_context = f"\n\nWORLD SETTING CONTEXT:\n{base_world_context}\n\nADDITIONAL CAMPAIGN NOTES:\n{world_notes}"
+                else:
+                    world_context = f"\n\nWORLD SETTING CONTEXT:\n{base_world_context}"
         
         # Create system message based on generation type
         system_messages = {
-            'encounter': f'You are a TTRPG encounter designer{system_context}. Create detailed, balanced encounters with monsters, tactics, and environmental details following the rules and conventions of the system.',
-            'trap': f'You are a TTRPG trap designer{system_context}. Create creative and dangerous traps with trigger mechanisms, effects, and disarm methods appropriate for the system.',
-            'npc': f'You are a TTRPG NPC creator{system_context}. Create memorable NPCs with personality, backstory, stats, and plot hooks using the system\'s stat format.',
-            'world': f'You are a TTRPG world-builder{system_context}. Create rich locations, lore, factions, and story hooks for campaigns.'
+            'encounter': f'You are a TTRPG encounter designer{system_context}. Create detailed, balanced encounters with monsters, tactics, and environmental details following the rules and conventions of the system.{world_context}',
+            'trap': f'You are a TTRPG trap designer{system_context}. Create creative and dangerous traps with trigger mechanisms, effects, and disarm methods appropriate for the system.{world_context}',
+            'npc': f'You are a TTRPG NPC creator{system_context}. Create memorable NPCs with personality, backstory, stats, and plot hooks using the system\'s stat format. Make NPCs fit naturally into the campaign world.{world_context}',
+            'world': f'You are a TTRPG world-builder{system_context}. Create rich locations, lore, factions, and story hooks that fit seamlessly into the established setting.{world_context}',
+            'plot': f'You are a TTRPG story architect{system_context}. Create compelling plot hooks, story arcs, and adventure ideas that tie into the world\'s established lore and factions.{world_context}',
+            'location': f'You are a TTRPG location designer{system_context}. Create detailed locations with atmosphere, inhabitants, secrets, and adventure hooks appropriate for the setting.{world_context}'
         }
         
-        system_message = system_messages.get(request.generation_type, f'You are a helpful TTRPG assistant{system_context}.')
+        system_message = system_messages.get(request.generation_type, f'You are a helpful TTRPG assistant{system_context}.{world_context}')
         
         # Initialize LLM chat
         chat = LlmChat(

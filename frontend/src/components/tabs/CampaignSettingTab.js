@@ -16,9 +16,16 @@ function CampaignSettingTab({ campaignId }) {
   const [aiResult, setAiResult] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const [loadingJoinCode, setLoadingJoinCode] = useState(false);
+  
+  // World setting state
+  const [worldSetting, setWorldSetting] = useState('custom');
+  const [worldSettingNotes, setWorldSettingNotes] = useState('');
+  const [availableSettings, setAvailableSettings] = useState([]);
+  const [savingWorldSetting, setSavingWorldSetting] = useState(false);
 
   useEffect(() => {
     fetchSetting();
+    fetchWorldSetting();
   }, [campaignId]);
 
   const fetchSetting = async () => {
@@ -29,6 +36,32 @@ function CampaignSettingTab({ campaignId }) {
       toast.error('Failed to load campaign setting');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchWorldSetting = async () => {
+    try {
+      const response = await axios.get(`${API}/campaigns/${campaignId}/world-setting`);
+      setWorldSetting(response.data?.world_setting || 'custom');
+      setWorldSettingNotes(response.data?.world_setting_notes || '');
+      setAvailableSettings(response.data?.available_settings || []);
+    } catch (error) {
+      console.error('Failed to load world setting');
+    }
+  };
+
+  const handleSaveWorldSetting = async () => {
+    setSavingWorldSetting(true);
+    try {
+      await axios.put(`${API}/campaigns/${campaignId}/world-setting`, {
+        world_setting: worldSetting,
+        world_setting_notes: worldSettingNotes
+      });
+      toast.success('World setting saved! AI will now use this context.');
+    } catch (error) {
+      toast.error('Failed to save world setting');
+    } finally {
+      setSavingWorldSetting(false);
     }
   };
 
@@ -106,6 +139,109 @@ function CampaignSettingTab({ campaignId }) {
           >
             <Save size={18} />
             {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </div>
+
+        {/* World Setting Selector - AI Context */}
+        <div className="glow-panel" style={{ marginBottom: '24px', borderColor: '#8B5CF6' }}>
+          <h3 style={{ 
+            fontSize: '16px', 
+            color: '#ffffff', 
+            marginBottom: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <Wand2 size={18} style={{ color: '#8B5CF6' }} />
+            AI World Context
+          </h3>
+          <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>
+            Select your campaign's world setting. ROOK will use lore from this setting when generating content.
+          </p>
+          
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: '#E0E0E0' }}>
+              World Setting
+            </label>
+            <select
+              data-testid="world-setting-select"
+              value={worldSetting}
+              onChange={(e) => setWorldSetting(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                background: '#1A1A1A',
+                border: '1px solid #404040',
+                borderRadius: '8px',
+                color: '#E0E0E0',
+                fontSize: '14px',
+                cursor: 'pointer'
+              }}
+            >
+              {availableSettings.map(setting => (
+                <option key={setting.id} value={setting.id}>
+                  {setting.name} - {setting.description}
+                </option>
+              ))}
+              {availableSettings.length === 0 && (
+                <>
+                  <option value="forgotten_realms">Forgotten Realms - Sword Coast, Waterdeep, Baldur's Gate</option>
+                  <option value="eberron">Eberron - Dragonmarks, warforged, the Last War</option>
+                  <option value="greyhawk">Greyhawk - Classic D&D, Flanaess</option>
+                  <option value="dragonlance">Dragonlance - Krynn, War of the Lance</option>
+                  <option value="ravenloft">Ravenloft - Gothic horror, Domains of Dread</option>
+                  <option value="spelljammer">Spelljammer - Fantasy space, spelljamming ships</option>
+                  <option value="planescape">Planescape - Sigil, planar adventures</option>
+                  <option value="custom">Custom Setting - Your own homebrew world</option>
+                </>
+              )}
+            </select>
+          </div>
+          
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: '#E0E0E0' }}>
+              Additional Context for AI (Optional)
+            </label>
+            <textarea
+              data-testid="world-setting-notes"
+              value={worldSettingNotes}
+              onChange={(e) => setWorldSettingNotes(e.target.value)}
+              placeholder="Add specific details about your campaign that ROOK should know...&#10;&#10;Example: This campaign takes place in 1492 DR, focused on the Sword Coast. The party is based in Neverwinter and works for Lord Dagult Neverember."
+              style={{
+                width: '100%',
+                minHeight: '100px',
+                padding: '12px',
+                background: '#1A1A1A',
+                border: '1px solid #404040',
+                borderRadius: '8px',
+                color: '#E0E0E0',
+                fontSize: '14px',
+                resize: 'vertical'
+              }}
+            />
+          </div>
+          
+          <Button
+            data-testid="save-world-setting-btn"
+            onClick={handleSaveWorldSetting}
+            disabled={savingWorldSetting}
+            style={{
+              width: '100%',
+              background: '#8B5CF6',
+              border: 'none',
+              padding: '10px',
+              borderRadius: '8px',
+              color: 'white',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+          >
+            <Save size={16} />
+            {savingWorldSetting ? 'Saving...' : 'Save AI Context'}
           </Button>
         </div>
 
