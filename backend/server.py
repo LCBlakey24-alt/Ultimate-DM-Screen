@@ -634,6 +634,7 @@ class PlayerCharacter(BaseModel):
     spell_slots_remaining: Dict[str, int] = {}
     spells_known: List[Dict[str, Any]] = []  # [{"name": "Fireball", "level": 3, "school": "evocation"}]
     spells_prepared: List[Dict[str, Any]] = []  # Spells currently prepared for the day
+    cantrips_known: List[Dict[str, Any]] = []  # [{"name": "Fire Bolt", "level": 0}] - Cantrips the character knows
     
     # Level Progression Tracking
     level_progression: Dict[str, Any] = {}  # {"4": {"type": "asi", "choices": {"strength": 2}}, "8": {"type": "feat", "feat_name": "Alert"}}
@@ -681,11 +682,17 @@ class PlayerCharacterCreate(BaseModel):
     max_hit_points: Optional[int] = None  # Auto-calculate if not provided
     alignment: str = "Neutral"
     backstory: str = ""
+    portrait_url: Optional[str] = None
+    campaign_id: Optional[str] = None
     
     # Spell and feat selections from character creation
-    spells_known: Optional[List[str]] = []
-    cantrips_known: Optional[List[str]] = []
-    feats: Optional[List[Dict[str, str]]] = []
+    # spells_known: for known-spell casters (Bard, Sorcerer, Ranger, Warlock)
+    # spells_prepared: for prepared casters (Cleric, Druid, Paladin, Wizard)
+    # cantrips_known: for all spellcasters
+    spells_known: Optional[List[Dict[str, Any]]] = []
+    spells_prepared: Optional[List[Dict[str, Any]]] = []
+    cantrips_known: Optional[List[Dict[str, Any]]] = []
+    feats: Optional[List[Dict[str, Any]]] = []
 
 class PlayerCharacterUpdate(BaseModel):
     name: Optional[str] = None
@@ -6127,8 +6134,32 @@ async def create_character(
     
     # Prepare character data, excluding fields that will be calculated or explicitly set
     char_data = character.model_dump()
-    excluded_fields = ['max_hit_points', 'current_hit_points', 'proficiency_bonus', 'armor_class', 'spells_known', 'cantrips_known', 'feats', 'edition']
+    excluded_fields = ['max_hit_points', 'current_hit_points', 'proficiency_bonus', 'armor_class', 
+                       'spells_known', 'spells_prepared', 'cantrips_known', 'feats', 'edition',
+                       'portrait_url', 'campaign_id']
     char_data = {k: v for k, v in char_data.items() if k not in excluded_fields}
+    
+    # Normalize spell/cantrip inputs - ensure they are in object format
+    def normalize_spell_list(spell_list):
+        if not spell_list:
+            return []
+        return [
+            s if isinstance(s, dict) else {"name": str(s), "level": 0}
+            for s in spell_list
+        ]
+    
+    normalized_spells_known = normalize_spell_list(character.spells_known)
+    normalized_spells_prepared = normalize_spell_list(character.spells_prepared)
+    normalized_cantrips = normalize_spell_list(character.cantrips_known)
+    
+    # Determine spellcasting ability based on class
+    SPELLCASTING_ABILITIES = {
+        'Bard': 'charisma', 'Cleric': 'wisdom', 'Druid': 'wisdom',
+        'Paladin': 'charisma', 'Ranger': 'wisdom', 'Sorcerer': 'charisma',
+        'Warlock': 'charisma', 'Wizard': 'intelligence',
+        'Fighter': 'intelligence', 'Rogue': 'intelligence'  # For Eldritch Knight / Arcane Trickster
+    }
+    spellcasting_ability = SPELLCASTING_ABILITIES.get(character.character_class, '')
     
     new_character = PlayerCharacter(
         user_id=username,
@@ -6139,9 +6170,13 @@ async def create_character(
         armor_class=armor_class,
         hit_dice=f"1d{hit_die}",
         hit_dice_remaining=1,
-        spells_known=[{"name": s} for s in (character.spells_known or [])],
+        spells_known=normalized_spells_known,
+        spells_prepared=normalized_spells_prepared,
+        cantrips_known=normalized_cantrips,
         feats=character.feats or [],
-        edition=edition
+        edition=edition,
+        portrait_url=character.portrait_url or '',
+        spellcasting_ability=spellcasting_ability
     )
     
     await db.player_characters.insert_one(new_character.model_dump())
@@ -6192,6 +6227,19 @@ async def update_character(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="No fields to update"
         )
+    
+    # Validate subclass selection based on edition and level
+    if 'subclass' in update_data and update_data['subclass']:
+        edition = existing.get('edition', '2014')
+        character_class = update_data.get('character_class', existing.get('character_class'))
+        level = update_data.get('level', existing.get('level', 1))
+        subclass_unlock_level = get_subclass_unlock_level(character_class, edition)
+        
+        if level < subclass_unlock_level:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"{character_class}s cannot select a subclass until level {subclass_unlock_level} in {edition} rules"
+            )
     
     # Add updated timestamp
     update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
@@ -6450,6 +6498,66 @@ async def delete_character(
         )
     
     return {"message": "Character deleted successfully"}
+
+@api_router.get("/characters/{character_id}/level-up-info")
+async def get_level_up_info(
+    character_id: str,
+    username: str = Depends(get_current_user)
+):
+    """Get edition-aware level-up information for a character"""
+    character = await db.player_characters.find_one({'id': character_id, 'user_id': username})
+    if not character:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Character not found"
+        )
+    
+    current_level = character.get('level', 1)
+    next_level = current_level + 1
+    character_class = character.get('character_class', '')
+    edition = character.get('edition', '2014')
+    
+    # Get subclass unlock level for this edition
+    subclass_unlock_level = get_subclass_unlock_level(character_class, edition)
+    can_choose_subclass = next_level >= subclass_unlock_level
+    needs_subclass = can_choose_subclass and not character.get('subclass')
+    
+    # ASI levels
+    asi_levels = [4, 8, 12, 16, 19]
+    if character_class.lower() == 'fighter':
+        asi_levels.extend([6, 14])
+    elif character_class.lower() == 'rogue':
+        asi_levels.append(10)
+    asi_levels.sort()
+    
+    is_asi_level = next_level in asi_levels
+    
+    # Hit die for HP calculation
+    hit_die = HIT_DICE.get(character_class, 8)
+    con_mod = (character.get('constitution', 10) - 10) // 2
+    average_hp_gain = (hit_die // 2 + 1) + con_mod
+    
+    return {
+        'current_level': current_level,
+        'next_level': next_level,
+        'can_level_up': next_level <= 20,
+        'edition': edition,
+        'subclass_info': {
+            'unlock_level': subclass_unlock_level,
+            'can_choose_now': can_choose_subclass,
+            'needs_selection': needs_subclass,
+            'current_subclass': character.get('subclass', '')
+        },
+        'asi_info': {
+            'is_asi_level': is_asi_level,
+            'all_asi_levels': asi_levels
+        },
+        'hp_info': {
+            'hit_die': f"d{hit_die}",
+            'average_gain': max(1, average_hp_gain),
+            'constitution_modifier': con_mod
+        }
+    }
 
 @api_router.post("/characters/{character_id}/link-campaign")
 async def link_character_to_campaign(

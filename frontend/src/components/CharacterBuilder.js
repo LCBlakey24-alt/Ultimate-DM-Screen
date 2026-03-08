@@ -881,17 +881,42 @@ function CharacterBuilder() {
       const conMod = Math.floor((characterData.constitution - 10) / 2);
       const maxHP = hitDie + conMod;
       
+      // Normalize spell selections to object format for backend consistency
+      const normalizedSpells = (characterData.selectedSpells || []).map(spell => 
+        typeof spell === 'string' ? { name: spell, level: 1 } : spell
+      );
+      const normalizedCantrips = (characterData.selectedCantrips || []).map(cantrip => 
+        typeof cantrip === 'string' ? { name: cantrip, level: 0 } : cantrip
+      );
+      
+      // Determine if class is a prepared caster
+      const isPreparedCaster = ['Cleric', 'Druid', 'Paladin', 'Wizard'].includes(characterData.character_class);
+      
       const payload = {
-        ...characterData,
-        max_hit_points: maxHP,  // Use correct field name for backend
+        name: characterData.name,
+        race: characterData.race,
+        character_class: characterData.character_class,
+        subclass: characterData.subclass || '',
+        background: characterData.background,
+        level: characterData.level || 1,
+        strength: characterData.strength,
+        dexterity: characterData.dexterity,
+        constitution: characterData.constitution,
+        intelligence: characterData.intelligence,
+        wisdom: characterData.wisdom,
+        charisma: characterData.charisma,
+        alignment: characterData.alignment || 'Neutral',
+        backstory: characterData.backstory || '',
+        max_hit_points: maxHP,
         armor_class: 10 + Math.floor((characterData.dexterity - 10) / 2),
         portrait_url: portraitImage || null,
-        campaign_id: campaignId || null,  // Link to campaign if creating for a specific campaign
-        edition: selectedEdition || '2014',  // Include edition for rule system
-        // Include spell selections if spellcaster
-        spells_known: selectedSpells || [],
-        cantrips_known: selectedCantrips || [],
-        feats: selectedFeat ? [{ name: selectedFeat }] : []
+        campaign_id: campaignId || null,
+        edition: selectedEdition || '2014',
+        // Canonical spell fields - use correct field based on class type
+        spells_known: isPreparedCaster ? [] : normalizedSpells,
+        spells_prepared: isPreparedCaster ? normalizedSpells : [],
+        cantrips_known: normalizedCantrips,
+        feats: characterData.selectedFeat ? [{ name: characterData.selectedFeat }] : []
       };
 
       await axios.post(`${API}/characters`, payload);
@@ -907,7 +932,11 @@ function CharacterBuilder() {
           suggestedTier: detail.upgrade_tier || 'player'
         });
         setShowUpgradePrompt(true);
+      } else if (error.response?.status === 400) {
+        // Handle validation errors (e.g., subclass level restrictions)
+        toast.error(error.response?.data?.detail || 'Invalid character data');
       } else {
+        console.error('Character creation error:', error);
         toast.error('Failed to create character');
       }
     } finally {
@@ -1801,45 +1830,95 @@ function CharacterBuilder() {
                       <span style={{ color: '#F59E0B', fontSize: '11px', fontWeight: '500' }}>★ Custom available</span>
                     )}
                   </h3>
+                  
+                  {/* Show edition-aware unlock message */}
+                  {(() => {
+                    const unlockLevel = getSubclassUnlockLevel(characterData.character_class, selectedEdition || '2014');
+                    const canChooseSubclass = characterData.level >= unlockLevel;
+                    
+                    if (!canChooseSubclass) {
+                      return (
+                        <div style={{
+                          padding: '16px',
+                          background: 'rgba(245, 158, 11, 0.1)',
+                          border: '1px solid rgba(245, 158, 11, 0.3)',
+                          borderRadius: '8px',
+                          marginBottom: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px'
+                        }}>
+                          <Shield size={24} style={{ color: '#F59E0B' }} />
+                          <div>
+                            <p style={{ color: '#F59E0B', fontWeight: '600', margin: 0 }}>
+                              Subclass Locked
+                            </p>
+                            <p style={{ color: '#808080', fontSize: '13px', margin: '4px 0 0' }}>
+                              {characterData.character_class}s choose their subclass at level {unlockLevel} in {selectedEdition || '2014'} rules.
+                              Your character is currently level {characterData.level}.
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                  
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' }}>
                     {/* Custom subclasses first */}
-                    {availableSubclasses.filter(s => s.isCustom).map(sub => (
-                      <button
-                        key={`custom-${sub.name}`}
-                        onClick={() => handleChange('subclass', sub.name)}
-                        style={{
-                          padding: '16px',
-                          background: characterData.subclass === sub.name ? 'rgba(245, 158, 11, 0.15)' : '#1F1F1F',
-                          border: characterData.subclass === sub.name ? '2px solid #F59E0B' : '1px solid #F59E0B50',
-                          color: characterData.subclass === sub.name ? '#F59E0B' : '#fff',
-                          textAlign: 'left',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <div style={{ fontWeight: '600', marginBottom: '4px', color: '#F59E0B' }}>★ {sub.name}</div>
-                        <div style={{ fontSize: '12px', color: '#808080' }}>{sub.description}</div>
-                        <div style={{ fontSize: '11px', color: '#F59E0B', marginTop: '8px' }}>Unlocks at Level {sub.level}</div>
-                      </button>
-                    ))}
+                    {availableSubclasses.filter(s => s.isCustom).map(sub => {
+                      const isLocked = characterData.level < sub.level;
+                      const isSelected = characterData.subclass === sub.name;
+                      return (
+                        <button
+                          key={`custom-${sub.name}`}
+                          onClick={() => !isLocked && handleChange('subclass', isSelected ? '' : sub.name)}
+                          disabled={isLocked}
+                          style={{
+                            padding: '16px',
+                            background: isSelected ? 'rgba(245, 158, 11, 0.15)' : (isLocked ? '#151515' : '#1F1F1F'),
+                            border: isSelected ? '2px solid #F59E0B' : (isLocked ? '1px solid #333' : '1px solid #F59E0B50'),
+                            color: isLocked ? '#555' : (isSelected ? '#F59E0B' : '#fff'),
+                            textAlign: 'left',
+                            cursor: isLocked ? 'not-allowed' : 'pointer',
+                            opacity: isLocked ? 0.6 : 1
+                          }}
+                        >
+                          <div style={{ fontWeight: '600', marginBottom: '4px', color: isLocked ? '#555' : '#F59E0B' }}>★ {sub.name}</div>
+                          <div style={{ fontSize: '12px', color: isLocked ? '#444' : '#808080' }}>{sub.description}</div>
+                          <div style={{ fontSize: '11px', color: isLocked ? '#F59E0B' : '#F59E0B', marginTop: '8px' }}>
+                            {isLocked ? `🔒 Unlocks at Level ${sub.level}` : `Unlocks at Level ${sub.level}`}
+                          </div>
+                        </button>
+                      );
+                    })}
                     {/* Standard subclasses */}
-                    {availableSubclasses.filter(s => !s.isCustom).map(sub => (
-                      <button
-                        key={sub.name}
-                        onClick={() => handleChange('subclass', sub.name)}
-                        style={{
-                          padding: '16px',
-                          background: characterData.subclass === sub.name ? playerBlueSubtle : '#1F1F1F',
-                          border: characterData.subclass === sub.name ? `2px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
-                          color: characterData.subclass === sub.name ? playerBlue : '#fff',
-                          textAlign: 'left',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <div style={{ fontWeight: '600', marginBottom: '4px' }}>{sub.name}</div>
-                        <div style={{ fontSize: '12px', color: '#808080' }}>{sub.description}</div>
-                        <div style={{ fontSize: '11px', color: playerBlue, marginTop: '8px' }}>Unlocks at Level {sub.level}</div>
-                      </button>
-                    ))}
+                    {availableSubclasses.filter(s => !s.isCustom).map(sub => {
+                      const isLocked = characterData.level < sub.level;
+                      const isSelected = characterData.subclass === sub.name;
+                      return (
+                        <button
+                          key={sub.name}
+                          onClick={() => !isLocked && handleChange('subclass', isSelected ? '' : sub.name)}
+                          disabled={isLocked}
+                          style={{
+                            padding: '16px',
+                            background: isSelected ? playerBlueSubtle : (isLocked ? '#151515' : '#1F1F1F'),
+                            border: isSelected ? `2px solid ${playerBlue}` : (isLocked ? '1px solid #333' : '1px solid rgba(255,255,255,0.1)'),
+                            color: isLocked ? '#555' : (isSelected ? playerBlue : '#fff'),
+                            textAlign: 'left',
+                            cursor: isLocked ? 'not-allowed' : 'pointer',
+                            opacity: isLocked ? 0.6 : 1
+                          }}
+                        >
+                          <div style={{ fontWeight: '600', marginBottom: '4px' }}>{sub.name}</div>
+                          <div style={{ fontSize: '12px', color: isLocked ? '#444' : '#808080' }}>{sub.description}</div>
+                          <div style={{ fontSize: '11px', color: isLocked ? '#666' : playerBlue, marginTop: '8px' }}>
+                            {isLocked ? `🔒 Unlocks at Level ${sub.level}` : `Unlocks at Level ${sub.level}`}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
