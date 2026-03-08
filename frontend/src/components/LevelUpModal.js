@@ -12,16 +12,16 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 // Tron Legacy Blue theme for player section
-const playerBlue = '#2A9D8F';
-const playerBlueHover = '#3DB5A6';
+const playerBlue = '#F2A541';
+const playerBlueHover = '#FFB855';
 const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
-const playerCyan = '#2A9D8F';
+const playerCyan = '#F2A541';
 const playerCyanGlow = '#22D3EE';
 
 // Ability data - Tron Legacy blue gradient
 const ABILITIES = [
-  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#2A9D8F', icon: Dumbbell },
-  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#2A9D8F', icon: Zap },
+  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#F2A541', icon: Dumbbell },
+  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#F2A541', icon: Zap },
   { key: 'constitution', label: 'CON', fullName: 'Constitution', color: '#0EA5E9', icon: Shield },
   { key: 'intelligence', label: 'INT', fullName: 'Intelligence', color: '#6366F1', icon: Brain },
   { key: 'wisdom', label: 'WIS', fullName: 'Wisdom', color: '#8B5CF6', icon: Eye },
@@ -332,7 +332,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
     >
       <div 
         style={{
-          background: '#1A1A1A',
+          background: '#4A1F1F',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           maxWidth: '700px',
           width: '100%',
@@ -407,7 +407,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
           {/* Step 0: Mode Selection */}
           {step === 0 && !mode && (
             <div>
-              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '20px' }}>
+              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '20px' }}>
                 Choose Your Path
               </h3>
               
@@ -438,7 +438,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                     <TrendingUp size={28} color={playerBlue} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '4px' }}>
+                    <div style={{ color: '#fff', fontSize: '16px', fontWeight: '400', marginBottom: '4px' }}>
                       Level Up {character?.character_class}
                     </div>
                     <div style={{ color: '#9CA3AF', fontSize: '13px' }}>
@@ -483,7 +483,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                     <Plus size={28} color={meetsCurrentClassRequirements.met && canMulticlass ? '#22C55E' : '#6B7280'} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '4px' }}>
+                    <div style={{ color: '#fff', fontSize: '16px', fontWeight: '400', marginBottom: '4px' }}>
                       Multiclass into a New Class
                     </div>
                     <div style={{ color: '#9CA3AF', fontSize: '13px' }}>
@@ -506,7 +506,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
           {/* MULTICLASS FLOW */}
           {mode === 'multiclass' && step === 1 && (
             <div>
-              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}>
+              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '8px' }}>
                 Choose New Class
               </h3>
               <p style={{ color: '#9CA3AF', fontSize: '14px', marginBottom: '20px' }}>
@@ -544,7 +544,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                     >
                       <ClassIcon size={24} color={isSelected ? playerBlue : '#9CA3AF'} />
                       <div style={{ flex: 1 }}>
-                        <div style={{ color: '#fff', fontWeight: '600', marginBottom: '2px' }}>
+                        <div style={{ color: '#fff', fontWeight: '400', marginBottom: '2px' }}>
                           {cls.name}
                         </div>
                         <div style={{ color: '#6B7280', fontSize: '12px' }}>
@@ -560,8 +560,8 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                         isSelected && <Check size={20} color="#22C55E" />
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <AlertCircle size={16} color="#DC2626" />
-                          <span style={{ color: '#DC2626', fontSize: '11px' }}>
+                          <AlertCircle size={16} color="#E05C3D" />
+                          <span style={{ color: '#E05C3D', fontSize: '11px' }}>
                             {reqCheck.failed.map(f => `${f.ability} ${f.current}/${f.required}`).join(', ')}
                           </span>
                         </div>
@@ -607,7 +607,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
           {/* MULTICLASS CONFIRMATION */}
           {mode === 'multiclass' && step === 2 && (
             <div>
-              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '20px' }}>
+              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '20px' }}>
                 Confirm Multiclass
               </h3>
 
@@ -620,7 +620,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                   <Plus size={24} color="#22C55E" />
                   <div>
-                    <h4 style={{ color: '#fff', fontSize: '16px', fontWeight: '700' }}>
+                    <h4 style={{ color: '#fff', fontSize: '16px', fontWeight: '400' }}>
                       Adding {selectedNewClass?.name}
                     </h4>
                     <p style={{ color: '#9CA3AF', fontSize: '14px' }}>
@@ -683,7 +683,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
           {/* Step 1: Overview */}
           {mode === 'levelup' && step === 1 && (
             <div>
-              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '20px' }}>
+              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '20px' }}>
                 Level {newLevel} Benefits
               </h3>
 
@@ -697,7 +697,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                   <Heart size={24} color="#ef4444" />
                   <div>
-                    <h4 style={{ color: '#ef4444', fontSize: '16px', fontWeight: '700' }}>Hit Points</h4>
+                    <h4 style={{ color: '#ef4444', fontSize: '16px', fontWeight: '400' }}>Hit Points</h4>
                     <p style={{ color: '#9CA3AF', fontSize: '13px' }}>
                       Roll d{hitDie} + {conMod >= 0 ? '+' : ''}{conMod} (CON) or take average ({averageHp})
                     </p>
@@ -745,7 +745,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                     }}>
                       <span style={{ color: '#fff', fontSize: '14px' }}>Rolled:</span>
                       <span style={{ 
-                        color: hpRoll === hitDie ? '#2A9D8F' : hpRoll === 1 ? '#ef4444' : playerBlue,
+                        color: hpRoll === hitDie ? '#F2A541' : hpRoll === 1 ? '#ef4444' : playerBlue,
                         fontSize: '24px',
                         fontWeight: '800'
                       }}>
@@ -759,7 +759,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                 </div>
 
                 <div style={{ marginTop: '12px', color: '#9CA3AF', fontSize: '13px' }}>
-                  New Max HP: <span style={{ color: '#ef4444', fontWeight: '700' }}>
+                  New Max HP: <span style={{ color: '#ef4444', fontWeight: '400' }}>
                     {currentMaxHp} → {currentMaxHp + (hpRoll !== null ? Math.max(1, hpRoll + conMod) : averageHp)}
                   </span>
                 </div>
@@ -778,7 +778,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                 }}>
                   <Award size={24} color="#8B5CF6" />
                   <div>
-                    <h4 style={{ color: '#8B5CF6', fontSize: '14px', fontWeight: '700' }}>Proficiency Bonus Increased!</h4>
+                    <h4 style={{ color: '#8B5CF6', fontSize: '14px', fontWeight: '400' }}>Proficiency Bonus Increased!</h4>
                     <p style={{ color: '#9CA3AF', fontSize: '13px' }}>
                       +{currentProfBonus} → +{newProfBonus}
                     </p>
@@ -798,7 +798,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                 }}>
                   <Sparkles size={24} color={playerBlue} />
                   <div>
-                    <h4 style={{ color: playerBlue, fontSize: '14px', fontWeight: '700' }}>
+                    <h4 style={{ color: playerBlue, fontSize: '14px', fontWeight: '400' }}>
                       Ability Score Improvement!
                     </h4>
                     <p style={{ color: '#9CA3AF', fontSize: '13px' }}>
@@ -854,7 +854,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                     border: 'none',
                     color: choiceType === 'asi' ? '#fff' : '#9CA3AF',
                     fontSize: '14px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     cursor: 'pointer'
                   }}
                 >
@@ -870,7 +870,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                     border: 'none',
                     color: choiceType === 'feat' ? '#fff' : '#9CA3AF',
                     fontSize: '14px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     cursor: 'pointer'
                   }}
                 >
@@ -950,7 +950,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                           }}
                         >
                           <Icon size={24} color={ability.color} style={{ marginBottom: '8px' }} />
-                          <div style={{ color: ability.color, fontSize: '12px', fontWeight: '700', marginBottom: '4px' }}>
+                          <div style={{ color: ability.color, fontSize: '12px', fontWeight: '400', marginBottom: '4px' }}>
                             {ability.label}
                           </div>
                           <div style={{ color: '#fff', fontSize: '24px', fontWeight: '800' }}>
@@ -1017,7 +1017,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                           {selectedFeat?.name === feat.name && <Check size={14} color="#fff" />}
                         </div>
                         <div>
-                          <div style={{ color: '#fff', fontSize: '14px', fontWeight: '600', marginBottom: '4px' }}>
+                          <div style={{ color: '#fff', fontSize: '14px', fontWeight: '400', marginBottom: '4px' }}>
                             {feat.name}
                           </div>
                           <div style={{ color: '#9CA3AF', fontSize: '12px', lineHeight: '1.5' }}>
@@ -1066,7 +1066,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
           {/* Step 3: Confirmation */}
           {mode === 'levelup' && step === 3 && (
             <div>
-              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '20px' }}>
+              <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '20px' }}>
                 Confirm Level Up
               </h3>
 
@@ -1080,7 +1080,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                   <TrendingUp size={24} color={playerBlue} />
                   <div>
-                    <h4 style={{ color: '#fff', fontSize: '16px', fontWeight: '700' }}>
+                    <h4 style={{ color: '#fff', fontSize: '16px', fontWeight: '400' }}>
                       {character?.name}
                     </h4>
                     <p style={{ color: playerBlue, fontSize: '14px' }}>
@@ -1093,7 +1093,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                   {/* HP Change */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                     <span style={{ color: '#9CA3AF' }}>Hit Points</span>
-                    <span style={{ color: '#ef4444', fontWeight: '600' }}>
+                    <span style={{ color: '#ef4444', fontWeight: '400' }}>
                       {currentMaxHp} → {currentMaxHp + (hpRoll !== null ? Math.max(1, hpRoll + conMod) : averageHp)}
                       <span style={{ color: '#22c55e', marginLeft: '8px' }}>
                         (+{hpRoll !== null ? Math.max(1, hpRoll + conMod) : averageHp})
@@ -1105,7 +1105,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                   {profBonusIncreased && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                       <span style={{ color: '#9CA3AF' }}>Proficiency Bonus</span>
-                      <span style={{ color: '#a855f7', fontWeight: '600' }}>
+                      <span style={{ color: '#a855f7', fontWeight: '400' }}>
                         +{currentProfBonus} → +{newProfBonus}
                       </span>
                     </div>
@@ -1115,7 +1115,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                   {choiceType === 'asi' && asiChoices.ability1 && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                       <span style={{ color: '#9CA3AF' }}>Ability Scores</span>
-                      <span style={{ color: playerBlue, fontWeight: '600' }}>
+                      <span style={{ color: playerBlue, fontWeight: '400' }}>
                         {asiChoices.ability1 === asiChoices.ability2 ? (
                           `+2 ${ABILITIES.find(a => a.key === asiChoices.ability1)?.fullName}`
                         ) : (
@@ -1130,7 +1130,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                     <div style={{ padding: '8px 0' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                         <span style={{ color: '#9CA3AF' }}>New Feat</span>
-                        <span style={{ color: '#a855f7', fontWeight: '600' }}>{selectedFeat.name}</span>
+                        <span style={{ color: '#a855f7', fontWeight: '400' }}>{selectedFeat.name}</span>
                       </div>
                       <p style={{ color: '#6B7280', fontSize: '12px', lineHeight: '1.5' }}>
                         {selectedFeat.description}
@@ -1157,7 +1157,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                   disabled={loading}
                   data-testid="confirm-level-up-btn"
                   style={{
-                    background: 'linear-gradient(135deg, #2A9D8F, #0891B2)',
+                    background: 'linear-gradient(135deg, #F2A541, #0891B2)',
                     border: 'none',
                     padding: '12px 32px',
                     display: 'flex',

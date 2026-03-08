@@ -11,7 +11,7 @@ export default defineConfig({
     ['json', { outputFile: '/root/.emergent/automation_output/20260308_165701/results.json' }],
   ],
   use: {
-    baseURL: 'https://rook-campaign-core.preview.emergentagent.com',
+    baseURL: 'https://rook-edition.preview.emergentagent.com',
     screenshot: 'only-on-failure',
     trace: 'off',
     headless: true,

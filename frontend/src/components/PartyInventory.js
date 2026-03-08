@@ -199,7 +199,7 @@ function PartyInventory({ campaignId, players = [] }) {
     <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
       {/* Currency Section */}
       <div className="glow-panel" style={{ padding: '16px' }}>
-        <h3 style={{ fontSize: '16px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <h3 style={{ fontSize: '16px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '400', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Coins size={18} style={{ color: '#eab308' }} /> Party Treasury
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
@@ -211,11 +211,11 @@ function PartyInventory({ campaignId, players = [] }) {
             { key: 'copper', label: 'CP', color: '#f97316' }
           ].map(coin => (
             <div key={coin.key} style={{ background: 'rgba(10, 10, 40, 0.5)', border: '2px solid #1e40af', borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
-              <div style={{ fontSize: '10px', color: coin.color, fontWeight: '700', marginBottom: '4px' }}>{coin.label}</div>
+              <div style={{ fontSize: '10px', color: coin.color, fontWeight: '400', marginBottom: '4px' }}>{coin.label}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '2px', justifyContent: 'center' }}>
-                <button onClick={() => adjustCurrency(coin.key, -1)} style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', borderRadius: '4px', color: '#ef4444', width: '20px', height: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: '700' }}>-</button>
-                <input type="number" value={currency[coin.key] || 0} onChange={(e) => handleCurrencyChange(coin.key, e.target.value)} style={{ width: '50px', textAlign: 'center', background: 'rgba(10, 10, 40, 0.6)', border: '1px solid #1e40af', borderRadius: '4px', color: '#fff', padding: '2px', fontSize: '12px', fontWeight: '700' }} />
-                <button onClick={() => adjustCurrency(coin.key, 1)} style={{ background: 'rgba(34, 197, 94, 0.2)', border: '1px solid #22c55e', borderRadius: '4px', color: '#22c55e', width: '20px', height: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: '700' }}>+</button>
+                <button onClick={() => adjustCurrency(coin.key, -1)} style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', borderRadius: '4px', color: '#ef4444', width: '20px', height: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: '400' }}>-</button>
+                <input type="number" value={currency[coin.key] || 0} onChange={(e) => handleCurrencyChange(coin.key, e.target.value)} style={{ width: '50px', textAlign: 'center', background: 'rgba(10, 10, 40, 0.6)', border: '1px solid #1e40af', borderRadius: '4px', color: '#fff', padding: '2px', fontSize: '12px', fontWeight: '400' }} />
+                <button onClick={() => adjustCurrency(coin.key, 1)} style={{ background: 'rgba(34, 197, 94, 0.2)', border: '1px solid #22c55e', borderRadius: '4px', color: '#22c55e', width: '20px', height: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: '400' }}>+</button>
               </div>
             </div>
           ))}
@@ -229,7 +229,7 @@ function PartyInventory({ campaignId, players = [] }) {
           {/* Inventory Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
             <div>
-              <h3 style={{ fontSize: '16px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '16px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Package size={18} style={{ color: '#22c55e' }} /> Party Loot
               </h3>
               <p style={{ fontSize: '11px', color: '#67e8f9', marginTop: '2px' }}>
@@ -257,7 +257,7 @@ function PartyInventory({ campaignId, players = [] }) {
               <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search..." className="input-glow" style={{ paddingLeft: '32px', fontSize: '12px', height: '32px' }} />
             </div>
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-              <button onClick={() => setFilterType('all')} style={{ padding: '6px 10px', borderRadius: '6px', border: `2px solid ${filterType === 'all' ? '#22c55e' : '#1e40af'}`, background: filterType === 'all' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(10, 10, 40, 0.5)', color: filterType === 'all' ? '#22c55e' : '#94a3b8', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}>All</button>
+              <button onClick={() => setFilterType('all')} style={{ padding: '6px 10px', borderRadius: '6px', border: `2px solid ${filterType === 'all' ? '#22c55e' : '#1e40af'}`, background: filterType === 'all' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(10, 10, 40, 0.5)', color: filterType === 'all' ? '#22c55e' : '#94a3b8', fontSize: '11px', fontWeight: '400', cursor: 'pointer' }}>All</button>
               {ITEM_TYPES.map(type => (
                 <button key={type.id} onClick={() => setFilterType(type.id)} style={{ padding: '6px 8px', borderRadius: '6px', border: `2px solid ${filterType === type.id ? type.color : '#1e40af'}`, background: filterType === type.id ? `${type.color}30` : 'rgba(10, 10, 40, 0.5)', color: filterType === type.id ? type.color : '#94a3b8', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                   <type.icon size={12} />
@@ -269,7 +269,7 @@ function PartyInventory({ campaignId, players = [] }) {
           {/* Add Item Form */}
           {showAddForm && (
             <div className="glow-panel" style={{ marginBottom: '12px', borderColor: '#22c55e', padding: '12px' }}>
-              <h4 style={{ color: '#22c55e', fontSize: '13px', fontWeight: '700', marginBottom: '12px' }}>Add New Item</h4>
+              <h4 style={{ color: '#22c55e', fontSize: '13px', fontWeight: '400', marginBottom: '12px' }}>Add New Item</h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '10px', color: '#67e8f9', marginBottom: '2px' }}>Name *</label>
@@ -309,7 +309,7 @@ function PartyInventory({ campaignId, players = [] }) {
           {partyItems.length === 0 ? (
             <div className="glow-panel" style={{ padding: '30px', textAlign: 'center' }}>
               <Package size={36} style={{ color: '#1e40af', margin: '0 auto 12px' }} />
-              <h4 style={{ fontSize: '14px', color: '#ffffff', marginBottom: '6px', fontFamily: 'Montserrat', fontWeight: '700' }}>
+              <h4 style={{ fontSize: '14px', color: '#ffffff', marginBottom: '6px', fontFamily: 'Montserrat', fontWeight: '400' }}>
                 {items.length === 0 ? 'Inventory Empty' : 'All Items Assigned'}
               </h4>
               <p style={{ color: '#94a3b8', fontSize: '12px' }}>
@@ -345,7 +345,7 @@ function PartyInventory({ campaignId, players = [] }) {
                           <TypeIcon size={16} style={{ color: typeInfo.color }} />
                         </div>
                         <div>
-                          <div style={{ color: '#ffffff', fontWeight: '700', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <div style={{ color: '#ffffff', fontWeight: '400', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {item.name}
                             {item.is_magical && <Sparkles size={10} style={{ color: '#eab308' }} />}
                           </div>
@@ -370,7 +370,7 @@ function PartyInventory({ campaignId, players = [] }) {
         {/* Right Column - Players Drop Zones */}
         {players.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <h4 style={{ fontSize: '14px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+            <h4 style={{ fontSize: '14px', color: '#ffffff', fontFamily: 'Montserrat', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
               <Users size={16} style={{ color: '#4a7dff' }} /> Assign to Player
             </h4>
             
@@ -395,11 +395,11 @@ function PartyInventory({ campaignId, players = [] }) {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: playerItems.length > 0 ? '8px' : '0' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #4a7dff 0%, #22c55e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#fff', fontSize: '13px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #4a7dff 0%, #22c55e 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '400', color: '#fff', fontSize: '13px' }}>
                       {player.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <div style={{ color: '#fff', fontWeight: '700', fontSize: '13px' }}>{player.name}</div>
+                      <div style={{ color: '#fff', fontWeight: '400', fontSize: '13px' }}>{player.name}</div>
                       <div style={{ fontSize: '10px', color: '#67e8f9' }}>{player.class || 'Adventurer'} {player.level ? `Lv.${player.level}` : ''}</div>
                     </div>
                     <div style={{ marginLeft: 'auto', fontSize: '10px', color: '#64748b' }}>

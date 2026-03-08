@@ -13,19 +13,19 @@ import { UpgradePrompt } from '@/components/ui/UpgradePrompt';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Dark Minimalist Theme - NEW #B91C1C
+// Dark Minimalist Theme - NEW #C54B2C
 const theme = {
   bg: {
     black: '#0D0D0D',
     dark: '#141414',
-    panel: '#1A1A1A',
-    card: '#1F1F1F',
-    hover: '#2A2A2A',
+    panel: '#1F1F1F',
+    card: '#262626',
+    hover: '#333333',
     elevated: '#333333'
   },
   accent: {
-    red: '#B91C1C',
-    redHover: '#DC2626',
+    red: '#C54B2C',
+    redHover: '#E05C3D',
     redSubtle: 'rgba(225, 29, 72, 0.15)'
   },
   text: {
@@ -172,7 +172,7 @@ function CampaignList({ username, onLogout }) {
             <h1 style={{ 
               fontSize: '28px', 
               color: theme.text.white, 
-              fontWeight: '700',
+              fontWeight: '400',
               letterSpacing: '2px'
             }}>
               ROOKIE QUEST<br />
@@ -184,7 +184,7 @@ function CampaignList({ username, onLogout }) {
                 fontSize: '24px', 
                 color: theme.text.white, 
                 marginBottom: '4px',
-                fontWeight: '700'
+                fontWeight: '400'
               }}>
                 Your Campaigns
               </h2>
@@ -269,7 +269,7 @@ function CampaignList({ username, onLogout }) {
                     border: 'none',
                     color: theme.text.white,
                     padding: '10px 20px',
-                    fontWeight: '600'
+                    fontWeight: '400'
                   }}
                 >
                   <Plus size={20} />
@@ -286,7 +286,7 @@ function CampaignList({ username, onLogout }) {
                   <DialogTitle style={{ 
                     fontSize: '24px', 
                     color: theme.text.white,
-                    fontWeight: '700'
+                    fontWeight: '400'
                   }}>
                     Create New Campaign
                   </DialogTitle>
@@ -298,7 +298,7 @@ function CampaignList({ username, onLogout }) {
                       marginBottom: '10px', 
                       color: theme.text.white, 
                       fontSize: '12px', 
-                      fontWeight: '600',
+                      fontWeight: '400',
                       textTransform: 'uppercase',
                       letterSpacing: '1px'
                     }}>
@@ -324,7 +324,7 @@ function CampaignList({ username, onLogout }) {
                       marginBottom: '10px', 
                       color: theme.text.white, 
                       fontSize: '12px', 
-                      fontWeight: '600',
+                      fontWeight: '400',
                       textTransform: 'uppercase',
                       letterSpacing: '1px'
                     }}>
@@ -357,7 +357,7 @@ function CampaignList({ username, onLogout }) {
                       marginBottom: '10px', 
                       color: theme.text.white, 
                       fontSize: '12px', 
-                      fontWeight: '600',
+                      fontWeight: '400',
                       textTransform: 'uppercase',
                       letterSpacing: '1px'
                     }}>
@@ -407,7 +407,7 @@ function CampaignList({ username, onLogout }) {
                         border: 'none',
                         color: theme.text.white,
                         padding: '10px 20px',
-                        fontWeight: '600'
+                        fontWeight: '400'
                       }}
                     >
                       Create Campaign
@@ -486,7 +486,7 @@ function CampaignList({ username, onLogout }) {
               fontSize: '24px', 
               color: theme.text.white, 
               marginBottom: '12px',
-              fontWeight: '700'
+              fontWeight: '400'
             }}>
               No Campaigns Yet
             </h2>
@@ -500,7 +500,7 @@ function CampaignList({ username, onLogout }) {
                 border: 'none',
                 color: theme.text.white,
                 padding: '12px 24px',
-                fontWeight: '600'
+                fontWeight: '400'
               }}
             >
               <Plus size={20} style={{ marginRight: '8px' }} />
@@ -536,7 +536,7 @@ function CampaignList({ username, onLogout }) {
                     fontSize: '22px', 
                     color: theme.text.white, 
                     marginBottom: '12px',
-                    fontWeight: '700'
+                    fontWeight: '400'
                   }}>
                     {campaign.name}
                   </h3>
@@ -545,7 +545,7 @@ function CampaignList({ username, onLogout }) {
                     color: theme.accent.red,
                     background: theme.accent.redSubtle,
                     padding: '4px 10px',
-                    fontWeight: '600'
+                    fontWeight: '400'
                   }}>
                     {campaign.system || '5e 2024 Compatible'}
                   </span>
@@ -588,7 +588,7 @@ function CampaignList({ username, onLogout }) {
                       padding: '12px 16px',
                       background: 'rgba(239, 68, 68, 0.1)',
                       border: '1px solid rgba(239, 68, 68, 0.3)',
-                      color: '#DC2626'
+                      color: '#E05C3D'
                     }}
                   >
                     <Trash2 size={18} />

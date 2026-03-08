@@ -14,22 +14,22 @@ const API = `${BACKEND_URL}/api`;
 const theme = {
   bg: {
     black: '#0D0D0D',
-    dark: '#121212',
-    panel: '#1A1A1A',
-    card: '#1A6B64',
-    hover: '#2A9D8F'
+    dark: '#1A1A1A',
+    panel: '#1F1F1F',
+    card: '#D99033',
+    hover: '#F2A541'
   },
   gm: {
-    primary: '#B91C1C',
-    hover: '#B91C1C',
+    primary: '#C54B2C',
+    hover: '#C54B2C',
     subtle: 'rgba(185, 28, 28, 0.15)',
     border: 'rgba(185, 28, 28, 0.4)',
     glow: '0 0 20px rgba(185, 28, 28, 0.3)'
   },
   player: {
-    primary: '#2A9D8F',
-    cyan: '#1A6B64',
-    hover: '#3DB5A6',
+    primary: '#F2A541',
+    cyan: '#D99033',
+    hover: '#FFB855',
     subtle: 'rgba(42, 157, 143, 0.15)',
     border: 'rgba(42, 157, 143, 0.4)',
     glow: '0 0 20px rgba(42, 157, 143, 0.3)'
@@ -220,7 +220,7 @@ function AdminPage({ username }) {
           marginBottom: '40px',
           paddingBottom: '24px',
           borderBottom: '1px solid',
-          borderImage: 'linear-gradient(90deg, #B91C1C, #2A9D8F) 1'
+          borderImage: 'linear-gradient(90deg, #C54B2C, #F2A541) 1'
         }}>
           <Button 
             onClick={() => navigate('/home')} 
@@ -237,8 +237,8 @@ function AdminPage({ username }) {
             <h1 style={{ 
               fontSize: '28px', 
               color: theme.text.white,
-              fontFamily: 'Cityworm, sans-serif',
-              fontWeight: '700',
+              fontFamily: "Eros Book, sans-serif",
+              fontWeight: '400',
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
@@ -339,13 +339,13 @@ function AdminPage({ username }) {
               borderBottom: activeTab === 'promos' ? `2px solid ${theme.gm.primary}` : `1px solid ${theme.border}`,
               color: activeTab === 'promos' ? theme.gm.primary : theme.text.muted,
               fontSize: '14px',
-              fontWeight: '700',
+              fontWeight: '400',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               letterSpacing: '1px'
             }}
           >
@@ -362,13 +362,13 @@ function AdminPage({ username }) {
               borderBottom: activeTab === 'reviews' ? `2px solid ${theme.player.cyan}` : `1px solid ${theme.border}`,
               color: activeTab === 'reviews' ? theme.player.cyan : theme.text.muted,
               fontSize: '14px',
-              fontWeight: '700',
+              fontWeight: '400',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               letterSpacing: '1px'
             }}
           >
@@ -385,13 +385,13 @@ function AdminPage({ username }) {
               borderBottom: activeTab === 'rules' ? `2px solid ${theme.legendary.primary}` : `1px solid ${theme.border}`,
               color: activeTab === 'rules' ? theme.legendary.primary : theme.text.muted,
               fontSize: '14px',
-              fontWeight: '700',
+              fontWeight: '400',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               letterSpacing: '1px'
             }}
           >
@@ -416,8 +416,8 @@ function AdminPage({ username }) {
               <h2 style={{ 
                 color: theme.gm.primary, 
                 fontSize: '18px',
-                fontFamily: 'Cityworm, sans-serif',
-                fontWeight: '700',
+                fontFamily: "Eros Book, sans-serif",
+                fontWeight: '400',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
@@ -436,7 +436,7 @@ function AdminPage({ username }) {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  fontWeight: '600'
+                  fontWeight: '400'
                 }}
               >
                 <Plus size={16} />
@@ -455,9 +455,9 @@ function AdminPage({ username }) {
                 <h3 style={{ 
                   color: theme.gm.primary, 
                   fontSize: '14px', 
-                  fontWeight: '700', 
+                  fontWeight: '400', 
                   marginBottom: '20px',
-                  fontFamily: 'Cityworm, sans-serif',
+                  fontFamily: "Eros Book, sans-serif",
                   letterSpacing: '1px'
                 }}>
                   CREATE NEW PROMO CODE
@@ -598,7 +598,7 @@ function AdminPage({ username }) {
                           <span style={{
                             fontFamily: 'Montserrat, monospace',
                             fontSize: '16px',
-                            fontWeight: '700',
+                            fontWeight: '400',
                             color: style.color,
                             letterSpacing: '1px'
                           }}>
@@ -609,7 +609,7 @@ function AdminPage({ username }) {
                             color: style.color,
                             padding: '4px 12px',
                             fontSize: '11px',
-                            fontWeight: '600'
+                            fontWeight: '400'
                           }}>
                             {style.label}
                           </span>
@@ -668,8 +668,8 @@ function AdminPage({ username }) {
             <h2 style={{ 
               color: theme.player.cyan, 
               fontSize: '18px',
-              fontFamily: 'Cityworm, sans-serif',
-              fontWeight: '700',
+              fontFamily: "Eros Book, sans-serif",
+              fontWeight: '400',
               marginBottom: '20px',
               display: 'flex',
               alignItems: 'center',
@@ -702,7 +702,7 @@ function AdminPage({ username }) {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                          <span style={{ color: theme.text.white, fontWeight: '600' }}>{review.username}</span>
+                          <span style={{ color: theme.text.white, fontWeight: '400' }}>{review.username}</span>
                           <div style={{ display: 'flex' }}>
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star 
@@ -719,7 +719,7 @@ function AdminPage({ username }) {
                               color: theme.player.cyan,
                               padding: '2px 8px',
                               fontSize: '10px',
-                              fontWeight: '600'
+                              fontWeight: '400'
                             }}>
                               VISIBLE
                             </span>
@@ -774,8 +774,8 @@ function AdminPage({ username }) {
           <h2 style={{ 
             color: theme.legendary.primary, 
             fontSize: '18px',
-            fontFamily: 'Cityworm, sans-serif',
-            fontWeight: '700',
+            fontFamily: "Eros Book, sans-serif",
+            fontWeight: '400',
             marginBottom: '20px',
             display: 'flex',
             alignItems: 'center',
@@ -812,15 +812,15 @@ function AdminPage({ username }) {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       fontSize: '14px',
                       color: index < 3 ? '#000' : theme.text.white
                     }}>
                       {index + 1}
                     </span>
-                    <span style={{ color: theme.text.white, fontWeight: '600' }}>{user.username}</span>
+                    <span style={{ color: theme.text.white, fontWeight: '400' }}>{user.username}</span>
                   </div>
-                  <span style={{ color: '#22c55e', fontWeight: '700' }}>
+                  <span style={{ color: '#22c55e', fontWeight: '400' }}>
                     {user.referrals} referrals
                   </span>
                 </div>

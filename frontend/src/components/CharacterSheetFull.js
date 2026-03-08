@@ -56,8 +56,8 @@ const SKILLS = [
 
 // Ability score data - Tron Legacy Blue theme for players
 const ABILITIES = [
-  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#2A9D8F', icon: Dumbbell },
-  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#2A9D8F', icon: Zap },
+  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#F2A541', icon: Dumbbell },
+  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#F2A541', icon: Zap },
   { key: 'constitution', label: 'CON', fullName: 'Constitution', color: '#0EA5E9', icon: Shield },
   { key: 'intelligence', label: 'INT', fullName: 'Intelligence', color: '#6366F1', icon: Brain },
   { key: 'wisdom', label: 'WIS', fullName: 'Wisdom', color: '#8B5CF6', icon: Eye },
@@ -87,17 +87,17 @@ const SPELL_LEVELS = {
 };
 
 // Blue theme for player section - Tron Legacy aesthetic
-const playerBlue = '#2A9D8F';
-const playerBlueHover = '#3DB5A6';
+const playerBlue = '#F2A541';
+const playerBlueHover = '#FFB855';
 const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
-const playerCyan = '#2A9D8F';     // Tron Legacy cyan for highlights
+const playerCyan = '#F2A541';     // Tron Legacy cyan for highlights
 const playerCyanGlow = '#22D3EE'; // Brighter cyan for glows
-const playerSuccess = '#2A9D8F';  // Use cyan instead of green for success states
-const playerHP = '#DC2626';       // Keep red for HP (damage is universal)
+const playerSuccess = '#F2A541';  // Use cyan instead of green for success states
+const playerHP = '#E05C3D';       // Keep red for HP (damage is universal)
 
 // Dark panel styles (matching dark theme)
 const glassPanel = {
-  background: '#1A1A1A',
+  background: '#1F1F1F',
   border: '1px solid rgba(255, 255, 255, 0.1)',
 };
 
@@ -129,7 +129,7 @@ function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBon
         <span style={{ 
           color: ability.color, 
           fontSize: '10px', 
-          fontWeight: '700',
+          fontWeight: '400',
           letterSpacing: '0.5px'
         }}>
           {ability.label}
@@ -202,8 +202,8 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
             width: '16px',
             height: '16px',
             borderRadius: '3px',
-            border: isProficient ? '2px solid #2A9D8F' : '2px solid #475569',
-            background: isProficient ? '#2A9D8F' : 'transparent',
+            border: isProficient ? '2px solid #F2A541' : '2px solid #475569',
+            background: isProficient ? '#F2A541' : 'transparent',
             marginRight: '8px',
             display: 'flex',
             alignItems: 'center',
@@ -216,11 +216,11 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
         </button>
       )}
       
-      <Icon size={12} color={isProficient ? '#2A9D8F' : '#64748b'} style={{ marginRight: '6px', flexShrink: 0 }} />
+      <Icon size={12} color={isProficient ? '#F2A541' : '#64748b'} style={{ marginRight: '6px', flexShrink: 0 }} />
       
       <span style={{ 
         flex: 1,
-        color: isProficient ? '#2A9D8F' : '#e2e8f0',
+        color: isProficient ? '#F2A541' : '#e2e8f0',
         fontSize: '12px',
         fontWeight: isProficient ? '600' : '400',
         whiteSpace: 'nowrap',
@@ -243,7 +243,7 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
       <DiceRollButton 
         modifier={totalMod}
         label={skill.name}
-        color={isProficient ? '#2A9D8F' : '#fff'}
+        color={isProficient ? '#F2A541' : '#fff'}
         size="small"
         showDice={false}
       />
@@ -257,8 +257,8 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
   
   // Tron Legacy blue gradient for spell levels
   const levelColor = spell.level === 0 ? '#94a3b8' : 
-    spell.level <= 2 ? '#2A9D8F' : 
-    spell.level <= 5 ? '#2A9D8F' : 
+    spell.level <= 2 ? '#F2A541' : 
+    spell.level <= 5 ? '#F2A541' : 
     spell.level <= 7 ? '#6366F1' : '#8B5CF6';
   
   return (
@@ -285,7 +285,7 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
               width: '24px',
               height: '24px',
               borderRadius: '6px',
-              border: isPrepared ? '2px solid #2A9D8F' : '2px solid #475569',
+              border: isPrepared ? '2px solid #F2A541' : '2px solid #475569',
               background: isPrepared ? 'rgba(6, 182, 212, 0.2)' : 'transparent',
               marginRight: '12px',
               display: 'flex',
@@ -294,13 +294,13 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
               cursor: 'pointer'
             }}
           >
-            {isPrepared && <Check size={14} color="#2A9D8F" />}
+            {isPrepared && <Check size={14} color="#F2A541" />}
           </button>
         )}
         
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>
+            <span style={{ color: '#fff', fontWeight: '400', fontSize: '14px' }}>
               {spell.name}
             </span>
             {spell.concentration && (
@@ -310,7 +310,7 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
                 fontSize: '9px',
                 padding: '2px 6px',
                 borderRadius: '4px',
-                fontWeight: '600'
+                fontWeight: '400'
               }}>
                 CONC
               </span>
@@ -322,7 +322,7 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
                 fontSize: '9px',
                 padding: '2px 6px',
                 borderRadius: '4px',
-                fontWeight: '600'
+                fontWeight: '400'
               }}>
                 RITUAL
               </span>
@@ -366,7 +366,7 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
           </p>
           {spell.higher_levels && (
             <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '6px' }}>
-              <span style={{ color: '#3b82f6', fontSize: '10px', fontWeight: '600' }}>AT HIGHER LEVELS</span>
+              <span style={{ color: '#3b82f6', fontSize: '10px', fontWeight: '400' }}>AT HIGHER LEVELS</span>
               <p style={{ color: '#93c5fd', fontSize: '11px', marginTop: '4px' }}>{spell.higher_levels}</p>
             </div>
           )}
@@ -382,7 +382,7 @@ function FeatureCard({ feature, source }) {
   
   // Tron Legacy blue palette for feature sources
   const sourceColors = {
-    class: { bg: 'rgba(59, 130, 246, 0.12)', text: '#3DB5A6' },
+    class: { bg: 'rgba(59, 130, 246, 0.12)', text: '#FFB855' },
     race: { bg: 'rgba(6, 182, 212, 0.12)', text: '#22D3EE' },
     feat: { bg: 'rgba(99, 102, 241, 0.12)', text: '#818CF8' },
     background: { bg: 'rgba(139, 92, 246, 0.12)', text: '#A78BFA' }
@@ -405,7 +405,7 @@ function FeatureCard({ feature, source }) {
       >
         <Crown size={16} color={colors.text} style={{ marginRight: '12px' }} />
         <div style={{ flex: 1 }}>
-          <span style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>
+          <span style={{ color: '#fff', fontWeight: '400', fontSize: '14px' }}>
             {feature.name}
           </span>
           <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
@@ -416,7 +416,7 @@ function FeatureCard({ feature, source }) {
               padding: '2px 6px', 
               borderRadius: '4px',
               textTransform: 'uppercase',
-              fontWeight: '600'
+              fontWeight: '400'
             }}>
               {source}
             </span>
@@ -777,7 +777,7 @@ function CharacterSheetFull() {
                 data-testid="level-up-btn"
                 onClick={() => setShowLevelUpModal(true)}
                 style={{ 
-                  background: 'linear-gradient(135deg, #2A9D8F 0%, #0891B2 100%)',
+                  background: 'linear-gradient(135deg, #F2A541 0%, #0891B2 100%)',
                   border: 'none',
                   borderRadius: '0px',
                   padding: '10px 16px',
@@ -795,7 +795,7 @@ function CharacterSheetFull() {
                 data-testid="join-campaign-btn"
                 onClick={() => setShowJoinModal(true)}
                 style={{ 
-                  background: 'linear-gradient(135deg, #2A9D8F 0%, #2563EB 100%)',
+                  background: 'linear-gradient(135deg, #F2A541 0%, #2563EB 100%)',
                   border: 'none',
                   borderRadius: '0px',
                   padding: '10px 16px',
@@ -829,7 +829,7 @@ function CharacterSheetFull() {
                   onClick={handleSave}
                   disabled={saving}
                   style={{ 
-                    background: 'linear-gradient(135deg, #2A9D8F 0%, #0891B2 100%)',
+                    background: 'linear-gradient(135deg, #F2A541 0%, #0891B2 100%)',
                     border: 'none',
                     borderRadius: '0px',
                     padding: '10px 16px'
@@ -862,7 +862,7 @@ function CharacterSheetFull() {
           ...glassPanel,
           padding: '10px 16px',
           marginBottom: '12px',
-          background: 'linear-gradient(180deg, #1A1A1A 0%, #121212 100%)',
+          background: 'linear-gradient(180deg, #1F1F1F 0%, #1A1A1A 100%)',
           borderBottom: '2px solid rgba(59, 130, 246, 0.3)'
         }}>
           {/* Character Info Row */}
@@ -883,7 +883,7 @@ function CharacterSheetFull() {
               borderRadius: '6px'
             }}>
               <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>NAME</span>
-              <span style={{ color: '#67e8f9', fontWeight: '700', fontSize: '14px' }}>{data.name}</span>
+              <span style={{ color: '#67e8f9', fontWeight: '400', fontSize: '14px' }}>{data.name}</span>
             </div>
 
             {/* Race */}
@@ -894,7 +894,7 @@ function CharacterSheetFull() {
               borderRadius: '6px'
             }}>
               <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>RACE</span>
-              <span style={{ color: '#22c55e', fontWeight: '600', fontSize: '13px' }}>{data.race}</span>
+              <span style={{ color: '#22c55e', fontWeight: '400', fontSize: '13px' }}>{data.race}</span>
             </div>
 
             {/* Class */}
@@ -905,7 +905,7 @@ function CharacterSheetFull() {
               borderRadius: '6px'
             }}>
               <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>CLASS</span>
-              <span style={{ color: '#a855f7', fontWeight: '600', fontSize: '13px' }}>
+              <span style={{ color: '#a855f7', fontWeight: '400', fontSize: '13px' }}>
                 Lvl {data.level} {data.character_class}
               </span>
             </div>
@@ -919,7 +919,7 @@ function CharacterSheetFull() {
                 borderRadius: '6px'
               }}>
                 <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>SUBCLASS</span>
-                <span style={{ color: '#ec4899', fontWeight: '600', fontSize: '13px' }}>{data.subclass}</span>
+                <span style={{ color: '#ec4899', fontWeight: '400', fontSize: '13px' }}>{data.subclass}</span>
               </div>
             )}
 
@@ -932,7 +932,7 @@ function CharacterSheetFull() {
                 borderRadius: '6px'
               }}>
                 <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>BACKGROUND</span>
-                <span style={{ color: '#fb923c', fontWeight: '600', fontSize: '13px' }}>{data.background}</span>
+                <span style={{ color: '#fb923c', fontWeight: '400', fontSize: '13px' }}>{data.background}</span>
               </div>
             )}
 
@@ -945,7 +945,7 @@ function CharacterSheetFull() {
                 borderRadius: '6px'
               }}>
                 <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>MULTICLASS</span>
-                <span style={{ color: '#eab308', fontWeight: '600', fontSize: '12px' }}>
+                <span style={{ color: '#eab308', fontWeight: '400', fontSize: '12px' }}>
                   {Object.entries(data.multiclass_levels).map(([cls, lvl]) => `${cls} ${lvl}`).join(' / ')}
                 </span>
               </div>
@@ -989,7 +989,7 @@ function CharacterSheetFull() {
                     />
                   </div>
                 ) : (
-                  <span style={{ color: '#ef4444', fontWeight: '700', fontSize: '14px' }}>
+                  <span style={{ color: '#ef4444', fontWeight: '400', fontSize: '14px' }}>
                     {data.current_hit_points}/{data.max_hit_points}
                   </span>
                 )}
@@ -1017,7 +1017,7 @@ function CharacterSheetFull() {
                     style={{ width: '32px', padding: '2px', textAlign: 'center', fontSize: '12px' }}
                   />
                 ) : (
-                  <span style={{ color: '#3b82f6', fontWeight: '700', fontSize: '14px' }}>
+                  <span style={{ color: '#3b82f6', fontWeight: '400', fontSize: '14px' }}>
                     {data.armor_class}
                   </span>
                 )}
@@ -1056,10 +1056,10 @@ function CharacterSheetFull() {
               alignItems: 'center',
               gap: '6px'
             }}>
-              <Activity size={14} color="#2A9D8F" />
+              <Activity size={14} color="#F2A541" />
               <div>
                 <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>SPEED</span>
-                <span style={{ color: '#2A9D8F', fontWeight: '700', fontSize: '14px' }}>
+                <span style={{ color: '#F2A541', fontWeight: '400', fontSize: '14px' }}>
                   {data.speed}ft
                 </span>
               </div>
@@ -1078,7 +1078,7 @@ function CharacterSheetFull() {
               <Award size={14} color="#8B5CF6" />
               <div>
                 <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>PROF</span>
-                <span style={{ color: '#8B5CF6', fontWeight: '700', fontSize: '14px' }}>
+                <span style={{ color: '#8B5CF6', fontWeight: '400', fontSize: '14px' }}>
                   +{profBonus}
                 </span>
               </div>
@@ -1117,7 +1117,7 @@ function CharacterSheetFull() {
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <Icon size={12} color={ability.color} />
-                      <span style={{ color: ability.color, fontSize: '9px', fontWeight: '700' }}>
+                      <span style={{ color: ability.color, fontSize: '9px', fontWeight: '400' }}>
                         {ability.label}
                       </span>
                     </div>
@@ -1179,7 +1179,7 @@ function CharacterSheetFull() {
           }}>
             {/* All Skills Box */}
             <div style={{ ...glassPanel, padding: '10px', flex: 1 }}>
-              <h4 style={{ color: '#67e8f9', fontSize: '10px', fontWeight: '700', marginBottom: '8px', letterSpacing: '0.5px' }}>
+              <h4 style={{ color: '#67e8f9', fontSize: '10px', fontWeight: '400', marginBottom: '8px', letterSpacing: '0.5px' }}>
                 ALL SKILLS
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -1206,12 +1206,12 @@ function CharacterSheetFull() {
                         background: isProficient ? 'rgba(6, 182, 212, 0.08)' : 'transparent',
                         borderRadius: '3px',
                         cursor: editMode ? 'pointer' : 'default',
-                        borderLeft: isProficient ? '2px solid #2A9D8F' : '2px solid transparent'
+                        borderLeft: isProficient ? '2px solid #F2A541' : '2px solid transparent'
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', minWidth: 0 }}>
                         <span style={{ 
-                          color: isProficient ? '#2A9D8F' : '#94a3b8', 
+                          color: isProficient ? '#F2A541' : '#94a3b8', 
                           fontSize: '10px',
                           fontWeight: isProficient ? '600' : '400',
                           textDecoration: isProficient ? 'underline' : 'none',
@@ -1228,7 +1228,7 @@ function CharacterSheetFull() {
                       <DiceRollButton 
                         modifier={totalMod}
                         label={skill.name}
-                        color={isProficient ? '#2A9D8F' : '#64748b'}
+                        color={isProficient ? '#F2A541' : '#64748b'}
                         size="small"
                         showDice={false}
                       />
@@ -1294,14 +1294,14 @@ function CharacterSheetFull() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
               {/* ACTIONS Column */}
               <div style={{ ...glassPanel, padding: '12px' }}>
-                <h3 style={{ color: '#ef4444', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h3 style={{ color: '#ef4444', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Swords size={16} /> ACTIONS
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {/* Weapon Attacks */}
                   {(data.attacks || []).length > 0 || (data.equipment || []).filter(e => e.equipped && (e.type === 'weapon' || e.damage)).length > 0 ? (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginBottom: '2px' }}>ATTACK</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginBottom: '2px' }}>ATTACK</div>
                       {(data.attacks || []).map((attack, i) => {
                         const abilityMod = attack.ability ? calculateModifier(data[attack.ability]) : calculateModifier(data.strength);
                         const attackBonus = abilityMod + (attack.proficient !== false ? profBonus : 0) + (attack.bonus || 0);
@@ -1351,7 +1351,7 @@ function CharacterSheetFull() {
                   {/* Cast a Spell (if caster) */}
                   {data.spellcasting_ability && (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>CAST A SPELL</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>CAST A SPELL</div>
                       <div style={{
                         padding: '8px 10px',
                         background: 'rgba(168, 85, 247, 0.1)',
@@ -1360,11 +1360,11 @@ function CharacterSheetFull() {
                       }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                           <span style={{ color: '#a855f7', fontSize: '11px', fontWeight: '500' }}>Spell Attack</span>
-                          <span style={{ color: '#a855f7', fontWeight: '700', fontSize: '13px' }}>+{profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}</span>
+                          <span style={{ color: '#a855f7', fontWeight: '400', fontSize: '13px' }}>+{profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ color: '#a855f7', fontSize: '11px', fontWeight: '500' }}>Save DC</span>
-                          <span style={{ color: '#a855f7', fontWeight: '700', fontSize: '13px' }}>{8 + profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}</span>
+                          <span style={{ color: '#a855f7', fontWeight: '400', fontSize: '13px' }}>{8 + profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}</span>
                         </div>
                       </div>
                     </>
@@ -1373,7 +1373,7 @@ function CharacterSheetFull() {
                   {/* Class Actions */}
                   {combatFeatures.actions.length > 0 && (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>CLASS ACTIONS</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>CLASS ACTIONS</div>
                       {combatFeatures.actions.map((action, i) => (
                         <div key={`class-action-${i}`} style={{
                           padding: '8px 10px',
@@ -1395,7 +1395,7 @@ function CharacterSheetFull() {
                   {/* Action Modifiers (like Sneak Attack, Divine Smite) */}
                   {combatFeatures.actionModifiers.length > 0 && (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>ATTACK MODIFIERS</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>ATTACK MODIFIERS</div>
                       {combatFeatures.actionModifiers.map((mod, i) => (
                         <div key={`action-mod-${i}`} style={{
                           padding: '8px 10px',
@@ -1415,7 +1415,7 @@ function CharacterSheetFull() {
                   )}
 
                   {/* Standard Actions */}
-                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>STANDARD ACTIONS</div>
+                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>STANDARD ACTIONS</div>
                   {[
                     { name: 'Dash', desc: 'Double movement' },
                     { name: 'Disengage', desc: 'No opportunity attacks' },
@@ -1441,14 +1441,14 @@ function CharacterSheetFull() {
 
               {/* BONUS ACTIONS Column */}
               <div style={{ ...glassPanel, padding: '12px' }}>
-                <h3 style={{ color: '#f59e0b', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h3 style={{ color: '#f59e0b', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Zap size={16} /> BONUS ACTIONS
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {/* Dynamic Class Bonus Actions from classFeatures.js */}
                   {combatFeatures.bonusActions.length > 0 ? (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginBottom: '2px' }}>CLASS FEATURES</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginBottom: '2px' }}>CLASS FEATURES</div>
                       {combatFeatures.bonusActions.map((action, i) => (
                         <div key={`class-ba-${i}`} style={{
                           padding: '8px 10px',
@@ -1474,7 +1474,7 @@ function CharacterSheetFull() {
                   {/* Custom bonus actions from character data */}
                   {data.bonus_actions?.length > 0 && (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>CUSTOM</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>CUSTOM</div>
                       {data.bonus_actions.map((action, i) => (
                         <div key={`custom-ba-${i}`} style={{
                           padding: '8px 10px',
@@ -1492,7 +1492,7 @@ function CharacterSheetFull() {
                   {/* Two-Weapon Fighting (if has offhand) */}
                   {(data.equipment || []).filter(e => e.equipped && e.offhand).length > 0 && (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>OFFHAND ATTACK</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>OFFHAND ATTACK</div>
                       {(data.equipment || []).filter(e => e.equipped && e.offhand).map((weapon, i) => {
                         const abilityMod = calculateModifier(data.dexterity);
                         return (
@@ -1516,7 +1516,7 @@ function CharacterSheetFull() {
                   {/* Spell slots for bonus action spells */}
                   {data.spellcasting_ability && (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>SPELL SLOTS</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>SPELL SLOTS</div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
                         {[1, 2, 3, 4, 5].map(level => {
                           const maxSlots = data[`spell_slots_${level}`] || 0;
@@ -1545,7 +1545,7 @@ function CharacterSheetFull() {
 
               {/* REACTIONS Column */}
               <div style={{ ...glassPanel, padding: '12px' }}>
-                <h3 style={{ color: '#3b82f6', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h3 style={{ color: '#3b82f6', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <RefreshCw size={16} /> REACTIONS
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -1563,7 +1563,7 @@ function CharacterSheetFull() {
                   {/* Dynamic Class Reactions from classFeatures.js */}
                   {combatFeatures.reactions.length > 0 && (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>CLASS FEATURES</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>CLASS FEATURES</div>
                       {combatFeatures.reactions.map((reaction, i) => (
                         <div key={`class-react-${i}`} style={{
                           padding: '8px 10px',
@@ -1585,7 +1585,7 @@ function CharacterSheetFull() {
                   {/* Custom reactions from character data */}
                   {data.reactions?.length > 0 && (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '2px' }}>CUSTOM</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>CUSTOM</div>
                       {data.reactions.map((reaction, i) => (
                         <div key={`custom-react-${i}`} style={{
                           padding: '8px 10px',
@@ -1603,7 +1603,7 @@ function CharacterSheetFull() {
                   {/* Passive Abilities Section */}
                   {combatFeatures.passives.length > 0 && (
                     <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '12px', marginBottom: '4px' }}>PASSIVE ABILITIES</div>
+                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '12px', marginBottom: '4px' }}>PASSIVE ABILITIES</div>
                       <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
                         {combatFeatures.passives.map((passive, i) => (
                           <div key={`passive-${i}`} style={{
@@ -1622,7 +1622,7 @@ function CharacterSheetFull() {
                   )}
 
                   {/* Combat Resources */}
-                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '12px', marginBottom: '4px' }}>COMBAT RESOURCES</div>
+                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '12px', marginBottom: '4px' }}>COMBAT RESOURCES</div>
                   
                   {/* Hit Dice */}
                   <div style={{
@@ -1634,7 +1634,7 @@ function CharacterSheetFull() {
                     borderRadius: '6px'
                   }}>
                     <span style={{ color: '#94a3b8', fontSize: '11px' }}>Hit Dice</span>
-                    <span style={{ color: '#ef4444', fontWeight: '700', fontSize: '13px' }}>
+                    <span style={{ color: '#ef4444', fontWeight: '400', fontSize: '13px' }}>
                       {data.hit_dice_remaining ?? data.level}/{data.level}d{data.hit_die || 8}
                     </span>
                   </div>
@@ -1649,7 +1649,7 @@ function CharacterSheetFull() {
                     borderRadius: '6px'
                   }}>
                     <span style={{ color: '#94a3b8', fontSize: '11px' }}>Temp HP</span>
-                    <span style={{ color: '#22d3ee', fontWeight: '700', fontSize: '13px' }}>{data.temp_hp || 0}</span>
+                    <span style={{ color: '#22d3ee', fontWeight: '400', fontSize: '13px' }}>{data.temp_hp || 0}</span>
                   </div>
 
                   {/* Death Saves */}
@@ -1684,7 +1684,7 @@ function CharacterSheetFull() {
                   </div>
 
                   {/* Conditions */}
-                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '600', marginTop: '8px', marginBottom: '4px' }}>CONDITIONS</div>
+                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '4px' }}>CONDITIONS</div>
                   {(!data.conditions?.length) ? (
                     <div style={{ color: '#22c55e', fontSize: '11px', padding: '6px', textAlign: 'center' }}>None</div>
                   ) : (
@@ -1712,7 +1712,7 @@ function CharacterSheetFull() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {/* Character Info */}
                 <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#67e8f9', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat' }}>
+                  <h3 style={{ color: '#67e8f9', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
                     Character Info
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -1740,7 +1740,7 @@ function CharacterSheetFull() {
 
                 {/* Personality */}
                 <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#ec4899', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat' }}>
+                  <h3 style={{ color: '#ec4899', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
                     Personality
                   </h3>
                   {['personality_traits', 'ideals', 'bonds', 'flaws'].map(field => (
@@ -1778,7 +1778,7 @@ function CharacterSheetFull() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', alignContent: 'start' }}>
                 {/* Class Features */}
                 <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#60a5fa', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat' }}>
+                  <h3 style={{ color: '#60a5fa', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
                     Class Features ({data.character_class})
                   </h3>
                   <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
@@ -1794,7 +1794,7 @@ function CharacterSheetFull() {
 
                 {/* Racial Traits */}
                 <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#22d3ee', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat' }}>
+                  <h3 style={{ color: '#22d3ee', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
                     Racial Traits ({data.race})
                   </h3>
                   <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
@@ -1810,7 +1810,7 @@ function CharacterSheetFull() {
 
                 {/* Feats */}
                 <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#fb923c', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat' }}>
+                  <h3 style={{ color: '#fb923c', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
                     Feats
                   </h3>
                   <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
@@ -1860,7 +1860,7 @@ function CharacterSheetFull() {
 
                 {/* Backstory & Notes */}
                 <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#a855f7', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat' }}>
+                  <h3 style={{ color: '#a855f7', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
                     Backstory & Notes
                   </h3>
                   <div style={{ marginBottom: '12px' }}>
@@ -1923,29 +1923,29 @@ function CharacterSheetFull() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginBottom: '20px' }}>
                 {/* Spellcasting Info */}
                 <div style={{ ...glassPanel, padding: '16px' }}>
-                  <h4 style={{ color: '#a855f7', fontSize: '12px', fontWeight: '700', marginBottom: '12px' }}>SPELLCASTING</h4>
+                  <h4 style={{ color: '#a855f7', fontSize: '12px', fontWeight: '400', marginBottom: '12px' }}>SPELLCASTING</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: '#64748b', fontSize: '11px' }}>Ability</span>
-                      <span style={{ color: '#8B5CF6', fontWeight: '700', fontSize: '14px', textTransform: 'capitalize' }}>
+                      <span style={{ color: '#8B5CF6', fontWeight: '400', fontSize: '14px', textTransform: 'capitalize' }}>
                         {data.spellcasting_ability || 'None'}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: '#64748b', fontSize: '11px' }}>Save DC</span>
-                      <span style={{ color: '#6366F1', fontWeight: '700', fontSize: '14px' }}>
+                      <span style={{ color: '#6366F1', fontWeight: '400', fontSize: '14px' }}>
                         {data.spellcasting_ability ? 8 + profBonus + calculateModifier(data[data.spellcasting_ability] || 10) : '—'}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: '#64748b', fontSize: '11px' }}>Attack Bonus</span>
-                      <span style={{ color: '#2A9D8F', fontWeight: '700', fontSize: '14px' }}>
+                      <span style={{ color: '#F2A541', fontWeight: '400', fontSize: '14px' }}>
                         {data.spellcasting_ability ? `+${profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}` : '—'}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: '#64748b', fontSize: '11px' }}>Prepared</span>
-                      <span style={{ color: '#2A9D8F', fontWeight: '700', fontSize: '14px' }}>
+                      <span style={{ color: '#F2A541', fontWeight: '400', fontSize: '14px' }}>
                         {data.spells_prepared?.length || 0} / {Math.max(1, calculateModifier(data[data.spellcasting_ability] || 10) + (data.level || 1))}
                       </span>
                     </div>
@@ -1954,7 +1954,7 @@ function CharacterSheetFull() {
 
                 {/* Spell Slots */}
                 <div style={{ ...glassPanel, padding: '16px' }}>
-                  <h4 style={{ color: '#3b82f6', fontSize: '12px', fontWeight: '700', marginBottom: '12px' }}>SPELL SLOTS</h4>
+                  <h4 style={{ color: '#3b82f6', fontSize: '12px', fontWeight: '400', marginBottom: '12px' }}>SPELL SLOTS</h4>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '6px' }}>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(level => {
                       const slotKey = `spell_slots_${level}`;
@@ -1969,7 +1969,7 @@ function CharacterSheetFull() {
                             color: maxSlots > 0 ? '#3b82f6' : '#475569', 
                             fontSize: '10px', 
                             marginBottom: '4px',
-                            fontWeight: '600'
+                            fontWeight: '400'
                           }}>
                             {level}
                           </div>
@@ -2036,7 +2036,7 @@ function CharacterSheetFull() {
                       border: 'none',
                       color: spellViewMode === 'prepared' ? '#fff' : '#94a3b8',
                       fontSize: '14px',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       cursor: 'pointer',
                       transition: 'all 0.2s'
                     }}
@@ -2053,7 +2053,7 @@ function CharacterSheetFull() {
                       border: 'none',
                       color: spellViewMode === 'known' ? '#fff' : '#94a3b8',
                       fontSize: '14px',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       cursor: 'pointer',
                       transition: 'all 0.2s'
                     }}
@@ -2210,7 +2210,7 @@ function CharacterSheetFull() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
               {/* Currency - Full */}
               <div style={{ ...glassPanel, padding: '14px' }}>
-                <h3 style={{ color: '#eab308', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h3 style={{ color: '#eab308', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Coins size={14} color="#eab308" />
                   Currency
                 </h3>
@@ -2237,7 +2237,7 @@ function CharacterSheetFull() {
                           style={{ width: '100%', textAlign: 'center', padding: '4px', fontSize: '14px' }}
                         />
                       ) : (
-                        <span style={{ color: '#fff', fontWeight: '700', fontSize: '16px' }}>
+                        <span style={{ color: '#fff', fontWeight: '400', fontSize: '16px' }}>
                           {data.currency?.[coin] || 0}
                         </span>
                       )}
@@ -2247,7 +2247,7 @@ function CharacterSheetFull() {
                 {/* Total in GP */}
                 <div style={{ marginTop: '10px', padding: '8px', background: 'rgba(234, 179, 8, 0.05)', borderRadius: '6px', textAlign: 'center' }}>
                   <span style={{ color: '#94a3b8', fontSize: '10px' }}>TOTAL (in GP): </span>
-                  <span style={{ color: '#eab308', fontWeight: '700', fontSize: '14px' }}>
+                  <span style={{ color: '#eab308', fontWeight: '400', fontSize: '14px' }}>
                     {(
                       (data.currency?.platinum || 0) * 10 +
                       (data.currency?.gold || 0) +
@@ -2261,7 +2261,7 @@ function CharacterSheetFull() {
 
               {/* Equipment */}
               <div style={{ ...glassPanel, padding: '14px' }}>
-                <h3 style={{ color: '#ef4444', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h3 style={{ color: '#ef4444', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Swords size={14} color="#ef4444" />
                   Equipment
                 </h3>
@@ -2285,7 +2285,7 @@ function CharacterSheetFull() {
                           {item.name}
                         </span>
                         {item.equipped && (
-                          <span style={{ color: '#22c55e', fontSize: '9px', fontWeight: '600', padding: '2px 6px', background: 'rgba(34, 197, 94, 0.2)', borderRadius: '4px' }}>EQUIPPED</span>
+                          <span style={{ color: '#22c55e', fontSize: '9px', fontWeight: '400', padding: '2px 6px', background: 'rgba(34, 197, 94, 0.2)', borderRadius: '4px' }}>EQUIPPED</span>
                         )}
                       </div>
                     ))
@@ -2295,7 +2295,7 @@ function CharacterSheetFull() {
 
               {/* Inventory */}
               <div style={{ ...glassPanel, padding: '14px' }}>
-                <h3 style={{ color: '#3b82f6', fontSize: '13px', fontWeight: '700', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h3 style={{ color: '#3b82f6', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Package size={14} color="#3b82f6" />
                   Inventory
                 </h3>

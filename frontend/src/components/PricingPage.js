@@ -10,8 +10,8 @@ const API = `${BACKEND_URL}/api`;
 
 // Theme
 const theme = {
-  bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F' },
-  accent: { red: '#B91C1C', blue: '#2A9D8F', gold: '#F59E0B' },
+  bg: { black: '#0D0D0D', dark: '#141414', panel: '#1F1F1F', card: '#262626' },
+  accent: { red: '#C54B2C', blue: '#F2A541', gold: '#F59E0B' },
   text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
   border: 'rgba(255, 255, 255, 0.1)'
 };
@@ -155,7 +155,7 @@ function PricingPage({ username, onLogout }) {
     <div style={{ 
       minHeight: '100vh', 
       background: theme.bg.black, 
-      fontFamily: 'Cityworm, sans-serif' 
+      fontFamily: "Eros Book, sans-serif" 
     }}>
       {/* Header */}
       <div style={{ 
@@ -169,7 +169,7 @@ function PricingPage({ username, onLogout }) {
           <Button onClick={() => navigate('/home')} style={{ background: 'transparent', border: 'none', padding: '8px' }}>
             <ArrowLeft size={24} color={theme.text.white} />
           </Button>
-          <h1 style={{ color: theme.text.white, fontSize: '24px', fontWeight: '700' }}>
+          <h1 style={{ color: theme.text.white, fontSize: '24px', fontWeight: '400' }}>
             Subscription Plans
           </h1>
         </div>
@@ -195,7 +195,7 @@ function PricingPage({ username, onLogout }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <Star size={24} style={{ color: getPlanColor(currentTier) }} />
               <div>
-                <span style={{ color: theme.text.white, fontWeight: '700' }}>
+                <span style={{ color: theme.text.white, fontWeight: '400' }}>
                   Current Plan: {plans.find(p => p.id === currentTier)?.name || currentTier}
                 </span>
                 {isLifetime && (
@@ -205,7 +205,7 @@ function PricingPage({ username, onLogout }) {
                     color: '#22c55e',
                     padding: '4px 10px',
                     fontSize: '11px',
-                    fontWeight: '600'
+                    fontWeight: '400'
                   }}>
                     LIFETIME ACCESS
                   </span>
@@ -229,7 +229,7 @@ function PricingPage({ username, onLogout }) {
               background: billingCycle === 'monthly' ? theme.accent.red : 'transparent',
               border: billingCycle === 'monthly' ? 'none' : `1px solid ${theme.border}`,
               color: theme.text.white,
-              fontWeight: '600',
+              fontWeight: '400',
               cursor: 'pointer'
             }}
           >
@@ -242,7 +242,7 @@ function PricingPage({ username, onLogout }) {
               background: billingCycle === 'yearly' ? theme.accent.red : 'transparent',
               border: billingCycle === 'yearly' ? 'none' : `1px solid ${theme.border}`,
               color: theme.text.white,
-              fontWeight: '600',
+              fontWeight: '400',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -255,7 +255,7 @@ function PricingPage({ username, onLogout }) {
               color: '#fff', 
               padding: '2px 8px', 
               fontSize: '10px',
-              fontWeight: '700'
+              fontWeight: '400'
             }}>
               SAVE ~17%
             </span>
@@ -299,7 +299,7 @@ function PricingPage({ username, onLogout }) {
                     color: '#fff',
                     padding: '4px 16px',
                     fontSize: '11px',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     letterSpacing: '1px'
                   }}>
                     MOST POPULAR
@@ -323,7 +323,7 @@ function PricingPage({ username, onLogout }) {
                   <h3 style={{ 
                     color: theme.text.white, 
                     fontSize: '22px', 
-                    fontWeight: '700',
+                    fontWeight: '400',
                     marginBottom: '4px'
                   }}>
                     {plan.name}
@@ -383,7 +383,7 @@ function PricingPage({ username, onLogout }) {
                       border: `1px solid ${planColor}`,
                       color: planColor,
                       textAlign: 'center',
-                      fontWeight: '600',
+                      fontWeight: '400',
                       fontSize: '14px'
                     }}>
                       Current Plan
@@ -394,7 +394,7 @@ function PricingPage({ username, onLogout }) {
                       background: theme.bg.card,
                       color: theme.text.muted,
                       textAlign: 'center',
-                      fontWeight: '600',
+                      fontWeight: '400',
                       fontSize: '14px'
                     }}>
                       Free Forever
@@ -410,7 +410,7 @@ function PricingPage({ username, onLogout }) {
                         background: planColor,
                         border: 'none',
                         color: '#fff',
-                        fontWeight: '700',
+                        fontWeight: '400',
                         fontSize: '14px',
                         cursor: 'pointer',
                         display: 'flex',
@@ -444,7 +444,7 @@ function PricingPage({ username, onLogout }) {
           <h3 style={{ 
             color: theme.text.white, 
             fontSize: '16px', 
-            fontWeight: '700', 
+            fontWeight: '400', 
             marginBottom: '16px',
             display: 'flex',
             alignItems: 'center',
@@ -479,7 +479,7 @@ function PricingPage({ username, onLogout }) {
                 background: theme.accent.red,
                 border: 'none',
                 color: '#fff',
-                fontWeight: '600'
+                fontWeight: '400'
               }}
             >
               {applyingPromo ? <Loader2 size={18} className="animate-spin" /> : 'Apply'}
@@ -497,7 +497,7 @@ function PricingPage({ username, onLogout }) {
             <h3 style={{ 
               color: theme.text.white, 
               fontSize: '16px', 
-              fontWeight: '700', 
+              fontWeight: '400', 
               marginBottom: '16px',
               display: 'flex',
               alignItems: 'center',

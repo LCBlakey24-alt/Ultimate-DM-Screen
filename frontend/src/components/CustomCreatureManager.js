@@ -244,8 +244,8 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
             <h2 style={{ 
               color: '#fff', 
               fontSize: '24px', 
-              fontFamily: 'Cityworm, sans-serif',
-              fontWeight: '700',
+              fontFamily: "Eros Book, sans-serif",
+              fontWeight: '400',
               display: 'flex',
               alignItems: 'center',
               gap: '10px'
@@ -337,7 +337,7 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
           <Wand2 size={24} color="#a855f7" />
-          <h3 style={{ color: '#a855f7', fontSize: '18px', fontWeight: '700', fontFamily: 'Cityworm, sans-serif' }}>
+          <h3 style={{ color: '#a855f7', fontSize: '18px', fontWeight: '400', fontFamily: "Eros Book, sans-serif" }}>
             ROOK
           </h3>
           <Sparkles size={16} color="#a855f7" style={{ opacity: 0.7 }} />
@@ -373,7 +373,7 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
               padding: '16px 24px',
               borderRadius: '12px',
               color: '#fff',
-              fontWeight: '700',
+              fontWeight: '400',
               fontSize: '14px',
               display: 'flex',
               alignItems: 'center',
@@ -396,7 +396,7 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
           </Button>
         </div>
         <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <span style={{ color: '#9333ea', fontSize: '11px', fontWeight: '600' }}>Try:</span>
+          <span style={{ color: '#9333ea', fontSize: '11px', fontWeight: '400' }}>Try:</span>
           {['Undead dragon wyrmling', 'Goblin shaman with fire magic', 'Giant ice spider', 'Corrupted treant'].map((suggestion, i) => (
             <button
               key={i}
@@ -570,20 +570,20 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
                   marginBottom: '8px',
                   color: '#a855f7',
                   fontSize: '11px',
-                  fontWeight: '600'
+                  fontWeight: '400'
                 }}>
                   <Sparkles size={12} /> Just Created by ROOK
                 </div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                <h4 style={{ color: '#fff', fontSize: '16px', fontWeight: '700' }}>{creature.name}</h4>
+                <h4 style={{ color: '#fff', fontSize: '16px', fontWeight: '400' }}>{creature.name}</h4>
                 <span style={{
                   background: '#ef444420',
                   color: '#ef4444',
                   padding: '2px 8px',
                   borderRadius: '6px',
                   fontSize: '12px',
-                  fontWeight: '600'
+                  fontWeight: '400'
                 }}>
                   CR {creature.cr}
                 </span>

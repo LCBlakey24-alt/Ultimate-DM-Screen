@@ -14,13 +14,13 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme - Red (Tron Aries)
 const theme = {
-  primary: '#B91C1C',
-  hover: '#DC2626',
+  primary: '#C54B2C',
+  hover: '#E05C3D',
   subtle: 'rgba(225, 29, 72, 0.15)',
   glow: '0 0 20px rgba(225, 29, 72, 0.3)',
   bg: '#0D0D0D',
-  card: '#1F1F1F',
-  panel: '#1A1A1A',
+  card: '#262626',
+  panel: '#1F1F1F',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
@@ -30,13 +30,13 @@ const theme = {
 // Relationship types with colors and icons
 const RELATIONSHIP_TYPES = [
   { id: 'ally', label: 'Ally', color: '#22C55E', icon: HandshakeIcon },
-  { id: 'enemy', label: 'Enemy', color: '#DC2626', icon: Swords },
+  { id: 'enemy', label: 'Enemy', color: '#E05C3D', icon: Swords },
   { id: 'family', label: 'Family', color: '#8B5CF6', icon: Heart },
   { id: 'romantic', label: 'Romantic', color: '#EC4899', icon: Heart },
   { id: 'business', label: 'Business', color: '#F59E0B', icon: Crown },
   { id: 'rival', label: 'Rival', color: '#F97316', icon: AlertCircle },
   { id: 'neutral', label: 'Neutral', color: '#6B7280', icon: HelpCircle },
-  { id: 'servant', label: 'Serves', color: '#2A9D8F', icon: Shield },
+  { id: 'servant', label: 'Serves', color: '#F2A541', icon: Shield },
 ];
 
 function NPCRelationshipWeb({ campaignId }) {
@@ -261,9 +261,9 @@ function NPCRelationshipWeb({ campaignId }) {
             <h3 style={{ 
               color: theme.primary, 
               fontSize: '18px', 
-              fontWeight: '700',
+              fontWeight: '400',
               margin: 0,
-              fontFamily: 'Cityworm, sans-serif'
+              fontFamily: "Eros Book, sans-serif"
             }}>
               NPC RELATIONSHIP WEB
             </h3>
@@ -490,7 +490,7 @@ function NPCRelationshipWeb({ campaignId }) {
             color: '#fff',
             padding: '8px 16px',
             fontSize: '12px',
-            fontWeight: '600'
+            fontWeight: '400'
           }}>
             LINK MODE: {linkSource ? 'Click target NPC' : 'Click source NPC'}
           </div>
@@ -507,7 +507,7 @@ function NPCRelationshipWeb({ campaignId }) {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <h4 style={{ color: theme.primary, fontSize: '16px', fontWeight: '700', margin: '0 0 4px' }}>
+              <h4 style={{ color: theme.primary, fontSize: '16px', fontWeight: '400', margin: '0 0 4px' }}>
                 {selectedNpc.name}
               </h4>
               <p style={{ color: theme.muted, fontSize: '13px', margin: 0 }}>
@@ -547,7 +547,7 @@ function NPCRelationshipWeb({ campaignId }) {
 
           {/* Existing relationships */}
           <div style={{ marginTop: '16px' }}>
-            <h5 style={{ color: theme.text, fontSize: '12px', fontWeight: '600', marginBottom: '8px' }}>
+            <h5 style={{ color: theme.text, fontSize: '12px', fontWeight: '400', marginBottom: '8px' }}>
               Relationships ({relationships.filter(r => r.source_id === selectedNpc.id || r.target_id === selectedNpc.id).length})
             </h5>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -568,7 +568,7 @@ function NPCRelationshipWeb({ campaignId }) {
                       background: theme.card,
                       border: `1px solid ${theme.border}`
                     }}>
-                      <span style={{ color: relType.color, fontWeight: '600', fontSize: '12px' }}>
+                      <span style={{ color: relType.color, fontWeight: '400', fontSize: '12px' }}>
                         {relType.label}
                       </span>
                       <span style={{ color: theme.muted }}>{direction}</span>
@@ -600,7 +600,7 @@ function NPCRelationshipWeb({ campaignId }) {
           border: `1px solid ${theme.primary}`,
           padding: '20px'
         }}>
-          <h4 style={{ color: theme.text, fontSize: '14px', fontWeight: '600', marginBottom: '16px' }}>
+          <h4 style={{ color: theme.text, fontSize: '14px', fontWeight: '400', marginBottom: '16px' }}>
             Add Relationship for {selectedNpc.name}
           </h4>
           

@@ -12,13 +12,13 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme - Red (Tron Aries)
 const theme = {
-  primary: '#B91C1C',
-  hover: '#DC2626',
+  primary: '#C54B2C',
+  hover: '#E05C3D',
   subtle: 'rgba(225, 29, 72, 0.15)',
   glow: '0 0 20px rgba(225, 29, 72, 0.3)',
   bg: '#0D0D0D',
-  card: '#1F1F1F',
-  panel: '#1A1A1A',
+  card: '#262626',
+  panel: '#1F1F1F',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
@@ -188,9 +188,9 @@ function SessionRecapAI({ campaignId, sessionNotes = '', onSaveRecap }) {
           <h3 style={{ 
             color: theme.primary, 
             fontSize: '18px', 
-            fontWeight: '700',
+            fontWeight: '400',
             margin: 0,
-            fontFamily: 'Cityworm, sans-serif'
+            fontFamily: "Eros Book, sans-serif"
           }}>
             AI SESSION RECAP
           </h3>
@@ -259,7 +259,7 @@ function SessionRecapAI({ campaignId, sessionNotes = '', onSaveRecap }) {
                 border: `1px solid ${recapStyle === style.id ? theme.primary : theme.border}`,
                 color: recapStyle === style.id ? theme.primary : theme.textSecondary,
                 fontSize: '13px',
-                fontWeight: '600',
+                fontWeight: '400',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -356,7 +356,7 @@ function SessionRecapAI({ campaignId, sessionNotes = '', onSaveRecap }) {
           background: loading ? theme.muted : theme.primary,
           border: 'none',
           color: '#fff',
-          fontWeight: '600',
+          fontWeight: '400',
           fontSize: '14px',
           display: 'flex',
           alignItems: 'center',
@@ -387,7 +387,7 @@ function SessionRecapAI({ campaignId, sessionNotes = '', onSaveRecap }) {
             alignItems: 'center',
             marginBottom: '12px'
           }}>
-            <h4 style={{ color: theme.text, fontSize: '14px', fontWeight: '600', margin: 0 }}>
+            <h4 style={{ color: theme.text, fontSize: '14px', fontWeight: '400', margin: 0 }}>
               Generated Recap
             </h4>
             <div style={{ display: 'flex', gap: '8px' }}>

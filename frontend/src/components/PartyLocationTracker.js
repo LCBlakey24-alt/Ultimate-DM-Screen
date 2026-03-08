@@ -14,42 +14,42 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme - Red
 const theme = {
-  primary: '#B91C1C',
-  hover: '#DC2626',
+  primary: '#C54B2C',
+  hover: '#E05C3D',
   subtle: 'rgba(225, 29, 72, 0.15)',
   bg: '#0D0D0D',
-  card: '#1F1F1F',
-  panel: '#1A1A1A',
+  card: '#262626',
+  panel: '#1F1F1F',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
   border: 'rgba(255, 255, 255, 0.1)',
   success: '#22C55E',
-  cyan: '#2A9D8F',
+  cyan: '#F2A541',
   warning: '#F59E0B'
 };
 
 const PIN_TYPES = {
   capital: { icon: Castle, color: '#EAB308', label: 'Capital' },
-  city: { icon: Building, color: '#2A9D8F', label: 'City' },
+  city: { icon: Building, color: '#F2A541', label: 'City' },
   town: { icon: Home, color: '#22C55E', label: 'Town' },
   village: { icon: Home, color: '#84CC16', label: 'Village' },
   landmark: { icon: Mountain, color: '#8B5CF6', label: 'Landmark' },
-  dungeon: { icon: Mountain, color: '#DC2626', label: 'Dungeon' },
-  port: { icon: Waves, color: '#2A9D8F', label: 'Port' },
+  dungeon: { icon: Mountain, color: '#E05C3D', label: 'Dungeon' },
+  port: { icon: Waves, color: '#F2A541', label: 'Port' },
   forest: { icon: Trees, color: '#16A34A', label: 'Forest' },
-  custom: { icon: MapPin, color: '#B91C1C', label: 'Location' }
+  custom: { icon: MapPin, color: '#C54B2C', label: 'Location' }
 };
 
 const POI_TYPES = {
   shop: { icon: Store, color: '#F59E0B', label: 'Shop' },
   tavern: { icon: Beer, color: '#F97316', label: 'Tavern/Inn' },
   temple: { icon: Church, color: '#8B5CF6', label: 'Temple' },
-  blacksmith: { icon: Hammer, color: '#DC2626', label: 'Blacksmith' },
-  guild: { icon: Building, color: '#2A9D8F', label: 'Guild Hall' },
-  library: { icon: BookOpen, color: '#2A9D8F', label: 'Library' },
+  blacksmith: { icon: Hammer, color: '#E05C3D', label: 'Blacksmith' },
+  guild: { icon: Building, color: '#F2A541', label: 'Guild Hall' },
+  library: { icon: BookOpen, color: '#F2A541', label: 'Library' },
   residence: { icon: Home, color: '#22C55E', label: 'Residence' },
-  other: { icon: MapPin, color: '#B91C1C', label: 'Other' }
+  other: { icon: MapPin, color: '#C54B2C', label: 'Other' }
 };
 
 const TRAVEL_MODES = [
@@ -190,7 +190,7 @@ function PartyLocationTracker({ campaignId }) {
   };
 
   const getPinColor = (pinType) => {
-    return PIN_TYPES[pinType]?.color || '#B91C1C';
+    return PIN_TYPES[pinType]?.color || '#C54B2C';
   };
 
   const getPOIIcon = (poiType) => {
@@ -198,7 +198,7 @@ function PartyLocationTracker({ campaignId }) {
   };
 
   const getPOIColor = (poiType) => {
-    return POI_TYPES[poiType]?.color || '#B91C1C';
+    return POI_TYPES[poiType]?.color || '#C54B2C';
   };
 
   if (loading) {
@@ -217,7 +217,7 @@ function PartyLocationTracker({ campaignId }) {
       <h2 style={{ 
         fontSize: '20px', 
         color: theme.text, 
-        fontWeight: '700', 
+        fontWeight: '400', 
         marginBottom: '20px', 
         display: 'flex', 
         alignItems: 'center', 
@@ -234,7 +234,7 @@ function PartyLocationTracker({ campaignId }) {
             display: 'block', 
             color: theme.muted, 
             fontSize: '11px', 
-            fontWeight: '600',
+            fontWeight: '400',
             letterSpacing: '1px',
             marginBottom: '8px' 
           }}>
@@ -308,7 +308,7 @@ function PartyLocationTracker({ campaignId }) {
               <MapPin size={18} color={currentLocation ? theme.primary : theme.muted} />
               <span style={{ 
                 color: currentLocation ? theme.text : theme.muted, 
-                fontWeight: '600',
+                fontWeight: '400',
                 fontSize: '14px'
               }}>
                 {currentLocation ? currentLocation.name : 'Select Current Location'}
@@ -320,7 +320,7 @@ function PartyLocationTracker({ campaignId }) {
                   fontSize: '10px',
                   color: '#fff',
                   textTransform: 'uppercase',
-                  fontWeight: '600'
+                  fontWeight: '400'
                 }}>
                   {PIN_TYPES[currentLocation.pin_type]?.label || 'Location'}
                 </span>
@@ -378,7 +378,7 @@ function PartyLocationTracker({ campaignId }) {
                           )}
                         </div>
                         {isSelected && (
-                          <span style={{ color: theme.primary, fontSize: '11px', fontWeight: '600' }}>
+                          <span style={{ color: theme.primary, fontSize: '11px', fontWeight: '400' }}>
                             HERE
                           </span>
                         )}
@@ -415,7 +415,7 @@ function PartyLocationTracker({ campaignId }) {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Building size={18} color={theme.warning} />
-              <span style={{ color: theme.text, fontWeight: '600', fontSize: '14px' }}>
+              <span style={{ color: theme.text, fontWeight: '400', fontSize: '14px' }}>
                 Places of Interest
               </span>
               <span style={{ 
@@ -466,7 +466,7 @@ function PartyLocationTracker({ campaignId }) {
                           <POIIcon size={16} color="#fff" />
                         </div>
                         <div>
-                          <div style={{ color: theme.text, fontSize: '13px', fontWeight: '600' }}>
+                          <div style={{ color: theme.text, fontSize: '13px', fontWeight: '400' }}>
                             {place.name}
                           </div>
                           <div style={{ color: poiColor, fontSize: '10px', textTransform: 'uppercase', marginTop: '2px' }}>
@@ -510,7 +510,7 @@ function PartyLocationTracker({ campaignId }) {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Route size={18} color={theme.cyan} />
-              <span style={{ color: theme.text, fontWeight: '600', fontSize: '14px' }}>
+              <span style={{ color: theme.text, fontWeight: '400', fontSize: '14px' }}>
                 Travel Distances
               </span>
               <span style={{ 
@@ -533,7 +533,7 @@ function PartyLocationTracker({ campaignId }) {
                   display: 'block', 
                   color: theme.muted, 
                   fontSize: '11px',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   letterSpacing: '1px',
                   marginBottom: '8px' 
                 }}>
@@ -608,7 +608,7 @@ function PartyLocationTracker({ campaignId }) {
                         </div>
                         
                         <div style={{ flex: 1 }}>
-                          <div style={{ color: theme.text, fontSize: '14px', fontWeight: '600' }}>
+                          <div style={{ color: theme.text, fontSize: '14px', fontWeight: '400' }}>
                             {loc.name}
                           </div>
                           <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
@@ -625,7 +625,7 @@ function PartyLocationTracker({ campaignId }) {
                           <div style={{ 
                             color: theme.cyan, 
                             fontSize: '16px', 
-                            fontWeight: '700' 
+                            fontWeight: '400' 
                           }}>
                             {travelTime}
                           </div>
@@ -664,7 +664,7 @@ function PartyLocationTracker({ campaignId }) {
                   background: 'rgba(6, 182, 212, 0.1)',
                   border: `1px solid ${theme.cyan}`
                 }}>
-                  <div style={{ color: theme.cyan, fontSize: '12px', fontWeight: '600', marginBottom: '8px' }}>
+                  <div style={{ color: theme.cyan, fontSize: '12px', fontWeight: '400', marginBottom: '8px' }}>
                     TRAVEL CALCULATION
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -681,7 +681,7 @@ function PartyLocationTracker({ campaignId }) {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: theme.muted }}>Time:</span>
-                    <span style={{ color: theme.cyan, fontWeight: '700', fontSize: '16px' }}>{travelResult.formatted_time}</span>
+                    <span style={{ color: theme.cyan, fontWeight: '400', fontSize: '16px' }}>{travelResult.formatted_time}</span>
                   </div>
                 </div>
               )}
@@ -705,7 +705,7 @@ function PartyLocationTracker({ campaignId }) {
             <div style={{ color: theme.muted, fontSize: '10px', letterSpacing: '1px', marginBottom: '2px' }}>
               PARTY LOCATION
             </div>
-            <div style={{ color: theme.text, fontSize: '16px', fontWeight: '700' }}>
+            <div style={{ color: theme.text, fontSize: '16px', fontWeight: '400' }}>
               {currentLocation.name}
             </div>
           </div>

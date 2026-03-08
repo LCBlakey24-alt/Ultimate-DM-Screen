@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Lightbulb, X, ChevronDown, ChevronUp } from 'lucide-react';
 
-// Dark Minimalist Theme Colors - #B91C1C
+// Dark Minimalist Theme Colors - #C54B2C
 const theme = {
-  accent: '#B91C1C',
+  accent: '#C54B2C',
   accentSubtle: 'rgba(225, 29, 72, 0.15)',
   accentBorder: 'rgba(225, 29, 72, 0.3)',
   text: '#FFFFFF',
@@ -85,7 +85,7 @@ function QuickTips({ tips, pageId, title = "Quick Tips" }) {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Lightbulb size={18} color={theme.accent} />
-          <span style={{ color: theme.accent, fontWeight: '700', fontSize: '14px' }}>
+          <span style={{ color: theme.accent, fontWeight: '400', fontSize: '14px' }}>
             {title}
           </span>
         </div>
@@ -131,7 +131,7 @@ function QuickTips({ tips, pageId, title = "Quick Tips" }) {
               }}>
                 {tip.highlight ? (
                   <>
-                    <span style={{ color: theme.accent, fontWeight: '600' }}>{tip.highlight}</span>
+                    <span style={{ color: theme.accent, fontWeight: '400' }}>{tip.highlight}</span>
                     {' '}{tip.text}
                   </>
                 ) : (

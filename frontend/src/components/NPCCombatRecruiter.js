@@ -98,7 +98,7 @@ function NPCCombatRecruiter({ campaignId, onAddNPC, existingCombatantIds = [] })
           justifyContent: 'center',
           gap: '8px',
           fontSize: '13px',
-          fontWeight: '700'
+          fontWeight: '400'
         }}
       >
         <UserPlus size={16} />
@@ -124,7 +124,7 @@ function NPCCombatRecruiter({ campaignId, onAddNPC, existingCombatantIds = [] })
         <h3 style={{ 
           color: '#22c55e', 
           fontSize: '15px', 
-          fontWeight: '700',
+          fontWeight: '400',
           display: 'flex',
           alignItems: 'center',
           gap: '8px'
@@ -160,7 +160,7 @@ function NPCCombatRecruiter({ campaignId, onAddNPC, existingCombatantIds = [] })
             borderRadius: '10px',
             color: selectedTab === 'npcs' ? '#22c55e' : '#94a3b8',
             fontSize: '13px',
-            fontWeight: '600',
+            fontWeight: '400',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -181,7 +181,7 @@ function NPCCombatRecruiter({ campaignId, onAddNPC, existingCombatantIds = [] })
             borderRadius: '10px',
             color: selectedTab === 'creatures' ? '#ef4444' : '#94a3b8',
             fontSize: '13px',
-            fontWeight: '600',
+            fontWeight: '400',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -246,7 +246,7 @@ function NPCCombatRecruiter({ campaignId, onAddNPC, existingCombatantIds = [] })
                 <div style={{ flex: 1 }}>
                   <div style={{ 
                     color: '#fff', 
-                    fontWeight: '700', 
+                    fontWeight: '400', 
                     fontSize: '14px',
                     marginBottom: '4px'
                   }}>
@@ -334,7 +334,7 @@ function NPCCombatRecruiter({ campaignId, onAddNPC, existingCombatantIds = [] })
                   }}>
                     <span style={{ 
                       color: '#fff', 
-                      fontWeight: '700', 
+                      fontWeight: '400', 
                       fontSize: '14px'
                     }}>
                       {creature.name}
@@ -345,7 +345,7 @@ function NPCCombatRecruiter({ campaignId, onAddNPC, existingCombatantIds = [] })
                       padding: '2px 8px',
                       borderRadius: '4px',
                       fontSize: '10px',
-                      fontWeight: '700'
+                      fontWeight: '400'
                     }}>
                       CR {creature.cr || '?'}
                     </span>

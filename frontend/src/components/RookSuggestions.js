@@ -304,7 +304,7 @@ function RookSuggestionPopup({
               <span style={{ 
                 color: '#a855f7', 
                 fontSize: '10px', 
-                fontWeight: '700',
+                fontWeight: '400',
                 textTransform: 'uppercase',
                 letterSpacing: '1px'
               }}>
@@ -315,8 +315,8 @@ function RookSuggestionPopup({
             <h4 style={{ 
               color: '#fff', 
               fontSize: '15px', 
-              fontWeight: '700',
-              fontFamily: 'Cityworm, sans-serif',
+              fontWeight: '400',
+              fontFamily: "Eros Book, sans-serif",
               margin: 0
             }}>
               {suggestion.title}

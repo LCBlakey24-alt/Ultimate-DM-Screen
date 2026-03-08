@@ -276,9 +276,9 @@ export function QuickReferencePopup({ type, id, children, position = 'top' }) {
             <BookOpen size={16} style={{ color: '#22c55e' }} />
             <span style={{ 
               color: '#22c55e', 
-              fontWeight: '700', 
+              fontWeight: '400', 
               fontSize: '14px',
-              fontFamily: 'Cityworm, sans-serif'
+              fontFamily: "Eros Book, sans-serif"
             }}>
               {ref.name}
             </span>
@@ -392,7 +392,7 @@ export function QuickReferenceModal({ isOpen, onClose }) {
           <h2 style={{ 
             fontSize: '24px', 
             color: '#ffffff',
-            fontFamily: 'Cityworm, sans-serif',
+            fontFamily: "Eros Book, sans-serif",
             fontWeight: '800',
             display: 'flex',
             alignItems: 'center',
@@ -433,7 +433,7 @@ export function QuickReferenceModal({ isOpen, onClose }) {
                 border: activeTab === tab.id ? '2px solid #22c55e' : '2px solid transparent',
                 background: activeTab === tab.id ? 'rgba(34, 197, 94, 0.2)' : 'rgba(10, 10, 40, 0.6)',
                 color: activeTab === tab.id ? '#22c55e' : '#94a3b8',
-                fontWeight: '600',
+                fontWeight: '400',
                 cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
@@ -464,9 +464,9 @@ export function QuickReferenceModal({ isOpen, onClose }) {
               <h3 style={{ 
                 color: '#22c55e', 
                 fontSize: '16px', 
-                fontWeight: '700',
+                fontWeight: '400',
                 marginBottom: '8px',
-                fontFamily: 'Cityworm, sans-serif'
+                fontFamily: "Eros Book, sans-serif"
               }}>
                 {item.name}
               </h3>

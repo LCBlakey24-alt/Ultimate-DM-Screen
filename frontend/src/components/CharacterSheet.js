@@ -151,7 +151,7 @@ function CharacterSheet() {
       minHeight: '100vh',
       background: '#0D0D0D',
       padding: '24px',
-      fontFamily: 'Cityworm, sans-serif'
+      fontFamily: "Eros Book, sans-serif"
     }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Header */}
@@ -163,14 +163,14 @@ function CharacterSheet() {
             <div>
               <h1 style={{
                 fontSize: 'clamp(28px, 5vw, 40px)',
-                fontFamily: 'Cityworm, sans-serif',
+                fontFamily: "Eros Book, sans-serif",
                 fontWeight: '800',
                 color: '#ffffff',
                 marginBottom: '4px'
               }}>
                 {character.name}
               </h1>
-              <p style={{ color: '#2A9D8F', fontSize: '16px' }}>
+              <p style={{ color: '#F2A541', fontSize: '16px' }}>
                 Level {character.level} {character.race} {character.character_class}
               </p>
             </div>
@@ -251,7 +251,7 @@ function CharacterSheet() {
                       <span style={{ 
                         color: '#67e8f9', 
                         fontSize: '14px', 
-                        fontWeight: '700',
+                        fontWeight: '400',
                         textTransform: 'capitalize' 
                       }}>
                         {ability.substring(0, 3).toUpperCase()}
@@ -477,7 +477,7 @@ function CharacterSheet() {
               <CardContent>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div>
-                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', marginBottom: '6px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', marginBottom: '6px', fontWeight: '400' }}>
                       Traits
                     </label>
                     {editMode ? (
@@ -494,7 +494,7 @@ function CharacterSheet() {
                     )}
                   </div>
                   <div>
-                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', marginBottom: '6px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', marginBottom: '6px', fontWeight: '400' }}>
                       Ideals
                     </label>
                     {editMode ? (
@@ -511,7 +511,7 @@ function CharacterSheet() {
                     )}
                   </div>
                   <div>
-                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', marginBottom: '6px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', marginBottom: '6px', fontWeight: '400' }}>
                       Bonds
                     </label>
                     {editMode ? (
@@ -528,7 +528,7 @@ function CharacterSheet() {
                     )}
                   </div>
                   <div>
-                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', marginBottom: '6px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', marginBottom: '6px', fontWeight: '400' }}>
                       Flaws
                     </label>
                     {editMode ? (

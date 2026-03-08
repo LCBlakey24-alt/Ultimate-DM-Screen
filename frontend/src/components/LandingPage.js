@@ -13,45 +13,45 @@ import TronBackground from '@/components/TronBackground';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-// Teal/Black/Red Theme - New Color Scheme
+// Dark Black/Grey Theme with Orange/Gold Accents
 const theme = {
   bg: {
-    black: '#0D0D0D',      // Pure black
-    dark: '#121212',       // Slightly lighter black
-    panel: '#1A1A1A',      // Panel background
-    card: '#1A6B64',       // Dark teal
-    hover: '#2A9D8F',      // Light teal
-    elevated: '#222222'
+    black: '#0D0D0D',      // Near black
+    dark: '#1A1A1A',       // Dark grey
+    panel: '#1F1F1F',      // Panel grey
+    card: '#262626',       // Card grey
+    hover: '#333333',      // Hover grey
+    elevated: '#2A2A2A'
   },
-  // GM Side - Reds
+  // GM Side - Orange/Red
   gm: {
-    primary: '#B91C1C',
-    hover: '#B91C1C',
-    subtle: 'rgba(185, 28, 28, 0.15)',
-    border: 'rgba(185, 28, 28, 0.4)',
-    glow: '0 0 30px rgba(185, 28, 28, 0.3)'
+    primary: '#C54B2C',
+    hover: '#E05C3D',
+    subtle: 'rgba(197, 75, 44, 0.15)',
+    border: 'rgba(197, 75, 44, 0.4)',
+    glow: '0 0 30px rgba(197, 75, 44, 0.3)'
   },
-  // Player Side - Teals
+  // Player Side - Gold
   player: {
-    primary: '#2A9D8F',
-    cyan: '#1A6B64',
-    hover: '#3DB5A6',
-    subtle: 'rgba(42, 157, 143, 0.15)',
-    border: 'rgba(42, 157, 143, 0.4)',
-    glow: '0 0 30px rgba(42, 157, 143, 0.3)'
+    primary: '#F2A541',
+    cyan: '#D99033',
+    hover: '#FFB855',
+    subtle: 'rgba(242, 165, 65, 0.15)',
+    border: 'rgba(242, 165, 65, 0.4)',
+    glow: '0 0 30px rgba(242, 165, 65, 0.3)'
   },
   // Accent colors
   accent: {
-    red: '#B91C1C',
-    redHover: '#B91C1C',
-    redSubtle: 'rgba(185, 28, 28, 0.15)',
-    redBorder: 'rgba(185, 28, 28, 0.4)'
+    red: '#C54B2C',
+    redHover: '#E05C3D',
+    redSubtle: 'rgba(197, 75, 44, 0.15)',
+    redBorder: 'rgba(197, 75, 44, 0.4)'
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#B8B8B8',
-    muted: '#808080',
-    dim: '#666666'
+    secondary: '#B0B0B0',
+    muted: '#707070',
+    dim: '#505050'
   },
   border: {
     dark: 'rgba(255, 255, 255, 0.06)',
@@ -152,8 +152,12 @@ function LandingPage() {
     <div style={{ 
       minHeight: '100vh', 
       background: theme.bg.black,
-      color: theme.text.white
+      color: theme.text.white,
+      position: 'relative'
     }}>
+      {/* Smokey Background Effect */}
+      <div className="smokey-bg" />
+      
       {/* Navigation */}
       <nav style={{
         position: 'fixed',
@@ -174,9 +178,9 @@ function LandingPage() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ 
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               fontSize: '20px',
-              fontWeight: '700',
+              fontWeight: '400',
               color: theme.text.white,
               letterSpacing: '2px'
             }}>
@@ -203,7 +207,7 @@ function LandingPage() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '8px',
-                background: 'linear-gradient(135deg, #B91C1C, #2A9D8F)',
+                background: 'linear-gradient(135deg, #C54B2C, #F2A541)',
                 border: 'none',
                 color: theme.text.white
               }}
@@ -229,9 +233,9 @@ function LandingPage() {
           {/* Logo and Text */}
           <div style={{ marginBottom: '32px' }}>
             <h1 style={{
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               fontSize: 'clamp(2.5rem, 8vw, 5rem)',
-              fontWeight: '700',
+              fontWeight: '400',
               color: theme.text.white,
               letterSpacing: '8px',
               textTransform: 'uppercase',
@@ -242,9 +246,9 @@ function LandingPage() {
             </h1>
             
             <h1 style={{
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               fontSize: 'clamp(3rem, 10vw, 6rem)',
-              fontWeight: '700',
+              fontWeight: '400',
               color: theme.text.white,
               letterSpacing: '12px',
               textTransform: 'uppercase',
@@ -255,15 +259,15 @@ function LandingPage() {
             </h1>
             
             <p style={{
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               fontSize: 'clamp(0.9rem, 2vw, 1.2rem)',
-              background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
+              background: 'linear-gradient(90deg, #C54B2C, #F2A541)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               letterSpacing: '6px',
               textTransform: 'uppercase',
               marginTop: '24px',
-              fontWeight: '600'
+              fontWeight: '400'
             }}>
               Campaign Operating System
             </p>
@@ -273,15 +277,15 @@ function LandingPage() {
           <div style={{
             width: '120px',
             height: '2px',
-            background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
+            background: 'linear-gradient(90deg, #C54B2C, #F2A541)',
             margin: '32px auto'
           }} />
 
           {/* Headline */}
           <h2 style={{
-            fontFamily: 'Cityworm, sans-serif',
+            fontFamily: "Eros Book, sans-serif",
             fontSize: 'clamp(2rem, 4vw, 3.5rem)',
-            fontWeight: '700',
+            fontWeight: '400',
             color: theme.text.white,
             marginBottom: '24px',
             lineHeight: '1.2'
@@ -293,7 +297,7 @@ function LandingPage() {
 
           {/* Subheadline */}
           <p style={{
-            fontFamily: 'Cityworm, sans-serif',
+            fontFamily: "Eros Book, sans-serif",
             fontSize: 'clamp(1rem, 1.8vw, 1.25rem)',
             color: theme.text.secondary,
             maxWidth: '800px',
@@ -313,14 +317,14 @@ function LandingPage() {
               style={{ 
                 padding: '16px 32px', 
                 fontSize: '16px',
-                fontFamily: 'Cityworm, sans-serif',
+                fontFamily: "Eros Book, sans-serif",
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
                 background: theme.gm.primary,
                 border: 'none',
                 color: theme.text.white,
-                fontWeight: '600',
+                fontWeight: '400',
                 letterSpacing: '1px'
               }}
             >
@@ -331,14 +335,14 @@ function LandingPage() {
               style={{ 
                 padding: '16px 32px', 
                 fontSize: '16px',
-                fontFamily: 'Cityworm, sans-serif',
+                fontFamily: "Eros Book, sans-serif",
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
                 background: theme.player.primary,
                 border: 'none',
                 color: theme.text.white,
-                fontWeight: '600',
+                fontWeight: '400',
                 letterSpacing: '1px'
               }}
             >
@@ -412,16 +416,16 @@ function LandingPage() {
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
-              fontWeight: '700',
+              fontWeight: '400',
               color: theme.text.white,
               marginBottom: '20px'
             }}>
               Your Entire Campaign. <span style={{ color: theme.accent.red }}>One System.</span>
             </h2>
             <p style={{
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               color: theme.text.secondary,
               fontSize: '16px',
               lineHeight: '1.8',
@@ -458,7 +462,7 @@ function LandingPage() {
                   minWidth: '180px'
                 }}>
                   <step.icon size={28} color={theme.accent.red} />
-                  <span style={{ color: theme.text.white, fontWeight: '600', fontSize: '16px' }}>
+                  <span style={{ color: theme.text.white, fontWeight: '400', fontSize: '16px' }}>
                     {step.label}
                   </span>
                 </div>
@@ -476,16 +480,16 @@ function LandingPage() {
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
-              fontWeight: '700',
+              fontWeight: '400',
               color: theme.text.white,
               marginBottom: '16px'
             }}>
               Try <span style={{ color: theme.accent.red }}>ROOK</span> Right Now
             </h2>
             <p style={{ 
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               color: theme.text.secondary, 
               fontSize: '16px', 
               maxWidth: '600px', 
@@ -511,8 +515,8 @@ function LandingPage() {
               style={{
                 padding: '16px 40px',
                 fontSize: '16px',
-                fontFamily: 'Cityworm, sans-serif',
-                fontWeight: '600',
+                fontFamily: "Eros Book, sans-serif",
+                fontWeight: '400',
                 background: theme.accent.red,
                 border: 'none',
                 color: theme.text.white,
@@ -532,7 +536,7 @@ function LandingPage() {
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <h2 style={{
               fontSize: 'clamp(2rem, 4vw, 3rem)',
-              fontWeight: '700',
+              fontWeight: '400',
               color: theme.text.white,
               marginBottom: '16px'
             }}>
@@ -569,7 +573,7 @@ function LandingPage() {
                 </div>
                 <h3 style={{
                   fontSize: '24px',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   color: theme.text.white,
                   marginBottom: '16px'
                 }}>
@@ -594,7 +598,7 @@ function LandingPage() {
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <h2 style={{
               fontSize: 'clamp(2rem, 4vw, 3rem)',
-              fontWeight: '700',
+              fontWeight: '400',
               color: theme.text.white,
               marginBottom: '16px'
             }}>
@@ -636,7 +640,7 @@ function LandingPage() {
                 </div>
                 <h3 style={{
                   fontSize: '22px',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   color: theme.text.white,
                   marginBottom: '12px'
                 }}>
@@ -691,7 +695,7 @@ function LandingPage() {
                 background: theme.accent.redSubtle,
                 color: theme.accent.red,
                 fontSize: '14px',
-                fontWeight: '600',
+                fontWeight: '400',
                 marginBottom: '16px'
               }}>
                 <Sparkles size={16} />
@@ -700,7 +704,7 @@ function LandingPage() {
               
               <h2 style={{
                 fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
-                fontWeight: '700',
+                fontWeight: '400',
                 color: theme.text.white,
                 marginBottom: '16px',
                 lineHeight: '1.2'
@@ -711,7 +715,7 @@ function LandingPage() {
               <p style={{
                 color: theme.accent.red,
                 fontSize: '20px',
-                fontWeight: '600',
+                fontWeight: '400',
                 marginBottom: '24px'
               }}>
                 Your AI Game Master Assistant
@@ -738,7 +742,7 @@ function LandingPage() {
                   }}>
                     <div style={{
                       fontSize: '28px',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       color: theme.accent.red
                     }}>
                       {item.letter}
@@ -778,7 +782,7 @@ function LandingPage() {
                     background: theme.bg.card,
                     color: theme.accent.red,
                     fontSize: '13px',
-                    fontWeight: '600',
+                    fontWeight: '400',
                     border: `1px solid ${theme.border.default}`
                   }}>
                     <Sparkles size={14} />
@@ -802,7 +806,7 @@ function LandingPage() {
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <h2 style={{
             fontSize: 'clamp(2rem, 4vw, 3rem)',
-            fontWeight: '700',
+            fontWeight: '400',
             color: theme.text.white,
             marginBottom: '24px',
             lineHeight: '1.3'
@@ -828,11 +832,11 @@ function LandingPage() {
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <p style={{
-              background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
+              background: 'linear-gradient(90deg, #C54B2C, #F2A541)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               fontSize: '16px',
-              fontWeight: '700',
+              fontWeight: '400',
               letterSpacing: '2px',
               textTransform: 'uppercase',
               marginBottom: '12px'
@@ -841,7 +845,7 @@ function LandingPage() {
             </p>
             <h2 style={{
               fontSize: 'clamp(2rem, 4vw, 3rem)',
-              fontWeight: '700',
+              fontWeight: '400',
               color: theme.text.white,
               marginBottom: '16px'
             }}>
@@ -867,7 +871,7 @@ function LandingPage() {
                   background: billingCycle === 'monthly' ? theme.gm.primary : 'transparent',
                   border: 'none',
                   color: theme.text.white,
-                  fontWeight: '600',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   transition: 'all 0.2s'
                 }}
@@ -882,7 +886,7 @@ function LandingPage() {
                   background: billingCycle === 'yearly' ? theme.gm.primary : 'transparent',
                   border: 'none',
                   color: theme.text.white,
-                  fontWeight: '600',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -896,7 +900,7 @@ function LandingPage() {
                   color: '#fff', 
                   padding: '3px 8px', 
                   fontSize: '10px',
-                  fontWeight: '700'
+                  fontWeight: '400'
                 }}>
                   SAVE ~17%
                 </span>
@@ -921,13 +925,13 @@ function LandingPage() {
               flexDirection: 'column'
             }}>
               <div style={{ marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '600', marginBottom: '4px' }}>
+                <h3 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '400', marginBottom: '4px' }}>
                   Free
                 </h3>
                 <p style={{ color: theme.text.muted, fontSize: '13px' }}>Get started</p>
               </div>
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '700' }}>£0</span>
+                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '400' }}>£0</span>
                 <span style={{ color: theme.text.muted, fontSize: '14px' }}>/forever</span>
               </div>
               <ul style={{ margin: '0 0 auto', padding: 0, listStyle: 'none', flex: 1 }}>
@@ -978,7 +982,7 @@ function LandingPage() {
                 color: '#000',
                 padding: '4px 16px',
                 fontSize: '11px',
-                fontWeight: '700',
+                fontWeight: '400',
                 letterSpacing: '1px'
               }}>
                 FOR PLAYERS
@@ -987,7 +991,7 @@ function LandingPage() {
                 <h3 style={{ 
                   fontSize: '20px', 
                   color: theme.player.cyan, 
-                  fontWeight: '600', 
+                  fontWeight: '400', 
                   marginBottom: '4px',
                   display: 'flex',
                   alignItems: 'center',
@@ -998,7 +1002,7 @@ function LandingPage() {
                 <p style={{ color: theme.text.muted, fontSize: '13px' }}>Serious players</p>
               </div>
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '700' }}>£{getPrice('hero')}</span>
+                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '400' }}>£{getPrice('hero')}</span>
                 <span style={{ color: theme.text.muted, fontSize: '14px' }}>/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                 {billingCycle === 'yearly' && (
                   <p style={{ color: theme.player.cyan, fontSize: '12px', marginTop: '4px' }}>
@@ -1028,7 +1032,7 @@ function LandingPage() {
                   background: `linear-gradient(135deg, ${theme.player.primary}, ${theme.player.cyan})`,
                   border: 'none',
                   color: '#fff',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   marginTop: '20px'
                 }}
               >
@@ -1055,7 +1059,7 @@ function LandingPage() {
                 color: '#fff',
                 padding: '4px 16px',
                 fontSize: '11px',
-                fontWeight: '700',
+                fontWeight: '400',
                 letterSpacing: '1px'
               }}>
                 FOR GMs
@@ -1064,7 +1068,7 @@ function LandingPage() {
                 <h3 style={{ 
                   fontSize: '20px', 
                   color: theme.gm.primary, 
-                  fontWeight: '600', 
+                  fontWeight: '400', 
                   marginBottom: '4px',
                   display: 'flex',
                   alignItems: 'center',
@@ -1075,7 +1079,7 @@ function LandingPage() {
                 <p style={{ color: theme.text.muted, fontSize: '13px' }}>Game Masters</p>
               </div>
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '700' }}>£{getPrice('questMaster')}</span>
+                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '400' }}>£{getPrice('questMaster')}</span>
                 <span style={{ color: theme.text.muted, fontSize: '14px' }}>/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                 {billingCycle === 'yearly' && (
                   <p style={{ color: theme.gm.primary, fontSize: '12px', marginTop: '4px' }}>
@@ -1105,7 +1109,7 @@ function LandingPage() {
                   background: theme.gm.primary,
                   border: 'none',
                   color: '#fff',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   marginTop: '20px'
                 }}
               >
@@ -1118,7 +1122,7 @@ function LandingPage() {
               padding: '32px',
               background: `linear-gradient(135deg, ${theme.gm.subtle}, ${theme.player.subtle})`,
               border: '2px solid transparent',
-              borderImage: 'linear-gradient(135deg, #B91C1C, #2A9D8F) 1',
+              borderImage: 'linear-gradient(135deg, #C54B2C, #F2A541) 1',
               position: 'relative',
               display: 'flex',
               flexDirection: 'column'
@@ -1128,11 +1132,11 @@ function LandingPage() {
                 top: '-12px',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
+                background: 'linear-gradient(90deg, #C54B2C, #F2A541)',
                 color: '#fff',
                 padding: '4px 16px',
                 fontSize: '11px',
-                fontWeight: '700',
+                fontWeight: '400',
                 letterSpacing: '1px'
               }}>
                 BEST VALUE
@@ -1140,10 +1144,10 @@ function LandingPage() {
               <div style={{ marginBottom: '20px', marginTop: '8px' }}>
                 <h3 style={{ 
                   fontSize: '20px', 
-                  background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
+                  background: 'linear-gradient(90deg, #C54B2C, #F2A541)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  fontWeight: '700', 
+                  fontWeight: '400', 
                   marginBottom: '4px',
                   display: 'flex',
                   alignItems: 'center',
@@ -1154,7 +1158,7 @@ function LandingPage() {
                 <p style={{ color: theme.text.muted, fontSize: '13px' }}>GM who also plays</p>
               </div>
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '700' }}>£{getPrice('legendary')}</span>
+                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '400' }}>£{getPrice('legendary')}</span>
                 <span style={{ color: theme.text.muted, fontSize: '14px' }}>/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                 {billingCycle === 'yearly' && (
                   <p style={{ color: '#F59E0B', fontSize: '12px', marginTop: '4px' }}>
@@ -1181,10 +1185,10 @@ function LandingPage() {
                 style={{ 
                   width: '100%', 
                   padding: '12px',
-                  background: 'linear-gradient(135deg, #B91C1C, #2A9D8F)',
+                  background: 'linear-gradient(135deg, #C54B2C, #F2A541)',
                   border: 'none',
                   color: '#fff',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   marginTop: '20px'
                 }}
               >
@@ -1215,7 +1219,7 @@ function LandingPage() {
             <div style={{ textAlign: 'center', marginBottom: '48px' }}>
               <h2 style={{
                 fontSize: 'clamp(2rem, 4vw, 3rem)',
-                fontWeight: '700',
+                fontWeight: '400',
                 color: theme.text.white,
                 marginBottom: '16px'
               }}>
@@ -1250,7 +1254,7 @@ function LandingPage() {
                     "{review.comment}"
                   </p>
                   <div>
-                    <p style={{ color: theme.text.white, fontWeight: '600', marginBottom: '4px' }}>
+                    <p style={{ color: theme.text.white, fontWeight: '400', marginBottom: '4px' }}>
                       {review.username}
                     </p>
                     <p style={{ color: theme.accent.red, fontSize: '13px' }}>
@@ -1269,7 +1273,7 @@ function LandingPage() {
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <h2 style={{
             fontSize: 'clamp(2rem, 4vw, 3rem)',
-            fontWeight: '700',
+            fontWeight: '400',
             color: theme.text.white,
             marginBottom: '24px'
           }}>
@@ -1294,7 +1298,7 @@ function LandingPage() {
               background: theme.accent.red,
               border: 'none',
               color: theme.text.white,
-              fontWeight: '600'
+              fontWeight: '400'
             }}
           >
             <Scroll size={24} /> Create Your First Campaign
@@ -1322,9 +1326,9 @@ function LandingPage() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span style={{ 
-                fontFamily: 'Cityworm, sans-serif',
+                fontFamily: "Eros Book, sans-serif",
                 fontSize: '16px',
-                fontWeight: '700',
+                fontWeight: '400',
                 color: theme.text.white,
                 letterSpacing: '2px'
               }}>

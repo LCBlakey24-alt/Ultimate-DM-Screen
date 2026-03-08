@@ -14,13 +14,13 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme - Red (Tron Aries)
 const theme = {
-  primary: '#B91C1C',
-  hover: '#DC2626',
+  primary: '#C54B2C',
+  hover: '#E05C3D',
   subtle: 'rgba(225, 29, 72, 0.15)',
   glow: '0 0 20px rgba(225, 29, 72, 0.3)',
   bg: '#0D0D0D',
-  card: '#1F1F1F',
-  panel: '#1A1A1A',
+  card: '#262626',
+  panel: '#1F1F1F',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
@@ -28,14 +28,14 @@ const theme = {
 };
 
 const EVENT_TYPES = [
-  { id: 'session', label: 'Session', icon: Calendar, color: '#2A9D8F' },
-  { id: 'combat', label: 'Combat', icon: Swords, color: '#DC2626' },
+  { id: 'session', label: 'Session', icon: Calendar, color: '#F2A541' },
+  { id: 'combat', label: 'Combat', icon: Swords, color: '#E05C3D' },
   { id: 'npc_met', label: 'NPC Met', icon: Users, color: '#8B5CF6' },
   { id: 'location', label: 'Location', icon: MapPin, color: '#22C55E' },
   { id: 'quest', label: 'Quest', icon: Flag, color: '#F59E0B' },
   { id: 'death', label: 'Death', icon: Skull, color: '#6B7280' },
-  { id: 'level_up', label: 'Level Up', icon: Star, color: '#2A9D8F' },
-  { id: 'major', label: 'Major Event', icon: Crown, color: '#B91C1C' },
+  { id: 'level_up', label: 'Level Up', icon: Star, color: '#F2A541' },
+  { id: 'major', label: 'Major Event', icon: Crown, color: '#C54B2C' },
   { id: 'milestone', label: 'Milestone', icon: Milestone, color: '#EC4899' }
 ];
 
@@ -169,9 +169,9 @@ function SessionTimeline({ campaignId }) {
             <h3 style={{ 
               color: theme.primary, 
               fontSize: '18px', 
-              fontWeight: '700',
+              fontWeight: '400',
               margin: 0,
-              fontFamily: 'Cityworm, sans-serif'
+              fontFamily: "Eros Book, sans-serif"
             }}>
               SESSION TIMELINE
             </h3>
@@ -191,7 +191,7 @@ function SessionTimeline({ campaignId }) {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            fontWeight: '600'
+            fontWeight: '400'
           }}
         >
           <Plus size={16} />
@@ -207,7 +207,7 @@ function SessionTimeline({ campaignId }) {
           padding: '20px',
           marginBottom: '24px'
         }}>
-          <h4 style={{ color: theme.text, fontSize: '14px', fontWeight: '600', marginBottom: '16px' }}>
+          <h4 style={{ color: theme.text, fontSize: '14px', fontWeight: '400', marginBottom: '16px' }}>
             New Timeline Event
           </h4>
           
@@ -317,7 +317,7 @@ function SessionTimeline({ campaignId }) {
             border: `1px solid ${filter === 'all' ? theme.primary : theme.border}`,
             color: filter === 'all' ? theme.primary : theme.muted,
             fontSize: '12px',
-            fontWeight: '600',
+            fontWeight: '400',
             cursor: 'pointer'
           }}
         >
@@ -336,7 +336,7 @@ function SessionTimeline({ campaignId }) {
                 border: `1px solid ${filter === type.id ? type.color : theme.border}`,
                 color: filter === type.id ? type.color : theme.muted,
                 fontSize: '12px',
-                fontWeight: '600',
+                fontWeight: '400',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -398,14 +398,14 @@ function SessionTimeline({ campaignId }) {
                   justifyContent: 'center',
                   zIndex: 1
                 }}>
-                  <span style={{ color: '#fff', fontWeight: '700', fontSize: '14px' }}>
+                  <span style={{ color: '#fff', fontWeight: '400', fontSize: '14px' }}>
                     {session === 'Unassigned' ? '?' : session}
                   </span>
                 </div>
                 <h4 style={{ 
                   color: theme.text, 
                   fontSize: '16px', 
-                  fontWeight: '700',
+                  fontWeight: '400',
                   margin: 0 
                 }}>
                   {session === 'Unassigned' ? 'Unassigned Events' : `Session ${session}`}
@@ -431,7 +431,7 @@ function SessionTimeline({ campaignId }) {
                         <div style={{ flex: 1 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                             <eventType.icon size={14} color={eventType.color} />
-                            <span style={{ color: eventType.color, fontSize: '11px', fontWeight: '600', textTransform: 'uppercase' }}>
+                            <span style={{ color: eventType.color, fontSize: '11px', fontWeight: '400', textTransform: 'uppercase' }}>
                               {eventType.label}
                             </span>
                             {event.in_game_date && (
@@ -440,7 +440,7 @@ function SessionTimeline({ campaignId }) {
                               </span>
                             )}
                           </div>
-                          <h5 style={{ color: theme.text, fontSize: '15px', fontWeight: '600', margin: '0 0 6px' }}>
+                          <h5 style={{ color: theme.text, fontSize: '15px', fontWeight: '400', margin: '0 0 6px' }}>
                             {event.title}
                           </h5>
                           {event.description && (

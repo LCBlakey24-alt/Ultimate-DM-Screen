@@ -224,7 +224,7 @@ function CreatureAbilityCard({ creature, onRollResult, compact = false }) {
                   borderRadius: '6px',
                   color: ability.hasDice ? getTypeColor(ability.type) : '#64748b',
                   fontSize: '10px',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   cursor: ability.hasDice ? 'pointer' : 'default',
                   display: 'flex',
                   alignItems: 'center',
@@ -254,7 +254,7 @@ function CreatureAbilityCard({ creature, onRollResult, compact = false }) {
             borderRadius: '6px',
             fontSize: '11px'
           }}>
-            <div style={{ color: '#ef4444', fontWeight: '600', marginBottom: '4px' }}>
+            <div style={{ color: '#ef4444', fontWeight: '400', marginBottom: '4px' }}>
               {lastRoll.ability}
             </div>
             {lastRoll.results.map((r, i) => (
@@ -272,7 +272,7 @@ function CreatureAbilityCard({ creature, onRollResult, compact = false }) {
               </div>
             ))}
             {lastRoll.totalDamage > 0 && (
-              <div style={{ color: '#ef4444', fontWeight: '700', marginTop: '4px' }}>
+              <div style={{ color: '#ef4444', fontWeight: '400', marginTop: '4px' }}>
                 Total: {lastRoll.totalDamage} damage
               </div>
             )}
@@ -294,7 +294,7 @@ function CreatureAbilityCard({ creature, onRollResult, compact = false }) {
       <h4 style={{ 
         color: '#ef4444', 
         fontSize: '14px', 
-        fontWeight: '700', 
+        fontWeight: '400', 
         marginBottom: '12px',
         display: 'flex',
         alignItems: 'center',
@@ -337,7 +337,7 @@ function CreatureAbilityCard({ creature, onRollResult, compact = false }) {
                 }}>
                   <AbilityIcon icon={ability.icon} size={14} color={getTypeColor(ability.type)} />
                 </div>
-                <span style={{ color: '#fff', fontWeight: '700', fontSize: '13px' }}>
+                <span style={{ color: '#fff', fontWeight: '400', fontSize: '13px' }}>
                   {ability.name}
                 </span>
                 <span style={{
@@ -347,7 +347,7 @@ function CreatureAbilityCard({ creature, onRollResult, compact = false }) {
                   color: getTypeColor(ability.type),
                   borderRadius: '4px',
                   textTransform: 'uppercase',
-                  fontWeight: '600'
+                  fontWeight: '400'
                 }}>
                   {ability.type}
                 </span>
@@ -387,7 +387,7 @@ function CreatureAbilityCard({ creature, onRollResult, compact = false }) {
                   borderRadius: '8px',
                   color: '#fff',
                   fontSize: '11px',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -419,7 +419,7 @@ function CreatureAbilityCard({ creature, onRollResult, compact = false }) {
             alignItems: 'center',
             marginBottom: '8px'
           }}>
-            <span style={{ color: '#ef4444', fontWeight: '700', fontSize: '13px' }}>
+            <span style={{ color: '#ef4444', fontWeight: '400', fontSize: '13px' }}>
               {lastRoll.ability} Result
             </span>
             {lastRoll.results.some(r => r.isCrit) && (
@@ -470,7 +470,7 @@ function CreatureAbilityCard({ creature, onRollResult, compact = false }) {
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-              <span style={{ color: '#fff', fontSize: '12px', fontWeight: '600' }}>
+              <span style={{ color: '#fff', fontSize: '12px', fontWeight: '400' }}>
                 Total Damage
               </span>
               <span style={{ 

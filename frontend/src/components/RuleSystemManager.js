@@ -14,13 +14,13 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme - Red (Tron Aries)
 const theme = {
-  primary: '#B91C1C',
-  hover: '#DC2626',
+  primary: '#C54B2C',
+  hover: '#E05C3D',
   subtle: 'rgba(225, 29, 72, 0.15)',
   glow: '0 0 20px rgba(225, 29, 72, 0.3)',
   bg: '#0D0D0D',
-  card: '#1F1F1F',
-  panel: '#1A1A1A',
+  card: '#262626',
+  panel: '#1F1F1F',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
@@ -30,13 +30,13 @@ const theme = {
 };
 
 const CONTENT_TYPES = [
-  { id: 'classes', label: 'Classes', icon: Users, color: '#2A9D8F' },
+  { id: 'classes', label: 'Classes', icon: Users, color: '#F2A541' },
   { id: 'subclasses', label: 'Subclasses', icon: Users, color: '#6366F1' },
   { id: 'races', label: 'Races/Species', icon: Users, color: '#8B5CF6' },
   { id: 'spells', label: 'Spells', icon: Sparkles, color: '#EC4899' },
   { id: 'items', label: 'Items', icon: Package, color: '#F59E0B' },
   { id: 'feats', label: 'Feats', icon: Shield, color: '#22C55E' },
-  { id: 'monsters', label: 'Monsters', icon: Swords, color: '#DC2626' },
+  { id: 'monsters', label: 'Monsters', icon: Swords, color: '#E05C3D' },
   { id: 'features', label: 'Class Features', icon: Wand2, color: '#14B8A6' },
 ];
 
@@ -362,7 +362,7 @@ function RuleSystemManager() {
             <BookOpen size={20} color={theme.primary} />
           </div>
           <div>
-            <h3 style={{ color: theme.primary, fontSize: '18px', fontWeight: '700', margin: 0 }}>
+            <h3 style={{ color: theme.primary, fontSize: '18px', fontWeight: '400', margin: 0 }}>
               RULE SYSTEM MANAGER
             </h3>
             <p style={{ color: theme.muted, fontSize: '13px', margin: 0 }}>
@@ -472,7 +472,7 @@ function RuleSystemManager() {
                         padding: '2px 8px',
                         borderRadius: '10px',
                         fontSize: '12px',
-                        fontWeight: '600'
+                        fontWeight: '400'
                       }}>
                         {count}
                       </span>

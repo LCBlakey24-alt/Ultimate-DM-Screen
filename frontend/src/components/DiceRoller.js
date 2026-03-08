@@ -78,8 +78,8 @@ function DiceRoller() {
         <h3 style={{ 
           fontSize: '18px', 
           color: '#ffffff',
-          fontFamily: 'Cityworm, sans-serif',
-          fontWeight: '700',
+          fontFamily: "Eros Book, sans-serif",
+          fontWeight: '400',
           display: 'flex',
           alignItems: 'center',
           gap: '10px'
@@ -114,9 +114,9 @@ function DiceRoller() {
               border: selectedDice.sides === dice.sides ? `2px solid ${dice.color}` : '2px solid #1e40af',
               background: selectedDice.sides === dice.sides ? `${dice.color}20` : 'transparent',
               color: selectedDice.sides === dice.sides ? dice.color : '#94a3b8',
-              fontWeight: '700',
+              fontWeight: '400',
               fontSize: '13px',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               cursor: 'pointer',
               transition: 'all 0.2s',
               boxShadow: selectedDice.sides === dice.sides ? `0 0 15px ${dice.color}40` : 'none'
@@ -135,8 +135,8 @@ function DiceRoller() {
             marginBottom: '6px', 
             fontSize: '12px', 
             color: '#67e8f9',
-            fontWeight: '600',
-            fontFamily: 'Cityworm, sans-serif'
+            fontWeight: '400',
+            fontFamily: "Eros Book, sans-serif"
           }}>
             Number of Dice
           </label>
@@ -152,7 +152,7 @@ function DiceRoller() {
                   border: diceCount === num ? '2px solid #22c55e' : '2px solid #1e40af',
                   background: diceCount === num ? 'rgba(34, 197, 94, 0.2)' : 'transparent',
                   color: diceCount === num ? '#22c55e' : '#94a3b8',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   fontSize: '13px',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
@@ -180,7 +180,7 @@ function DiceRoller() {
                 background: 'rgba(10, 10, 40, 0.6)',
                 color: '#ffffff',
                 fontSize: '14px',
-                fontWeight: '600',
+                fontWeight: '400',
                 textAlign: 'center'
               }}
               title="Enter any number (1-999)"
@@ -193,8 +193,8 @@ function DiceRoller() {
             marginBottom: '6px', 
             fontSize: '12px', 
             color: '#67e8f9',
-            fontWeight: '600',
-            fontFamily: 'Cityworm, sans-serif'
+            fontWeight: '400',
+            fontFamily: "Eros Book, sans-serif"
           }}>
             Modifier
           </label>
@@ -210,7 +210,7 @@ function DiceRoller() {
               background: 'rgba(10, 10, 40, 0.6)',
               color: '#ffffff',
               fontSize: '14px',
-              fontWeight: '600',
+              fontWeight: '400',
               textAlign: 'center'
             }}
           />
@@ -257,7 +257,7 @@ function DiceRoller() {
               fontSize: '14px', 
               color: '#22c55e', 
               fontWeight: '800',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               marginBottom: '8px',
               textTransform: 'uppercase',
               letterSpacing: '2px'
@@ -270,7 +270,7 @@ function DiceRoller() {
               fontSize: '14px', 
               color: '#ef4444', 
               fontWeight: '800',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               marginBottom: '8px',
               textTransform: 'uppercase',
               letterSpacing: '2px'
@@ -284,7 +284,7 @@ function DiceRoller() {
             color: currentResult.isCrit ? '#22c55e' : 
                    currentResult.isFail ? '#ef4444' : 
                    '#ffffff',
-            fontFamily: 'Cityworm, sans-serif',
+            fontFamily: "Eros Book, sans-serif",
             textShadow: `0 0 20px ${currentResult.dice.color}60`,
             lineHeight: 1
           }}>
@@ -363,8 +363,8 @@ function DiceRoller() {
             <span style={{ 
               fontSize: '13px', 
               color: '#67e8f9', 
-              fontWeight: '600',
-              fontFamily: 'Cityworm, sans-serif'
+              fontWeight: '400',
+              fontFamily: "Eros Book, sans-serif"
             }}>
               Recent Rolls
             </span>
@@ -403,9 +403,9 @@ function DiceRoller() {
                   {roll.modifier !== 0 && (roll.modifier > 0 ? `+${roll.modifier}` : roll.modifier)}
                 </span>
                 <span style={{ 
-                  fontWeight: '700', 
+                  fontWeight: '400', 
                   color: roll.isCrit ? '#22c55e' : roll.isFail ? '#ef4444' : '#ffffff',
-                  fontFamily: 'Cityworm, sans-serif'
+                  fontFamily: "Eros Book, sans-serif"
                 }}>
                   {roll.total}
                 </span>

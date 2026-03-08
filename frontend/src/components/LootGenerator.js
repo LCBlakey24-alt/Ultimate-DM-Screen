@@ -318,8 +318,8 @@ function LootGenerator({ partyLevel = 5, enemiesDefeated = [] }) {
         <h3 style={{ 
           fontSize: '18px', 
           color: '#ffffff',
-          fontFamily: 'Cityworm, sans-serif',
-          fontWeight: '700',
+          fontFamily: "Eros Book, sans-serif",
+          fontWeight: '400',
           display: 'flex',
           alignItems: 'center',
           gap: '10px'
@@ -341,7 +341,7 @@ function LootGenerator({ partyLevel = 5, enemiesDefeated = [] }) {
 
       {/* Tier Selection */}
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: '#67e8f9', fontWeight: '600' }}>
+        <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: '#67e8f9', fontWeight: '400' }}>
           Loot Tier
         </label>
         <div style={{ display: 'flex', gap: '8px' }}>
@@ -362,7 +362,7 @@ function LootGenerator({ partyLevel = 5, enemiesDefeated = [] }) {
                 background: lootTier === t.id ? `${t.color}20` : 'transparent',
                 color: lootTier === t.id ? t.color : '#94a3b8',
                 fontSize: '11px',
-                fontWeight: '600',
+                fontWeight: '400',
                 cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
@@ -406,20 +406,20 @@ function LootGenerator({ partyLevel = 5, enemiesDefeated = [] }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
               <Coins size={16} style={{ color: '#eab308' }} />
-              <span style={{ color: '#ffffff', fontWeight: '700', fontFamily: 'Cityworm, sans-serif' }}>Coins</span>
+              <span style={{ color: '#ffffff', fontWeight: '400', fontFamily: "Eros Book, sans-serif" }}>Coins</span>
             </div>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {generatedLoot.coins.copper > 0 && (
-                <span style={{ color: '#cd7f32', fontWeight: '600' }}>{generatedLoot.coins.copper} CP</span>
+                <span style={{ color: '#cd7f32', fontWeight: '400' }}>{generatedLoot.coins.copper} CP</span>
               )}
               {generatedLoot.coins.silver > 0 && (
-                <span style={{ color: '#c0c0c0', fontWeight: '600' }}>{generatedLoot.coins.silver} SP</span>
+                <span style={{ color: '#c0c0c0', fontWeight: '400' }}>{generatedLoot.coins.silver} SP</span>
               )}
               {generatedLoot.coins.gold > 0 && (
-                <span style={{ color: '#ffd700', fontWeight: '600' }}>{generatedLoot.coins.gold} GP</span>
+                <span style={{ color: '#ffd700', fontWeight: '400' }}>{generatedLoot.coins.gold} GP</span>
               )}
               {generatedLoot.coins.platinum > 0 && (
-                <span style={{ color: '#e5e4e2', fontWeight: '600' }}>{generatedLoot.coins.platinum} PP</span>
+                <span style={{ color: '#e5e4e2', fontWeight: '400' }}>{generatedLoot.coins.platinum} PP</span>
               )}
               {Object.values(generatedLoot.coins).every(v => v === 0) && (
                 <span style={{ color: '#64748b', fontStyle: 'italic' }}>No coins</span>
@@ -438,13 +438,13 @@ function LootGenerator({ partyLevel = 5, enemiesDefeated = [] }) {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <Gem size={16} style={{ color: '#a855f7' }} />
-                <span style={{ color: '#ffffff', fontWeight: '700', fontFamily: 'Cityworm, sans-serif' }}>Gems</span>
+                <span style={{ color: '#ffffff', fontWeight: '400', fontFamily: "Eros Book, sans-serif" }}>Gems</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {generatedLoot.gems.map((gem, idx) => (
                   <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                     <span style={{ color: '#ffffff' }}>{gem.name}</span>
-                    <span style={{ color: '#a855f7', fontWeight: '600' }}>{gem.value} gp</span>
+                    <span style={{ color: '#a855f7', fontWeight: '400' }}>{gem.value} gp</span>
                   </div>
                 ))}
               </div>
@@ -462,13 +462,13 @@ function LootGenerator({ partyLevel = 5, enemiesDefeated = [] }) {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <Scroll size={16} style={{ color: '#06b6d4' }} />
-                <span style={{ color: '#ffffff', fontWeight: '700', fontFamily: 'Cityworm, sans-serif' }}>Art Objects</span>
+                <span style={{ color: '#ffffff', fontWeight: '400', fontFamily: "Eros Book, sans-serif" }}>Art Objects</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {generatedLoot.artObjects.map((art, idx) => (
                   <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                     <span style={{ color: '#ffffff' }}>{art.name}</span>
-                    <span style={{ color: '#06b6d4', fontWeight: '600' }}>{art.value} gp</span>
+                    <span style={{ color: '#06b6d4', fontWeight: '400' }}>{art.value} gp</span>
                   </div>
                 ))}
               </div>
@@ -486,7 +486,7 @@ function LootGenerator({ partyLevel = 5, enemiesDefeated = [] }) {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <Sword size={16} style={{ color: '#22c55e' }} />
-                <span style={{ color: '#ffffff', fontWeight: '700', fontFamily: 'Cityworm, sans-serif' }}>Magic Items</span>
+                <span style={{ color: '#ffffff', fontWeight: '400', fontFamily: "Eros Book, sans-serif" }}>Magic Items</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {generatedLoot.magicItems.map((item, idx) => (
@@ -497,7 +497,7 @@ function LootGenerator({ partyLevel = 5, enemiesDefeated = [] }) {
                     border: '1px solid rgba(34, 197, 94, 0.3)'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                      <span style={{ color: '#ffffff', fontWeight: '700' }}>{item.name}</span>
+                      <span style={{ color: '#ffffff', fontWeight: '400' }}>{item.name}</span>
                       <span style={{ 
                         fontSize: '10px', 
                         padding: '2px 8px', 
@@ -507,7 +507,7 @@ function LootGenerator({ partyLevel = 5, enemiesDefeated = [] }) {
                                    item.rarity === 'rare' ? '#4a7dff' :
                                    item.rarity === 'veryRare' ? '#a855f7' : '#eab308',
                         color: '#ffffff',
-                        fontWeight: '600',
+                        fontWeight: '400',
                         textTransform: 'capitalize'
                       }}>
                         {item.rarity}
@@ -530,7 +530,7 @@ function LootGenerator({ partyLevel = 5, enemiesDefeated = [] }) {
             textAlign: 'center'
           }}>
             <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>Total Value</div>
-            <div style={{ fontSize: '28px', fontWeight: '800', color: '#eab308', fontFamily: 'Cityworm, sans-serif' }}>
+            <div style={{ fontSize: '28px', fontWeight: '800', color: '#eab308', fontFamily: "Eros Book, sans-serif" }}>
               ~{Math.round(generatedLoot.totalValue)} gp
             </div>
           </div>

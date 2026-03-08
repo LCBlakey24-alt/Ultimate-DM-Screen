@@ -99,7 +99,7 @@ function MonsterLookup({ onAddToCombat }) {
               onMouseLeave={(e) => e.target.style.background = 'transparent'}
             >
               <div>
-                <span style={{ color: '#fff', fontWeight: '600' }}>{monster.name}</span>
+                <span style={{ color: '#fff', fontWeight: '400' }}>{monster.name}</span>
                 <span style={{ color: '#64748b', fontSize: '12px', marginLeft: '10px' }}>
                   {monster.size} {monster.type}
                 </span>
@@ -110,7 +110,7 @@ function MonsterLookup({ onAddToCombat }) {
                 padding: '4px 10px',
                 borderRadius: '6px',
                 fontSize: '12px',
-                fontWeight: '700'
+                fontWeight: '400'
               }}>
                 CR {formatCR(monster.challenge_rating)}
               </span>
@@ -195,7 +195,7 @@ function MonsterLookup({ onAddToCombat }) {
             <div style={{ textAlign: 'center' }}>
               <Zap size={20} color="#eab308" style={{ margin: '0 auto 4px' }} />
               <p style={{ color: '#64748b', fontSize: '10px', textTransform: 'uppercase' }}>Speed</p>
-              <p style={{ color: '#fff', fontSize: '14px', fontWeight: '600' }}>{selectedMonster.speed || '30 ft.'}</p>
+              <p style={{ color: '#fff', fontSize: '14px', fontWeight: '400' }}>{selectedMonster.speed || '30 ft.'}</p>
             </div>
           </div>
 
@@ -221,7 +221,7 @@ function MonsterLookup({ onAddToCombat }) {
                 borderRadius: '8px',
                 border: '1px solid #1e40af'
               }}>
-                <p style={{ color: '#4a7dff', fontSize: '10px', fontWeight: '700' }}>{stat.name}</p>
+                <p style={{ color: '#4a7dff', fontSize: '10px', fontWeight: '400' }}>{stat.name}</p>
                 <p style={{ color: '#fff', fontSize: '16px', fontWeight: '800' }}>{stat.value || 10}</p>
                 <p style={{ color: '#94a3b8', fontSize: '11px' }}>{getStatModifier(stat.value || 10)}</p>
               </div>
@@ -238,7 +238,7 @@ function MonsterLookup({ onAddToCombat }) {
             borderRadius: '10px',
             marginBottom: '16px'
           }}>
-            <span style={{ color: '#ef4444', fontWeight: '700' }}>Challenge Rating</span>
+            <span style={{ color: '#ef4444', fontWeight: '400' }}>Challenge Rating</span>
             <span style={{ color: '#fff', fontSize: '20px', fontWeight: '800' }}>
               {formatCR(selectedMonster.challenge_rating)}
               <span style={{ color: '#64748b', fontSize: '12px', marginLeft: '8px' }}>
@@ -250,12 +250,12 @@ function MonsterLookup({ onAddToCombat }) {
           {/* Actions Preview */}
           {selectedMonster.actions && selectedMonster.actions.length > 0 && (
             <div style={{ marginBottom: '16px' }}>
-              <h4 style={{ color: '#ef4444', fontSize: '14px', fontWeight: '700', marginBottom: '8px', borderBottom: '2px solid #ef4444', paddingBottom: '4px' }}>
+              <h4 style={{ color: '#ef4444', fontSize: '14px', fontWeight: '400', marginBottom: '8px', borderBottom: '2px solid #ef4444', paddingBottom: '4px' }}>
                 Actions
               </h4>
               {selectedMonster.actions.slice(0, 3).map((action, idx) => (
                 <div key={idx} style={{ marginBottom: '8px' }}>
-                  <span style={{ color: '#fff', fontWeight: '700', fontSize: '13px' }}>{action.name}. </span>
+                  <span style={{ color: '#fff', fontWeight: '400', fontSize: '13px' }}>{action.name}. </span>
                   <span style={{ color: '#94a3b8', fontSize: '12px' }}>
                     {action.desc?.substring(0, 150)}{action.desc?.length > 150 ? '...' : ''}
                   </span>

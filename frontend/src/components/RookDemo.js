@@ -79,13 +79,13 @@ export const RookDemo = () => {
         alignItems: 'center',
         gap: '12px'
       }}>
-        <Sparkles size={28} color="#B91C1C" />
+        <Sparkles size={28} color="#C54B2C" />
         <div>
           <div style={{ 
-            color: '#B91C1C', 
-            fontWeight: '700', 
+            color: '#C54B2C', 
+            fontWeight: '400', 
             fontSize: '16px',
-            fontFamily: 'Cityworm, sans-serif'
+            fontFamily: "Eros Book, sans-serif"
           }}>
             ROOK
           </div>
@@ -160,13 +160,13 @@ export const RookDemo = () => {
           padding: '12px',
           background: currentStage.type === 'generating'
             ? 'linear-gradient(135deg, #0891b2 0%, #0284c7 100%)'
-            : 'linear-gradient(135deg, #22D3EE 0%, #2A9D8F 100%)',
+            : 'linear-gradient(135deg, #22D3EE 0%, #F2A541 100%)',
           border: 'none',
           borderRadius: '10px',
           color: '#ffffff',
-          fontWeight: '700',
+          fontWeight: '400',
           fontSize: '14px',
-          fontFamily: 'Cityworm, sans-serif',
+          fontFamily: "Eros Book, sans-serif",
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -209,7 +209,7 @@ export const RookDemo = () => {
               marginBottom: '12px',
               color: '#10B981',
               fontSize: '12px',
-              fontWeight: '600'
+              fontWeight: '400'
             }}>
               <Check size={16} />
               NPC Created Successfully!
@@ -219,15 +219,15 @@ export const RookDemo = () => {
                 width: '48px',
                 height: '48px',
                 background: 'rgba(225, 29, 72, 0.15)',
-                border: '1px solid #B91C1C',
+                border: '1px solid #C54B2C',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <User size={24} color="#B91C1C" />
+                <User size={24} color="#C54B2C" />
               </div>
               <div>
-                <div style={{ color: '#ffffff', fontWeight: '700', fontSize: '16px' }}>
+                <div style={{ color: '#ffffff', fontWeight: '400', fontSize: '16px' }}>
                   {npcResult.name}
                 </div>
                 <div style={{ color: '#94a3b8', fontSize: '12px' }}>

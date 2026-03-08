@@ -131,7 +131,7 @@ function EncounterDifficultyCalculator({ monsters = [], partySize = 4, partyLeve
       <h3 style={{ 
         color: '#4a7dff', 
         fontSize: '14px', 
-        fontWeight: '700', 
+        fontWeight: '400', 
         marginBottom: '16px',
         display: 'flex',
         alignItems: 'center',
@@ -166,7 +166,7 @@ function EncounterDifficultyCalculator({ monsters = [], partySize = 4, partyLeve
               borderRadius: '8px',
               color: '#fff',
               fontSize: '16px',
-              fontWeight: '700',
+              fontWeight: '400',
               textAlign: 'center'
             }}
           />
@@ -189,7 +189,7 @@ function EncounterDifficultyCalculator({ monsters = [], partySize = 4, partyLeve
               borderRadius: '8px',
               color: '#fff',
               fontSize: '16px',
-              fontWeight: '700',
+              fontWeight: '400',
               textAlign: 'center'
             }}
           />
@@ -244,8 +244,8 @@ function EncounterDifficultyCalculator({ monsters = [], partySize = 4, partyLeve
                   borderRadius: '6px',
                   textAlign: 'center'
                 }}>
-                  <p style={{ color: t.color, fontSize: '10px', fontWeight: '700' }}>{t.label}</p>
-                  <p style={{ color: '#fff', fontSize: '12px', fontWeight: '600' }}>{t.value.toLocaleString()}</p>
+                  <p style={{ color: t.color, fontSize: '10px', fontWeight: '400' }}>{t.label}</p>
+                  <p style={{ color: '#fff', fontSize: '12px', fontWeight: '400' }}>{t.value.toLocaleString()}</p>
                 </div>
               ))}
             </div>

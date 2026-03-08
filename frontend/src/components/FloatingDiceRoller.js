@@ -4,11 +4,11 @@ import { Dices, X, ChevronUp, Minus } from 'lucide-react';
 // Dark Minimalist Theme - Supports both Player (blue) and GM (red) modes
 const themes = {
   player: {
-    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F', hover: '#2A2A2A' },
+    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1F1F1F', card: '#262626', hover: '#333333' },
     accent: {
-      primary: '#2A9D8F',
-      secondary: '#2A9D8F',
-      hover: '#3DB5A6',
+      primary: '#F2A541',
+      secondary: '#F2A541',
+      hover: '#FFB855',
       subtle: 'rgba(59, 130, 246, 0.15)',
       glow: 'rgba(59, 130, 246, 0.4)'
     },
@@ -16,10 +16,10 @@ const themes = {
     border: 'rgba(255, 255, 255, 0.1)'
   },
   gm: {
-    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F', hover: '#2A2A2A' },
+    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1F1F1F', card: '#262626', hover: '#333333' },
     accent: {
-      primary: '#B91C1C',
-      secondary: '#DC2626',
+      primary: '#C54B2C',
+      secondary: '#E05C3D',
       hover: '#F87171',
       subtle: 'rgba(220, 38, 38, 0.15)',
       glow: 'rgba(220, 38, 38, 0.4)'
@@ -154,7 +154,7 @@ function FloatingDiceRoller({ mode = 'player' }) {
         border: `1px solid ${theme.border}`,
         boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
         zIndex: 9999,
-        fontFamily: 'Cityworm, sans-serif'
+        fontFamily: "Eros Book, sans-serif"
       }}
     >
       {/* Header */}
@@ -168,7 +168,7 @@ function FloatingDiceRoller({ mode = 'player' }) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Dices size={18} color="#fff" />
-          <span style={{ color: '#fff', fontWeight: '700', fontSize: '14px', letterSpacing: '0.5px' }}>
+          <span style={{ color: '#fff', fontWeight: '400', fontSize: '14px', letterSpacing: '0.5px' }}>
             DICE ROLLER
           </span>
         </div>
@@ -224,7 +224,7 @@ function FloatingDiceRoller({ mode = 'player' }) {
                   background: theme.bg.card,
                   border: `1px solid ${theme.border}`,
                   color: theme.text.white,
-                  fontWeight: '600',
+                  fontWeight: '400',
                   fontSize: '13px',
                   cursor: 'pointer',
                   transition: 'all 0.15s'
@@ -264,7 +264,7 @@ function FloatingDiceRoller({ mode = 'player' }) {
                 background: theme.accent.primarySubtle,
                 border: `1px solid ${theme.accent.primary}`,
                 color: theme.accent.primary,
-                fontWeight: '700',
+                fontWeight: '400',
                 fontSize: '11px',
                 cursor: 'pointer',
                 transition: 'all 0.15s'
@@ -301,7 +301,7 @@ function FloatingDiceRoller({ mode = 'player' }) {
                 background: theme.accent.primary,
                 border: 'none',
                 color: '#fff',
-                fontWeight: '700',
+                fontWeight: '400',
                 fontSize: '13px',
                 cursor: 'pointer'
               }}
@@ -339,7 +339,7 @@ function FloatingDiceRoller({ mode = 'player' }) {
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ color: theme.text.muted, fontSize: '11px', fontWeight: '600' }}>{roll.dice}</span>
+                    <span style={{ color: theme.text.muted, fontSize: '11px', fontWeight: '400' }}>{roll.dice}</span>
                     <span style={{ color: theme.text.muted, fontSize: '10px' }}>{roll.timestamp}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
@@ -347,7 +347,7 @@ function FloatingDiceRoller({ mode = 'player' }) {
                       color: roll.isCrit ? '#22c55e' : roll.isFail ? '#ef4444' : theme.text.white,
                       fontWeight: '800',
                       fontSize: '22px',
-                      fontFamily: 'Cityworm, sans-serif'
+                      fontFamily: "Eros Book, sans-serif"
                     }}>
                       {roll.total}
                     </span>
@@ -356,8 +356,8 @@ function FloatingDiceRoller({ mode = 'player' }) {
                         ({roll.results.join(' + ')}{roll.modifier ? ` ${roll.modifier > 0 ? '+' : ''}${roll.modifier}` : ''})
                       </span>
                     )}
-                    {roll.isCrit && <span style={{ color: '#22c55e', fontSize: '10px', fontWeight: '700' }}>NAT 20!</span>}
-                    {roll.isFail && <span style={{ color: '#ef4444', fontSize: '10px', fontWeight: '700' }}>NAT 1!</span>}
+                    {roll.isCrit && <span style={{ color: '#22c55e', fontSize: '10px', fontWeight: '400' }}>NAT 20!</span>}
+                    {roll.isFail && <span style={{ color: '#ef4444', fontSize: '10px', fontWeight: '400' }}>NAT 1!</span>}
                   </div>
                 </div>
               ))
@@ -397,7 +397,7 @@ function FloatingDiceRoller({ mode = 'player' }) {
                 background: theme.bg.card,
                 border: `1px solid ${theme.border}`,
                 color: theme.text.white,
-                fontWeight: '600',
+                fontWeight: '400',
                 fontSize: '11px',
                 cursor: 'pointer'
               }}

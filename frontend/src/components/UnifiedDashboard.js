@@ -13,44 +13,45 @@ import { RookGuide } from '@/components/RookGuide';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Teal/Black/Red Theme - New Color Scheme
+// Dark Black/Grey Theme with Orange/Gold Accents
 const theme = {
   bg: {
-    black: '#0D0D0D',      // Pure black
-    dark: '#121212',       // Slightly lighter black
-    panel: '#1A1A1A',      // Panel background
-    card: '#1A6B64',       // Dark teal
-    hover: '#2A9D8F'       // Light teal
+    black: '#0D0D0D',      // Near black
+    dark: '#1A1A1A',       // Dark grey
+    panel: '#1F1F1F',      // Panel grey
+    card: '#262626',       // Card grey
+    hover: '#333333'       // Hover grey
   },
-  // Player/Character Side - Teals
+  // Player Side - Gold/Yellow
   player: {
-    primary: '#2A9D8F',    // Light teal
-    secondary: '#1A6B64',  // Dark teal
-    tertiary: '#145852',   // Darker teal
-    hover: '#3DB5A6',
-    subtle: 'rgba(42, 157, 143, 0.12)',
-    border: 'rgba(42, 157, 143, 0.35)',
-    glow: '0 0 40px rgba(42, 157, 143, 0.2)',
-    gradient: 'linear-gradient(180deg, rgba(42, 157, 143, 0.15) 0%, transparent 100%)',
-    cyan: '#2A9D8F'
+    primary: '#F2A541',    // Golden yellow
+    secondary: '#D99033',  // Darker gold
+    tertiary: '#C07A22',   // Deep gold
+    hover: '#FFB855',
+    subtle: 'rgba(242, 165, 65, 0.12)',
+    border: 'rgba(242, 165, 65, 0.35)',
+    glow: '0 0 40px rgba(242, 165, 65, 0.2)',
+    gradient: 'linear-gradient(180deg, rgba(242, 165, 65, 0.15) 0%, transparent 100%)',
+    cyan: '#F2A541'
   },
-  // GM/Campaign Side - Reds
+  // GM Side - Orange/Red
   gm: {
-    primary: '#B91C1C',    // Bright red
-    secondary: '#7F1D1D',  // Medium red
-    tertiary: '#4A0E0E',   // Dark maroon
-    hover: '#B91C1C',
-    subtle: 'rgba(185, 28, 28, 0.12)',
-    border: 'rgba(185, 28, 28, 0.35)',
-    glow: '0 0 40px rgba(185, 28, 28, 0.2)',
-    gradient: 'linear-gradient(180deg, rgba(185, 28, 28, 0.15) 0%, transparent 100%)'
+    primary: '#C54B2C',    // Burnt orange
+    secondary: '#A03D24',  // Medium orange-red
+    tertiary: '#7A1F1F',   // Dark burgundy
+    hover: '#E05C3D',
+    subtle: 'rgba(197, 75, 44, 0.12)',
+    border: 'rgba(197, 75, 44, 0.35)',
+    glow: '0 0 40px rgba(197, 75, 44, 0.2)',
+    gradient: 'linear-gradient(180deg, rgba(197, 75, 44, 0.15) 0%, transparent 100%)'
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#B8B8B8',
-    muted: '#808080'
+    secondary: '#B0B0B0',  // Light grey
+    muted: '#707070'       // Muted grey
   },
-  border: 'rgba(255, 255, 255, 0.1)'
+  border: 'rgba(255, 255, 255, 0.15)',
+  navy: '#1A1A1A'  // Dark grey accent
 };
 
 function UnifiedDashboard({ username, onLogout }) {
@@ -262,8 +263,12 @@ function UnifiedDashboard({ username, onLogout }) {
       minHeight: '100vh', 
       background: theme.bg.black,
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      position: 'relative'
     }}>
+      {/* Smokey Embers Background */}
+      <div className="smokey-bg" />
+      
       {/* Header */}
       <header style={{
         background: theme.bg.dark,
@@ -275,11 +280,11 @@ function UnifiedDashboard({ username, onLogout }) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <h1 style={{
-            fontWeight: '700',
+            fontWeight: '400',
             fontSize: '20px',
             color: theme.text.white,
             margin: 0,
-            fontFamily: 'Cityworm, sans-serif',
+            fontFamily: "Eros Book, sans-serif",
             letterSpacing: '2px'
           }}>
             ROOKIE QUEST KEEPER
@@ -302,13 +307,13 @@ function UnifiedDashboard({ username, onLogout }) {
               style={{
                 background: 'linear-gradient(135deg, rgba(225, 29, 72, 0.2), rgba(6, 182, 212, 0.2))',
                 border: '1px solid',
-                borderImage: 'linear-gradient(135deg, #B91C1C, #2A9D8F) 1',
+                borderImage: 'linear-gradient(135deg, #C54B2C, #F2A541) 1',
                 color: theme.text.white,
                 padding: '8px 16px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                fontWeight: '600'
+                fontWeight: '400'
               }}
             >
               <Shield size={16} />
@@ -345,7 +350,7 @@ function UnifiedDashboard({ username, onLogout }) {
               alignItems: 'center',
               gap: '8px',
               borderRadius: '8px',
-              fontWeight: '600',
+              fontWeight: '400',
               fontSize: '14px',
               cursor: uploadingRuleset ? 'not-allowed' : 'pointer',
               opacity: uploadingRuleset ? 0.6 : 1
@@ -435,7 +440,7 @@ function UnifiedDashboard({ username, onLogout }) {
             borderRight: 'none',
             color: mobileView === 'player' ? '#fff' : theme.text.muted,
             fontSize: '13px',
-            fontWeight: '600',
+            fontWeight: '400',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -456,7 +461,7 @@ function UnifiedDashboard({ username, onLogout }) {
             border: `1px solid ${mobileView === 'gm' ? theme.gm.primary : theme.border}`,
             color: mobileView === 'gm' ? '#fff' : theme.text.muted,
             fontSize: '13px',
-            fontWeight: '600',
+            fontWeight: '400',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -520,21 +525,21 @@ function UnifiedDashboard({ username, onLogout }) {
             }}>
               <div>
                 <h2 style={{
-                  fontWeight: '700',
+                  fontWeight: '400',
                   fontSize: '14px',
                   color: theme.player.cyan,
                   margin: '0 0 8px',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
-                  fontFamily: 'Cityworm, sans-serif',
+                  fontFamily: "Eros Book, sans-serif",
                   letterSpacing: '2px'
                 }}>
                   <User size={18} />
                   PLAYER SIDE
                 </h2>
                 <h3 style={{
-                  fontWeight: '700',
+                  fontWeight: '400',
                   fontSize: '24px',
                   color: theme.text.white,
                   margin: 0
@@ -550,7 +555,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   border: 'none',
                   color: '#fff',
                   padding: '12px 24px',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
@@ -588,7 +593,7 @@ function UnifiedDashboard({ username, onLogout }) {
                       border: 'none',
                       padding: '14px 28px',
                       color: '#fff',
-                      fontWeight: '600'
+                      fontWeight: '400'
                     }}
                   >
                     Create Character
@@ -625,7 +630,7 @@ function UnifiedDashboard({ username, onLogout }) {
                         color: theme.text.white, 
                         margin: '0 0 6px', 
                         fontSize: '18px',
-                        fontWeight: '600'
+                        fontWeight: '400'
                       }}>
                         {char.name}
                       </h3>
@@ -654,7 +659,7 @@ function UnifiedDashboard({ username, onLogout }) {
                           transition: 'all 0.2s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.color = '#DC2626';
+                          e.currentTarget.style.color = '#E05C3D';
                           e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
                         }}
                         onMouseLeave={(e) => {
@@ -716,21 +721,21 @@ function UnifiedDashboard({ username, onLogout }) {
             }}>
               <div>
                 <h2 style={{
-                  fontWeight: '700',
+                  fontWeight: '400',
                   fontSize: '14px',
                   color: theme.gm.primary,
                   margin: '0 0 8px',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
-                  fontFamily: 'Cityworm, sans-serif',
+                  fontFamily: "Eros Book, sans-serif",
                   letterSpacing: '2px'
                 }}>
                   <Sword size={18} />
                   GM SIDE
                 </h2>
                 <h3 style={{
-                  fontWeight: '700',
+                  fontWeight: '400',
                   fontSize: '24px',
                   color: theme.text.white,
                   margin: 0
@@ -746,7 +751,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   border: 'none',
                   color: '#fff',
                   padding: '12px 24px',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
@@ -784,7 +789,7 @@ function UnifiedDashboard({ username, onLogout }) {
                       border: 'none',
                       padding: '14px 28px',
                       color: '#fff',
-                      fontWeight: '600'
+                      fontWeight: '400'
                     }}
                   >
                     Create Campaign
@@ -821,7 +826,7 @@ function UnifiedDashboard({ username, onLogout }) {
                         color: theme.text.white, 
                         margin: '0 0 6px', 
                         fontSize: '18px',
-                        fontWeight: '600'
+                        fontWeight: '400'
                       }}>
                         {campaign.name}
                       </h3>
@@ -854,7 +859,7 @@ function UnifiedDashboard({ username, onLogout }) {
                           transition: 'all 0.2s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.color = '#DC2626';
+                          e.currentTarget.style.color = '#E05C3D';
                           e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
                         }}
                         onMouseLeave={(e) => {
@@ -900,7 +905,7 @@ function UnifiedDashboard({ username, onLogout }) {
             <h2 style={{ 
               color: theme.text.white, 
               margin: '0 0 8px',
-              fontWeight: '700',
+              fontWeight: '400',
               fontSize: '20px'
             }}>
               Leave a Review
@@ -968,11 +973,11 @@ function UnifiedDashboard({ username, onLogout }) {
                 disabled={submittingReview}
                 style={{
                   flex: 1,
-                  background: 'linear-gradient(135deg, #B91C1C, #2A9D8F)',
+                  background: 'linear-gradient(135deg, #C54B2C, #F2A541)',
                   border: 'none',
                   color: '#fff',
                   padding: '12px',
-                  fontWeight: '600'
+                  fontWeight: '400'
                 }}
               >
                 {submittingReview ? 'Submitting...' : 'Submit'}
@@ -1008,7 +1013,7 @@ function UnifiedDashboard({ username, onLogout }) {
             <h2 style={{ 
               color: theme.text.white, 
               margin: '0 0 8px',
-              fontWeight: '700',
+              fontWeight: '400',
               fontSize: '20px'
             }}>
               Your Referral Code
@@ -1025,11 +1030,11 @@ function UnifiedDashboard({ username, onLogout }) {
               textAlign: 'center'
             }}>
               <code style={{ 
-                background: 'linear-gradient(90deg, #B91C1C, #2A9D8F)',
+                background: 'linear-gradient(90deg, #C54B2C, #F2A541)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 fontSize: '18px',
-                fontWeight: '700',
+                fontWeight: '400',
                 letterSpacing: '2px'
               }}>
                 {referralCode || 'Loading...'}
@@ -1040,11 +1045,11 @@ function UnifiedDashboard({ username, onLogout }) {
               onClick={copyReferralCode}
               style={{
                 width: '100%',
-                background: 'linear-gradient(135deg, #B91C1C, #2A9D8F)',
+                background: 'linear-gradient(135deg, #C54B2C, #F2A541)',
                 border: 'none',
                 color: '#fff',
                 padding: '14px',
-                fontWeight: '600',
+                fontWeight: '400',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

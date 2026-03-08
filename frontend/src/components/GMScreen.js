@@ -278,16 +278,16 @@ function GMScreen({ username }) {
 
   // GM Theme - Three shades of Red
   const theme = {
-    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F', hover: '#2A2A2A' },
+    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1F1F1F', card: '#262626', hover: '#333333' },
     accent: { 
-      primary: '#B91C1C',      // Main red
-      secondary: '#DC2626',    // Light red
+      primary: '#C54B2C',      // Main red
+      secondary: '#E05C3D',    // Light red
       tertiary: '#991B1B',     // Dark red
       hover: '#F87171',
       subtle: 'rgba(220, 38, 38, 0.15)',
       glow: '0 0 20px rgba(220, 38, 38, 0.4)',
       // Legacy compatibility
-      red: '#B91C1C', 
+      red: '#C54B2C', 
       redHover: '#F87171', 
       redSubtle: 'rgba(220, 38, 38, 0.15)',
       orange: '#F97316'
@@ -313,7 +313,7 @@ function GMScreen({ username }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ width: '1px', height: '30px', background: theme.border }} />
             <div>
-              <h1 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <h1 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '400', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Sword size={20} style={{ color: theme.accent.red }} />
                 {campaign?.name}
               </h1>
@@ -354,7 +354,7 @@ function GMScreen({ username }) {
           <h3 style={{
             color: theme.text.muted,
             fontSize: '11px',
-            fontWeight: '600',
+            fontWeight: '400',
             letterSpacing: '1.5px',
             textTransform: 'uppercase',
             marginBottom: '12px',
@@ -435,14 +435,14 @@ function GMScreen({ username }) {
             {/* COMBAT TAB */}
             {activeTab === 'combat' && (
               <div>
-                <h2 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '700', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h2 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '400', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Swords size={24} style={{ color: theme.accent.red }} /> Combat Control
                 </h2>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
                   {/* Encounter Selector */}
                   <div>
-                    <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '600', marginBottom: '12px' }}>Select Encounter</h3>
+                    <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '400', marginBottom: '12px' }}>Select Encounter</h3>
                     {scenarios.length === 0 ? (
                       <div style={{ background: theme.bg.card, border: `1px dashed ${theme.border}`, padding: '30px', textAlign: 'center' }}>
                         <Swords size={32} style={{ color: theme.text.muted, margin: '0 auto 12px' }} />
@@ -467,7 +467,7 @@ function GMScreen({ username }) {
                             transition: 'all 0.15s'
                           }}
                         >
-                          <div style={{ fontWeight: '600', marginBottom: '4px', fontSize: '14px' }}>{s.name}</div>
+                          <div style={{ fontWeight: '400', marginBottom: '4px', fontSize: '14px' }}>{s.name}</div>
                           <div style={{ fontSize: '11px', color: theme.text.secondary, display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                             <span>{s.combatants?.length || 0} combatants</span>
                             {s.map_url && <span style={{ color: '#22c55e' }}>Has Map</span>}
@@ -481,7 +481,7 @@ function GMScreen({ username }) {
 
                 {/* Combat Actions */}
                 <div>
-                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '600', marginBottom: '12px' }}>Launch Combat</h3>
+                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '400', marginBottom: '12px' }}>Launch Combat</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <Button 
                       onClick={launchCombat} 
@@ -540,7 +540,7 @@ function GMScreen({ username }) {
                   {/* Selected Encounter Preview */}
                   {selectedScenario && (
                     <div style={{ marginTop: '20px', background: theme.bg.card, border: `1px solid ${theme.border}`, padding: '14px' }}>
-                      <h4 style={{ fontSize: '13px', color: theme.text.white, fontWeight: '600', marginBottom: '10px' }}>{selectedScenario.name}</h4>
+                      <h4 style={{ fontSize: '13px', color: theme.text.white, fontWeight: '400', marginBottom: '10px' }}>{selectedScenario.name}</h4>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                         {selectedScenario.combatants?.slice(0, 6).map(c => (
                           <div key={c.id} style={{ 
@@ -629,7 +629,7 @@ function GMScreen({ username }) {
                 {/* Generator Controls */}
                 <div>
                   <div style={{ background: 'rgba(10, 10, 40, 0.6)', border: '2px solid #f97316', borderRadius: '16px', padding: '24px' }}>
-                    <h3 style={{ fontSize: '16px', color: '#f97316', fontWeight: '700', marginBottom: '20px' }}>Generate a Name</h3>
+                    <h3 style={{ fontSize: '16px', color: '#f97316', fontWeight: '400', marginBottom: '20px' }}>Generate a Name</h3>
                     
                     {/* Race Selection */}
                     <div style={{ marginBottom: '16px' }}>
@@ -673,7 +673,7 @@ function GMScreen({ username }) {
                               borderRadius: '8px',
                               color: nameGender === g ? '#f97316' : '#94a3b8',
                               fontSize: '13px',
-                              fontWeight: '600',
+                              fontWeight: '400',
                               cursor: 'pointer',
                               textTransform: 'capitalize',
                               transition: 'all 0.2s'
@@ -768,7 +768,7 @@ function GMScreen({ username }) {
                 {/* Saved Names This Session */}
                 <div>
                   <div style={{ background: 'rgba(10, 10, 40, 0.6)', border: '2px solid #1e40af', borderRadius: '16px', padding: '24px' }}>
-                    <h3 style={{ fontSize: '16px', color: '#22c55e', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ fontSize: '16px', color: '#22c55e', fontWeight: '400', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <UserPlus size={18} />
                       Saved This Session ({savedNames.length})
                     </h3>
@@ -795,7 +795,7 @@ function GMScreen({ username }) {
                             }}
                           >
                             <div>
-                              <span style={{ color: '#fff', fontWeight: '700', fontSize: '15px' }}>{name.fullName}</span>
+                              <span style={{ color: '#fff', fontWeight: '400', fontSize: '15px' }}>{name.fullName}</span>
                               <span style={{ color: '#94a3b8', fontSize: '12px', marginLeft: '10px' }}>
                                 {name.race.charAt(0).toUpperCase() + name.race.slice(1)}
                               </span>
@@ -806,7 +806,7 @@ function GMScreen({ username }) {
                               padding: '2px 8px', 
                               borderRadius: '6px', 
                               fontSize: '10px', 
-                              fontWeight: '700' 
+                              fontWeight: '400' 
                             }}>
                               SAVED
                             </span>
@@ -824,7 +824,7 @@ function GMScreen({ username }) {
                     borderRadius: '12px',
                     padding: '16px'
                   }}>
-                    <p style={{ color: '#4a7dff', fontSize: '12px', fontWeight: '600', marginBottom: '8px' }}>💡 Quick Tip</p>
+                    <p style={{ color: '#4a7dff', fontSize: '12px', fontWeight: '400', marginBottom: '8px' }}>💡 Quick Tip</p>
                     <p style={{ color: '#94a3b8', fontSize: '12px', lineHeight: '1.5' }}>
                       Saved NPCs appear in your campaign's NPC tab where you can add more details like occupation, personality, and backstory!
                     </p>
@@ -904,7 +904,7 @@ function GMScreen({ username }) {
                           {player.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <div style={{ color: '#ffffff', fontWeight: '700', fontSize: '16px', fontFamily: 'Montserrat' }}>{player.name}</div>
+                          <div style={{ color: '#ffffff', fontWeight: '400', fontSize: '16px', fontFamily: 'Montserrat' }}>{player.name}</div>
                           <div style={{ color: '#67e8f9', fontSize: '12px' }}>
                             {player.race || 'Unknown'} {player.class || 'Adventurer'} {player.level ? `Lv.${player.level}` : ''}
                           </div>
@@ -913,16 +913,16 @@ function GMScreen({ username }) {
                       
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                         <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '10px', color: '#ef4444', fontWeight: '600' }}>HP</div>
-                          <div style={{ fontSize: '16px', color: '#fff', fontWeight: '700' }}>{player.hp || player.max_hp || '?'}/{player.max_hp || '?'}</div>
+                          <div style={{ fontSize: '10px', color: '#ef4444', fontWeight: '400' }}>HP</div>
+                          <div style={{ fontSize: '16px', color: '#fff', fontWeight: '400' }}>{player.hp || player.max_hp || '?'}/{player.max_hp || '?'}</div>
                         </div>
                         <div style={{ background: 'rgba(74, 125, 255, 0.15)', border: '1px solid #4a7dff', borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '10px', color: '#4a7dff', fontWeight: '600' }}>AC</div>
-                          <div style={{ fontSize: '16px', color: '#fff', fontWeight: '700' }}>{player.ac || '?'}</div>
+                          <div style={{ fontSize: '10px', color: '#4a7dff', fontWeight: '400' }}>AC</div>
+                          <div style={{ fontSize: '16px', color: '#fff', fontWeight: '400' }}>{player.ac || '?'}</div>
                         </div>
                         <div style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid #22c55e', borderRadius: '8px', padding: '8px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '10px', color: '#22c55e', fontWeight: '600' }}>INIT</div>
-                          <div style={{ fontSize: '16px', color: '#fff', fontWeight: '700' }}>
+                          <div style={{ fontSize: '10px', color: '#22c55e', fontWeight: '400' }}>INIT</div>
+                          <div style={{ fontSize: '16px', color: '#fff', fontWeight: '400' }}>
                             {player.stats?.dexterity ? (() => {
                               const mod = Math.floor((player.stats.dexterity - 10) / 2);
                               return mod >= 0 ? `+${mod}` : `${mod}`;
@@ -940,7 +940,7 @@ function GMScreen({ username }) {
                             return (
                               <div key={stat} style={{ textAlign: 'center', background: 'rgba(10, 10, 40, 0.5)', borderRadius: '6px', padding: '4px' }}>
                                 <div style={{ fontSize: '9px', color: '#64748b' }}>{stat}</div>
-                                <div style={{ fontSize: '12px', color: '#fff', fontWeight: '700' }}>{val}</div>
+                                <div style={{ fontSize: '12px', color: '#fff', fontWeight: '400' }}>{val}</div>
                                 <div style={{ fontSize: '9px', color: mod >= 0 ? '#22c55e' : '#ef4444' }}>{mod >= 0 ? '+' : ''}{mod}</div>
                               </div>
                             );
@@ -964,7 +964,7 @@ function GMScreen({ username }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 {/* Add Note */}
                 <div>
-                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '700', marginBottom: '12px' }}>Quick Note</h3>
+                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '400', marginBottom: '12px' }}>Quick Note</h3>
                   <textarea
                     value={quickNote}
                     onChange={(e) => setQuickNote(e.target.value)}
@@ -983,7 +983,7 @@ function GMScreen({ username }) {
 
                 {/* Notes List */}
                 <div>
-                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '700', marginBottom: '12px' }}>Recent Notes ({sessionNotes.length})</h3>
+                  <h3 style={{ fontSize: '14px', color: theme.accent.red, fontWeight: '400', marginBottom: '12px' }}>Recent Notes ({sessionNotes.length})</h3>
                   <div style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {sessionNotes.length === 0 ? (
                       <div style={{ background: theme.bg.card, border: `2px dashed ${theme.border}`, padding: '30px', textAlign: 'center' }}>

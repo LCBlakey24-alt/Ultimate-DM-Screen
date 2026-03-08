@@ -13,14 +13,14 @@ const API = `${BACKEND_URL}/api`;
 
 // Player Theme - Blue (Tron Legacy)
 const theme = {
-  primary: '#2A9D8F',
-  cyan: '#2A9D8F',
-  hover: '#3DB5A6',
+  primary: '#F2A541',
+  cyan: '#F2A541',
+  hover: '#FFB855',
   subtle: 'rgba(59, 130, 246, 0.15)',
   glow: '0 0 20px rgba(6, 182, 212, 0.3)',
   bg: '#0D0D0D',
-  card: '#1F1F1F',
-  panel: '#1A1A1A',
+  card: '#262626',
+  panel: '#1F1F1F',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
@@ -31,8 +31,8 @@ const theme = {
 };
 
 const ITEM_TYPES = {
-  weapon: { icon: Swords, color: '#DC2626' },
-  armor: { icon: Shield, color: '#2A9D8F' },
+  weapon: { icon: Swords, color: '#E05C3D' },
+  armor: { icon: Shield, color: '#F2A541' },
   potion: { icon: Heart, color: '#EC4899' },
   scroll: { icon: Wand2, color: '#8B5CF6' },
   wondrous: { icon: Sparkles, color: '#F59E0B' },
@@ -134,7 +134,7 @@ function PlayerPartyLoot({ campaignId, characterId, characterName }) {
             <Package size={20} color={theme.primary} />
           </div>
           <div>
-            <h3 style={{ color: theme.primary, fontSize: '16px', fontWeight: '700', margin: 0 }}>
+            <h3 style={{ color: theme.primary, fontSize: '16px', fontWeight: '400', margin: 0 }}>
               PARTY LOOT
             </h3>
             <p style={{ color: theme.muted, fontSize: '12px', margin: 0 }}>
@@ -146,7 +146,7 @@ function PlayerPartyLoot({ campaignId, characterId, characterName }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Coins size={16} color={theme.gold} />
-            <span style={{ color: theme.gold, fontWeight: '600' }}>{totalValue} gp value</span>
+            <span style={{ color: theme.gold, fontWeight: '400' }}>{totalValue} gp value</span>
           </div>
           <span style={{ color: theme.muted, fontSize: '13px' }}>
             {items.length} items
@@ -233,7 +233,7 @@ function PlayerPartyLoot({ campaignId, characterId, characterName }) {
                     <Icon size={18} color={typeInfo.color} />
                     <span style={{ 
                       color: theme.text, 
-                      fontWeight: '600',
+                      fontWeight: '400',
                       textTransform: 'capitalize'
                     }}>
                       {type}s
@@ -279,7 +279,7 @@ function PlayerPartyLoot({ campaignId, characterId, characterName }) {
                               <span style={{
                                 fontSize: '10px',
                                 padding: '2px 6px',
-                                background: item.rarity === 'rare' ? '#2A9D8F' :
+                                background: item.rarity === 'rare' ? '#F2A541' :
                                            item.rarity === 'very_rare' ? '#8B5CF6' :
                                            item.rarity === 'legendary' ? '#F59E0B' :
                                            item.rarity === 'uncommon' ? '#22C55E' : theme.muted,

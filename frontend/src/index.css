@@ -8,6 +8,7 @@ body {
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background: #0D0D0D;
 }
 
 code {
@@ -16,59 +17,134 @@ code {
 
 @layer base {
     :root {
-        /* Teal/Black/Red Theme - New Color Scheme */
-        --background: 180 8% 5%;  /* Black #0D0D0D */
-        --foreground: 180 5% 90%;
-        --card: 175 40% 12%;  /* Dark teal #1A6B64 */
-        --card-foreground: 180 5% 90%;
-        --popover: 175 40% 12%;
-        --popover-foreground: 180 5% 90%;
-        --primary: 0 75% 42%;  /* Bright red #B91C1C */
+        /* Dark Theme with Orange/Gold Accents */
+        --background: 0 0% 5%;  /* Near black #0D0D0D */
+        --foreground: 0 0% 95%;
+        --card: 0 0% 12%;  /* Dark grey #1F1F1F */
+        --card-foreground: 0 0% 100%;
+        --popover: 0 0% 12%;
+        --popover-foreground: 0 0% 100%;
+        --primary: 18 70% 47%;  /* Burnt orange #C54B2C */
         --primary-foreground: 0 0% 100%;
-        --secondary: 174 55% 35%;  /* Light teal #2A9D8F */
+        --secondary: 37 87% 60%;  /* Golden yellow #F2A541 */
         --secondary-foreground: 0 0% 100%;
-        --muted: 175 30% 25%;
-        --muted-foreground: 180 10% 60%;
-        --accent: 0 65% 20%;  /* Dark maroon #4A0E0E */
+        --muted: 0 0% 15%;  /* Dark grey #262626 */
+        --muted-foreground: 0 0% 70%;
+        --accent: 18 70% 47%;  /* Burnt orange #C54B2C */
         --accent-foreground: 0 0% 100%;
         --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 98%;
-        --border: 175 30% 20%;
-        --input: 175 30% 20%;
-        --ring: 0 75% 42%;
-        --chart-1: 0 75% 42%;
-        --chart-2: 174 55% 35%;
-        --chart-3: 38 92% 50%;
-        --chart-4: 160 60% 45%;
+        --border: 0 0% 20%;
+        --input: 0 0% 15%;
+        --ring: 18 70% 47%;
+        --chart-1: 18 70% 47%;
+        --chart-2: 37 87% 60%;
+        --chart-3: 0 60% 30%;
+        --chart-4: 0 0% 20%;
         --chart-5: 340 75% 55%;
         --radius: 0.625rem;
     }
     
     .dark {
-        --background: 180 8% 5%;
-        --foreground: 180 5% 90%;
-        --card: 222 47% 9%;
-        --card-foreground: 220 14% 91%;
-        --popover: 222 47% 9%;
-        --popover-foreground: 220 14% 91%;
-        --primary: 262 83% 58%;
+        --background: 0 0% 5%;
+        --foreground: 0 0% 95%;
+        --card: 0 0% 12%;
+        --card-foreground: 0 0% 100%;
+        --popover: 0 0% 12%;
+        --popover-foreground: 0 0% 100%;
+        --primary: 18 70% 47%;
         --primary-foreground: 0 0% 100%;
-        --secondary: 220 13% 18%;
-        --secondary-foreground: 220 14% 91%;
-        --muted: 220 13% 18%;
-        --muted-foreground: 220 9% 46%;
-        --accent: 262 83% 58%;
+        --secondary: 0 0% 18%;
+        --secondary-foreground: 0 0% 100%;
+        --muted: 0 0% 18%;
+        --muted-foreground: 0 0% 60%;
+        --accent: 18 70% 47%;
         --accent-foreground: 0 0% 100%;
         --destructive: 0 62% 30%;
         --destructive-foreground: 0 0% 98%;
-        --border: 220 13% 18%;
-        --input: 220 13% 18%;
-        --ring: 262 83% 58%;
-        --chart-1: 262 83% 58%;
-        --chart-2: 187 92% 53%;
+        --border: 0 0% 18%;
+        --input: 0 0% 18%;
+        --ring: 18 70% 47%;
+        --chart-1: 18 70% 47%;
+        --chart-2: 37 87% 60%;
         --chart-3: 38 92% 50%;
         --chart-4: 160 60% 45%;
         --chart-5: 340 75% 55%;
+    }
+}
+
+/* ===== SMOKEY EMBERS BACKGROUND ===== */
+.smokey-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.smokey-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(ellipse 80% 50% at 20% 40%, rgba(197, 75, 44, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(242, 165, 65, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 100% 80% at 50% 100%, rgba(197, 75, 44, 0.05) 0%, transparent 40%);
+    animation: smoke-drift 20s ease-in-out infinite;
+}
+
+.smokey-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(2px 2px at 10% 20%, rgba(255, 120, 50, 0.6) 0%, transparent 100%),
+        radial-gradient(2px 2px at 25% 45%, rgba(255, 180, 80, 0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 40% 15%, rgba(255, 100, 30, 0.7) 0%, transparent 100%),
+        radial-gradient(2px 2px at 55% 70%, rgba(255, 150, 60, 0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 30%, rgba(255, 200, 100, 0.6) 0%, transparent 100%),
+        radial-gradient(2px 2px at 85% 55%, rgba(255, 130, 40, 0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 95% 80%, rgba(255, 160, 70, 0.4) 0%, transparent 100%),
+        radial-gradient(2px 2px at 15% 75%, rgba(255, 110, 35, 0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 60% 90%, rgba(255, 190, 90, 0.3) 0%, transparent 100%),
+        radial-gradient(2px 2px at 30% 60%, rgba(255, 140, 50, 0.4) 0%, transparent 100%);
+    animation: ember-float 15s ease-in-out infinite;
+}
+
+@keyframes smoke-drift {
+    0%, 100% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+    }
+    25% {
+        transform: translateX(2%) translateY(-1%);
+    }
+    50% {
+        transform: translateX(-1%) translateY(1%);
+        opacity: 0.8;
+    }
+    75% {
+        transform: translateX(1%) translateY(-2%);
+    }
+}
+
+@keyframes ember-float {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translateY(-20px);
+        opacity: 1;
     }
 }
 

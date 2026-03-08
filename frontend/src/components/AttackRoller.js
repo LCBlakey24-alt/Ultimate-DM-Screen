@@ -203,7 +203,7 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
       marginTop: '12px'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h3 style={{ color: '#ef4444', fontSize: '16px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <h3 style={{ color: '#ef4444', fontSize: '16px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Sword size={18} /> {creature.name}'s Attacks
         </h3>
         <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
@@ -232,7 +232,7 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
             color: '#eab308',
             textShadow: '0 0 40px #eab308, 0 0 80px #eab308',
             animation: 'critPulse 1s ease-out',
-            fontFamily: 'Cityworm, sans-serif'
+            fontFamily: "Eros Book, sans-serif"
           }}>
             CRITICAL!
           </div>
@@ -259,7 +259,7 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
                   borderRadius: '10px',
                   color: '#fff',
                   fontSize: '13px',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   cursor: 'pointer',
                   textAlign: 'left'
                 }}
@@ -336,7 +336,7 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              fontWeight: '700',
+              fontWeight: '400',
               fontSize: '14px'
             }}
           >
@@ -352,7 +352,7 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
               padding: '14px',
               marginBottom: '12px'
             }}>
-              <h4 style={{ color: '#3b82f6', fontSize: '13px', fontWeight: '700', marginBottom: '10px' }}>
+              <h4 style={{ color: '#3b82f6', fontSize: '13px', fontWeight: '400', marginBottom: '10px' }}>
                 Attack Results vs AC {targetAC}
               </h4>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -396,7 +396,7 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
                     </div>
                     <div style={{ 
                       fontSize: '11px', 
-                      fontWeight: '700',
+                      fontWeight: '400',
                       marginTop: '4px',
                       color: result.isCrit ? '#eab308' : result.hits ? '#22c55e' : '#ef4444'
                     }}>
@@ -429,7 +429,7 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                fontWeight: '700',
+                fontWeight: '400',
                 fontSize: '14px',
                 boxShadow: '0 0 20px rgba(239, 68, 68, 0.4)'
               }}
@@ -446,7 +446,7 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
               borderRadius: '12px',
               padding: '14px'
             }}>
-              <h4 style={{ color: '#ef4444', fontSize: '13px', fontWeight: '700', marginBottom: '10px' }}>
+              <h4 style={{ color: '#ef4444', fontSize: '13px', fontWeight: '400', marginBottom: '10px' }}>
                 Damage Results
               </h4>
               
@@ -462,7 +462,7 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
                     <span style={{ color: '#94a3b8', fontSize: '11px' }}>
                       Attack #{roll.attackNum} {roll.isCrit && '(CRITICAL!)'}
                     </span>
-                    <span style={{ color: roll.isCrit ? '#eab308' : '#ef4444', fontWeight: '700', fontSize: '16px' }}>
+                    <span style={{ color: roll.isCrit ? '#eab308' : '#ef4444', fontWeight: '400', fontSize: '16px' }}>
                       {roll.damage} damage
                     </span>
                   </div>
@@ -487,7 +487,7 @@ function AttackRoller({ creature, onDamageApplied, onClose }) {
                 justifyContent: 'space-between',
                 alignItems: 'center'
               }}>
-                <span style={{ color: '#fff', fontSize: '14px', fontWeight: '700' }}>
+                <span style={{ color: '#fff', fontSize: '14px', fontWeight: '400' }}>
                   TOTAL DAMAGE
                 </span>
                 <span style={{ 

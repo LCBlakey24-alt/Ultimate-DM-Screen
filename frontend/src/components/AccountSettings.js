@@ -223,7 +223,7 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
             fontSize: '28px',
             fontWeight: '800',
             color: '#ffffff',
-            fontFamily: 'Cityworm, sans-serif'
+            fontFamily: "Eros Book, sans-serif"
           }}>
             Account Settings
           </h1>
@@ -240,9 +240,9 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
             <User size={24} className="text-teal-400" />
             <h2 style={{
               fontSize: '20px',
-              fontWeight: '700',
+              fontWeight: '400',
               color: '#ffffff',
-              fontFamily: 'Cityworm, sans-serif'
+              fontFamily: "Eros Book, sans-serif"
             }}>
               Profile Information
             </h2>
@@ -317,9 +317,9 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
             <Shield size={24} className="text-teal-400" />
             <h2 style={{
               fontSize: '20px',
-              fontWeight: '700',
+              fontWeight: '400',
               color: '#ffffff',
-              fontFamily: 'Cityworm, sans-serif'
+              fontFamily: "Eros Book, sans-serif"
             }}>
               Change Password
             </h2>
@@ -465,9 +465,9 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
             <AlertTriangle size={24} color="#ef4444" />
             <h2 style={{
               fontSize: '20px',
-              fontWeight: '700',
+              fontWeight: '400',
               color: '#ef4444',
-              fontFamily: 'Cityworm, sans-serif'
+              fontFamily: "Eros Book, sans-serif"
             }}>
               Danger Zone
             </h2>
@@ -497,7 +497,7 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
               padding: '20px',
               borderRadius: '8px'
             }}>
-              <p style={{ color: '#ef4444', marginBottom: '12px', fontWeight: '600' }}>
+              <p style={{ color: '#ef4444', marginBottom: '12px', fontWeight: '400' }}>
                 Type "DELETE" to confirm:
               </p>
               <Input
@@ -540,9 +540,9 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
           <div className="glow-panel" style={{ padding: '24px', marginTop: '24px' }}>
             <h2 style={{
               fontSize: '20px',
-              fontWeight: '700',
+              fontWeight: '400',
               color: '#ffffff',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               marginBottom: '16px'
             }}>
               Subscription
@@ -552,7 +552,7 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
                 <span style={{ color: '#94a3b8' }}>Current Plan:</span>
                 <span style={{ 
                   color: profile.subscription.tier === 'adventurer' ? '#14b8a6' : '#ffffff',
-                  fontWeight: '600'
+                  fontWeight: '400'
                 }}>
                   {profile.subscription.tier === 'adventurer' ? 'Adventurer (Premium)' : 'Free'}
                 </span>
@@ -573,7 +573,7 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
                   marginBottom: '12px'
                 }}>
                   <Share2 size={18} style={{ color: '#22c55e' }} />
-                  <span style={{ color: '#22c55e', fontWeight: '600', fontSize: '14px' }}>
+                  <span style={{ color: '#22c55e', fontWeight: '400', fontSize: '14px' }}>
                     Your Referral Code
                   </span>
                 </div>
@@ -623,7 +623,7 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
                       color: '#22c55e', 
                       fontFamily: 'monospace',
                       fontSize: '18px',
-                      fontWeight: '700',
+                      fontWeight: '400',
                       letterSpacing: '2px',
                       flex: 1
                     }}>
@@ -695,7 +695,7 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
                     justifyContent: 'space-between'
                   }}>
                     <span style={{ color: '#94a3b8', fontSize: '12px' }}>Friends referred:</span>
-                    <span style={{ color: '#22c55e', fontWeight: '700' }}>
+                    <span style={{ color: '#22c55e', fontWeight: '400' }}>
                       {profile.subscription.referral_count}
                     </span>
                   </div>

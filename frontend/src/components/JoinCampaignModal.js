@@ -61,7 +61,7 @@ function JoinCampaignModal({ characterId, characterName, open, onOpenChange, onS
           </p>
 
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '600' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#67e8f9', fontSize: '14px', fontWeight: '400' }}>
               Campaign Join Code
             </label>
             <div style={{ position: 'relative' }}>

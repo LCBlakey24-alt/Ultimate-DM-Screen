@@ -183,8 +183,8 @@ function QuickCombatModal({ isOpen, onClose, campaignId, players, customCreature
             <h2 style={{ 
               color: '#fff', 
               fontSize: '24px', 
-              fontFamily: 'Cityworm, sans-serif',
-              fontWeight: '700',
+              fontFamily: "Eros Book, sans-serif",
+              fontWeight: '400',
               display: 'flex',
               alignItems: 'center',
               gap: '10px'
@@ -225,7 +225,7 @@ function QuickCombatModal({ isOpen, onClose, campaignId, players, customCreature
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           {/* Left - Search & Add */}
           <div>
-            <h3 style={{ color: '#ef4444', fontSize: '14px', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 style={{ color: '#ef4444', fontSize: '14px', fontWeight: '400', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Skull size={16} /> Add Creatures
             </h3>
 
@@ -305,7 +305,7 @@ function QuickCombatModal({ isOpen, onClose, campaignId, players, customCreature
                       }}
                     >
                       <div>
-                        <div style={{ color: '#fff', fontSize: '14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ color: '#fff', fontSize: '14px', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '6px' }}>
                           {creature.name}
                           {creature.isCustom && <Sparkles size={12} color="#a855f7" />}
                         </div>
@@ -362,7 +362,7 @@ function QuickCombatModal({ isOpen, onClose, campaignId, players, customCreature
                     }}
                   >
                     <div>
-                      <div style={{ color: '#fff', fontSize: '13px', fontWeight: '600' }}>{creature.name}</div>
+                      <div style={{ color: '#fff', fontSize: '13px', fontWeight: '400' }}>{creature.name}</div>
                       <div style={{ color: '#64748b', fontSize: '10px' }}>CR {creature.cr} • HP {creature.hp}</div>
                     </div>
                     <Button
@@ -380,7 +380,7 @@ function QuickCombatModal({ isOpen, onClose, campaignId, players, customCreature
 
           {/* Right - Combatants List */}
           <div>
-            <h3 style={{ color: '#4a7dff', fontSize: '14px', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 style={{ color: '#4a7dff', fontSize: '14px', fontWeight: '400', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Users size={16} /> Combatants ({combatants.length})
             </h3>
 
@@ -395,7 +395,7 @@ function QuickCombatModal({ isOpen, onClose, campaignId, players, customCreature
               {/* Players */}
               {combatants.filter(c => c.type === 'player').length > 0 && (
                 <div style={{ marginBottom: '12px' }}>
-                  <p style={{ color: '#4a7dff', fontSize: '11px', fontWeight: '600', marginBottom: '8px' }}>PLAYERS</p>
+                  <p style={{ color: '#4a7dff', fontSize: '11px', fontWeight: '400', marginBottom: '8px' }}>PLAYERS</p>
                   {combatants.filter(c => c.type === 'player').map(c => (
                     <div key={c.id} style={{
                       display: 'flex',
@@ -420,7 +420,7 @@ function QuickCombatModal({ isOpen, onClose, campaignId, players, customCreature
               {/* Enemies */}
               {Object.keys(enemyGroups).length > 0 && (
                 <div>
-                  <p style={{ color: '#ef4444', fontSize: '11px', fontWeight: '600', marginBottom: '8px' }}>ENEMIES</p>
+                  <p style={{ color: '#ef4444', fontSize: '11px', fontWeight: '400', marginBottom: '8px' }}>ENEMIES</p>
                   {Object.values(enemyGroups).map(group => (
                     <div key={group.baseName} style={{
                       display: 'flex',
@@ -458,7 +458,7 @@ function QuickCombatModal({ isOpen, onClose, campaignId, players, customCreature
                         >
                           <Minus size={12} />
                         </button>
-                        <span style={{ color: '#fff', fontWeight: '700', minWidth: '20px', textAlign: 'center' }}>
+                        <span style={{ color: '#fff', fontWeight: '400', minWidth: '20px', textAlign: 'center' }}>
                           {group.count}
                         </span>
                         <button
@@ -506,7 +506,7 @@ function QuickCombatModal({ isOpen, onClose, campaignId, players, customCreature
               border: 'none',
               padding: '14px 28px',
               fontSize: '15px',
-              fontWeight: '700',
+              fontWeight: '400',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',

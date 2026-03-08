@@ -6,9 +6,9 @@ import { getFeatureRequirement } from '@/hooks/useSubscription';
 
 // Theme
 const theme = {
-  bg: { panel: '#1A1A1A', dark: '#0D0D0D' },
+  bg: { panel: '#1F1F1F', dark: '#0D0D0D' },
   text: { white: '#FFFFFF', muted: '#808080' },
-  accent: { red: '#B91C1C', cyan: '#2A9D8F' },
+  accent: { red: '#C54B2C', cyan: '#F2A541' },
   border: 'rgba(255, 255, 255, 0.1)'
 };
 
@@ -75,7 +75,7 @@ export function UpgradePrompt({
         color: theme.text.muted
       }}>
         <Lock size={12} color={theme.accent.red} />
-        <span>Requires <span style={{ color: requirement.color, fontWeight: '600' }}>{requirement.tierName}</span></span>
+        <span>Requires <span style={{ color: requirement.color, fontWeight: '400' }}>{requirement.tierName}</span></span>
         <button
           onClick={() => navigate('/pricing')}
           style={{
@@ -116,7 +116,7 @@ export function UpgradePrompt({
             <Zap size={20} color="#fff" />
           </div>
           <div>
-            <h4 style={{ color: theme.text.white, margin: 0, fontSize: '15px', fontWeight: '600' }}>
+            <h4 style={{ color: theme.text.white, margin: 0, fontSize: '15px', fontWeight: '400' }}>
               {displayTitle}
             </h4>
             <p style={{ color: theme.text.muted, margin: 0, fontSize: '13px' }}>
@@ -134,7 +134,7 @@ export function UpgradePrompt({
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            fontWeight: '600'
+            fontWeight: '400'
           }}
         >
           Upgrade to {requirement.tierName}
@@ -190,7 +190,7 @@ export function UpgradePrompt({
           <div style={{
             width: '64px',
             height: '64px',
-            background: 'linear-gradient(135deg, #B91C1C 0%, #DC2626 100%)',
+            background: 'linear-gradient(135deg, #C54B2C 0%, #E05C3D 100%)',
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
@@ -203,7 +203,7 @@ export function UpgradePrompt({
           <h3 style={{ 
             color: theme.text.white, 
             fontSize: '24px', 
-            fontWeight: '700',
+            fontWeight: '400',
             marginBottom: '12px'
           }}>
             {displayTitle}
@@ -229,7 +229,7 @@ export function UpgradePrompt({
               alignItems: 'center'
             }}>
               <span style={{ color: theme.text.muted, fontSize: '13px' }}>Current:</span>
-              <span style={{ color: theme.accent.red, fontWeight: '700', fontSize: '18px' }}>{currentCount}</span>
+              <span style={{ color: theme.accent.red, fontWeight: '400', fontSize: '18px' }}>{currentCount}</span>
               <span style={{ color: theme.text.muted, fontSize: '13px' }}>/</span>
               <span style={{ color: theme.text.muted, fontSize: '18px' }}>{limit}</span>
             </div>
@@ -239,12 +239,12 @@ export function UpgradePrompt({
             onClick={() => navigate('/pricing')}
             style={{
               width: '100%',
-              background: 'linear-gradient(90deg, #B91C1C 0%, #DC2626 100%)',
+              background: 'linear-gradient(90deg, #C54B2C 0%, #E05C3D 100%)',
               border: 'none',
               color: '#fff',
               padding: '14px 24px',
               fontSize: '16px',
-              fontWeight: '600',
+              fontWeight: '400',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -291,7 +291,7 @@ export function UpgradePrompt({
       <h4 style={{ 
         color: theme.text.white, 
         fontSize: '18px', 
-        fontWeight: '600',
+        fontWeight: '400',
         marginBottom: '8px'
       }}>
         {displayTitle}
@@ -317,7 +317,7 @@ export function UpgradePrompt({
           fontSize: '13px'
         }}>
           <span style={{ color: theme.text.muted }}>Limit:</span>
-          <span style={{ color: theme.accent.red, fontWeight: '600' }}>{currentCount}/{limit}</span>
+          <span style={{ color: theme.accent.red, fontWeight: '400' }}>{currentCount}/{limit}</span>
         </div>
       )}
       
@@ -329,7 +329,7 @@ export function UpgradePrompt({
           border: 'none',
           color: '#fff',
           padding: '12px 20px',
-          fontWeight: '600',
+          fontWeight: '400',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -346,7 +346,7 @@ export function UpgradePrompt({
 /**
  * LimitIndicator - Shows current usage vs limit
  */
-export function LimitIndicator({ current, limit, label, color = '#B91C1C' }) {
+export function LimitIndicator({ current, limit, label, color = '#C54B2C' }) {
   const percentage = limit > 0 ? (current / limit) * 100 : 0;
   const isAtLimit = current >= limit;
   
@@ -362,7 +362,7 @@ export function LimitIndicator({ current, limit, label, color = '#B91C1C' }) {
         <span style={{ 
           color: isAtLimit ? color : theme.text.white, 
           fontSize: '13px',
-          fontWeight: '600'
+          fontWeight: '400'
         }}>
           {current}/{limit}
         </span>

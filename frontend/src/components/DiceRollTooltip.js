@@ -57,8 +57,8 @@ export function DiceRollTooltip() {
           left: position.x,
           top: position.y,
           transform: 'translateX(-50%)',
-          background: 'linear-gradient(135deg, #1A1A1A, #2A2A2A)',
-          border: '2px solid #2A9D8F',
+          background: 'linear-gradient(135deg, #4A1F1F, #6A2020)',
+          border: '2px solid #F2A541',
           padding: '20px 24px',
           maxWidth: '320px',
           zIndex: 9999,
@@ -77,7 +77,7 @@ export function DiceRollTooltip() {
             height: 0,
             borderLeft: '10px solid transparent',
             borderRight: '10px solid transparent',
-            borderBottom: '10px solid #2A9D8F'
+            borderBottom: '10px solid #F2A541'
           }}
         />
         
@@ -108,12 +108,12 @@ export function DiceRollTooltip() {
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <Dice6 size={20} color="#2A9D8F" />
+            <Dice6 size={20} color="#F2A541" />
           </div>
           <h3 style={{ 
-            color: '#2A9D8F', 
+            color: '#F2A541', 
             fontSize: '16px', 
-            fontWeight: '700',
+            fontWeight: '400',
             margin: 0
           }}>
             Click to Roll Dice!
@@ -126,7 +126,7 @@ export function DiceRollTooltip() {
           lineHeight: '1.6',
           margin: '0 0 16px'
         }}>
-          Any <span style={{ color: '#2A9D8F', fontWeight: '600' }}>blue box with a number</span> is 
+          Any <span style={{ color: '#F2A541', fontWeight: '400' }}>blue box with a number</span> is 
           clickable! Click ability modifiers, skill bonuses, saves, or attack rolls to instantly roll dice.
         </p>
 
@@ -150,10 +150,10 @@ export function DiceRollTooltip() {
             width: '100%',
             marginTop: '16px',
             padding: '10px',
-            background: '#2A9D8F',
+            background: '#F2A541',
             border: 'none',
             color: '#000',
-            fontWeight: '600',
+            fontWeight: '400',
             cursor: 'pointer'
           }}
         >

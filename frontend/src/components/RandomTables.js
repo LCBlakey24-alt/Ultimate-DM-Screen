@@ -204,7 +204,7 @@ function RandomTables({ onSaveAsNote }) {
               }}
             >
               <IconComponent size={24} color={table.color} />
-              <span style={{ color: table.color, fontWeight: '700', fontSize: '13px' }}>
+              <span style={{ color: table.color, fontWeight: '400', fontSize: '13px' }}>
                 {table.label}
               </span>
               <Shuffle size={14} color="#64748b" />
@@ -227,7 +227,7 @@ function RandomTables({ onSaveAsNote }) {
           alignItems: 'center',
           marginBottom: '12px'
         }}>
-          <h3 style={{ color: '#fff', fontSize: '14px', fontWeight: '700' }}>
+          <h3 style={{ color: '#fff', fontSize: '14px', fontWeight: '400' }}>
             Results ({results.length})
           </h3>
           {results.length > 0 && (
@@ -275,7 +275,7 @@ function RandomTables({ onSaveAsNote }) {
                   <span style={{ 
                     color: result.color, 
                     fontSize: '11px', 
-                    fontWeight: '700',
+                    fontWeight: '400',
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px'
                   }}>
@@ -286,7 +286,7 @@ function RandomTables({ onSaveAsNote }) {
                 <p style={{ 
                   color: '#fff', 
                   fontSize: '15px', 
-                  fontWeight: '600',
+                  fontWeight: '400',
                   lineHeight: '1.5',
                   marginBottom: '10px'
                 }}>

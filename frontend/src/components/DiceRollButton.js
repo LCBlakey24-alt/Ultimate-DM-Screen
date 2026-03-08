@@ -4,13 +4,13 @@ import { Dice6 } from 'lucide-react';
 
 // Player theme - Blue (Tron Legacy)
 const theme = {
-  primary: '#2A9D8F',
-  cyan: '#2A9D8F',
-  hover: '#3DB5A6',
+  primary: '#F2A541',
+  cyan: '#F2A541',
+  hover: '#FFB855',
   subtle: 'rgba(59, 130, 246, 0.15)',
   border: 'rgba(6, 182, 212, 0.4)',
   crit: '#22C55E',
-  fail: '#DC2626',
+  fail: '#E05C3D',
   text: '#FFFFFF'
 };
 
@@ -77,7 +77,7 @@ export function DiceRollButton({
     } else if (rollType === 'fail') {
       toast.error(`NAT 1! ${message}`, { 
         description,
-        style: { background: '#7F1D1D', border: '2px solid #DC2626' }
+        style: { background: '#A03D24', border: '2px solid #E05C3D' }
       });
     } else {
       toast(message, { 
@@ -116,7 +116,7 @@ export function DiceRollButton({
         borderRadius: '4px',
         color: isHovered ? theme.cyan : theme.text,
         fontSize: s.fontSize,
-        fontWeight: '700',
+        fontWeight: '400',
         cursor: 'pointer',
         transition: 'all 0.15s ease',
         transform: rolling ? 'scale(1.05)' : 'scale(1)',
@@ -158,7 +158,7 @@ export function DamageRollButton({
   diceFormula,  // e.g., "2d6+3"
   label = 'Damage',
   damageType = 'slashing',
-  color = '#DC2626'
+  color = '#E05C3D'
 }) {
   const [rolling, setRolling] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -228,14 +228,14 @@ export function DamageRollButton({
         borderRadius: '4px',
         color: isHovered ? color : theme.text,
         fontSize: '13px',
-        fontWeight: '600',
+        fontWeight: '400',
         cursor: 'pointer',
         transition: 'all 0.15s ease',
         boxShadow: isHovered ? `0 0 8px ${damageTheme.border}` : 'none'
       }}
       title={`Click to roll ${diceFormula} ${damageType} damage`}
     >
-      <Dice6 size={12} color={isHovered ? color : '#DC2626'} style={{ flexShrink: 0 }} />
+      <Dice6 size={12} color={isHovered ? color : '#E05C3D'} style={{ flexShrink: 0 }} />
       <span>{diceFormula}</span>
     </button>
   );

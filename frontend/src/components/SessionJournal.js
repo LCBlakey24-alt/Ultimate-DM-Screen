@@ -14,12 +14,12 @@ const API = `${BACKEND_URL}/api`;
 
 // Player Theme - Blue
 const theme = {
-  primary: '#2A9D8F',
-  hover: '#3DB5A6',
+  primary: '#F2A541',
+  hover: '#FFB855',
   subtle: 'rgba(59, 130, 246, 0.15)',
   bg: '#0D0D0D',
-  card: '#1F1F1F',
-  panel: '#1A1A1A',
+  card: '#262626',
+  panel: '#1F1F1F',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
@@ -27,8 +27,8 @@ const theme = {
 };
 
 const ENTRY_TYPES = [
-  { id: 'session', label: 'Session Summary', icon: Calendar, color: '#2A9D8F' },
-  { id: 'combat', label: 'Combat', icon: Swords, color: '#DC2626' },
+  { id: 'session', label: 'Session Summary', icon: Calendar, color: '#F2A541' },
+  { id: 'combat', label: 'Combat', icon: Swords, color: '#E05C3D' },
   { id: 'npc', label: 'NPC Met', icon: User, color: '#22C55E' },
   { id: 'location', label: 'Location', icon: MapPin, color: '#F59E0B' },
   { id: 'loot', label: 'Loot/Item', icon: Star, color: '#A855F7' },
@@ -157,8 +157,8 @@ function SessionJournal({ characterId, campaignId }) {
           <h2 style={{ 
             color: theme.text, 
             fontSize: '24px', 
-            fontWeight: '700',
-            fontFamily: 'Cityworm, sans-serif',
+            fontWeight: '400',
+            fontFamily: "Eros Book, sans-serif",
             display: 'flex',
             alignItems: 'center',
             gap: '12px'
@@ -179,7 +179,7 @@ function SessionJournal({ characterId, campaignId }) {
             background: theme.primary,
             border: 'none',
             color: theme.text,
-            fontWeight: '600',
+            fontWeight: '400',
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
@@ -399,7 +399,7 @@ function SessionJournal({ characterId, campaignId }) {
                       {isExpanded ? <ChevronDown size={16} color={theme.muted} /> : <ChevronRight size={16} color={theme.muted} />}
                       <h4 style={{ 
                         color: theme.text, 
-                        fontWeight: '600',
+                        fontWeight: '400',
                         fontSize: '16px',
                         margin: 0
                       }}>
@@ -411,7 +411,7 @@ function SessionJournal({ characterId, campaignId }) {
                           background: theme.subtle,
                           color: theme.primary,
                           fontSize: '12px',
-                          fontWeight: '600'
+                          fontWeight: '400'
                         }}>
                           Session {entry.session_number}
                         </span>
@@ -525,8 +525,8 @@ function SessionJournal({ characterId, campaignId }) {
                                 style={{
                                   padding: '6px 12px',
                                   background: 'transparent',
-                                  border: `1px solid #DC2626`,
-                                  color: '#DC2626',
+                                  border: `1px solid #E05C3D`,
+                                  color: '#E05C3D',
                                   fontSize: '13px'
                                 }}
                               >

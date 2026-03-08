@@ -31,21 +31,21 @@ const theme = {
   bg: {
     black: '#0D0D0D',
     dark: '#141414',
-    panel: '#1A1A1A',
-    card: '#1F1F1F',
-    hover: '#2A2A2A',
+    panel: '#1F1F1F',
+    card: '#262626',
+    hover: '#333333',
     elevated: '#333333'
   },
   // Three shades of red for GM/Campaign side
   accent: {
-    primary: '#B91C1C',      // Main red
-    secondary: '#DC2626',    // Light red  
+    primary: '#C54B2C',      // Main red
+    secondary: '#E05C3D',    // Light red  
     tertiary: '#991B1B',     // Dark red
     hover: '#F87171',
     subtle: 'rgba(220, 38, 38, 0.15)',
     glow: '0 0 20px rgba(220, 38, 38, 0.4)',
     // Legacy compatibility
-    red: '#B91C1C',
+    red: '#C54B2C',
     redHover: '#F87171',
     redSubtle: 'rgba(220, 38, 38, 0.15)',
     orange: '#F97316'
@@ -228,7 +228,7 @@ function CampaignDashboard({ username, onLogout }) {
           border: 'none',
           background: hasActiveTab ? theme.accent.redSubtle : 'transparent',
           color: hasActiveTab ? theme.accent.red : theme.text.muted,
-          fontWeight: '600',
+          fontWeight: '400',
           fontSize: '11px',
           letterSpacing: '1px',
           textTransform: 'uppercase',
@@ -307,7 +307,7 @@ function CampaignDashboard({ username, onLogout }) {
                 fontSize: 'clamp(18px, 4vw, 24px)', 
                 color: theme.text.white, 
                 marginBottom: '4px',
-                fontWeight: '700',
+                fontWeight: '400',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -321,7 +321,7 @@ function CampaignDashboard({ username, onLogout }) {
                   color: theme.accent.red,
                   background: theme.accent.redSubtle,
                   padding: '2px 8px',
-                  fontWeight: '600'
+                  fontWeight: '400'
                 }}>
                   {campaign.system || '5e 2024'}
                 </span>
@@ -342,7 +342,7 @@ function CampaignDashboard({ username, onLogout }) {
               fontSize: 'clamp(12px, 2vw, 14px)',
               padding: '10px 16px',
               minHeight: '44px',
-              fontWeight: '600'
+              fontWeight: '400'
             }}
           >
             <Monitor size={18} />
@@ -374,7 +374,7 @@ function CampaignDashboard({ username, onLogout }) {
           <h3 style={{
             color: theme.text.muted,
             fontSize: '11px',
-            fontWeight: '600',
+            fontWeight: '400',
             letterSpacing: '1.5px',
             textTransform: 'uppercase',
             marginBottom: '12px',

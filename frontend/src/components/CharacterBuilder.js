@@ -116,11 +116,11 @@ const RACES = [
 ];
 
 const CLASSES = [
-  { name: 'Barbarian', color: '#B91C1C', hitDie: 'd12', primary: 'STR' },
+  { name: 'Barbarian', color: '#C54B2C', hitDie: 'd12', primary: 'STR' },
   { name: 'Bard', color: '#EC4899', hitDie: 'd8', primary: 'CHA' },
   { name: 'Cleric', color: '#F59E0B', hitDie: 'd8', primary: 'WIS' },
   { name: 'Druid', color: '#22C55E', hitDie: 'd8', primary: 'WIS' },
-  { name: 'Fighter', color: '#DC2626', hitDie: 'd10', primary: 'STR/DEX' },
+  { name: 'Fighter', color: '#E05C3D', hitDie: 'd10', primary: 'STR/DEX' },
   { name: 'Monk', color: '#14B8A6', hitDie: 'd8', primary: 'DEX/WIS' },
   { name: 'Paladin', color: '#FBBF24', hitDie: 'd10', primary: 'STR/CHA' },
   { name: 'Ranger', color: '#10B981', hitDie: 'd10', primary: 'DEX/WIS' },
@@ -494,7 +494,7 @@ function CharacterBuilder() {
       userContent.classes.forEach(c => {
         customClasses.push({
           name: c.name,
-          color: c.color || '#2A9D8F',
+          color: c.color || '#F2A541',
           hitDie: c.hit_die || 'd8',
           primary: c.primary_ability || 'Varies',
           source: c.source || 'My Rulesets',
@@ -945,8 +945,8 @@ function CharacterBuilder() {
   };
 
   // Teal theme for player section
-  const playerBlue = '#2A9D8F';
-  const playerBlueHover = '#3DB5A6';
+  const playerBlue = '#F2A541';
+  const playerBlueHover = '#FFB855';
   const playerBlueSubtle = 'rgba(42, 157, 143, 0.15)';
 
   const getClassColor = () => {
@@ -974,19 +974,19 @@ function CharacterBuilder() {
           <div style={{ flex: 1 }}>
             <h1 style={{
               fontSize: '28px',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               fontWeight: '800',
               color: '#ffffff'
             }}>
               Create Character
             </h1>
             {selectedEdition && (
-              <p style={{ color: '#2A9D8F', fontSize: '13px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <p style={{ color: '#F2A541', fontSize: '13px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 Using <strong>{selectedEdition} Rules</strong>
                 {userContent?.has_custom_content && (
                   <span style={{ 
                     background: 'rgba(6, 182, 212, 0.2)', 
-                    border: '1px solid #2A9D8F',
+                    border: '1px solid #F2A541',
                     padding: '2px 8px',
                     fontSize: '11px',
                     marginLeft: '8px'
@@ -1029,7 +1029,7 @@ function CharacterBuilder() {
                 style={{
                   padding: '32px 48px',
                   background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(59, 130, 246, 0.1))',
-                  border: '2px solid #2A9D8F',
+                  border: '2px solid #F2A541',
                   borderRadius: '12px',
                   cursor: 'pointer',
                   transition: 'all 0.3s'
@@ -1043,7 +1043,7 @@ function CharacterBuilder() {
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                <div style={{ color: '#2A9D8F', fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
+                <div style={{ color: '#F2A541', fontSize: '32px', fontWeight: '400', marginBottom: '8px' }}>
                   2014
                 </div>
                 <div style={{ color: '#9CA3AF', fontSize: '14px' }}>
@@ -1051,7 +1051,7 @@ function CharacterBuilder() {
                 </div>
                 {contentSummary?.['2014'] && (contentSummary['2014'].races > 0 || contentSummary['2014'].classes > 0) && (
                   <div style={{ 
-                    color: '#2A9D8F', 
+                    color: '#F2A541', 
                     fontSize: '12px', 
                     marginTop: '12px',
                     background: 'rgba(6, 182, 212, 0.1)',
@@ -1082,7 +1082,7 @@ function CharacterBuilder() {
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                <div style={{ color: '#A855F7', fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
+                <div style={{ color: '#A855F7', fontSize: '32px', fontWeight: '400', marginBottom: '8px' }}>
                   2024
                 </div>
                 <div style={{ color: '#9CA3AF', fontSize: '14px' }}>
@@ -1147,7 +1147,7 @@ function CharacterBuilder() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#fff',
-                fontWeight: '700',
+                fontWeight: '400',
                 fontSize: '14px',
                 marginRight: '10px'
               }}>
@@ -1202,8 +1202,8 @@ function CharacterBuilder() {
                     <h3 style={{ 
                       color: '#fff', 
                       fontSize: '18px', 
-                      fontWeight: '700',
-                      fontFamily: 'Cityworm, sans-serif'
+                      fontWeight: '400',
+                      fontFamily: "Eros Book, sans-serif"
                     }}>
                       ROOK
                     </h3>
@@ -1264,7 +1264,7 @@ function CharacterBuilder() {
                     background: aiGenerating ? 'rgba(59, 130, 246, 0.5)' : playerBlue,
                     border: 'none',
                     color: '#fff',
-                    fontWeight: '700',
+                    fontWeight: '400',
                     fontSize: '15px',
                     cursor: aiGenerating || !aiPrompt.trim() ? 'not-allowed' : 'pointer',
                     display: 'flex',
@@ -1298,15 +1298,15 @@ function CharacterBuilder() {
                 <h3 style={{ 
                   color: '#fff', 
                   fontSize: '18px', 
-                  fontWeight: '700',
-                  fontFamily: 'Cityworm, sans-serif',
+                  fontWeight: '400',
+                  fontFamily: "Eros Book, sans-serif",
                   marginBottom: '20px'
                 }}>
                   Basic Info
                 </h3>
 
                 <div style={{ marginBottom: '20px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '400' }}>
                     Character Name *
                   </label>
                   <Input
@@ -1321,7 +1321,7 @@ function CharacterBuilder() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '400' }}>
                       Race {campaignContent?.races?.length > 0 && <span style={{ color: '#F59E0B', fontSize: '10px' }}>★ Custom available</span>}
                     </label>
                     <select
@@ -1345,7 +1345,7 @@ function CharacterBuilder() {
                     </select>
                   </div>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '400' }}>
                       Class {campaignContent?.classes?.length > 0 && <span style={{ color: '#F59E0B', fontSize: '10px' }}>★ Custom available</span>}
                     </label>
                     <select
@@ -1372,7 +1372,7 @@ function CharacterBuilder() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '400' }}>
                       Background {campaignContent?.backgrounds?.length > 0 && <span style={{ color: '#F59E0B', fontSize: '10px' }}>★ Custom available</span>}
                     </label>
                     <select
@@ -1396,7 +1396,7 @@ function CharacterBuilder() {
                     </select>
                   </div>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '400' }}>
                       Level
                     </label>
                     <Input
@@ -1420,7 +1420,7 @@ function CharacterBuilder() {
             {/* Race Selection */}
             <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
               <CardContent style={{ padding: '24px' }}>
-                <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>
+                <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '16px' }}>
                   <User size={20} style={{ marginRight: '8px', verticalAlign: 'middle', color: '#22D3EE' }} />
                   Choose Race
                 </h3>
@@ -1428,7 +1428,7 @@ function CharacterBuilder() {
                   {/* Custom races first */}
                   {mergedRaces.filter(r => r.isCustom).length > 0 && (
                     <>
-                      <div style={{ color: '#F59E0B', fontSize: '12px', fontWeight: '600', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div style={{ color: '#F59E0B', fontSize: '12px', fontWeight: '400', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Star size={14} /> Campaign Custom
                       </div>
                       {mergedRaces.filter(r => r.isCustom).map(race => (
@@ -1447,7 +1447,7 @@ function CharacterBuilder() {
                             transition: 'all 0.2s'
                           }}
                         >
-                          <span style={{ color: '#F59E0B', fontWeight: '600', fontSize: '14px' }}>★ {race.name}</span>
+                          <span style={{ color: '#F59E0B', fontWeight: '400', fontSize: '14px' }}>★ {race.name}</span>
                           <span style={{ color: '#9CA3AF', fontSize: '12px' }}>{race.bonus}</span>
                         </button>
                       ))}
@@ -1471,7 +1471,7 @@ function CharacterBuilder() {
                         transition: 'all 0.2s'
                       }}
                     >
-                      <span style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>{race.name}</span>
+                      <span style={{ color: '#fff', fontWeight: '400', fontSize: '14px' }}>{race.name}</span>
                       <span style={{ color: '#9CA3AF', fontSize: '12px' }}>{race.bonus}</span>
                     </button>
                   ))}
@@ -1482,7 +1482,7 @@ function CharacterBuilder() {
             {/* Class Selection */}
             <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
               <CardContent style={{ padding: '24px' }}>
-                <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>
+                <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '16px' }}>
                   <Swords size={20} style={{ marginRight: '8px', verticalAlign: 'middle', color: getClassColor() }} />
                   Choose Class
                 </h3>
@@ -1505,7 +1505,7 @@ function CharacterBuilder() {
                             gridColumn: 'span 2'
                           }}
                         >
-                          <div style={{ color: '#F59E0B', fontWeight: '600', fontSize: '13px' }}>★ {cls.name}</div>
+                          <div style={{ color: '#F59E0B', fontWeight: '400', fontSize: '13px' }}>★ {cls.name}</div>
                           <div style={{ color: '#9CA3AF', fontSize: '11px' }}>{cls.hitDie} • {cls.primary}</div>
                         </button>
                       ))}
@@ -1526,7 +1526,7 @@ function CharacterBuilder() {
                         transition: 'all 0.2s'
                       }}
                     >
-                      <div style={{ color: '#fff', fontWeight: '600', fontSize: '13px' }}>{cls.name}</div>
+                      <div style={{ color: '#fff', fontWeight: '400', fontSize: '13px' }}>{cls.name}</div>
                       <div style={{ color: '#9CA3AF', fontSize: '11px' }}>{cls.hitDie} • {cls.primary}</div>
                     </button>
                   ))}
@@ -1547,7 +1547,7 @@ function CharacterBuilder() {
               marginBottom: '20px'
             }}>
               <CardContent style={{ padding: '20px' }}>
-                <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '16px' }}>
+                <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '400', marginBottom: '16px' }}>
                   How would you like to generate stats?
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
@@ -1555,7 +1555,7 @@ function CharacterBuilder() {
                     { id: 'custom', label: 'Custom', desc: 'Point Buy', color: '#9CA3AF' },
                     { id: 'standard', label: 'Standard', desc: '15,14,13,12,10,8', color: '#22D3EE' },
                     { id: 'recommended', label: 'Recommended', desc: `Best for ${characterData.character_class}`, color: '#10B981' },
-                    { id: 'rolled', label: 'Roll Dice', desc: '4d6 drop lowest', color: '#2A9D8F' }
+                    { id: 'rolled', label: 'Roll Dice', desc: '4d6 drop lowest', color: '#F2A541' }
                   ].map(method => (
                     <button
                       key={method.id}
@@ -1581,7 +1581,7 @@ function CharacterBuilder() {
                       )}
                       <div style={{ 
                         color: statMethod === method.id ? method.color : '#fff', 
-                        fontWeight: '700', 
+                        fontWeight: '400', 
                         fontSize: '14px',
                         marginBottom: '4px'
                       }}>
@@ -1600,7 +1600,7 @@ function CharacterBuilder() {
             <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
               <CardContent style={{ padding: '24px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700' }}>
+                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400' }}>
                     Ability Scores
                   </h3>
                   {statMethod === 'rolled' && (
@@ -1609,11 +1609,11 @@ function CharacterBuilder() {
                       disabled={isRolling}
                       style={{
                         padding: '8px 16px',
-                        background: 'linear-gradient(135deg, #2A9D8F, #2A9D8F)',
+                        background: 'linear-gradient(135deg, #F2A541, #F2A541)',
                         border: 'none',
                         borderRadius: '8px',
                         color: '#fff',
-                        fontWeight: '600',
+                        fontWeight: '400',
                         fontSize: '13px',
                         display: 'flex',
                         alignItems: 'center',
@@ -1629,7 +1629,7 @@ function CharacterBuilder() {
               
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
                   {[
-                    { key: 'strength', label: 'STR', icon: Swords, color: '#DC2626' },
+                    { key: 'strength', label: 'STR', icon: Swords, color: '#E05C3D' },
                     { key: 'dexterity', label: 'DEX', icon: ArrowRight, color: '#22D3EE' },
                     { key: 'constitution', label: 'CON', icon: Heart, color: '#F59E0B' },
                     { key: 'intelligence', label: 'INT', icon: BookOpen, color: '#8B5CF6' },
@@ -1653,7 +1653,7 @@ function CharacterBuilder() {
                       }}
                     >
                       <stat.icon size={24} style={{ color: stat.color, marginBottom: '8px' }} />
-                      <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '600', marginBottom: '8px' }}>
+                      <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '400', marginBottom: '8px' }}>
                         {stat.label}
                       </div>
                       
@@ -1695,7 +1695,7 @@ function CharacterBuilder() {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     fontSize: '12px',
-                                    fontWeight: '700',
+                                    fontWeight: '400',
                                     color: i === 3 ? '#6B7280' : stat.color,
                                     textDecoration: i === 3 ? 'line-through' : 'none'
                                   }}
@@ -1765,7 +1765,7 @@ function CharacterBuilder() {
                       <div style={{ 
                         color: stat.color, 
                         fontSize: '14px', 
-                        fontWeight: '700', 
+                        fontWeight: '400', 
                         marginTop: '8px',
                         padding: '4px 8px',
                         background: stat.color + '20',
@@ -1789,19 +1789,19 @@ function CharacterBuilder() {
                   border: `1px solid ${playerBlue}30`
                 }}>
                   <div style={{ textAlign: 'center' }}>
-                    <Heart size={24} style={{ color: '#DC2626', marginBottom: '4px' }} />
-                    <div style={{ color: '#DC2626', fontSize: '24px', fontWeight: '800' }}>
+                    <Heart size={24} style={{ color: '#E05C3D', marginBottom: '4px' }} />
+                    <div style={{ color: '#E05C3D', fontSize: '24px', fontWeight: '800' }}>
                       {parseInt(CLASSES.find(c => c.name === characterData.character_class)?.hitDie?.slice(1) || 8) + 
                        Math.floor((characterData.constitution - 10) / 2)}
                     </div>
-                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '600' }}>Hit Points</div>
+                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '400' }}>Hit Points</div>
                   </div>
                   <div style={{ textAlign: 'center' }}>
                     <Shield size={24} style={{ color: '#22D3EE', marginBottom: '4px' }} />
                     <div style={{ color: '#22D3EE', fontSize: '24px', fontWeight: '800' }}>
                       {10 + Math.floor((characterData.dexterity - 10) / 2)}
                     </div>
-                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '600' }}>Armor Class</div>
+                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '400' }}>Armor Class</div>
                   </div>
                   <div style={{ textAlign: 'center' }}>
                     <Sparkles size={24} style={{ color: '#F59E0B', marginBottom: '4px' }} />
@@ -1809,7 +1809,7 @@ function CharacterBuilder() {
                       {characterData.strength + characterData.dexterity + characterData.constitution + 
                        characterData.intelligence + characterData.wisdom + characterData.charisma}
                     </div>
-                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '600' }}>Total Points</div>
+                    <div style={{ color: '#9CA3AF', fontSize: '12px', fontWeight: '400' }}>Total Points</div>
                   </div>
                 </div>
               </CardContent>
@@ -1820,11 +1820,11 @@ function CharacterBuilder() {
         {/* Step 4: Subclass, Spells & Feats */}
         {step === 4 && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
-            <Card style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <Card style={{ background: '#1F1F1F', border: '1px solid rgba(255,255,255,0.1)' }}>
               <CardContent style={{ padding: '24px' }}>
                 {/* Subclass Selection */}
                 <div style={{ marginBottom: '32px' }}>
-                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <Shield size={20} style={{ color: playerBlue }} />
                     Choose Your Subclass
                     {availableSubclasses.some(s => s.isCustom) && (
@@ -1851,7 +1851,7 @@ function CharacterBuilder() {
                         }}>
                           <Shield size={24} style={{ color: '#F59E0B' }} />
                           <div>
-                            <p style={{ color: '#F59E0B', fontWeight: '600', margin: 0 }}>
+                            <p style={{ color: '#F59E0B', fontWeight: '400', margin: 0 }}>
                               Subclass Locked
                             </p>
                             <p style={{ color: '#808080', fontSize: '13px', margin: '4px 0 0' }}>
@@ -1877,7 +1877,7 @@ function CharacterBuilder() {
                           disabled={isLocked}
                           style={{
                             padding: '16px',
-                            background: isSelected ? 'rgba(245, 158, 11, 0.15)' : (isLocked ? '#151515' : '#1F1F1F'),
+                            background: isSelected ? 'rgba(245, 158, 11, 0.15)' : (isLocked ? '#151515' : '#262626'),
                             border: isSelected ? '2px solid #F59E0B' : (isLocked ? '1px solid #333' : '1px solid #F59E0B50'),
                             color: isLocked ? '#555' : (isSelected ? '#F59E0B' : '#fff'),
                             textAlign: 'left',
@@ -1885,7 +1885,7 @@ function CharacterBuilder() {
                             opacity: isLocked ? 0.6 : 1
                           }}
                         >
-                          <div style={{ fontWeight: '600', marginBottom: '4px', color: isLocked ? '#555' : '#F59E0B' }}>★ {sub.name}</div>
+                          <div style={{ fontWeight: '400', marginBottom: '4px', color: isLocked ? '#555' : '#F59E0B' }}>★ {sub.name}</div>
                           <div style={{ fontSize: '12px', color: isLocked ? '#444' : '#808080' }}>{sub.description}</div>
                           <div style={{ fontSize: '11px', color: isLocked ? '#F59E0B' : '#F59E0B', marginTop: '8px' }}>
                             {isLocked ? `🔒 Unlocks at Level ${sub.level}` : `Unlocks at Level ${sub.level}`}
@@ -1904,7 +1904,7 @@ function CharacterBuilder() {
                           disabled={isLocked}
                           style={{
                             padding: '16px',
-                            background: isSelected ? playerBlueSubtle : (isLocked ? '#151515' : '#1F1F1F'),
+                            background: isSelected ? playerBlueSubtle : (isLocked ? '#151515' : '#262626'),
                             border: isSelected ? `2px solid ${playerBlue}` : (isLocked ? '1px solid #333' : '1px solid rgba(255,255,255,0.1)'),
                             color: isLocked ? '#555' : (isSelected ? playerBlue : '#fff'),
                             textAlign: 'left',
@@ -1912,7 +1912,7 @@ function CharacterBuilder() {
                             opacity: isLocked ? 0.6 : 1
                           }}
                         >
-                          <div style={{ fontWeight: '600', marginBottom: '4px' }}>{sub.name}</div>
+                          <div style={{ fontWeight: '400', marginBottom: '4px' }}>{sub.name}</div>
                           <div style={{ fontSize: '12px', color: isLocked ? '#444' : '#808080' }}>{sub.description}</div>
                           <div style={{ fontSize: '11px', color: isLocked ? '#666' : playerBlue, marginTop: '8px' }}>
                             {isLocked ? `🔒 Unlocks at Level ${sub.level}` : `Unlocks at Level ${sub.level}`}
@@ -1926,7 +1926,7 @@ function CharacterBuilder() {
                 {/* Spells for Casters */}
                 {isCaster && availableCantrips.length > 0 && cantripLimit > 0 && (
                   <div style={{ marginBottom: '32px' }}>
-                    <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <Wand2 size={20} style={{ color: playerBlue }} />
                       Select Cantrips
                     </h3>
@@ -1952,7 +1952,7 @@ function CharacterBuilder() {
                             }}
                             style={{
                               padding: '8px 16px',
-                              background: isSelected ? playerBlueSubtle : '#1F1F1F',
+                              background: isSelected ? playerBlueSubtle : '#262626',
                               border: isSelected ? `1px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
                               color: isDisabled ? '#555' : (isSelected ? playerBlue : '#B3B3B3'),
                               fontSize: '13px',
@@ -1974,7 +1974,7 @@ function CharacterBuilder() {
                 {/* Level 1 Spells for Casters */}
                 {isCaster && availableSpells.length > 0 && (
                   <div style={{ marginBottom: '32px' }}>
-                    <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '12px' }}>
+                    <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '400', marginBottom: '12px' }}>
                       Select 1st Level Spells
                     </h3>
                     {isPreparedCaster ? (
@@ -2008,7 +2008,7 @@ function CharacterBuilder() {
                             }}
                             style={{
                               padding: '8px 16px',
-                              background: isSelected ? playerBlueSubtle : '#1F1F1F',
+                              background: isSelected ? playerBlueSubtle : '#262626',
                               border: isSelected ? `1px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
                               color: isDisabled ? '#555' : (isSelected ? playerBlue : '#B3B3B3'),
                               fontSize: '13px',
@@ -2030,11 +2030,11 @@ function CharacterBuilder() {
 
                 {/* Starting Equipment */}
                 <div style={{ marginBottom: '32px' }}>
-                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <BookOpen size={20} style={{ color: playerBlue }} />
                     Starting Equipment
                   </h3>
-                  <div style={{ background: '#1F1F1F', border: '1px solid rgba(255,255,255,0.1)', padding: '16px' }}>
+                  <div style={{ background: '#262626', border: '1px solid rgba(255,255,255,0.1)', padding: '16px' }}>
                     <p style={{ color: '#808080', fontSize: '12px', marginBottom: '8px' }}>As a {characterData.character_class}, you start with:</p>
                     <ul style={{ margin: 0, paddingLeft: '20px' }}>
                       {startingEquipment.map((item, i) => (
@@ -2046,10 +2046,10 @@ function CharacterBuilder() {
 
                 {/* Background Feature */}
                 <div style={{ marginBottom: '32px' }}>
-                  <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '12px' }}>
+                  <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '400', marginBottom: '12px' }}>
                     Background Feature: {selectedBackground.feature}
                   </h3>
-                  <div style={{ background: '#1F1F1F', border: '1px solid rgba(255,255,255,0.1)', padding: '16px' }}>
+                  <div style={{ background: '#262626', border: '1px solid rgba(255,255,255,0.1)', padding: '16px' }}>
                     <p style={{ color: '#808080', fontSize: '12px', marginBottom: '8px' }}>Skills: {selectedBackground.skills?.join(', ')}</p>
                     {selectedBackground.tools?.length > 0 && (
                       <p style={{ color: '#808080', fontSize: '12px', marginBottom: '8px' }}>Tools: {selectedBackground.tools.join(', ')}</p>
@@ -2062,7 +2062,7 @@ function CharacterBuilder() {
 
                 {/* Optional Feat */}
                 <div>
-                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <Sparkles size={20} style={{ color: playerBlue }} />
                     Optional Starting Feat
                     {mergedFeats.some(f => f.isCustom) && (
@@ -2080,7 +2080,7 @@ function CharacterBuilder() {
                         onClick={() => handleChange('selectedFeat', feat.name === characterData.selectedFeat ? '' : feat.name)}
                         style={{
                           padding: '12px',
-                          background: characterData.selectedFeat === feat.name ? 'rgba(245, 158, 11, 0.15)' : '#1F1F1F',
+                          background: characterData.selectedFeat === feat.name ? 'rgba(245, 158, 11, 0.15)' : '#262626',
                           border: characterData.selectedFeat === feat.name ? '1px solid #F59E0B' : '1px solid #F59E0B50',
                           color: characterData.selectedFeat === feat.name ? '#F59E0B' : '#fff',
                           textAlign: 'left',
@@ -2088,7 +2088,7 @@ function CharacterBuilder() {
                           fontSize: '12px'
                         }}
                       >
-                        <div style={{ fontWeight: '600', marginBottom: '2px', color: '#F59E0B' }}>★ {feat.name}</div>
+                        <div style={{ fontWeight: '400', marginBottom: '2px', color: '#F59E0B' }}>★ {feat.name}</div>
                         <div style={{ color: '#808080', fontSize: '11px' }}>{feat.description}</div>
                       </button>
                     ))}
@@ -2099,7 +2099,7 @@ function CharacterBuilder() {
                         onClick={() => handleChange('selectedFeat', feat.name === characterData.selectedFeat ? '' : feat.name)}
                         style={{
                           padding: '12px',
-                          background: characterData.selectedFeat === feat.name ? playerBlueSubtle : '#1F1F1F',
+                          background: characterData.selectedFeat === feat.name ? playerBlueSubtle : '#262626',
                           border: characterData.selectedFeat === feat.name ? `1px solid ${playerBlue}` : '1px solid rgba(255,255,255,0.1)',
                           color: characterData.selectedFeat === feat.name ? playerBlue : '#fff',
                           textAlign: 'left',
@@ -2107,7 +2107,7 @@ function CharacterBuilder() {
                           fontSize: '12px'
                         }}
                       >
-                        <div style={{ fontWeight: '600', marginBottom: '2px' }}>{feat.name}</div>
+                        <div style={{ fontWeight: '400', marginBottom: '2px' }}>{feat.name}</div>
                         <div style={{ color: '#808080', fontSize: '11px' }}>{feat.description}</div>
                       </button>
                     ))}
@@ -2123,13 +2123,13 @@ function CharacterBuilder() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px' }}>
             <Card style={{ background: '#111827', border: '1px solid #1F2937', borderRadius: '16px' }}>
               <CardContent style={{ padding: '24px' }}>
-                <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '700', marginBottom: '20px' }}>
+                <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '400', marginBottom: '20px' }}>
                   Character Details
                 </h3>
 
                 {/* Alignment Grid */}
                 <div style={{ marginBottom: '24px' }}>
-                  <label style={{ display: 'block', marginBottom: '12px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
+                  <label style={{ display: 'block', marginBottom: '12px', color: '#22D3EE', fontSize: '13px', fontWeight: '400' }}>
                     Alignment
                   </label>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
@@ -2155,7 +2155,7 @@ function CharacterBuilder() {
 
                 {/* Backstory */}
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#22D3EE', fontSize: '13px', fontWeight: '400' }}>
                     Backstory
                   </label>
                   <textarea
@@ -2170,9 +2170,9 @@ function CharacterBuilder() {
             </Card>
 
             {/* Portrait Panel */}
-            <Card style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.1)', height: 'fit-content' }}>
+            <Card style={{ background: '#1F1F1F', border: '1px solid rgba(255,255,255,0.1)', height: 'fit-content' }}>
               <CardContent style={{ padding: '24px' }}>
-                <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '700', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ color: '#fff', fontSize: '16px', fontWeight: '400', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Image size={18} style={{ color: playerBlue }} />
                   Portrait
                 </h3>
@@ -2213,7 +2213,7 @@ function CharacterBuilder() {
                         background: gender === g ? playerBlueSubtle : 'transparent',
                         color: gender === g ? playerBlueHover : '#9CA3AF',
                         fontSize: '11px',
-                        fontWeight: '600',
+                        fontWeight: '400',
                         cursor: 'pointer',
                         textTransform: 'capitalize'
                       }}
@@ -2232,7 +2232,7 @@ function CharacterBuilder() {
                     background: portraitGenerating ? 'rgba(59, 130, 246, 0.5)' : playerBlue,
                     border: 'none',
                     color: '#fff',
-                    fontWeight: '600',
+                    fontWeight: '400',
                     fontSize: '13px',
                     cursor: portraitGenerating || !characterData.name.trim() ? 'not-allowed' : 'pointer',
                     display: 'flex',
@@ -2291,7 +2291,7 @@ function CharacterBuilder() {
                 background: playerBlue,
                 border: 'none',
                 color: '#fff',
-                fontWeight: '700',
+                fontWeight: '400',
                 fontSize: '15px',
                 cursor: creating || !characterData.name.trim() ? 'not-allowed' : 'pointer',
                 display: 'flex',

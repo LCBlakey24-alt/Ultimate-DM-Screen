@@ -99,8 +99,8 @@ function ReviewModal({ isOpen, onClose }) {
             <h2 style={{ 
               color: '#fff', 
               fontSize: '24px', 
-              fontFamily: 'Cityworm, sans-serif',
-              fontWeight: '700',
+              fontFamily: "Eros Book, sans-serif",
+              fontWeight: '400',
               marginBottom: '4px'
             }}>
               {existingReview ? 'Edit Your Review' : 'Leave a Review'}
@@ -169,7 +169,7 @@ function ReviewModal({ isOpen, onClose }) {
                 color: rating >= 4 ? '#22c55e' : rating >= 2 ? '#f59e0b' : '#94a3b8',
                 fontSize: '14px',
                 marginTop: '8px',
-                fontWeight: '600'
+                fontWeight: '400'
               }}>
                 {rating === 5 && "Amazing! 🎉"}
                 {rating === 4 && "Great!"}

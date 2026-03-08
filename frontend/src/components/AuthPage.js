@@ -10,31 +10,31 @@ import TronBackground from '@/components/TronBackground';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Dark Minimalist Theme - Updated color scheme
+// Dark Black/Grey Theme with Orange/Gold Accents
 const theme = {
   bg: {
-    black: '#0D0D0D',      // Pure black
-    dark: '#121212',       // Slightly lighter black
-    panel: '#1A1A1A',      // Panel background
-    card: '#1A6B64',       // Dark teal
-    hover: '#2A9D8F'       // Light teal
+    black: '#0D0D0D',      // Near black
+    dark: '#1A1A1A',       // Dark grey
+    panel: '#1F1F1F',      // Panel grey
+    card: '#262626',       // Card grey
+    hover: '#333333'       // Hover grey
   },
   accent: {
-    primary: '#B91C1C',      // Bright red
-    secondary: '#7F1D1D',    // Medium red
-    tertiary: '#4A0E0E',     // Dark maroon
-    hover: '#B91C1C',
-    subtle: 'rgba(185, 28, 28, 0.15)',
-    red: '#B91C1C',
-    redHover: '#B91C1C',
-    redSubtle: 'rgba(185, 28, 28, 0.15)'
+    primary: '#C54B2C',      // Burnt orange
+    secondary: '#A03D24',    // Medium orange-red
+    tertiary: '#7A1F1F',     // Dark burgundy
+    hover: '#E05C3D',
+    subtle: 'rgba(197, 75, 44, 0.15)',
+    red: '#C54B2C',
+    redHover: '#E05C3D',
+    redSubtle: 'rgba(197, 75, 44, 0.15)'
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#B8B8B8',
-    muted: '#808080'
+    secondary: '#B0B0B0',
+    muted: '#707070'
   },
-  border: 'rgba(255, 255, 255, 0.1)'
+  border: 'rgba(255, 255, 255, 0.15)'
 };
 
 function AuthPage({ onLogin }) {
@@ -182,22 +182,28 @@ function AuthPage({ onLogin }) {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '20px',
-      background: theme.bg.dark,
-      fontFamily: "'Eros Book', 'Inter', sans-serif"
+      background: theme.bg.black,
+      fontFamily: "'Eros Book', 'Inter', sans-serif",
+      position: 'relative'
     }}>
+      {/* Smokey Background Effect */}
+      <div className="smokey-bg" />
+      
       <div style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         width: '100%',
         maxWidth: '420px',
-        gap: '40px'
+        gap: '40px',
+        position: 'relative',
+        zIndex: 1
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center' }}>
           <h1 style={{
             fontSize: '32px',
-            fontWeight: '700',
+            fontWeight: '400',
             color: theme.text.white,
             letterSpacing: '4px',
             margin: '0 0 8px'
@@ -206,7 +212,7 @@ function AuthPage({ onLogin }) {
           </h1>
           <h2 style={{
             fontSize: '40px',
-            fontWeight: '700',
+            fontWeight: '400',
             color: theme.text.white,
             letterSpacing: '8px',
             margin: 0
@@ -235,7 +241,7 @@ function AuthPage({ onLogin }) {
             <>
               <h3 style={{
                 fontSize: '20px',
-                fontWeight: '600',
+                fontWeight: '400',
                 color: theme.text.white,
                 textAlign: 'center',
                 marginBottom: '8px'
@@ -304,7 +310,7 @@ function AuthPage({ onLogin }) {
                     border: 'none',
                     color: theme.text.white,
                     padding: '12px',
-                    fontWeight: '600'
+                    fontWeight: '400'
                   }}
                 >
                   {loading ? 'Signing in...' : 'LOG IN'}
@@ -332,7 +338,7 @@ function AuthPage({ onLogin }) {
             <>
               <h3 style={{
                 fontSize: '20px',
-                fontWeight: '600',
+                fontWeight: '400',
                 color: theme.text.white,
                 textAlign: 'center',
                 marginBottom: '8px'
@@ -417,7 +423,7 @@ function AuthPage({ onLogin }) {
                     border: 'none',
                     color: theme.text.white,
                     padding: '12px',
-                    fontWeight: '600'
+                    fontWeight: '400'
                   }}
                 >
                   {loading ? 'Creating account...' : 'CREATE ACCOUNT'}
@@ -446,7 +452,7 @@ function AuthPage({ onLogin }) {
             <>
               <h3 style={{
                 fontSize: '20px',
-                fontWeight: '600',
+                fontWeight: '400',
                 color: theme.text.white,
                 textAlign: 'center',
                 marginBottom: '8px'
@@ -484,7 +490,7 @@ function AuthPage({ onLogin }) {
                     border: 'none',
                     color: theme.text.white,
                     padding: '12px',
-                    fontWeight: '600'
+                    fontWeight: '400'
                   }}
                 >
                   {loading ? 'Sending...' : 'SEND RESET LINK'}
@@ -513,7 +519,7 @@ function AuthPage({ onLogin }) {
             <>
               <h3 style={{
                 fontSize: '20px',
-                fontWeight: '600',
+                fontWeight: '400',
                 color: theme.text.white,
                 textAlign: 'center',
                 marginBottom: '8px'
@@ -566,7 +572,7 @@ function AuthPage({ onLogin }) {
                     border: 'none',
                     color: theme.text.white,
                     padding: '12px',
-                    fontWeight: '600'
+                    fontWeight: '400'
                   }}
                 >
                   {loading ? 'Resetting...' : 'RESET PASSWORD'}

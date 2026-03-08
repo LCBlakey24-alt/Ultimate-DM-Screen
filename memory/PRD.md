@@ -10,6 +10,32 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 
 ## Recent Major Updates (March 2026)
 
+### UI THEME REDESIGN - DARK MODE WITH EMBERS (March 8, 2026)
+**Complete visual theme overhaul for darker, more immersive look**
+
+**Background Changes:**
+- Changed main background from burgundy (#2B0F0F) to near-black (#0D0D0D)
+- Updated card/panel backgrounds to dark grey (#1F1F1F, #262626)
+- Added smokey embers CSS effect with animated orange/red gradients and floating particles
+
+**Color Scheme Updates:**
+- `bg.black`: #0D0D0D (near black)
+- `bg.dark`: #1A1A1A (dark grey)
+- `bg.panel`: #1F1F1F (panel grey)
+- `bg.card`: #262626 (card grey)
+- `bg.hover`: #333333 (hover grey)
+- `text.secondary`: #B0B0B0 (light grey for better contrast)
+- `text.muted`: #707070 (muted grey)
+- Orange/gold accent colors preserved (#C54B2C, #F2A541)
+
+**Files Updated (23 components):**
+- index.css (CSS variables + smokey-bg animation)
+- LandingPage.js, AuthPage.js, UnifiedDashboard.js
+- AdminPage.js, CampaignDashboard.js, CampaignList.js
+- CharacterBuilder.js, CharacterSheet.js, CharacterSheetFull.js
+- FloatingDiceRoller.js, GMScreen.js, NPCQuickReference.js
+- And 10 more component files
+
 ### RULES CONSISTENCY PASS - EDITION-AWARE SYSTEM (March 8, 2026)
 **Full rules-consistency pass for character creation + level-up with strict 5e 2014/2024 support**
 

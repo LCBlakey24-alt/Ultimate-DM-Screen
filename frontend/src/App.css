@@ -1,5 +1,5 @@
-/* Quest Keeper - Dark Minimalist Design System v7.0 */
-/* New Color Scheme: Teal/Black/Red Theme with Eros Book Font */
+/* Quest Keeper - Dark Minimalist Design System v8.0 */
+/* New Color Scheme: Burgundy/Orange/Gold/Navy Theme with Eros Book Font */
 
 /* Custom Font - Eros Book */
 @font-face {
@@ -16,14 +16,62 @@
 /* Global font weight override - ensure no bold */
 * {
   font-weight: 400 !important;
+  font-family: 'Eros Book', 'Inter', sans-serif !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, strong, b {
   font-weight: 400 !important;
 }
 
-strong, b {
-  font-weight: 400 !important;
+/* ==================== SMOKEY BACKGROUND EFFECT ==================== */
+.smokey-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.smokey-bg::before,
+.smokey-bg::after {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: radial-gradient(ellipse at center, rgba(122, 31, 31, 0.15) 0%, transparent 50%),
+              radial-gradient(ellipse at 20% 80%, rgba(197, 75, 44, 0.1) 0%, transparent 40%),
+              radial-gradient(ellipse at 80% 20%, rgba(242, 165, 65, 0.08) 0%, transparent 40%);
+  animation: smokeFloat 30s ease-in-out infinite;
+}
+
+.smokey-bg::after {
+  background: radial-gradient(ellipse at 70% 70%, rgba(43, 15, 15, 0.2) 0%, transparent 50%),
+              radial-gradient(ellipse at 30% 30%, rgba(45, 42, 58, 0.15) 0%, transparent 45%);
+  animation: smokeFloat 40s ease-in-out infinite reverse;
+}
+
+@keyframes smokeFloat {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translate(2%, -2%) rotate(5deg) scale(1.05);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-1%, 1%) rotate(-3deg) scale(0.98);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translate(1%, 2%) rotate(2deg) scale(1.02);
+    opacity: 0.7;
+  }
 }
 
 /* ==================== TRON BORDER LIGHT TRACE EFFECT ==================== */

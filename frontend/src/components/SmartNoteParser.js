@@ -222,7 +222,7 @@ function SmartNoteParser({ campaignId, noteText, onUpdateApplied }) {
               {parseResults.entities_mentioned && parseResults.entities_mentioned.length > 0 && (
                 <div style={{ marginBottom: '20px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                    <h4 style={{ color: '#ffffff', fontSize: '16px', fontWeight: '700' }}>
+                    <h4 style={{ color: '#ffffff', fontSize: '16px', fontWeight: '400' }}>
                       Entities Found ({parseResults.entities_mentioned.length})
                     </h4>
                     <Button
@@ -253,7 +253,7 @@ function SmartNoteParser({ campaignId, noteText, onUpdateApplied }) {
                               ) : (
                                 <MapPin size={16} color={entity.existing_id ? '#22c55e' : '#4a7dff'} />
                               )}
-                              <span style={{ color: '#ffffff', fontWeight: '700', fontSize: '14px' }}>
+                              <span style={{ color: '#ffffff', fontWeight: '400', fontSize: '14px' }}>
                                 {entity.name}
                               </span>
                               <span style={{ 
@@ -297,7 +297,7 @@ function SmartNoteParser({ campaignId, noteText, onUpdateApplied }) {
               {/* Time Changes */}
               {parseResults.time_changes && parseResults.time_changes.length > 0 && (
                 <div style={{ marginBottom: '20px' }}>
-                  <h4 style={{ color: '#ffffff', fontSize: '16px', fontWeight: '700', marginBottom: '12px' }}>
+                  <h4 style={{ color: '#ffffff', fontSize: '16px', fontWeight: '400', marginBottom: '12px' }}>
                     Time Changes ({parseResults.time_changes.length})
                   </h4>
                   
@@ -317,7 +317,7 @@ function SmartNoteParser({ campaignId, noteText, onUpdateApplied }) {
                       >
                         <Clock size={18} color="#a855f7" />
                         <div style={{ flex: 1 }}>
-                          <p style={{ color: '#ffffff', fontSize: '14px', fontWeight: '600' }}>
+                          <p style={{ color: '#ffffff', fontSize: '14px', fontWeight: '400' }}>
                             {timeChange.description}
                           </p>
                           <p style={{ color: '#94a3b8', fontSize: '12px' }}>
@@ -342,7 +342,7 @@ function SmartNoteParser({ campaignId, noteText, onUpdateApplied }) {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <Calendar size={18} color="#22c55e" />
                         <div>
-                          <p style={{ color: '#ffffff', fontSize: '14px', fontWeight: '600' }}>
+                          <p style={{ color: '#ffffff', fontSize: '14px', fontWeight: '400' }}>
                             Update Campaign Calendar
                           </p>
                           <p style={{ color: '#94a3b8', fontSize: '12px' }}>

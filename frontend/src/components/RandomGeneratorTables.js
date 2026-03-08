@@ -9,13 +9,13 @@ import { toast } from 'sonner';
 
 // GM Theme - Red (Tron Aries)
 const theme = {
-  primary: '#B91C1C',
-  hover: '#DC2626',
+  primary: '#C54B2C',
+  hover: '#E05C3D',
   subtle: 'rgba(225, 29, 72, 0.15)',
   glow: '0 0 20px rgba(225, 29, 72, 0.3)',
   bg: '#0D0D0D',
-  card: '#1F1F1F',
-  panel: '#1A1A1A',
+  card: '#262626',
+  panel: '#1F1F1F',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
@@ -308,9 +308,9 @@ function RandomGeneratorTables({ campaignId }) {
           <h3 style={{ 
             color: theme.primary, 
             fontSize: '18px', 
-            fontWeight: '700',
+            fontWeight: '400',
             margin: 0,
-            fontFamily: 'Cityworm, sans-serif'
+            fontFamily: "Eros Book, sans-serif"
           }}>
             RANDOM GENERATORS
           </h3>
@@ -337,7 +337,7 @@ function RandomGeneratorTables({ campaignId }) {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   cursor: 'pointer',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   fontSize: '14px'
                 }}
               >
@@ -390,7 +390,7 @@ function RandomGeneratorTables({ campaignId }) {
             alignItems: 'center',
             marginBottom: '12px'
           }}>
-            <h4 style={{ color: theme.text, fontSize: '14px', fontWeight: '600', margin: 0 }}>
+            <h4 style={{ color: theme.text, fontSize: '14px', fontWeight: '400', margin: 0 }}>
               Results ({results.length})
             </h4>
             {results.length > 0 && (
@@ -448,7 +448,7 @@ function RandomGeneratorTables({ campaignId }) {
                         <span style={{
                           color: theme.primary,
                           fontSize: '10px',
-                          fontWeight: '700',
+                          fontWeight: '400',
                           textTransform: 'uppercase',
                           letterSpacing: '0.5px'
                         }}>
@@ -457,7 +457,7 @@ function RandomGeneratorTables({ campaignId }) {
                         <p style={{
                           color: theme.text,
                           fontSize: '15px',
-                          fontWeight: '600',
+                          fontWeight: '400',
                           margin: '4px 0 0'
                         }}>
                           {result.value}

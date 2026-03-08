@@ -2,8 +2,8 @@ import React from 'react';
 import { X } from 'lucide-react';
 
 const theme = {
-  accent: '#B91C1C',
-  bg: { dark: '#141414', card: '#1F1F1F', panel: '#1A1A1A' },
+  accent: '#C54B2C',
+  bg: { dark: '#141414', card: '#5A2020', panel: '#4A1F1F' },
   text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
   border: 'rgba(255, 255, 255, 0.1)'
 };
@@ -50,8 +50,8 @@ export function KeyboardShortcutsModal({ isOpen, onClose }) {
           <h2 style={{ 
             color: theme.text.white, 
             fontSize: '18px', 
-            fontWeight: '700',
-            fontFamily: 'Cityworm, sans-serif'
+            fontWeight: '400',
+            fontFamily: "Eros Book, sans-serif"
           }}>
             Keyboard Shortcuts
           </h2>
@@ -92,7 +92,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }) {
                 fontSize: '13px',
                 fontFamily: 'monospace',
                 color: theme.accent,
-                fontWeight: '600',
+                fontWeight: '400',
                 minWidth: '36px',
                 textAlign: 'center'
               }}>

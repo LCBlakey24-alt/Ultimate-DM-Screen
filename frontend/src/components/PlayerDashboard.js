@@ -21,13 +21,13 @@ const API = `${BACKEND_URL}/api`;
 
 // Dark Minimalist Theme - BLUE for Players
 const playerTheme = {
-  primary: '#2A9D8F',
-  hover: '#3DB5A6',
+  primary: '#F2A541',
+  hover: '#FFB855',
   subtle: 'rgba(59, 130, 246, 0.15)',
   border: 'rgba(255, 255, 255, 0.1)',
   bg: '#0D0D0D',
-  card: '#1F1F1F',
-  panel: '#1A1A1A',
+  card: '#262626',
+  panel: '#1F1F1F',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080'
@@ -110,13 +110,13 @@ function PlayerDashboard({ username, onLogout }) {
 
   const getClassColor = (charClass) => {
     const colors = {
-      'Fighter': '#DC2626',
+      'Fighter': '#E05C3D',
       'Wizard': '#8B5CF6',
       'Rogue': '#6B7280',
       'Cleric': '#F59E0B',
       'Ranger': '#10B981',
       'Paladin': '#FBBF24',
-      'Barbarian': '#B91C1C',
+      'Barbarian': '#C54B2C',
       'Bard': '#EC4899',
       'Druid': '#22C55E',
       'Monk': '#14B8A6',
@@ -222,7 +222,7 @@ function PlayerDashboard({ username, onLogout }) {
           <div>
             <h1 style={{
               fontSize: '20px',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               fontWeight: '800',
               color: '#ffffff'
             }}>
@@ -276,9 +276,9 @@ function PlayerDashboard({ username, onLogout }) {
                 : '1px solid #374151',
               borderRadius: '10px',
               color: '#ffffff',
-              fontWeight: '600',
+              fontWeight: '400',
               fontSize: '14px',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -302,9 +302,9 @@ function PlayerDashboard({ username, onLogout }) {
                 : '1px solid #374151',
               borderRadius: '10px',
               color: '#ffffff',
-              fontWeight: '600',
+              fontWeight: '400',
               fontSize: '14px',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -328,9 +328,9 @@ function PlayerDashboard({ username, onLogout }) {
                 : '1px solid #374151',
               borderRadius: '10px',
               color: '#ffffff',
-              fontWeight: '600',
+              fontWeight: '400',
               fontSize: '14px',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -354,9 +354,9 @@ function PlayerDashboard({ username, onLogout }) {
                 : '1px solid #374151',
               borderRadius: '10px',
               color: '#ffffff',
-              fontWeight: '600',
+              fontWeight: '400',
               fontSize: '14px',
-              fontFamily: 'Cityworm, sans-serif',
+              fontFamily: "Eros Book, sans-serif",
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -391,9 +391,9 @@ function PlayerDashboard({ username, onLogout }) {
                   alignItems: 'center',
                   gap: '12px',
                   color: '#ffffff',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   fontSize: '16px',
-                  fontFamily: 'Cityworm, sans-serif',
+                  fontFamily: "Eros Book, sans-serif",
                   cursor: 'pointer',
                   boxShadow: '0 4px 20px rgba(34, 211, 238, 0.4)'
                 }}
@@ -413,9 +413,9 @@ function PlayerDashboard({ username, onLogout }) {
                   alignItems: 'center',
                   gap: '12px',
                   color: '#ffffff',
-                  fontWeight: '700',
+                  fontWeight: '400',
                   fontSize: '16px',
-                  fontFamily: 'Cityworm, sans-serif',
+                  fontFamily: "Eros Book, sans-serif",
                   cursor: 'pointer',
                   boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)'
                 }}
@@ -435,8 +435,8 @@ function PlayerDashboard({ username, onLogout }) {
           }}>
             <h2 style={{
               fontSize: '22px',
-              fontFamily: 'Cityworm, sans-serif',
-              fontWeight: '700',
+              fontFamily: "Eros Book, sans-serif",
+              fontWeight: '400',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
@@ -467,8 +467,8 @@ function PlayerDashboard({ username, onLogout }) {
                 color: '#9CA3AF', 
                 fontSize: '18px', 
                 marginBottom: '8px',
-                fontFamily: 'Cityworm, sans-serif',
-                fontWeight: '600'
+                fontFamily: "Eros Book, sans-serif",
+                fontWeight: '400'
               }}>
                 No Characters Yet
               </h3>
@@ -539,8 +539,8 @@ function PlayerDashboard({ username, onLogout }) {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <h3 style={{
                           fontSize: '18px',
-                          fontFamily: 'Cityworm, sans-serif',
-                          fontWeight: '700',
+                          fontFamily: "Eros Book, sans-serif",
+                          fontWeight: '400',
                           color: '#ffffff',
                           marginBottom: '4px',
                           whiteSpace: 'nowrap',
@@ -607,8 +607,8 @@ function PlayerDashboard({ username, onLogout }) {
                         background: 'rgba(239, 68, 68, 0.1)',
                         borderRadius: '8px'
                       }}>
-                        <Heart size={14} style={{ color: '#DC2626' }} />
-                        <span style={{ color: '#DC2626', fontSize: '13px', fontWeight: '600' }}>
+                        <Heart size={14} style={{ color: '#E05C3D' }} />
+                        <span style={{ color: '#E05C3D', fontSize: '13px', fontWeight: '400' }}>
                           {char.max_hp || '—'} HP
                         </span>
                       </div>
@@ -621,7 +621,7 @@ function PlayerDashboard({ username, onLogout }) {
                         borderRadius: '8px'
                       }}>
                         <Shield size={14} style={{ color: '#22D3EE' }} />
-                        <span style={{ color: '#22D3EE', fontSize: '13px', fontWeight: '600' }}>
+                        <span style={{ color: '#22D3EE', fontSize: '13px', fontWeight: '400' }}>
                           {char.armor_class || '—'} AC
                         </span>
                       </div>
@@ -643,8 +643,8 @@ function PlayerDashboard({ username, onLogout }) {
           }}>
             <h2 style={{
               fontSize: '22px',
-              fontFamily: 'Cityworm, sans-serif',
-              fontWeight: '700',
+              fontFamily: "Eros Book, sans-serif",
+              fontWeight: '400',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
@@ -674,8 +674,8 @@ function PlayerDashboard({ username, onLogout }) {
                 color: '#9CA3AF', 
                 fontSize: '18px', 
                 marginBottom: '8px',
-                fontFamily: 'Cityworm, sans-serif',
-                fontWeight: '600'
+                fontFamily: "Eros Book, sans-serif",
+                fontWeight: '400'
               }}>
                 No Campaigns Joined
               </h3>
@@ -714,8 +714,8 @@ function PlayerDashboard({ username, onLogout }) {
                   <CardContent style={{ padding: '20px' }}>
                     <h3 style={{
                       fontSize: '18px',
-                      fontFamily: 'Cityworm, sans-serif',
-                      fontWeight: '700',
+                      fontFamily: "Eros Book, sans-serif",
+                      fontWeight: '400',
                       color: '#ffffff',
                       marginBottom: '8px'
                     }}>
@@ -769,9 +769,9 @@ function PlayerDashboard({ username, onLogout }) {
                     <h3 style={{ 
                       color: '#F59E0B', 
                       fontSize: '16px', 
-                      fontWeight: '700',
+                      fontWeight: '400',
                       marginBottom: '12px',
-                      fontFamily: 'Cityworm, sans-serif'
+                      fontFamily: "Eros Book, sans-serif"
                     }}>
                       {campaign.name}
                     </h3>
@@ -794,8 +794,8 @@ function PlayerDashboard({ username, onLogout }) {
           <DialogHeader>
             <DialogTitle style={{
               fontSize: '24px',
-              fontFamily: 'Cityworm, sans-serif',
-              fontWeight: '700',
+              fontFamily: "Eros Book, sans-serif",
+              fontWeight: '400',
               color: '#ffffff'
             }}>
               Join Campaign
@@ -809,7 +809,7 @@ function PlayerDashboard({ username, onLogout }) {
                 marginBottom: '8px', 
                 color: '#22D3EE',
                 fontSize: '14px',
-                fontWeight: '600'
+                fontWeight: '400'
               }}>
                 Invite Code
               </label>
@@ -843,7 +843,7 @@ function PlayerDashboard({ username, onLogout }) {
                   marginBottom: '12px', 
                   color: '#22D3EE',
                   fontSize: '14px',
-                  fontWeight: '600'
+                  fontWeight: '400'
                 }}>
                   Select Character to Join With
                 </label>
@@ -881,7 +881,7 @@ function PlayerDashboard({ username, onLogout }) {
                         <User size={20} style={{ color: getClassColor(char.character_class) }} />
                       </div>
                       <div style={{ textAlign: 'left' }}>
-                        <p style={{ color: '#ffffff', fontWeight: '600', fontSize: '14px' }}>
+                        <p style={{ color: '#ffffff', fontWeight: '400', fontSize: '14px' }}>
                           {char.name}
                         </p>
                         <p style={{ color: '#9CA3AF', fontSize: '12px' }}>
