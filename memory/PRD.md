@@ -271,6 +271,12 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - [ ] None
 
 ### Completed (March 2026)
+- [x] **COLOR SCHEME UPDATE (March 2026)**
+  - Player/Character side: Three shades of blue (#3B82F6 primary, #06B6D4 secondary, #1E40AF tertiary)
+  - GM/Campaign side: Three shades of red (#DC2626 primary, #EF4444 secondary, #991B1B tertiary)
+  - Dice roller button changes color based on current page (blue on player pages, red on GM pages)
+  - Updated: UnifiedDashboard, CharacterBuilder, CampaignDashboard, GMScreen, AuthPage, FloatingDiceRoller
+
 - [x] **USER-LEVEL RULESETS WITH EDITION TAGGING (March 2026)** - Major feature
   - Moved ruleset uploader to Player Dashboard (home page)
   - Rulesets now stored per-user (not per-campaign)

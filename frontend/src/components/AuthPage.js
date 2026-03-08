@@ -10,7 +10,7 @@ import TronBackground from '@/components/TronBackground';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Dark Minimalist Theme - NEW #E11D48
+// Dark Minimalist Theme - Updated color scheme
 const theme = {
   bg: {
     black: '#0D0D0D',
@@ -20,9 +20,15 @@ const theme = {
     hover: '#2A2A2A'
   },
   accent: {
-    red: '#E11D48',
-    redHover: '#F43F5E',
-    redSubtle: 'rgba(225, 29, 72, 0.15)'
+    primary: '#DC2626',      // Main red
+    secondary: '#EF4444',    // Light red
+    tertiary: '#991B1B',     // Dark red
+    hover: '#F87171',
+    subtle: 'rgba(220, 38, 38, 0.15)',
+    // Legacy
+    red: '#DC2626',
+    redHover: '#F87171',
+    redSubtle: 'rgba(220, 38, 38, 0.15)'
   },
   text: {
     white: '#FFFFFF',

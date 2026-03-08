@@ -36,12 +36,17 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-// Conditional Dice Roller - only shows on gameplay pages
+// Conditional Dice Roller - only shows on gameplay pages, with correct theme
 function ConditionalDiceRoller({ isAuthenticated, forceShow, onToggle }) {
   const location = useLocation();
   
   // Pages where dice roller should NOT appear
   const excludedPaths = ['/', '/auth', '/home', '/pricing', '/admin', '/account', '/reset-password'];
+  
+  // GM paths use red theme, everything else uses blue (player)
+  const gmPaths = ['/gm', '/campaigns'];
+  const isGMPage = gmPaths.some(path => location.pathname.startsWith(path));
+  const mode = isGMPage ? 'gm' : 'player';
   
   // Check if current path should show dice roller
   const shouldShowDice = isAuthenticated && !excludedPaths.some(path => {
@@ -50,7 +55,7 @@ function ConditionalDiceRoller({ isAuthenticated, forceShow, onToggle }) {
   });
   
   // Show if forced or should show based on path
-  return (shouldShowDice || forceShow) ? <FloatingDiceRoller onToggle={onToggle} /> : null;
+  return (shouldShowDice || forceShow) ? <FloatingDiceRoller mode={mode} onToggle={onToggle} /> : null;
 }
 
 // Keyboard shortcuts wrapper component

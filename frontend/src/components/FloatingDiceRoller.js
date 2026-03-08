@@ -1,29 +1,36 @@
 import React, { useState } from 'react';
 import { Dices, X, ChevronUp, Minus } from 'lucide-react';
 
-// Dark Minimalist Theme - RED #E11D48
-const theme = {
-  bg: {
-    black: '#0D0D0D',
-    dark: '#141414',
-    panel: '#1A1A1A',
-    card: '#1F1F1F',
-    hover: '#2A2A2A'
+// Dark Minimalist Theme - Supports both Player (blue) and GM (red) modes
+const themes = {
+  player: {
+    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F', hover: '#2A2A2A' },
+    accent: {
+      primary: '#3B82F6',
+      secondary: '#06B6D4',
+      hover: '#60A5FA',
+      subtle: 'rgba(59, 130, 246, 0.15)',
+      glow: 'rgba(59, 130, 246, 0.4)'
+    },
+    text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
+    border: 'rgba(255, 255, 255, 0.1)'
   },
-  accent: {
-    red: '#E11D48',
-    redHover: '#F43F5E',
-    redSubtle: 'rgba(225, 29, 72, 0.15)'
-  },
-  text: {
-    white: '#FFFFFF',
-    secondary: '#B3B3B3',
-    muted: '#808080'
-  },
-  border: 'rgba(255, 255, 255, 0.1)'
+  gm: {
+    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1A1A1A', card: '#1F1F1F', hover: '#2A2A2A' },
+    accent: {
+      primary: '#DC2626',
+      secondary: '#EF4444',
+      hover: '#F87171',
+      subtle: 'rgba(220, 38, 38, 0.15)',
+      glow: 'rgba(220, 38, 38, 0.4)'
+    },
+    text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
+    border: 'rgba(255, 255, 255, 0.1)'
+  }
 };
 
-function FloatingDiceRoller() {
+function FloatingDiceRoller({ mode = 'player' }) {
+  const theme = themes[mode] || themes.player;
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [rolls, setRolls] = useState([]);
@@ -110,7 +117,7 @@ function FloatingDiceRoller() {
           left: '24px',
           width: '56px',
           height: '56px',
-          background: theme.accent.red,
+          background: theme.accent.primary,
           border: 'none',
           cursor: 'pointer',
           display: 'flex',
@@ -118,14 +125,14 @@ function FloatingDiceRoller() {
           justifyContent: 'center',
           zIndex: 9999,
           transition: 'all 0.2s',
-          boxShadow: '0 4px 20px rgba(225, 29, 72, 0.4)'
+          boxShadow: `0 4px 20px ${theme.accent.glow}`
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = theme.accent.redHover;
+          e.currentTarget.style.background = theme.accent.hover;
           e.currentTarget.style.transform = 'scale(1.05)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = theme.accent.red;
+          e.currentTarget.style.background = theme.accent.primary;
           e.currentTarget.style.transform = 'scale(1)';
         }}
       >
@@ -156,7 +163,7 @@ function FloatingDiceRoller() {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '12px 16px',
-        background: theme.accent.red,
+        background: theme.accent.primary,
         cursor: 'move'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -223,9 +230,9 @@ function FloatingDiceRoller() {
                   transition: 'all 0.15s'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = theme.accent.redSubtle;
-                  e.currentTarget.style.borderColor = theme.accent.red;
-                  e.currentTarget.style.color = theme.accent.red;
+                  e.currentTarget.style.background = theme.accent.primarySubtle;
+                  e.currentTarget.style.borderColor = theme.accent.primary;
+                  e.currentTarget.style.color = theme.accent.primary;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = theme.bg.card;
@@ -254,9 +261,9 @@ function FloatingDiceRoller() {
               data-testid="roll-advantage-btn"
               style={{
                 padding: '10px 4px',
-                background: theme.accent.redSubtle,
-                border: `1px solid ${theme.accent.red}`,
-                color: theme.accent.red,
+                background: theme.accent.primarySubtle,
+                border: `1px solid ${theme.accent.primary}`,
+                color: theme.accent.primary,
                 fontWeight: '700',
                 fontSize: '11px',
                 cursor: 'pointer',
@@ -291,7 +298,7 @@ function FloatingDiceRoller() {
               data-testid="custom-roll-btn"
               style={{
                 padding: '10px 16px',
-                background: theme.accent.red,
+                background: theme.accent.primary,
                 border: 'none',
                 color: '#fff',
                 fontWeight: '700',

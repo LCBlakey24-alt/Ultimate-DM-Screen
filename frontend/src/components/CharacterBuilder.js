@@ -1475,7 +1475,7 @@ function CharacterBuilder() {
                     { id: 'custom', label: 'Custom', desc: 'Point Buy', color: '#9CA3AF' },
                     { id: 'standard', label: 'Standard', desc: '15,14,13,12,10,8', color: '#22D3EE' },
                     { id: 'recommended', label: 'Recommended', desc: `Best for ${characterData.character_class}`, color: '#10B981' },
-                    { id: 'rolled', label: 'Roll Dice', desc: '4d6 drop lowest', color: '#F59E0B' }
+                    { id: 'rolled', label: 'Roll Dice', desc: '4d6 drop lowest', color: '#3B82F6' }
                   ].map(method => (
                     <button
                       key={method.id}
@@ -1529,7 +1529,7 @@ function CharacterBuilder() {
                       disabled={isRolling}
                       style={{
                         padding: '8px 16px',
-                        background: 'linear-gradient(135deg, #F59E0B, #EF4444)',
+                        background: 'linear-gradient(135deg, #3B82F6, #06B6D4)',
                         border: 'none',
                         borderRadius: '8px',
                         color: '#fff',

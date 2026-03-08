@@ -36,12 +36,19 @@ const theme = {
     hover: '#2A2A2A',
     elevated: '#333333'
   },
+  // Three shades of red for GM/Campaign side
   accent: {
-    red: '#E11D48',
-    redHover: '#F43F5E',
-    redSubtle: 'rgba(225, 29, 72, 0.15)',
-    orange: '#F97316',
-    glow: '0 0 20px rgba(225, 29, 72, 0.4)'
+    primary: '#DC2626',      // Main red
+    secondary: '#EF4444',    // Light red  
+    tertiary: '#991B1B',     // Dark red
+    hover: '#F87171',
+    subtle: 'rgba(220, 38, 38, 0.15)',
+    glow: '0 0 20px rgba(220, 38, 38, 0.4)',
+    // Legacy compatibility
+    red: '#DC2626',
+    redHover: '#F87171',
+    redSubtle: 'rgba(220, 38, 38, 0.15)',
+    orange: '#F97316'
   },
   text: {
     white: '#FFFFFF',

@@ -22,24 +22,29 @@ const theme = {
     card: '#1F1F1F',
     hover: '#2A2A2A'
   },
-  // Tron Legacy - Player Side (Blue/Cyan)
+  // Player/Character Side - Three shades of Blue
   player: {
-    primary: '#3B82F6',
-    cyan: '#06B6D4',
+    primary: '#3B82F6',    // Main blue
+    secondary: '#06B6D4',  // Cyan/teal
+    tertiary: '#1E40AF',   // Dark blue
     hover: '#60A5FA',
     subtle: 'rgba(59, 130, 246, 0.08)',
-    border: 'rgba(6, 182, 212, 0.3)',
-    glow: '0 0 40px rgba(6, 182, 212, 0.15)',
-    gradient: 'linear-gradient(180deg, rgba(6, 182, 212, 0.1) 0%, transparent 100%)'
+    border: 'rgba(59, 130, 246, 0.3)',
+    glow: '0 0 40px rgba(59, 130, 246, 0.15)',
+    gradient: 'linear-gradient(180deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%)',
+    // Legacy compatibility
+    cyan: '#06B6D4'
   },
-  // Tron Aries - GM Side (Red/Orange)
+  // GM/Campaign Side - Three shades of Red
   gm: {
-    primary: '#E11D48',
-    hover: '#F43F5E',
-    subtle: 'rgba(225, 29, 72, 0.08)',
-    border: 'rgba(225, 29, 72, 0.3)',
-    glow: '0 0 40px rgba(225, 29, 72, 0.15)',
-    gradient: 'linear-gradient(180deg, rgba(225, 29, 72, 0.1) 0%, transparent 100%)'
+    primary: '#DC2626',    // Main red
+    secondary: '#EF4444',  // Light red
+    tertiary: '#991B1B',   // Dark red
+    hover: '#F87171',
+    subtle: 'rgba(220, 38, 38, 0.08)',
+    border: 'rgba(220, 38, 38, 0.3)',
+    glow: '0 0 40px rgba(220, 38, 38, 0.15)',
+    gradient: 'linear-gradient(180deg, rgba(220, 38, 38, 0.1) 0%, transparent 100%)'
   },
   text: {
     white: '#FFFFFF',
