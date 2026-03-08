@@ -1,18 +1,18 @@
-/* Quest Keeper - Dark Minimalist Design System v6.0 */
-/* Clean, Minimalist - Dark Grey/Black with Red Accent #E11D48 */
+/* Quest Keeper - Dark Minimalist Design System v7.0 */
+/* New Color Scheme: Navy Blue/Red Theme with Eros Book Font */
 
-/* Custom Font - Cityworm */
+/* Custom Font - Eros Book */
 @font-face {
-  font-family: 'Cityworm';
-  src: url('./fonts/CitywormRegular.ttf') format('truetype');
+  font-family: 'Eros Book';
+  src: url('../public/fonts/ErosBookRegular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Cityworm';
-  src: url('./fonts/CitywormRegular.ttf') format('truetype');
+  font-family: 'Eros Book';
+  src: url('../public/fonts/ErosBookRegular.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;

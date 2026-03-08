@@ -171,6 +171,15 @@ function App() {
         <SubscriptionProvider>
           <KeyboardShortcutsProvider isAuthenticated={isAuthenticated}>
             <Routes>
+            {/* Login route - redirects to /auth */}
+            <Route 
+              path="/login" 
+              element={
+                isAuthenticated ? 
+                  <Navigate to="/home" replace /> : 
+                  <AuthPage onLogin={handleLogin} />
+              } 
+            />
             <Route 
               path="/auth" 
               element={

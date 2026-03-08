@@ -13,29 +13,28 @@ const API = `${BACKEND_URL}/api`;
 // Dark Minimalist Theme - Updated color scheme
 const theme = {
   bg: {
-    black: '#0D0D0D',
-    dark: '#141414',
-    panel: '#1A1A1A',
-    card: '#1F1F1F',
-    hover: '#2A2A2A'
+    black: '#0A1628',      // Darkest navy
+    dark: '#0F1F33',       // Very dark navy
+    panel: '#1E3A5F',      // Dark navy
+    card: '#243B5A',       // Medium dark navy
+    hover: '#2D4A6E'       // Hover navy
   },
   accent: {
     primary: '#DC2626',      // Main red
-    secondary: '#EF4444',    // Light red
-    tertiary: '#991B1B',     // Dark red
-    hover: '#F87171',
+    secondary: '#B91C3C',    // Medium burgundy
+    tertiary: '#8B1538',     // Dark burgundy
+    hover: '#EF4444',
     subtle: 'rgba(220, 38, 38, 0.15)',
-    // Legacy
     red: '#DC2626',
-    redHover: '#F87171',
+    redHover: '#EF4444',
     redSubtle: 'rgba(220, 38, 38, 0.15)'
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#B3B3B3',
-    muted: '#808080'
+    secondary: '#C4D4E8',
+    muted: '#8BA3C0'
   },
-  border: 'rgba(255, 255, 255, 0.1)'
+  border: 'rgba(107, 140, 174, 0.2)'
 };
 
 function AuthPage({ onLogin }) {
@@ -183,7 +182,8 @@ function AuthPage({ onLogin }) {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '20px',
-      background: theme.bg.black
+      background: theme.bg.dark,
+      fontFamily: "'Eros Book', 'Inter', sans-serif"
     }}>
       <div style={{
         display: 'flex',

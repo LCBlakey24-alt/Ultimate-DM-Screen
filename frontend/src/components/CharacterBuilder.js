@@ -944,10 +944,10 @@ function CharacterBuilder() {
     }
   };
 
-  // Blue theme for player section
-  const playerBlue = '#3B82F6';
-  const playerBlueHover = '#60A5FA';
-  const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
+  // Blue theme for player section - New Navy/Steel Blue palette
+  const playerBlue = '#6B8CAE';
+  const playerBlueHover = '#8BA3C0';
+  const playerBlueSubtle = 'rgba(107, 140, 174, 0.15)';
 
   const getClassColor = () => {
     return CLASSES.find(c => c.name === characterData.character_class)?.color || playerBlue;
@@ -960,9 +960,9 @@ function CharacterBuilder() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0D0D0D',
+      background: '#0F1F33',
       padding: '24px',
-      fontFamily: 'Cityworm, sans-serif'
+      fontFamily: "'Eros Book', sans-serif"
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Header */}

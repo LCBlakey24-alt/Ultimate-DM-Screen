@@ -13,26 +13,26 @@ const API = `${BACKEND_URL}/api`;
 // Dual Tron Theme - Aries (Red) + Legacy (Blue)
 const theme = {
   bg: {
-    black: '#0D0D0D',
-    dark: '#141414',
-    panel: '#1A1A1A',
-    card: '#1F1F1F',
-    hover: '#2A2A2A'
+    black: '#0A1628',
+    dark: '#0F1F33',
+    panel: '#1E3A5F',
+    card: '#243B5A',
+    hover: '#2D4A6E'
   },
   gm: {
-    primary: '#E11D48',
-    hover: '#F43F5E',
-    subtle: 'rgba(225, 29, 72, 0.15)',
-    border: 'rgba(225, 29, 72, 0.4)',
-    glow: '0 0 20px rgba(225, 29, 72, 0.3)'
+    primary: '#DC2626',
+    hover: '#EF4444',
+    subtle: 'rgba(220, 38, 38, 0.15)',
+    border: 'rgba(220, 38, 38, 0.4)',
+    glow: '0 0 20px rgba(220, 38, 38, 0.3)'
   },
   player: {
-    primary: '#3B82F6',
-    cyan: '#06B6D4',
-    hover: '#60A5FA',
-    subtle: 'rgba(59, 130, 246, 0.15)',
-    border: 'rgba(59, 130, 246, 0.4)',
-    glow: '0 0 20px rgba(6, 182, 212, 0.3)'
+    primary: '#6B8CAE',
+    cyan: '#5A7A9A',
+    hover: '#8BA3C0',
+    subtle: 'rgba(107, 140, 174, 0.15)',
+    border: 'rgba(107, 140, 174, 0.4)',
+    glow: '0 0 20px rgba(107, 140, 174, 0.3)'
   },
   legendary: {
     primary: '#F59E0B',
@@ -41,10 +41,10 @@ const theme = {
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#B3B3B3',
-    muted: '#808080'
+    secondary: '#C4D4E8',
+    muted: '#8BA3C0'
   },
-  border: 'rgba(255, 255, 255, 0.1)'
+  border: 'rgba(107, 140, 174, 0.2)'
 };
 
 function AdminPage({ username }) {

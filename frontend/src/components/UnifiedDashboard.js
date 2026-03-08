@@ -13,45 +13,44 @@ import { RookGuide } from '@/components/RookGuide';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Dual Tron Theme - Split Design
+// Navy Blue/Red Theme - New Color Scheme
 const theme = {
   bg: {
-    black: '#0D0D0D',
-    dark: '#141414',
-    panel: '#1A1A1A',
-    card: '#1F1F1F',
-    hover: '#2A2A2A'
+    black: '#0A1628',      // Darkest navy
+    dark: '#0F1F33',       // Very dark navy
+    panel: '#1E3A5F',      // Dark navy
+    card: '#243B5A',       // Medium dark navy
+    hover: '#2D4A6E'       // Hover navy
   },
-  // Player/Character Side - Three shades of Blue
+  // Player/Character Side - Blues from the palette
   player: {
-    primary: '#3B82F6',    // Main blue
-    secondary: '#06B6D4',  // Cyan/teal
-    tertiary: '#1E40AF',   // Dark blue
-    hover: '#60A5FA',
-    subtle: 'rgba(59, 130, 246, 0.08)',
-    border: 'rgba(59, 130, 246, 0.3)',
-    glow: '0 0 40px rgba(59, 130, 246, 0.15)',
-    gradient: 'linear-gradient(180deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%)',
-    // Legacy compatibility
-    cyan: '#06B6D4'
+    primary: '#6B8CAE',    // Light steel blue
+    secondary: '#5A7A9A',  // Medium steel blue
+    tertiary: '#3B5A7C',   // Medium blue
+    hover: '#8BA3C0',
+    subtle: 'rgba(107, 140, 174, 0.12)',
+    border: 'rgba(107, 140, 174, 0.35)',
+    glow: '0 0 40px rgba(107, 140, 174, 0.2)',
+    gradient: 'linear-gradient(180deg, rgba(107, 140, 174, 0.15) 0%, transparent 100%)',
+    cyan: '#6B8CAE'
   },
-  // GM/Campaign Side - Three shades of Red
+  // GM/Campaign Side - Reds from the palette
   gm: {
-    primary: '#DC2626',    // Main red
-    secondary: '#EF4444',  // Light red
-    tertiary: '#991B1B',   // Dark red
-    hover: '#F87171',
-    subtle: 'rgba(220, 38, 38, 0.08)',
-    border: 'rgba(220, 38, 38, 0.3)',
-    glow: '0 0 40px rgba(220, 38, 38, 0.15)',
-    gradient: 'linear-gradient(180deg, rgba(220, 38, 38, 0.1) 0%, transparent 100%)'
+    primary: '#DC2626',    // Bright red
+    secondary: '#B91C3C',  // Medium burgundy
+    tertiary: '#8B1538',   // Dark burgundy
+    hover: '#EF4444',
+    subtle: 'rgba(220, 38, 38, 0.12)',
+    border: 'rgba(220, 38, 38, 0.35)',
+    glow: '0 0 40px rgba(220, 38, 38, 0.2)',
+    gradient: 'linear-gradient(180deg, rgba(220, 38, 38, 0.15) 0%, transparent 100%)'
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#B3B3B3',
-    muted: '#808080'
+    secondary: '#C4D4E8',  // Light blue-gray
+    muted: '#8BA3C0'       // Muted blue
   },
-  border: 'rgba(255, 255, 255, 0.1)'
+  border: 'rgba(107, 140, 174, 0.2)'
 };
 
 function UnifiedDashboard({ username, onLogout }) {

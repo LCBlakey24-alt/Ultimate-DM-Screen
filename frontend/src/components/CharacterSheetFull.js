@@ -97,7 +97,7 @@ const playerHP = '#EF4444';       // Keep red for HP (damage is universal)
 
 // Dark panel styles (matching dark theme)
 const glassPanel = {
-  background: '#1A1A1A',
+  background: '#243B5A',
   border: '1px solid rgba(255, 255, 255, 0.1)',
 };
 
@@ -157,7 +157,7 @@ function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBon
             fontSize: '22px', 
             fontWeight: '800', 
             color: '#fff',
-            fontFamily: 'Cityworm, sans-serif',
+            fontFamily: 'Eros Book, sans-serif',
             lineHeight: 1
           }}>
             {score}
@@ -705,8 +705,8 @@ function CharacterSheetFull() {
   return (
     <div data-testid="character-sheet-full" style={{
       minHeight: '100vh',
-      background: '#0D0D0D',
-      fontFamily: 'Cityworm, sans-serif'
+      background: '#0F1F33',
+      fontFamily: 'Eros Book, sans-serif'
     }}>
       {/* Subtle Blue Gradient Background */}
       <div style={{
@@ -742,7 +742,7 @@ function CharacterSheetFull() {
             <div>
               <h1 style={{
                 fontSize: 'clamp(24px, 4vw, 36px)',
-                fontFamily: 'Cityworm, sans-serif',
+                fontFamily: 'Eros Book, sans-serif',
                 fontWeight: '800',
                 color: '#fff',
                 marginBottom: '4px'
@@ -862,7 +862,7 @@ function CharacterSheetFull() {
           ...glassPanel,
           padding: '10px 16px',
           marginBottom: '12px',
-          background: 'linear-gradient(180deg, #1A1A1A 0%, #141414 100%)',
+          background: 'linear-gradient(180deg, #243B5A 0%, #1E3A5F 100%)',
           borderBottom: '2px solid rgba(59, 130, 246, 0.3)'
         }}>
           {/* Character Info Row */}

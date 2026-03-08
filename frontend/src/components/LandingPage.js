@@ -13,50 +13,50 @@ import TronBackground from '@/components/TronBackground';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-// Dual Tron Theme - Aries (GM/Red) + Legacy (Player/Blue)
+// Navy Blue/Red Theme - New Color Scheme
 const theme = {
   bg: {
-    black: '#0D0D0D',
-    dark: '#141414',
-    panel: '#1A1A1A',
-    card: '#1F1F1F',
-    hover: '#2A2A2A',
-    elevated: '#333333'
+    black: '#0A1628',      // Darkest navy
+    dark: '#0F1F33',       // Very dark navy
+    panel: '#1E3A5F',      // Dark navy
+    card: '#243B5A',       // Medium dark navy
+    hover: '#2D4A6E',      // Hover navy
+    elevated: '#345678'
   },
-  // Tron Aries - GM Side (Red/Orange/Warm)
+  // GM Side - Reds
   gm: {
-    primary: '#E11D48',
-    hover: '#F43F5E',
-    subtle: 'rgba(225, 29, 72, 0.15)',
-    border: 'rgba(225, 29, 72, 0.4)',
-    glow: '0 0 30px rgba(225, 29, 72, 0.3)'
+    primary: '#DC2626',
+    hover: '#EF4444',
+    subtle: 'rgba(220, 38, 38, 0.15)',
+    border: 'rgba(220, 38, 38, 0.4)',
+    glow: '0 0 30px rgba(220, 38, 38, 0.3)'
   },
-  // Tron Legacy - Player Side (Blue/Cyan/Cool)
+  // Player Side - Blues
   player: {
-    primary: '#3B82F6',
-    cyan: '#06B6D4',
-    hover: '#60A5FA',
-    subtle: 'rgba(59, 130, 246, 0.15)',
-    border: 'rgba(59, 130, 246, 0.4)',
-    glow: '0 0 30px rgba(6, 182, 212, 0.3)'
+    primary: '#6B8CAE',
+    cyan: '#5A7A9A',
+    hover: '#8BA3C0',
+    subtle: 'rgba(107, 140, 174, 0.15)',
+    border: 'rgba(107, 140, 174, 0.4)',
+    glow: '0 0 30px rgba(107, 140, 174, 0.3)'
   },
-  // Keep old accent for backwards compatibility
+  // Accent colors
   accent: {
-    red: '#E11D48',
-    redHover: '#F43F5E',
-    redSubtle: 'rgba(225, 29, 72, 0.15)',
-    redBorder: 'rgba(225, 29, 72, 0.4)'
+    red: '#DC2626',
+    redHover: '#EF4444',
+    redSubtle: 'rgba(220, 38, 38, 0.15)',
+    redBorder: 'rgba(220, 38, 38, 0.4)'
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#B3B3B3',
-    muted: '#808080',
-    dim: '#666666'
+    secondary: '#C4D4E8',
+    muted: '#8BA3C0',
+    dim: '#5A7A9A'
   },
   border: {
-    dark: 'rgba(255, 255, 255, 0.06)',
-    default: 'rgba(255, 255, 255, 0.1)',
-    hover: 'rgba(255, 255, 255, 0.15)'
+    dark: 'rgba(107, 140, 174, 0.1)',
+    default: 'rgba(107, 140, 174, 0.2)',
+    hover: 'rgba(107, 140, 174, 0.3)'
   }
 };
 
