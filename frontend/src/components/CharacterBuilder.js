@@ -37,6 +37,95 @@ const AI_SUGGESTIONS = [
 
 // Standard Array
 const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
+const ABILITY_KEYS = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+const ABILITY_LABELS = {
+  strength: 'STR',
+  dexterity: 'DEX',
+  constitution: 'CON',
+  intelligence: 'INT',
+  wisdom: 'WIS',
+  charisma: 'CHA'
+};
+
+const RACE_ABILITY_RULES_2014 = {
+  Human: { type: 'fixed', bonuses: { strength: 1, dexterity: 1, constitution: 1, intelligence: 1, wisdom: 1, charisma: 1 } },
+  Elf: { type: 'fixed', bonuses: { dexterity: 2 } },
+  Dwarf: { type: 'fixed', bonuses: { constitution: 2 } },
+  Halfling: { type: 'fixed', bonuses: { dexterity: 2 } },
+  Dragonborn: { type: 'fixed', bonuses: { strength: 2, charisma: 1 } },
+  Gnome: { type: 'fixed', bonuses: { intelligence: 2 } },
+  'Half-Elf': { type: 'choose', options: [{ value: 1 }, { value: 1 }], fixed: { charisma: 2 } },
+  'Half-Orc': { type: 'fixed', bonuses: { strength: 2, constitution: 1 } },
+  Tiefling: { type: 'fixed', bonuses: { charisma: 2, intelligence: 1 } },
+  Aasimar: { type: 'choose', options: [{ value: 1 }], fixed: { charisma: 2 } },
+  Firbolg: { type: 'fixed', bonuses: { wisdom: 2, strength: 1 } },
+  Goliath: { type: 'fixed', bonuses: { strength: 2, constitution: 1 } },
+  Kenku: { type: 'fixed', bonuses: { dexterity: 2, wisdom: 1 } },
+  Lizardfolk: { type: 'fixed', bonuses: { constitution: 2, wisdom: 1 } },
+  Tabaxi: { type: 'fixed', bonuses: { dexterity: 2, charisma: 1 } },
+  Triton: { type: 'fixed', bonuses: { strength: 1, constitution: 1, charisma: 1 } },
+  Bugbear: { type: 'fixed', bonuses: { strength: 2, dexterity: 1 } },
+  Goblin: { type: 'fixed', bonuses: { dexterity: 2, constitution: 1 } },
+  Hobgoblin: { type: 'fixed', bonuses: { constitution: 2, intelligence: 1 } },
+  Kobold: { type: 'fixed', bonuses: { dexterity: 2, strength: -2 } },
+  Orc: { type: 'fixed', bonuses: { strength: 2, constitution: 1 } },
+  'Yuan-ti Pureblood': { type: 'fixed', bonuses: { charisma: 2, intelligence: 1 } },
+  Leonin: { type: 'fixed', bonuses: { constitution: 2, strength: 1 } },
+  Satyr: { type: 'fixed', bonuses: { charisma: 2, dexterity: 1 } },
+  Owlin: { type: 'choose', options: [{ value: 2 }, { value: 1 }] },
+  Changeling: { type: 'choose', options: [{ value: 1 }], fixed: { charisma: 2 } },
+  Kalashtar: { type: 'fixed', bonuses: { wisdom: 2, charisma: 1 } },
+  Shifter: { type: 'chooseRestricted', options: [{ value: 2, allowed: ['dexterity', 'wisdom'] }] },
+  Warforged: { type: 'choose', options: [{ value: 1 }], fixed: { constitution: 2 } },
+  Centaur: { type: 'fixed', bonuses: { strength: 2, wisdom: 1 } },
+  Loxodon: { type: 'fixed', bonuses: { constitution: 2, wisdom: 1 } },
+  Minotaur: { type: 'fixed', bonuses: { strength: 2, constitution: 1 } },
+  'Simic Hybrid': { type: 'choose', options: [{ value: 1 }], fixed: { constitution: 2 } },
+  Vedalken: { type: 'fixed', bonuses: { intelligence: 2, wisdom: 1 } },
+  Aarakocra: { type: 'fixed', bonuses: { dexterity: 2, wisdom: 1 } },
+  'Genasi (Air)': { type: 'fixed', bonuses: { constitution: 2, dexterity: 1 } },
+  'Genasi (Earth)': { type: 'fixed', bonuses: { constitution: 2, strength: 1 } },
+  'Genasi (Fire)': { type: 'fixed', bonuses: { constitution: 2, intelligence: 1 } },
+  'Genasi (Water)': { type: 'fixed', bonuses: { constitution: 2, wisdom: 1 } },
+  Autognome: { type: 'choose', options: [{ value: 2 }, { value: 1 }] },
+  Giff: { type: 'fixed', bonuses: { strength: 2, constitution: 1 } },
+  Hadozee: { type: 'choose', options: [{ value: 1 }], fixed: { dexterity: 2 } },
+  Plasmoid: { type: 'choose', options: [{ value: 2 }, { value: 1 }] },
+  'Thri-kreen': { type: 'choose', options: [{ value: 1 }], fixed: { dexterity: 2 } },
+  Harengon: { type: 'choose', options: [{ value: 2 }, { value: 1 }] },
+  Fairy: { type: 'choose', options: [{ value: 2 }, { value: 1 }] },
+  'Custom Lineage': { type: 'choose', options: [{ value: 2 }] }
+};
+
+const DEFAULT_2024_RACE_RULE = { type: 'choose', options: [{ value: 2 }, { value: 1 }] };
+
+const getRaceAbilityRule = (raceName, edition, mergedRaces = []) => {
+  const customRace = mergedRaces.find(r => r.name === raceName);
+  if (customRace?.ability_bonuses && typeof customRace.ability_bonuses === 'object' && Object.keys(customRace.ability_bonuses).length > 0) {
+    return { type: 'fixed', bonuses: customRace.ability_bonuses };
+  }
+
+  if (edition === '2024') {
+    return DEFAULT_2024_RACE_RULE;
+  }
+
+  return RACE_ABILITY_RULES_2014[raceName] || null;
+};
+
+const getRecommendedAbilityOrder = (className) => ({
+  Barbarian: ['strength', 'constitution', 'dexterity', 'wisdom', 'charisma', 'intelligence'],
+  Bard: ['charisma', 'dexterity', 'constitution', 'wisdom', 'intelligence', 'strength'],
+  Cleric: ['wisdom', 'constitution', 'strength', 'dexterity', 'charisma', 'intelligence'],
+  Druid: ['wisdom', 'constitution', 'dexterity', 'intelligence', 'charisma', 'strength'],
+  Fighter: ['strength', 'constitution', 'dexterity', 'wisdom', 'charisma', 'intelligence'],
+  Monk: ['dexterity', 'wisdom', 'constitution', 'strength', 'charisma', 'intelligence'],
+  Paladin: ['strength', 'charisma', 'constitution', 'wisdom', 'dexterity', 'intelligence'],
+  Ranger: ['dexterity', 'wisdom', 'constitution', 'strength', 'charisma', 'intelligence'],
+  Rogue: ['dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma', 'strength'],
+  Sorcerer: ['charisma', 'constitution', 'dexterity', 'wisdom', 'intelligence', 'strength'],
+  Warlock: ['charisma', 'constitution', 'dexterity', 'wisdom', 'intelligence', 'strength'],
+  Wizard: ['intelligence', 'constitution', 'dexterity', 'wisdom', 'charisma', 'strength']
+}[className] || ABILITY_KEYS);
 
 // Recommended stats by class
 const RECOMMENDED_STATS = {
@@ -339,6 +428,12 @@ function CharacterBuilder() {
   const [isRolling, setIsRolling] = useState(false);
   const [rolledStats, setRolledStats] = useState({});
   const [diceAnimation, setDiceAnimation] = useState(null);
+  
+  // Score pool system for stat assignment
+  const [scorePool, setScorePool] = useState([]);
+  const [poolAssignments, setPoolAssignments] = useState({});
+  const [customBaseScores, setCustomBaseScores] = useState({});
+  const [raceBonusChoices, setRaceBonusChoices] = useState([]);
   
   // Content summary for edition selection screen
   const [contentSummary, setContentSummary] = useState(null);
@@ -698,9 +793,68 @@ function CharacterBuilder() {
   const availableSpells = LEVEL_1_SPELLS[characterData.character_class] || [];
   const startingEquipment = STARTING_EQUIPMENT[characterData.character_class] || [];
   const selectedBackground = mergedBackgrounds.find(b => b.name === characterData.background) || BACKGROUNDS[0];
+  const raceAbilityRule = getRaceAbilityRule(characterData.race, selectedEdition || '2014', mergedRaces);
+
+  const getBaseScoreForStat = (statKey) => {
+    if (statMethod === 'custom') return customBaseScores[statKey] ?? 10;
+    const poolId = poolAssignments[statKey];
+    const poolItem = scorePool.find(item => item.id === poolId);
+    return poolItem?.value ?? 10;
+  };
+
+  const getRaceBonuses = () => {
+    const bonuses = { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
+    if (!raceAbilityRule) return bonuses;
+
+    Object.entries(raceAbilityRule.fixed || raceAbilityRule.bonuses || {}).forEach(([stat, value]) => {
+      if (bonuses[stat] !== undefined) bonuses[stat] += value;
+    });
+
+    raceBonusChoices.forEach(choice => {
+      if (choice?.stat && bonuses[choice.stat] !== undefined) {
+        bonuses[choice.stat] += choice.value;
+      }
+    });
+
+    return bonuses;
+  };
+
+  const raceBonuses = getRaceBonuses();
+  const unassignedPoolCount = scorePool.filter(item => !Object.values(poolAssignments).includes(item.id)).length;
 
   const handleChange = (field, value) => {
     setCharacterData(prev => ({ ...prev, [field]: value }));
+  };
+
+  useEffect(() => {
+    const nextScores = {};
+    ABILITY_KEYS.forEach(stat => {
+      nextScores[stat] = getBaseScoreForStat(stat) + (raceBonuses[stat] || 0);
+    });
+
+    setCharacterData(prev => {
+      const changed = ABILITY_KEYS.some(stat => prev[stat] !== nextScores[stat]);
+      return changed ? { ...prev, ...nextScores } : prev;
+    });
+  }, [statMethod, customBaseScores, poolAssignments, scorePool, characterData.race, selectedEdition, JSON.stringify(raceBonusChoices)]);
+
+  useEffect(() => {
+    setRaceBonusChoices([]);
+  }, [characterData.race, selectedEdition]);
+
+  const buildPoolFromValues = (values, rollMap = {}) => values.map((value, index) => ({
+    id: `pool-${index}-${value}-${rollMap[index]?.join('') || 'base'}`,
+    value,
+    rolls: rollMap[index] || null
+  }));
+
+  const autoAssignPoolByOrder = (pool, order) => {
+    const sortedPool = [...pool].sort((a, b) => b.value - a.value);
+    const assignments = {};
+    order.forEach((stat, index) => {
+      assignments[stat] = sortedPool[index]?.id || null;
+    });
+    return assignments;
   };
 
   // AI Character Generation
@@ -793,77 +947,94 @@ function CharacterBuilder() {
   // Apply Standard Array
   const applyStandardArray = () => {
     setStatMethod('standard');
-    const stats = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
-    const sortedArray = [...STANDARD_ARRAY];
-    
-    setCharacterData(prev => ({
-      ...prev,
-      strength: sortedArray[0],
-      dexterity: sortedArray[1],
-      constitution: sortedArray[2],
-      intelligence: sortedArray[3],
-      wisdom: sortedArray[4],
-      charisma: sortedArray[5]
-    }));
-    
-    toast.success('Standard Array Applied', {
-      description: 'Assign these values as you like using Custom mode'
+    const pool = buildPoolFromValues(STANDARD_ARRAY);
+    setScorePool(pool);
+    setRolledStats({});
+    setPoolAssignments({});
+
+    toast.success('Standard array ready', {
+      description: 'Assign each score to the ability you want.'
     });
   };
 
   // Apply Recommended Stats for class
   const applyRecommended = () => {
     setStatMethod('recommended');
-    const recommended = RECOMMENDED_STATS[characterData.character_class];
-    
-    if (recommended) {
-      setCharacterData(prev => ({
-        ...prev,
-        ...recommended
-      }));
-      toast.success(`Optimized for ${characterData.character_class}`, {
-        description: 'Stats set for best performance'
-      });
-    }
+    const pool = buildPoolFromValues(STANDARD_ARRAY);
+    const order = getRecommendedAbilityOrder(characterData.character_class);
+    setScorePool(pool);
+    setRolledStats({});
+    setPoolAssignments(autoAssignPoolByOrder(pool, order));
+
+    toast.success(`Recommended spread applied for ${characterData.character_class}`, {
+      description: 'Uses the standard array and class priority.'
+    });
   };
 
   // Roll all stats with animation
   const rollAllStats = async () => {
     setStatMethod('rolled');
     setIsRolling(true);
-    
-    const stats = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
-    const newStats = {};
-    const newRolled = {};
-    
-    for (let i = 0; i < stats.length; i++) {
-      const stat = stats[i];
-      
-      // Show dice animation for this stat
+
+    const newRolls = [];
+    const rollMap = {};
+
+    for (let i = 0; i < ABILITY_KEYS.length; i++) {
+      const stat = ABILITY_KEYS[i];
       setDiceAnimation(stat);
-      
-      // Wait for animation
-      await new Promise(resolve => setTimeout(resolve, 600));
-      
+      await new Promise(resolve => setTimeout(resolve, 450));
       const result = roll4d6DropLowest();
-      newStats[stat] = result.total;
-      newRolled[stat] = result.rolls;
-      
-      // Update state progressively
-      setCharacterData(prev => ({ ...prev, [stat]: result.total }));
-      setRolledStats(prev => ({ ...prev, [stat]: result.rolls }));
+      newRolls.push(result.total);
+      rollMap[i] = result.rolls;
     }
-    
+
+    const pool = buildPoolFromValues(newRolls, rollMap);
+    setRolledStats(Object.fromEntries(pool.map(item => [item.id, item.rolls])));
+    setScorePool(pool);
+    setPoolAssignments({});
     setDiceAnimation(null);
     setIsRolling(false);
-    
-    const total = Object.values(newStats).reduce((a, b) => a + b, 0);
-    toast.success('Dice Rolled!', {
-      description: `Total: ${total} points`
+
+    const total = newRolls.reduce((a, b) => a + b, 0);
+    toast.success('Dice rolled', {
+      description: `Assign the six results where you want. Total: ${total}`
+    });
+  };
+
+  const handlePoolAssignment = (statKey, poolId) => {
+    setPoolAssignments(prev => {
+      const next = { ...prev };
+      Object.keys(next).forEach(existingStat => {
+        if (existingStat !== statKey && next[existingStat] === poolId) {
+          next[existingStat] = null;
+        }
+      });
+      next[statKey] = poolId || null;
+      return next;
+    });
+  };
+
+  const adjustCustomBaseScore = (statKey, delta) => {
+    setStatMethod('custom');
+    setCustomBaseScores(prev => ({
+      ...prev,
+      [statKey]: Math.max(3, Math.min(18, (prev[statKey] ?? 10) + delta))
+    }));
+  };
+
+  const handleRaceBonusChoice = (index, stat) => {
+    const option = raceAbilityRule?.options?.[index];
+    if (!option) return;
+
+    setRaceBonusChoices(prev => {
+      const next = [...prev];
+      next[index] = { stat, value: option.value };
+      return next;
     });
   };
 
   const calculateModifier = (score) => {
+
     const mod = Math.floor((score - 10) / 2);
     return mod >= 0 ? `+${mod}` : `${mod}`;
   };
@@ -1552,7 +1723,7 @@ function CharacterBuilder() {
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                   {[
-                    { id: 'custom', label: 'Custom', desc: 'Point Buy', color: '#9CA3AF' },
+                    { id: 'custom', label: 'Custom', desc: 'Manual assignment', color: '#9CA3AF' },
                     { id: 'standard', label: 'Standard', desc: '15,14,13,12,10,8', color: '#22D3EE' },
                     { id: 'recommended', label: 'Recommended', desc: `Best for ${characterData.character_class}`, color: '#10B981' },
                     { id: 'rolled', label: 'Roll Dice', desc: '4d6 drop lowest', color: '#F2A541' }
@@ -1675,14 +1846,14 @@ function CharacterBuilder() {
                       ) : (
                         <>
                           {/* Show rolled dice if in rolled mode */}
-                          {statMethod === 'rolled' && rolledStats[stat.key] && (
+                          {statMethod === 'rolled' && poolAssignments[stat.key] && rolledStats[poolAssignments[stat.key]] && (
                             <div style={{ 
                               display: 'flex', 
                               justifyContent: 'center', 
                               gap: '4px', 
                               marginBottom: '8px' 
                             }}>
-                              {rolledStats[stat.key].map((die, i) => (
+                              {rolledStats[poolAssignments[stat.key]].map((die, i) => (
                                 <span 
                                   key={i}
                                   style={{
@@ -1710,7 +1881,7 @@ function CharacterBuilder() {
                           {statMethod === 'custom' ? (
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                               <button
-                                onClick={() => handleChange(stat.key, Math.max(3, characterData[stat.key] - 1))}
+                                onClick={() => adjustCustomBaseScore(stat.key, -1)}
                                 style={{
                                   width: '32px',
                                   height: '32px',
@@ -1730,10 +1901,10 @@ function CharacterBuilder() {
                                 fontWeight: '800',
                                 minWidth: '40px'
                               }}>
-                                {characterData[stat.key]}
+                                {statMethod === 'custom' ? (customBaseScores[stat.key] ?? 10) : characterData[stat.key]}
                               </span>
                               <button
-                                onClick={() => handleChange(stat.key, Math.min(20, characterData[stat.key] + 1))}
+                                onClick={() => adjustCustomBaseScore(stat.key, 1)}
                                 style={{
                                   width: '32px',
                                   height: '32px',
@@ -1749,15 +1920,42 @@ function CharacterBuilder() {
                               </button>
                             </div>
                           ) : (
-                            // Other modes: just show the value
-                            <span style={{ 
-                              color: '#fff', 
-                              fontSize: '32px', 
-                              fontWeight: '800',
-                              display: 'block'
-                            }}>
-                              {characterData[stat.key]}
-                            </span>
+                            <div>
+                              <select
+                                value={poolAssignments[stat.key] || ''}
+                                onChange={(e) => handlePoolAssignment(stat.key, e.target.value)}
+                                style={{
+                                  width: '100%',
+                                  background: '#111827',
+                                  border: '1px solid #374151',
+                                  borderRadius: '8px',
+                                  color: '#fff',
+                                  padding: '10px 12px',
+                                  marginBottom: '10px'
+                                }}
+                              >
+                                <option value="">Choose score</option>
+                                {scorePool.map(item => {
+                                  const assignedElsewhere = Object.entries(poolAssignments).some(([otherStat, assignedId]) => otherStat !== stat.key && assignedId === item.id);
+                                  return (
+                                    <option key={item.id} value={item.id} disabled={assignedElsewhere}>
+                                      {item.value}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                              <span style={{ 
+                                color: '#fff', 
+                                fontSize: '32px', 
+                                fontWeight: '800',
+                                display: 'block'
+                              }}>
+                                {characterData[stat.key]}
+                              </span>
+                              <div style={{ color: '#6B7280', fontSize: '11px', marginTop: '4px' }}>
+                                Base {getBaseScoreForStat(stat.key)}{raceBonuses[stat.key] ? ` • Race ${raceBonuses[stat.key] > 0 ? '+' : ''}${raceBonuses[stat.key]}` : ''}
+                              </div>
+                            </div>
                           )}
                         </>
                       )}
@@ -1777,6 +1975,99 @@ function CharacterBuilder() {
                     </div>
                   ))}
                 </div>
+
+                {(statMethod === 'standard' || statMethod === 'recommended' || statMethod === 'rolled') && (
+                  <div style={{
+                    marginTop: '20px',
+                    padding: '16px',
+                    background: '#0F172A',
+                    border: '1px solid #1F2937',
+                    borderRadius: '12px'
+                  }}>
+                    <div style={{ color: '#fff', fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
+                      Score Pool
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {scorePool.map(item => {
+                        const assigned = Object.values(poolAssignments).includes(item.id);
+                        return (
+                          <span key={item.id} style={{
+                            padding: '8px 10px',
+                            borderRadius: '999px',
+                            background: assigned ? '#1D4ED8' : '#1F2937',
+                            border: assigned ? '1px solid #60A5FA' : '1px solid #374151',
+                            color: '#fff',
+                            fontSize: '13px'
+                          }}>
+                            {item.value}{item.rolls ? ` (${item.rolls.join(',')})` : ''}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    <div style={{ color: unassignedPoolCount ? '#F59E0B' : '#10B981', fontSize: '12px', marginTop: '10px' }}>
+                      {unassignedPoolCount ? `${unassignedPoolCount} score${unassignedPoolCount === 1 ? '' : 's'} left to assign.` : 'All scores assigned.'}
+                    </div>
+                  </div>
+                )}
+
+                {raceAbilityRule && (
+                  <div style={{
+                    marginTop: '20px',
+                    padding: '16px',
+                    background: '#0F172A',
+                    border: '1px solid #1F2937',
+                    borderRadius: '12px'
+                  }}>
+                    <div style={{ color: '#fff', fontSize: '14px', fontWeight: '600', marginBottom: '12px' }}>
+                      Race Ability Improvements
+                    </div>
+                    {Object.keys(raceAbilityRule.fixed || raceAbilityRule.bonuses || {}).length > 0 && (
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: raceAbilityRule.options?.length ? '12px' : 0 }}>
+                        {Object.entries(raceAbilityRule.fixed || raceAbilityRule.bonuses || {}).map(([stat, value]) => (
+                          <span key={stat} style={{
+                            padding: '8px 10px',
+                            borderRadius: '999px',
+                            background: '#1F2937',
+                            border: '1px solid #374151',
+                            color: '#fff',
+                            fontSize: '12px'
+                          }}>
+                            {ABILITY_LABELS[stat]} {value > 0 ? '+' : ''}{value}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {raceAbilityRule.options?.map((option, index) => {
+                      const allowed = option.allowed || ABILITY_KEYS;
+                      return (
+                        <div key={index} style={{ marginBottom: '10px' }}>
+                          <div style={{ color: '#9CA3AF', fontSize: '12px', marginBottom: '6px' }}>
+                            Choose a stat for +{option.value}
+                          </div>
+                          <select
+                            value={raceBonusChoices[index]?.stat || ''}
+                            onChange={(e) => handleRaceBonusChoice(index, e.target.value)}
+                            style={{
+                              width: '100%',
+                              maxWidth: '260px',
+                              background: '#111827',
+                              border: '1px solid #374151',
+                              borderRadius: '8px',
+                              color: '#fff',
+                              padding: '10px 12px'
+                            }}
+                          >
+                            <option value="">Choose ability</option>
+                            {allowed.map(stat => {
+                              const usedElsewhere = raceBonusChoices.some((choice, choiceIndex) => choiceIndex !== index && choice?.stat === stat);
+                              return <option key={stat} value={stat} disabled={usedElsewhere}>{ABILITY_LABELS[stat]}</option>;
+                            })}
+                          </select>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {/* Quick Stats Summary */}
                 <div style={{ 
