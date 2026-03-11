@@ -10,33 +10,42 @@ import TronBackground from '@/components/TronBackground';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Arcane Art-Deco Console Theme
+// Aether & Iron Theme
 const theme = {
   bg: {
-    black: '#0B1530',       // Deep navy
-    dark: '#0F1E42',        // Navy base
-    panel: '#121F3D',       // Panel navy
-    card: '#121F3D',        // Card navy
-    hover: '#172756'        // Hover navy
+    primary: '#0B0F19',
+    surface: '#111827',
+    surfaceHover: '#1F2937'
   },
-  accent: {
-    primary: '#7A5AF8',      // Arcane purple
-    secondary: '#9B6BFF',    // Light purple
-    tertiary: '#1C2C5A',     // Elevated navy
-    hover: '#9B6BFF',
-    subtle: 'rgba(122, 90, 248, 0.12)',
-    gold: '#D4AF37',
-    goldHover: '#F2D675',
-    goldSubtle: 'rgba(212, 175, 55, 0.12)'
+  gm: {
+    primary: '#F59E0B',
+    secondary: '#D97706',
+    glow: 'rgba(245, 158, 11, 0.4)'
+  },
+  player: {
+    primary: '#06B6D4',
+    secondary: '#0891B2',
+    glow: 'rgba(6, 182, 212, 0.4)'
   },
   text: {
-    white: '#E8E6E3',
+    primary: '#F9FAFB',
     secondary: '#9CA3AF',
-    muted: '#6B7280',
-    gold: '#D4AF37'
+    muted: '#6B7280'
   },
-  border: 'rgba(212, 175, 55, 0.25)'
+  border: '#374151'
 };
+
+// Ember Particles Component
+const EmberParticles = () => (
+  <div className="ember-particles">
+    {[...Array(15)].map((_, i) => (
+      <div 
+        key={i} 
+        className={`ember ${i % 3 === 0 ? 'large' : i % 2 === 0 ? 'medium' : 'small'}`}
+      />
+    ))}
+  </div>
+);
 
 function AuthPage({ onLogin }) {
   const [searchParams] = useSearchParams();
@@ -168,12 +177,13 @@ function AuthPage({ onLogin }) {
   };
 
   const inputStyle = {
-    background: theme.bg.dark,
+    background: theme.bg.surface,
     border: `1px solid ${theme.border}`,
-    color: theme.text.white,
+    color: theme.text.primary,
     padding: '14px 16px',
     width: '100%',
-    fontSize: '15px'
+    fontSize: '15px',
+    borderRadius: '8px'
   };
 
   return (
@@ -183,26 +193,15 @@ function AuthPage({ onLogin }) {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '20px',
-      background: theme.bg.black,
+      background: theme.bg.primary,
       fontFamily: "'Inter', sans-serif",
       position: 'relative'
     }}>
-      {/* Smokey Background Effect */}
-      <div className="smokey-bg" />
+      {/* Ember Background Effect */}
+      <div className="ember-bg" />
       
       {/* Floating Ember Particles */}
-      <div className="ember-particles">
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-      </div>
+      <EmberParticles />
       
       <div style={{
         display: 'flex',
@@ -212,14 +211,14 @@ function AuthPage({ onLogin }) {
         maxWidth: '420px',
         gap: '40px',
         position: 'relative',
-        zIndex: 1
+        zIndex: 2
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center' }}>
           <h1 style={{
             fontSize: '32px',
-            fontWeight: '500',
-            color: theme.accent.gold,
+            fontWeight: '600',
+            color: theme.gm.primary,
             letterSpacing: '0.1em',
             margin: '0 0 8px',
             fontFamily: "'Cinzel', serif"
@@ -228,8 +227,8 @@ function AuthPage({ onLogin }) {
           </h1>
           <h2 style={{
             fontSize: '40px',
-            fontWeight: '500',
-            color: theme.text.white,
+            fontWeight: '600',
+            color: theme.text.primary,
             letterSpacing: '0.15em',
             margin: 0,
             fontFamily: "'Cinzel', serif"
@@ -239,36 +238,30 @@ function AuthPage({ onLogin }) {
           <div style={{
             width: '60px',
             height: '3px',
-            background: `linear-gradient(90deg, ${theme.accent.gold}, ${theme.accent.primary})`,
+            background: `linear-gradient(90deg, ${theme.gm.primary}, ${theme.player.primary})`,
             margin: '16px auto 0'
           }} />
         </div>
 
         {/* Auth Card */}
         <div 
-          className="arcane-panel"
           style={{
-            background: theme.bg.panel,
+            background: theme.bg.surface,
             border: `1px solid ${theme.border}`,
-            borderRadius: '14px',
+            borderRadius: '12px',
             padding: '32px',
             width: '100%',
-            position: 'relative'
+            position: 'relative',
+            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.5)'
           }}
         >
-          {/* Art-Deco Corner Frames */}
-          <div style={{ position: 'absolute', top: '8px', left: '8px', width: '16px', height: '16px', borderLeft: '2px solid #D4AF37', borderTop: '2px solid #D4AF37' }} />
-          <div style={{ position: 'absolute', top: '8px', right: '8px', width: '16px', height: '16px', borderRight: '2px solid #D4AF37', borderTop: '2px solid #D4AF37' }} />
-          <div style={{ position: 'absolute', bottom: '8px', left: '8px', width: '16px', height: '16px', borderLeft: '2px solid #D4AF37', borderBottom: '2px solid #D4AF37' }} />
-          <div style={{ position: 'absolute', bottom: '8px', right: '8px', width: '16px', height: '16px', borderRight: '2px solid #D4AF37', borderBottom: '2px solid #D4AF37' }} />
-          
           {/* Login Form */}
           {mode === 'login' && (
             <>
               <h3 style={{
                 fontSize: '22px',
-                fontWeight: '500',
-                color: theme.text.white,
+                fontWeight: '600',
+                color: theme.text.primary,
                 textAlign: 'center',
                 marginBottom: '8px',
                 fontFamily: "'Cinzel', serif"
@@ -281,7 +274,7 @@ function AuthPage({ onLogin }) {
 
               <form onSubmit={handleLogin}>
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ color: theme.text.muted, fontSize: '13px', display: 'block', marginBottom: '6px' }}>
+                  <label style={{ color: theme.text.secondary, fontSize: '13px', display: 'block', marginBottom: '6px' }}>
                     <Mail size={14} style={{ display: 'inline', marginRight: '6px' }} />
                     Email
                   </label>
@@ -296,7 +289,7 @@ function AuthPage({ onLogin }) {
                 </div>
 
                 <div style={{ marginBottom: '8px' }}>
-                  <label style={{ color: theme.text.muted, fontSize: '13px', display: 'block', marginBottom: '6px' }}>
+                  <label style={{ color: theme.text.secondary, fontSize: '13px', display: 'block', marginBottom: '6px' }}>
                     <Lock size={14} style={{ display: 'inline', marginRight: '6px' }} />
                     Password
                   </label>
@@ -316,7 +309,7 @@ function AuthPage({ onLogin }) {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: theme.accent.gold,
+                    color: theme.gm.primary,
                     fontSize: '13px',
                     cursor: 'pointer',
                     marginBottom: '20px',
@@ -333,12 +326,13 @@ function AuthPage({ onLogin }) {
                   style={{ 
                     width: '100%', 
                     marginBottom: '12px',
-                    background: `linear-gradient(135deg, ${theme.accent.gold}, ${theme.accent.goldHover})`,
+                    background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.secondary})`,
                     border: 'none',
-                    color: '#0B1530',
+                    color: '#0B0F19',
                     padding: '14px',
                     fontWeight: '500',
-                    boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                    borderRadius: '8px',
+                    boxShadow: `0 4px 15px ${theme.gm.glow}`
                   }}
                 >
                   {loading ? 'Signing in...' : 'LOG IN'}
@@ -349,10 +343,11 @@ function AuthPage({ onLogin }) {
                   onClick={() => setMode('register')}
                   style={{ 
                     width: '100%',
-                    background: '#1C2C5A',
+                    background: theme.bg.surfaceHover,
                     border: `1px solid ${theme.border}`,
                     color: theme.text.secondary,
-                    padding: '14px'
+                    padding: '14px',
+                    borderRadius: '8px'
                   }}
                 >
                   CREATE ACCOUNT
@@ -367,7 +362,7 @@ function AuthPage({ onLogin }) {
               <h3 style={{
                 fontSize: '20px',
                 fontWeight: '400',
-                color: theme.text.white,
+                color: theme.text.primary,
                 textAlign: 'center',
                 marginBottom: '8px'
               }}>
@@ -447,9 +442,9 @@ function AuthPage({ onLogin }) {
                   style={{ 
                     width: '100%', 
                     marginBottom: '12px',
-                    background: theme.accent.red,
+                    background: theme.gm.primary,
                     border: 'none',
-                    color: theme.text.white,
+                    color: theme.text.primary,
                     padding: '12px',
                     fontWeight: '400'
                   }}
@@ -481,7 +476,7 @@ function AuthPage({ onLogin }) {
               <h3 style={{
                 fontSize: '20px',
                 fontWeight: '400',
-                color: theme.text.white,
+                color: theme.text.primary,
                 textAlign: 'center',
                 marginBottom: '8px'
               }}>
@@ -514,9 +509,9 @@ function AuthPage({ onLogin }) {
                   style={{ 
                     width: '100%', 
                     marginBottom: '12px',
-                    background: theme.accent.red,
+                    background: theme.gm.primary,
                     border: 'none',
-                    color: theme.text.white,
+                    color: theme.text.primary,
                     padding: '12px',
                     fontWeight: '400'
                   }}
@@ -548,7 +543,7 @@ function AuthPage({ onLogin }) {
               <h3 style={{
                 fontSize: '20px',
                 fontWeight: '400',
-                color: theme.text.white,
+                color: theme.text.primary,
                 textAlign: 'center',
                 marginBottom: '8px'
               }}>
@@ -596,9 +591,9 @@ function AuthPage({ onLogin }) {
                   style={{ 
                     width: '100%', 
                     marginBottom: '12px',
-                    background: theme.accent.red,
+                    background: theme.gm.primary,
                     border: 'none',
-                    color: theme.text.white,
+                    color: theme.text.primary,
                     padding: '12px',
                     fontWeight: '400'
                   }}

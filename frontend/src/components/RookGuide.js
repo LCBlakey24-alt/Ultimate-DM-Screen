@@ -28,7 +28,7 @@ const GUIDE_CONTENT = {
       "Hit '+ New Campaign' to start a fresh adventure.",
       "Each campaign has its own world, NPCs, locations, and maps!"
     ],
-    color: '#D4AF37' // Red for GM
+    color: '#F59E0B' // Red for GM
   },
   
   // Campaign Dashboard Tabs
@@ -40,7 +40,7 @@ const GUIDE_CONTENT = {
       "This is the first thing players see when they join your campaign.",
       "You can update these anytime as your world evolves."
     ],
-    color: '#D4AF37'
+    color: '#F59E0B'
   },
   'world': {
     title: "World Builder",
@@ -50,7 +50,7 @@ const GUIDE_CONTENT = {
       "Use the AI to help generate descriptions and history.",
       "Link locations together to create an interconnected world."
     ],
-    color: '#D4AF37'
+    color: '#F59E0B'
   },
   'world-map': {
     title: "World Map",
@@ -142,7 +142,7 @@ const GUIDE_CONTENT = {
       "Add NPCs, shops, and secrets to each location.",
       "Locations can be linked to map pins for visual navigation."
     ],
-    color: '#D4AF37'
+    color: '#F59E0B'
   },
   'npcs': {
     title: "NPC Manager",
@@ -152,7 +152,7 @@ const GUIDE_CONTENT = {
       "Use the AI to generate NPC backstories and motivations.",
       "Assign NPCs to locations so you always know who's where."
     ],
-    color: '#D4AF37'
+    color: '#F59E0B'
   },
   'npc-web': {
     title: "NPC Relationship Web",
@@ -192,7 +192,7 @@ const GUIDE_CONTENT = {
       "Define domains, holy symbols, and commandments.",
       "Link clerics and paladins to their patron deities."
     ],
-    color: '#D4AF37'
+    color: '#F59E0B'
   },
   'players': {
     title: "Player Management",
@@ -202,7 +202,7 @@ const GUIDE_CONTENT = {
       "See which characters are in your campaign.",
       "Manage player access and permissions."
     ],
-    color: '#D4AF37'
+    color: '#F59E0B'
   },
   'combat-creator': {
     title: "Combat Setup",
@@ -262,7 +262,7 @@ const GUIDE_CONTENT = {
       "Schedule festivals, holidays, and important dates.",
       "Never lose track of how many days have passed!"
     ],
-    color: '#D4AF37'
+    color: '#F59E0B'
   },
   'ingame-notes': {
     title: "Session Notes",
@@ -318,7 +318,7 @@ const GUIDE_CONTENT = {
       "Use the dice roller for any rolls you need.",
       "Everything updates in real-time!"
     ],
-    color: '#D4AF37'
+    color: '#F59E0B'
   }
 };
 
@@ -397,7 +397,7 @@ export function RookGuide({ guideId, variant = 'tooltip', position = 'bottom' })
           [position === 'top' ? 'bottom' : 'top']: position === 'top' ? 'auto' : '-10px',
           left: '50%',
           transform: `translateX(-50%) translateY(${position === 'top' ? '-100%' : '100%'}) scale(${isAnimating ? 1 : 0.9})`,
-          background: '#121F3D',
+          background: '#111827',
           border: `1px solid ${themeColor}`,
           borderRadius: '8px',
           padding: '12px 16px',
@@ -441,7 +441,7 @@ export function RookGuide({ guideId, variant = 'tooltip', position = 'bottom' })
           transform: 'translateX(-50%) rotate(45deg)',
           width: '12px',
           height: '12px',
-          background: '#121F3D',
+          background: '#111827',
           border: `1px solid ${themeColor}`,
           borderTop: position === 'top' ? `1px solid ${themeColor}` : 'none',
           borderLeft: position === 'top' ? `1px solid ${themeColor}` : 'none',
@@ -457,7 +457,7 @@ export function RookGuide({ guideId, variant = 'tooltip', position = 'bottom' })
     <div
       data-testid={`rook-guide-${guideId}`}
       style={{
-        background: 'linear-gradient(135deg, #121F3D 0%, #0B1530 100%)',
+        background: 'linear-gradient(135deg, #111827 0%, #0B0F19 100%)',
         border: `1px solid ${themeColor}`,
         borderLeft: `4px solid ${themeColor}`,
         padding: '20px',

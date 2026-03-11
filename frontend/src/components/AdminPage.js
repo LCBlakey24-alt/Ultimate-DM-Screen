@@ -13,23 +13,23 @@ const API = `${BACKEND_URL}/api`;
 // Dual Tron Theme - Aries (Red) + Legacy (Blue)
 const theme = {
   bg: {
-    black: '#0B1530',
-    dark: '#0F1E42',
-    panel: '#121F3D',
-    card: '#9B6BFF',
-    hover: '#7A5AF8'
+    black: '#0B0F19',
+    dark: '#111827',
+    panel: '#111827',
+    card: '#0891B2',
+    hover: '#06B6D4'
   },
   gm: {
-    primary: '#D4AF37',
-    hover: '#D4AF37',
+    primary: '#F59E0B',
+    hover: '#F59E0B',
     subtle: 'rgba(185, 28, 28, 0.15)',
     border: 'rgba(185, 28, 28, 0.4)',
     glow: '0 0 20px rgba(185, 28, 28, 0.3)'
   },
   player: {
-    primary: '#7A5AF8',
-    cyan: '#9B6BFF',
-    hover: '#9B6BFF',
+    primary: '#06B6D4',
+    cyan: '#0891B2',
+    hover: '#0891B2',
     subtle: 'rgba(42, 157, 143, 0.15)',
     border: 'rgba(42, 157, 143, 0.4)',
     glow: '0 0 20px rgba(42, 157, 143, 0.3)'
@@ -220,7 +220,7 @@ function AdminPage({ username }) {
           marginBottom: '40px',
           paddingBottom: '24px',
           borderBottom: '1px solid',
-          borderImage: 'linear-gradient(90deg, #D4AF37, #7A5AF8) 1'
+          borderImage: 'linear-gradient(90deg, #F59E0B, #06B6D4) 1'
         }}>
           <Button 
             onClick={() => navigate('/home')} 

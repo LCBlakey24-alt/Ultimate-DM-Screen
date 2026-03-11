@@ -13,59 +13,49 @@ import TronBackground from '@/components/TronBackground';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-// Arcane Art-Deco Console Theme
+// Aether & Iron Theme with Ember Accents
 const theme = {
   bg: {
-    black: '#0B1530',       // Deep navy
-    dark: '#0F1E42',        // Navy base
-    panel: '#121F3D',       // Panel navy
-    card: '#121F3D',        // Card navy
-    hover: '#172756',       // Hover navy
-    elevated: '#1C2C5A'     // Elevated navy
+    primary: '#0B0F19',      // Deep dark
+    surface: '#111827',      // Card/panel background
+    surfaceHover: '#1F2937', // Hover state
+    elevated: '#1F2937'      // Elevated elements
   },
-  // GM Side - Gold Art-Deco
   gm: {
-    primary: '#D4AF37',     // Metallic gold
-    hover: '#F2D675',       // Light gold
-    subtle: 'rgba(212, 175, 55, 0.12)',
-    border: 'rgba(212, 175, 55, 0.25)',
-    glow: '0 0 30px rgba(212, 175, 55, 0.3)'
+    primary: '#F59E0B',      // Amber
+    secondary: '#D97706',    // Darker amber
+    glow: 'rgba(245, 158, 11, 0.4)',
+    subtle: 'rgba(245, 158, 11, 0.1)'
   },
-  // Player Side - Arcane Purple
   player: {
-    primary: '#7A5AF8',     // Arcane purple
-    cyan: '#9B6BFF',        // Light purple
-    hover: '#9B6BFF',
-    subtle: 'rgba(122, 90, 248, 0.12)',
-    border: 'rgba(122, 90, 248, 0.25)',
-    glow: '0 0 30px rgba(122, 90, 248, 0.3)'
-  },
-  // Accent colors
-  accent: {
-    red: '#D4AF37',         // Gold accent
-    redHover: '#F2D675',
-    redSubtle: 'rgba(212, 175, 55, 0.12)',
-    redBorder: 'rgba(212, 175, 55, 0.25)',
-    purple: '#7A5AF8',
-    purpleGlow: 'rgba(122, 90, 248, 0.4)'
+    primary: '#06B6D4',      // Cyan
+    secondary: '#0891B2',    // Darker cyan
+    glow: 'rgba(6, 182, 212, 0.4)',
+    subtle: 'rgba(6, 182, 212, 0.1)'
   },
   text: {
-    white: '#E8E6E3',       // Warm white
-    secondary: '#9CA3AF',   // Muted text
-    muted: '#6B7280',       // Dim text
-    dim: '#4B5563',
-    gold: '#D4AF37'         // Gold text
+    primary: '#F9FAFB',      // Almost white
+    secondary: '#9CA3AF',    // Muted
+    muted: '#6B7280'         // Dim
   },
-  border: {
-    dark: 'rgba(212, 175, 55, 0.08)',
-    default: 'rgba(212, 175, 55, 0.25)',
-    hover: 'rgba(212, 175, 55, 0.4)'
-  },
-  // Utility colors
-  success: '#2ECC71',
-  danger: '#E74C3C',
-  info: '#3DA9FC'
+  border: '#374151',
+  success: '#10B981',
+  danger: '#EF4444',
+  warning: '#F59E0B',
+  info: '#3B82F6'
 };
+
+// Ember Particles Component
+const EmberParticles = () => (
+  <div className="ember-particles">
+    {[...Array(15)].map((_, i) => (
+      <div 
+        key={i} 
+        className={`ember ${i % 3 === 0 ? 'large' : i % 2 === 0 ? 'medium' : 'small'}`}
+      />
+    ))}
+  </div>
+);
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -158,26 +148,15 @@ function LandingPage() {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: theme.bg.black,
-      color: theme.text.white,
+      background: theme.bg.primary,
+      color: theme.text.primary,
       position: 'relative'
     }}>
-      {/* Smokey Background Effect */}
-      <div className="smokey-bg" />
+      {/* Ember Background Effect */}
+      <div className="ember-bg" />
       
       {/* Floating Ember Particles */}
-      <div className="ember-particles">
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-        <div className="ember"></div>
-      </div>
+      <EmberParticles />
       
       {/* Navigation */}
       <nav style={{
@@ -187,8 +166,9 @@ function LandingPage() {
         right: 0,
         zIndex: 50,
         padding: '16px 24px',
-        background: theme.bg.dark,
-        borderBottom: `1px solid ${theme.border.default}`
+        background: 'rgba(11, 15, 25, 0.95)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: `1px solid ${theme.border}`
       }}>
         <div style={{ 
           maxWidth: '1200px', 
@@ -199,11 +179,11 @@ function LandingPage() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ 
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Cinzel', serif",
               fontSize: '20px',
-              fontWeight: '400',
-              color: theme.text.white,
-              letterSpacing: '2px'
+              fontWeight: '600',
+              color: theme.gm.primary,
+              letterSpacing: '0.1em'
             }}>
               RQK
             </span>
@@ -215,7 +195,7 @@ function LandingPage() {
                 padding: '10px 20px',
                 background: 'transparent',
                 border: `1px solid ${theme.player.border}`,
-                color: theme.player.cyan
+                color: theme.player.primary
               }}
             >
               Log In
@@ -228,9 +208,11 @@ function LandingPage() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '8px',
-                background: 'linear-gradient(135deg, #C54B2C, #F2A541)',
+                background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.secondary})`,
                 border: 'none',
-                color: theme.text.white
+                color: '#0B0F19',
+                fontWeight: '500',
+                boxShadow: `0 4px 15px ${theme.gm.glow}`
               }}
             >
               Get Started Free <ArrowRight size={16} />
@@ -243,7 +225,8 @@ function LandingPage() {
       <section style={{ 
         paddingTop: '140px', 
         paddingBottom: '80px',
-        position: 'relative'
+        position: 'relative',
+        zIndex: 2
       }}>
         <div style={{ 
           maxWidth: '1200px', 
@@ -256,12 +239,13 @@ function LandingPage() {
             <h1 style={{
               fontFamily: "'Cinzel', serif",
               fontSize: 'clamp(2.5rem, 8vw, 5rem)',
-              fontWeight: '500',
-              color: theme.text.gold,
+              fontWeight: '600',
+              color: theme.gm.primary,
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
               margin: 0,
-              lineHeight: '1.1'
+              lineHeight: '1.1',
+              textShadow: `0 0 40px ${theme.gm.glow}`
             }}>
               ROOKIE QUEST
             </h1>
@@ -270,7 +254,7 @@ function LandingPage() {
               fontFamily: "'Cinzel', serif",
               fontSize: 'clamp(3rem, 10vw, 6rem)',
               fontWeight: '600',
-              color: theme.text.white,
+              color: theme.text.primary,
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
               margin: '0',
@@ -282,7 +266,7 @@ function LandingPage() {
             <p style={{
               fontFamily: "'Cinzel', serif",
               fontSize: 'clamp(0.9rem, 2vw, 1.2rem)',
-              background: 'linear-gradient(90deg, #D4AF37, #7A5AF8)',
+              background: `linear-gradient(90deg, ${theme.gm.primary}, ${theme.player.primary})`,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               letterSpacing: '0.3em',
@@ -298,7 +282,7 @@ function LandingPage() {
           <div style={{
             width: '120px',
             height: '2px',
-            background: 'linear-gradient(90deg, #D4AF37, #7A5AF8)',
+            background: `linear-gradient(90deg, ${theme.gm.primary}, ${theme.player.primary})`,
             margin: '32px auto'
           }} />
 
@@ -307,13 +291,13 @@ function LandingPage() {
             fontFamily: "'Cinzel', serif",
             fontSize: 'clamp(2rem, 4vw, 3.5rem)',
             fontWeight: '400',
-            color: theme.text.white,
+            color: theme.text.primary,
             marginBottom: '24px',
             lineHeight: '1.2',
             letterSpacing: '0.03em'
           }}>
             <span style={{ color: theme.gm.primary }}>Game Masters</span> &{' '}
-            <span style={{ color: theme.player.cyan }}>Players</span>{' '}
+            <span style={{ color: theme.player.primary }}>Players</span>{' '}
             United
           </h2>
 
@@ -326,9 +310,9 @@ function LandingPage() {
             margin: '0 auto 40px',
             lineHeight: '1.7'
           }}>
-            The all-in-one <strong style={{ color: theme.text.white }}>campaign operating system</strong> for 5e — 
+            The all-in-one <strong style={{ color: theme.text.primary }}>campaign operating system</strong> for 5e — 
             combining <span style={{ color: theme.gm.primary }}>worldbuilding, AI generation, combat</span> for GMs and{' '}
-            <span style={{ color: theme.player.cyan }}>character sheets, journals, party tools</span> for players.
+            <span style={{ color: theme.player.primary }}>character sheets, journals, party tools</span> for players.
           </p>
 
           {/* CTA Buttons */}
@@ -343,12 +327,12 @@ function LandingPage() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
-                background: `linear-gradient(135deg, ${theme.gm.primary} 0%, ${theme.gm.hover} 100%)`,
+                background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.secondary})`,
                 border: 'none',
-                color: '#0B1530',
+                color: '#0B0F19',
                 fontWeight: '500',
                 letterSpacing: '1px',
-                boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                boxShadow: `0 4px 20px ${theme.gm.glow}`
               }}
             >
               <Sword size={20} /> I'm a Game Master
@@ -362,12 +346,12 @@ function LandingPage() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
-                background: `linear-gradient(135deg, ${theme.player.primary} 0%, ${theme.player.cyan} 100%)`,
+                background: `linear-gradient(135deg, ${theme.player.primary}, ${theme.player.secondary})`,
                 border: 'none',
-                color: '#FFFFFF',
+                color: '#0B0F19',
                 fontWeight: '500',
                 letterSpacing: '1px',
-                boxShadow: '0 4px 15px rgba(122, 90, 248, 0.3)'
+                boxShadow: `0 4px 20px ${theme.player.glow}`
               }}
             >
               <Users size={20} /> I'm a Player
@@ -396,7 +380,7 @@ function LandingPage() {
                 fontSize: '16px', 
                 fontWeight: '400' 
               }}>
-                <item.icon size={18} color={theme.accent.red} /> {item.text}
+                <item.icon size={18} color={theme.gm.primary} /> {item.text}
               </div>
             ))}
           </div>
@@ -421,10 +405,10 @@ function LandingPage() {
               </div>
             )}
             <div style={{ color: theme.text.muted, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Shield size={16} color={theme.accent.red} /> Free Forever Tier
+              <Shield size={16} color={theme.gm.primary} /> Free Forever Tier
             </div>
             <div style={{ color: theme.text.muted, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Sparkles size={16} color={theme.accent.red} /> AI-Powered
+              <Sparkles size={16} color={theme.gm.primary} /> AI-Powered
             </div>
           </div>
         </div>
@@ -433,9 +417,9 @@ function LandingPage() {
       {/* Value Section */}
       <section style={{ 
         padding: '80px 24px', 
-        background: theme.bg.dark,
-        borderTop: `1px solid ${theme.border.default}`,
-        borderBottom: `1px solid ${theme.border.default}`
+        background: theme.bg.surface,
+        borderTop: `1px solid ${theme.border}`,
+        borderBottom: `1px solid ${theme.border}`
       }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
@@ -443,10 +427,10 @@ function LandingPage() {
               fontFamily: "'Inter', sans-serif",
               fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
               fontWeight: '400',
-              color: theme.text.white,
+              color: theme.text.primary,
               marginBottom: '20px'
             }}>
-              Your Entire Campaign. <span style={{ color: theme.accent.red }}>One System.</span>
+              Your Entire Campaign. <span style={{ color: theme.gm.primary }}>One System.</span>
             </h2>
             <p style={{
               fontFamily: "'Inter', sans-serif",
@@ -457,7 +441,7 @@ function LandingPage() {
               margin: '0 auto'
             }}>
               Most GMs juggle notes, PDFs, initiative trackers, spreadsheets, and AI chats across multiple tools. 
-              Rookie Quest Keeper connects <strong style={{ color: theme.text.white }}>prep and play</strong> into one seamless workflow.
+              Rookie Quest Keeper connects <strong style={{ color: theme.text.primary }}>prep and play</strong> into one seamless workflow.
             </p>
           </div>
 
@@ -478,15 +462,15 @@ function LandingPage() {
               <React.Fragment key={idx}>
                 <div style={{
                   padding: '24px 32px',
-                  background: theme.bg.card,
-                  border: `1px solid ${theme.border.default}`,
+                  background: theme.bg.surface,
+                  border: `1px solid ${theme.border}`,
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px',
                   minWidth: '180px'
                 }}>
-                  <step.icon size={28} color={theme.accent.red} />
-                  <span style={{ color: theme.text.white, fontWeight: '400', fontSize: '17px' }}>
+                  <step.icon size={28} color={theme.gm.primary} />
+                  <span style={{ color: theme.text.primary, fontWeight: '400', fontSize: '17px' }}>
                     {step.label}
                   </span>
                 </div>
@@ -500,17 +484,17 @@ function LandingPage() {
       </section>
 
       {/* App Preview Section - Live Demo Only */}
-      <section style={{ padding: '80px 24px', background: theme.bg.panel }}>
+      <section style={{ padding: '80px 24px', background: theme.bg.surface }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
               fontWeight: '400',
-              color: theme.text.white,
+              color: theme.text.primary,
               marginBottom: '16px'
             }}>
-              Try <span style={{ color: theme.accent.red }}>ROOK</span> Right Now
+              Try <span style={{ color: theme.gm.primary }}>ROOK</span> Right Now
             </h2>
             <p style={{ 
               fontFamily: "'Inter', sans-serif",
@@ -525,8 +509,8 @@ function LandingPage() {
 
           {/* Live Demo */}
           <div style={{
-            border: `1px solid ${theme.border.default}`,
-            background: theme.bg.black,
+            border: `1px solid ${theme.border}`,
+            background: theme.bg.primary,
             padding: '40px'
           }}>
             <RookDemo />
@@ -541,9 +525,9 @@ function LandingPage() {
                 fontSize: '16px',
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: '400',
-                background: theme.accent.red,
+                background: theme.gm.primary,
                 border: 'none',
-                color: theme.text.white,
+                color: theme.text.primary,
                 cursor: 'pointer',
                 letterSpacing: '1px'
               }}
@@ -555,16 +539,16 @@ function LandingPage() {
       </section>
 
       {/* Who It's For */}
-      <section style={{ padding: '80px 24px', background: theme.bg.black }}>
+      <section style={{ padding: '80px 24px', background: theme.bg.primary }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <h2 style={{
               fontSize: 'clamp(2rem, 4vw, 3rem)',
               fontWeight: '400',
-              color: theme.text.white,
+              color: theme.text.primary,
               marginBottom: '16px'
             }}>
-              Built for <span style={{ color: theme.accent.red }}>Real Game Masters</span>
+              Built for <span style={{ color: theme.gm.primary }}>Real Game Masters</span>
             </h2>
           </div>
 
@@ -580,25 +564,25 @@ function LandingPage() {
             ].map((item, i) => (
               <div key={i} style={{
                 padding: '40px',
-                background: theme.bg.card,
-                border: `1px solid ${theme.border.default}`,
+                background: theme.bg.surface,
+                border: `1px solid ${theme.border}`,
                 textAlign: 'center'
               }}>
                 <div style={{
                   width: '80px',
                   height: '80px',
-                  background: theme.bg.hover,
+                  background: theme.bg.surfaceHover,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 24px'
                 }}>
-                  <item.icon size={40} color={theme.accent.red} />
+                  <item.icon size={40} color={theme.gm.primary} />
                 </div>
                 <h3 style={{
                   fontSize: '24px',
                   fontWeight: '400',
-                  color: theme.text.white,
+                  color: theme.text.primary,
                   marginBottom: '16px'
                 }}>
                   {item.title}
@@ -617,13 +601,13 @@ function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" style={{ padding: '80px 24px', background: theme.bg.dark }}>
+      <section id="features" style={{ padding: '80px 24px', background: theme.bg.surface }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <h2 style={{
               fontSize: 'clamp(2rem, 4vw, 3rem)',
               fontWeight: '400',
-              color: theme.text.white,
+              color: theme.text.primary,
               marginBottom: '16px'
             }}>
               Everything You Need to Run Epic Campaigns
@@ -645,8 +629,8 @@ function LandingPage() {
                 onClick={() => setActiveFeature(index)}
                 style={{
                   padding: '32px',
-                  background: activeFeature === index ? theme.accent.redSubtle : theme.bg.card,
-                  border: `1px solid ${activeFeature === index ? theme.accent.red : theme.border.default}`,
+                  background: activeFeature === index ? theme.gm.primarySubtle : theme.bg.surface,
+                  border: `1px solid ${activeFeature === index ? theme.gm.primary : theme.border}`,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
                 }}
@@ -654,18 +638,18 @@ function LandingPage() {
                 <div style={{
                   width: '60px',
                   height: '60px',
-                  background: theme.bg.hover,
+                  background: theme.bg.surfaceHover,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: '20px'
                 }}>
-                  <feature.icon size={30} color={theme.accent.red} />
+                  <feature.icon size={30} color={theme.gm.primary} />
                 </div>
                 <h3 style={{
                   fontSize: '22px',
                   fontWeight: '400',
-                  color: theme.text.white,
+                  color: theme.text.primary,
                   marginBottom: '12px'
                 }}>
                   {feature.title}
@@ -684,7 +668,7 @@ function LandingPage() {
                       display: 'flex', 
                       alignItems: 'center', 
                       gap: '8px',
-                      color: theme.accent.red,
+                      color: theme.gm.primary,
                       fontSize: '14px',
                       marginBottom: '6px'
                     }}>
@@ -699,7 +683,7 @@ function LandingPage() {
       </section>
 
       {/* Meet ROOK */}
-      <section style={{ padding: '100px 24px', background: theme.bg.panel }}>
+      <section style={{ padding: '100px 24px', background: theme.bg.surface }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ 
             display: 'grid', 
@@ -716,8 +700,8 @@ function LandingPage() {
                 alignItems: 'center',
                 gap: '8px',
                 padding: '8px 16px',
-                background: theme.accent.redSubtle,
-                color: theme.accent.red,
+                background: theme.gm.primarySubtle,
+                color: theme.gm.primary,
                 fontSize: '14px',
                 fontWeight: '400',
                 marginBottom: '16px'
@@ -729,15 +713,15 @@ function LandingPage() {
               <h2 style={{
                 fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
                 fontWeight: '400',
-                color: theme.text.white,
+                color: theme.text.primary,
                 marginBottom: '16px',
                 lineHeight: '1.2'
               }}>
-                Meet <span style={{ color: theme.accent.red }}>ROOK</span>
+                Meet <span style={{ color: theme.gm.primary }}>ROOK</span>
               </h2>
               
               <p style={{
-                color: theme.accent.red,
+                color: theme.gm.primary,
                 fontSize: '20px',
                 fontWeight: '400',
                 marginBottom: '24px'
@@ -761,13 +745,13 @@ function LandingPage() {
                   <div key={i} style={{
                     textAlign: 'center',
                     padding: '16px 8px',
-                    background: theme.bg.card,
-                    border: `1px solid ${theme.border.default}`
+                    background: theme.bg.surface,
+                    border: `1px solid ${theme.border}`
                   }}>
                     <div style={{
                       fontSize: '28px',
                       fontWeight: '400',
-                      color: theme.accent.red
+                      color: theme.gm.primary
                     }}>
                       {item.letter}
                     </div>
@@ -789,10 +773,10 @@ function LandingPage() {
                 marginBottom: '32px'
               }}>
                 ROOK is the intelligent assistant built into Rookie Quest Keeper. 
-                It helps Game Masters <strong style={{ color: theme.text.white }}>generate worlds</strong>, 
-                <strong style={{ color: theme.text.white }}> build NPCs</strong>, 
-                <strong style={{ color: theme.text.white }}> summarize sessions</strong>, and 
-                <strong style={{ color: theme.text.white }}> manage campaigns</strong> with ease.
+                It helps Game Masters <strong style={{ color: theme.text.primary }}>generate worlds</strong>, 
+                <strong style={{ color: theme.text.primary }}> build NPCs</strong>, 
+                <strong style={{ color: theme.text.primary }}> summarize sessions</strong>, and 
+                <strong style={{ color: theme.text.primary }}> manage campaigns</strong> with ease.
               </p>
               
               {/* ROOK Features */}
@@ -803,11 +787,11 @@ function LandingPage() {
                     alignItems: 'center',
                     gap: '6px',
                     padding: '10px 16px',
-                    background: theme.bg.card,
-                    color: theme.accent.red,
+                    background: theme.bg.surface,
+                    color: theme.gm.primary,
                     fontSize: '13px',
                     fontWeight: '400',
-                    border: `1px solid ${theme.border.default}`
+                    border: `1px solid ${theme.border}`
                   }}>
                     <Sparkles size={14} />
                     {feature}
@@ -822,21 +806,21 @@ function LandingPage() {
       {/* Pre-Pricing Statement */}
       <section style={{ 
         padding: '80px 24px', 
-        background: theme.bg.black,
-        borderTop: `1px solid ${theme.accent.redBorder}`,
-        borderBottom: `1px solid ${theme.accent.redBorder}`,
+        background: theme.bg.primary,
+        borderTop: `1px solid ${theme.gm.primaryBorder}`,
+        borderBottom: `1px solid ${theme.gm.primaryBorder}`,
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <h2 style={{
             fontSize: 'clamp(2rem, 4vw, 3rem)',
             fontWeight: '400',
-            color: theme.text.white,
+            color: theme.text.primary,
             marginBottom: '24px',
             lineHeight: '1.3'
           }}>
             Stop Managing Tools. <br />
-            <span style={{ color: theme.accent.red }}>Start Managing Your Campaign.</span>
+            <span style={{ color: theme.gm.primary }}>Start Managing Your Campaign.</span>
           </h2>
           <p style={{
             color: theme.text.secondary,
@@ -846,13 +830,13 @@ function LandingPage() {
             margin: '0 auto'
           }}>
             Rookie Quest Keeper replaces fragmented GM workflows with one connected campaign hub — 
-            built specifically for <strong style={{ color: theme.text.white }}>5e 2014 and 2024</strong>.
+            built specifically for <strong style={{ color: theme.text.primary }}>5e 2014 and 2024</strong>.
           </p>
         </div>
       </section>
 
       {/* Pricing */}
-      <section style={{ padding: '80px 24px', background: theme.bg.dark }}>
+      <section style={{ padding: '80px 24px', background: theme.bg.surface }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <p style={{
@@ -870,20 +854,20 @@ function LandingPage() {
             <h2 style={{
               fontSize: 'clamp(2rem, 4vw, 3rem)',
               fontWeight: '400',
-              color: theme.text.white,
+              color: theme.text.primary,
               marginBottom: '16px'
             }}>
               Simple, Transparent Pricing
             </h2>
             <p style={{ color: theme.text.secondary, fontSize: '18px', marginBottom: '32px' }}>
-              Whether you're a <span style={{ color: theme.player.cyan }}>Player</span> or a <span style={{ color: theme.gm.primary }}>Game Master</span>, we've got you covered.
+              Whether you're a <span style={{ color: theme.player.primary }}>Player</span> or a <span style={{ color: theme.gm.primary }}>Game Master</span>, we've got you covered.
             </p>
 
             {/* Billing Toggle */}
             <div style={{ 
               display: 'inline-flex', 
-              background: theme.bg.panel,
-              border: `1px solid ${theme.border.default}`,
+              background: theme.bg.surface,
+              border: `1px solid ${theme.border}`,
               padding: '4px',
               gap: '4px'
             }}>
@@ -894,7 +878,7 @@ function LandingPage() {
                   padding: '12px 28px',
                   background: billingCycle === 'monthly' ? theme.gm.primary : 'transparent',
                   border: 'none',
-                  color: theme.text.white,
+                  color: theme.text.primary,
                   fontWeight: '400',
                   cursor: 'pointer',
                   transition: 'all 0.2s'
@@ -909,7 +893,7 @@ function LandingPage() {
                   padding: '12px 28px',
                   background: billingCycle === 'yearly' ? theme.gm.primary : 'transparent',
                   border: 'none',
-                  color: theme.text.white,
+                  color: theme.text.primary,
                   fontWeight: '400',
                   cursor: 'pointer',
                   display: 'flex',
@@ -943,19 +927,19 @@ function LandingPage() {
             {/* Free Tier */}
             <div style={{
               padding: '32px',
-              background: theme.bg.card,
-              border: `1px solid ${theme.border.default}`,
+              background: theme.bg.surface,
+              border: `1px solid ${theme.border}`,
               display: 'flex',
               flexDirection: 'column'
             }}>
               <div style={{ marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '20px', color: theme.text.white, fontWeight: '400', marginBottom: '4px' }}>
+                <h3 style={{ fontSize: '20px', color: theme.text.primary, fontWeight: '400', marginBottom: '4px' }}>
                   Free
                 </h3>
                 <p style={{ color: theme.text.muted, fontSize: '13px' }}>Get started</p>
               </div>
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '400' }}>£0</span>
+                <span style={{ fontSize: '40px', color: theme.text.primary, fontWeight: '400' }}>£0</span>
                 <span style={{ color: theme.text.muted, fontSize: '14px' }}>/forever</span>
               </div>
               <ul style={{ margin: '0 0 auto', padding: 0, listStyle: 'none', flex: 1 }}>
@@ -978,7 +962,7 @@ function LandingPage() {
                   width: '100%', 
                   padding: '12px',
                   background: 'transparent',
-                  border: `1px solid ${theme.border.default}`,
+                  border: `1px solid ${theme.border}`,
                   color: theme.text.secondary,
                   marginTop: '20px'
                 }}
@@ -1002,7 +986,7 @@ function LandingPage() {
                 top: '-12px',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                background: theme.player.cyan,
+                background: theme.player.primary,
                 color: '#000',
                 padding: '4px 16px',
                 fontSize: '11px',
@@ -1014,7 +998,7 @@ function LandingPage() {
               <div style={{ marginBottom: '20px', marginTop: '8px' }}>
                 <h3 style={{ 
                   fontSize: '20px', 
-                  color: theme.player.cyan, 
+                  color: theme.player.primary, 
                   fontWeight: '400', 
                   marginBottom: '4px',
                   display: 'flex',
@@ -1026,10 +1010,10 @@ function LandingPage() {
                 <p style={{ color: theme.text.muted, fontSize: '13px' }}>Serious players</p>
               </div>
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '400' }}>£{getPrice('hero')}</span>
+                <span style={{ fontSize: '40px', color: theme.text.primary, fontWeight: '400' }}>£{getPrice('hero')}</span>
                 <span style={{ color: theme.text.muted, fontSize: '14px' }}>/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                 {billingCycle === 'yearly' && (
-                  <p style={{ color: theme.player.cyan, fontSize: '12px', marginTop: '4px' }}>
+                  <p style={{ color: theme.player.primary, fontSize: '12px', marginTop: '4px' }}>
                     (£{getMonthlyEquivalent('hero')}/month)
                   </p>
                 )}
@@ -1044,7 +1028,7 @@ function LandingPage() {
                     fontSize: '13px',
                     marginBottom: '10px'
                   }}>
-                    <Check size={14} color={theme.player.cyan} /> {item}
+                    <Check size={14} color={theme.player.primary} /> {item}
                   </li>
                 ))}
               </ul>
@@ -1053,7 +1037,7 @@ function LandingPage() {
                 style={{ 
                   width: '100%', 
                   padding: '12px',
-                  background: `linear-gradient(135deg, ${theme.player.primary}, ${theme.player.cyan})`,
+                  background: `linear-gradient(135deg, ${theme.player.primary}, ${theme.player.primary})`,
                   border: 'none',
                   color: '#fff',
                   fontWeight: '400',
@@ -1103,7 +1087,7 @@ function LandingPage() {
                 <p style={{ color: theme.text.muted, fontSize: '13px' }}>Game Masters</p>
               </div>
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '400' }}>£{getPrice('questMaster')}</span>
+                <span style={{ fontSize: '40px', color: theme.text.primary, fontWeight: '400' }}>£{getPrice('questMaster')}</span>
                 <span style={{ color: theme.text.muted, fontSize: '14px' }}>/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                 {billingCycle === 'yearly' && (
                   <p style={{ color: theme.gm.primary, fontSize: '12px', marginTop: '4px' }}>
@@ -1182,7 +1166,7 @@ function LandingPage() {
                 <p style={{ color: theme.text.muted, fontSize: '13px' }}>GM who also plays</p>
               </div>
               <div style={{ marginBottom: '24px' }}>
-                <span style={{ fontSize: '40px', color: theme.text.white, fontWeight: '400' }}>£{getPrice('legendary')}</span>
+                <span style={{ fontSize: '40px', color: theme.text.primary, fontWeight: '400' }}>£{getPrice('legendary')}</span>
                 <span style={{ color: theme.text.muted, fontSize: '14px' }}>/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                 {billingCycle === 'yearly' && (
                   <p style={{ color: '#F59E0B', fontSize: '12px', marginTop: '4px' }}>
@@ -1226,11 +1210,11 @@ function LandingPage() {
             textAlign: 'center', 
             marginTop: '32px',
             padding: '16px',
-            background: theme.bg.panel,
-            border: `1px solid ${theme.border.default}`
+            background: theme.bg.surface,
+            border: `1px solid ${theme.border}`
           }}>
             <p style={{ color: theme.text.secondary, fontSize: '14px' }}>
-              <strong style={{ color: theme.text.white }}>Save ~17% with yearly billing</strong> — Cancel anytime. No contracts.
+              <strong style={{ color: theme.text.primary }}>Save ~17% with yearly billing</strong> — Cancel anytime. No contracts.
             </p>
           </div>
         </div>
@@ -1238,13 +1222,13 @@ function LandingPage() {
 
       {/* Reviews */}
       {reviews.length > 0 && (
-        <section style={{ padding: '80px 24px', background: theme.bg.black }}>
+        <section style={{ padding: '80px 24px', background: theme.bg.primary }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '48px' }}>
               <h2 style={{
                 fontSize: 'clamp(2rem, 4vw, 3rem)',
                 fontWeight: '400',
-                color: theme.text.white,
+                color: theme.text.primary,
                 marginBottom: '16px'
               }}>
                 What GMs Are Saying
@@ -1262,8 +1246,8 @@ function LandingPage() {
               {reviews.map((review, index) => (
                 <div key={index} style={{
                   padding: '32px',
-                  background: theme.bg.card,
-                  border: `1px solid ${theme.border.default}`
+                  background: theme.bg.surface,
+                  border: `1px solid ${theme.border}`
                 }}>
                   <div style={{ display: 'flex', marginBottom: '16px' }}>
                     {renderStars(review.rating)}
@@ -1278,10 +1262,10 @@ function LandingPage() {
                     "{review.comment}"
                   </p>
                   <div>
-                    <p style={{ color: theme.text.white, fontWeight: '400', marginBottom: '4px' }}>
+                    <p style={{ color: theme.text.primary, fontWeight: '400', marginBottom: '4px' }}>
                       {review.username}
                     </p>
-                    <p style={{ color: theme.accent.red, fontSize: '13px' }}>
+                    <p style={{ color: theme.gm.primary, fontSize: '13px' }}>
                       Rookie Quest Keeper User
                     </p>
                   </div>
@@ -1293,12 +1277,12 @@ function LandingPage() {
       )}
 
       {/* Final CTA */}
-      <section style={{ padding: '80px 24px', textAlign: 'center', background: theme.bg.dark }}>
+      <section style={{ padding: '80px 24px', textAlign: 'center', background: theme.bg.surface }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <h2 style={{
             fontSize: 'clamp(2rem, 4vw, 3rem)',
             fontWeight: '400',
-            color: theme.text.white,
+            color: theme.text.primary,
             marginBottom: '24px'
           }}>
             Ready to Level Up Your GMing?
@@ -1319,9 +1303,9 @@ function LandingPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '12px',
-              background: theme.accent.red,
+              background: theme.gm.primary,
               border: 'none',
-              color: theme.text.white,
+              color: theme.text.primary,
               fontWeight: '400'
             }}
           >
@@ -1336,8 +1320,8 @@ function LandingPage() {
       {/* Footer */}
       <footer style={{ 
         padding: '40px 24px', 
-        borderTop: `1px solid ${theme.border.default}`,
-        background: theme.bg.black
+        borderTop: `1px solid ${theme.border}`,
+        background: theme.bg.primary
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{
@@ -1353,7 +1337,7 @@ function LandingPage() {
                 fontFamily: "'Inter', sans-serif",
                 fontSize: '16px',
                 fontWeight: '400',
-                color: theme.text.white,
+                color: theme.text.primary,
                 letterSpacing: '2px'
               }}>
                 RQK
@@ -1368,12 +1352,12 @@ function LandingPage() {
           </div>
           
           <div style={{
-            borderTop: `1px solid ${theme.border.default}`,
+            borderTop: `1px solid ${theme.border}`,
             paddingTop: '20px',
             textAlign: 'center'
           }}>
             <p style={{ 
-              color: theme.text.dim, 
+              color: theme.text.muted, 
               fontSize: '12px', 
               lineHeight: '1.6',
               maxWidth: '800px',

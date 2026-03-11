@@ -2,10 +2,10 @@ import React from 'react';
 import { X } from 'lucide-react';
 
 const theme = {
-  accent: '#D4AF37',
-  bg: { dark: '#0F1E42', card: '#121F3D', panel: '#121F3D' },
+  accent: '#F59E0B',
+  bg: { dark: '#111827', card: '#111827', panel: '#111827' },
   text: { white: '#FFFFFF', secondary: '#9CA3AF', muted: '#6B7280' },
-  border: 'rgba(212, 175, 55, 0.25)'
+  border: '#374151'
 };
 
 const shortcuts = [

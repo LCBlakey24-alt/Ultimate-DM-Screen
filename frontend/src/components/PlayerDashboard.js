@@ -21,13 +21,13 @@ const API = `${BACKEND_URL}/api`;
 
 // Dark Minimalist Theme - BLUE for Players
 const playerTheme = {
-  primary: '#7A5AF8',
-  hover: '#9B6BFF',
+  primary: '#06B6D4',
+  hover: '#0891B2',
   subtle: 'rgba(59, 130, 246, 0.15)',
   border: 'rgba(212, 175, 55, 0.15)',
-  bg: '#0B1530',
-  card: '#121F3D',
-  panel: '#121F3D',
+  bg: '#0B0F19',
+  card: '#111827',
+  panel: '#111827',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080'
@@ -110,13 +110,13 @@ function PlayerDashboard({ username, onLogout }) {
 
   const getClassColor = (charClass) => {
     const colors = {
-      'Fighter': '#F2D675',
+      'Fighter': '#D97706',
       'Wizard': '#8B5CF6',
       'Rogue': '#6B7280',
       'Cleric': '#F59E0B',
       'Ranger': '#10B981',
       'Paladin': '#FBBF24',
-      'Barbarian': '#D4AF37',
+      'Barbarian': '#F59E0B',
       'Bard': '#EC4899',
       'Druid': '#22C55E',
       'Monk': '#14B8A6',
@@ -607,8 +607,8 @@ function PlayerDashboard({ username, onLogout }) {
                         background: 'rgba(239, 68, 68, 0.1)',
                         borderRadius: '8px'
                       }}>
-                        <Heart size={14} style={{ color: '#F2D675' }} />
-                        <span style={{ color: '#F2D675', fontSize: '13px', fontWeight: '400' }}>
+                        <Heart size={14} style={{ color: '#D97706' }} />
+                        <span style={{ color: '#D97706', fontSize: '13px', fontWeight: '400' }}>
                           {char.max_hp || '—'} HP
                         </span>
                       </div>

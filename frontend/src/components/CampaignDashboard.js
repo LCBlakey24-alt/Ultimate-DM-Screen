@@ -29,23 +29,23 @@ const API = `${BACKEND_URL}/api`;
 // Tron Aries Theme - Red/Orange GM Style
 const theme = {
   bg: {
-    black: '#0B1530',
+    black: '#0B0F19',
     dark: '#141414',
-    panel: '#121F3D',
-    card: '#121F3D',
-    hover: '#172756',
-    elevated: '#172756'
+    panel: '#111827',
+    card: '#111827',
+    hover: '#1F2937',
+    elevated: '#1F2937'
   },
   // Three shades of red for GM/Campaign side
   accent: {
-    primary: '#D4AF37',      // Main red
-    secondary: '#F2D675',    // Light red  
+    primary: '#F59E0B',      // Main red
+    secondary: '#D97706',    // Light red  
     tertiary: '#991B1B',     // Dark red
     hover: '#F87171',
     subtle: 'rgba(220, 38, 38, 0.15)',
     glow: '0 0 20px rgba(220, 38, 38, 0.4)',
     // Legacy compatibility
-    red: '#D4AF37',
+    red: '#F59E0B',
     redHover: '#F87171',
     redSubtle: 'rgba(220, 38, 38, 0.15)',
     orange: '#F97316'

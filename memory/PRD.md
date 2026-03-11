@@ -10,56 +10,47 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 
 ## Recent Major Updates (March 2026)
 
-### ARCANE ART-DECO CONSOLE REDESIGN (March 11, 2026)
-**Complete visual theme transformation to premium fantasy GM console aesthetic**
+### AETHER & IRON THEME WITH EMBER EFFECTS (March 11, 2026)
+**Complete visual redesign with high-contrast dark theme and fire elements**
 
 **Design Philosophy:**
-- Clean Arcane Art-Deco console aesthetic
-- Dark navy dashboard with metallic gold framing
-- Magical purple accents for arcane/AI elements
-- Modern web-application clarity without heavy textures
+- Clean, modern sci-fi/fantasy hybrid aesthetic
+- High contrast for readability during long gaming sessions
+- Ember/fire effects to add warmth and magical atmosphere
+- Clear visual distinction between GM (amber) and Player (cyan) features
 
 **Color Palette:**
-- `--navy-deep`: #0B1530 (Primary background)
-- `--navy-base`: #0F1E42 (Background gradient end)
-- `--navy-panel`: #121F3D (Panel backgrounds)
-- `--navy-hover`: #172756 (Hover states)
-- `--navy-elevated`: #1C2C5A (Elevated panels)
-- `--gold`: #D4AF37 (Metallic gold - GM accent, borders, headings)
-- `--gold-light`: #F2D675 (Gold hover states)
-- `--arcane-purple`: #7A5AF8 (Player accent, magical elements)
-- `--arcane-purple-light`: #9B6BFF (Purple hover states)
-- `--success`: #2ECC71
-- `--danger`: #E74C3C
-- `--info`: #3DA9FC
+- `--background`: #0B0F19 (Near black/deep slate)
+- `--surface`: #111827 (Card/panel backgrounds)
+- `--surface-hover`: #1F2937 (Hover states)
+- `--border`: #374151 (Subtle grey borders)
+- `--text-primary`: #F9FAFB (Almost white)
+- `--text-secondary`: #9CA3AF (Muted text)
+- `--gm-primary`: #F59E0B (Amber - GM accent)
+- `--gm-secondary`: #D97706 (Darker amber)
+- `--player-primary`: #06B6D4 (Cyan - Player accent)
+- `--player-secondary`: #0891B2 (Darker cyan)
+
+**Ember Effects:**
+- Floating ember particles (15 particles with varied sizes)
+- Ambient bottom glow in amber tones
+- Subtle animation for organic feel
+- CSS-only implementation (no JS overhead)
 
 **Typography:**
-- Cinzel font for titles and major headings (fantasy elegance)
-- Inter font for all interface text (modern readability)
-- Gold borders using rgba(212, 175, 55, 0.25)
-- Border radius ~14px for panels
+- Cinzel for titles and major headings
+- Inter for all interface text
+- High contrast white on dark backgrounds
 
-**Button Hierarchy (with correct text colors):**
-- Gold buttons: Dark navy text (#0B1530) on gold gradient - GM/Major actions
-- Purple buttons: White text on purple gradient - Player actions
-- Secondary (Navy): #1C2C5A with gold border, light text - Back/Cancel
+**Button Hierarchy:**
+- GM buttons: Amber gradient with dark text
+- Player buttons: Cyan gradient with dark text  
+- Secondary: Dark surface with grey border
 
-**Art-Deco Corner Frames:**
-- Gold corner accents added to panels (login card, main cards)
-- 16px x 16px L-shaped frames at all 4 corners
-- 2px solid gold (#D4AF37) borders
-
-**Visual Effects:**
-- Subtle radial gradients for magical depth
-- arcane-pulse animation for background
-- Gold/purple glow effects for active states
-- Smooth 0.2s transitions on all interactions
-
-**Files Updated (25+ components):**
-- index.css (Complete Arcane CSS variables, panel/button classes, corner frames)
-- LandingPage.js, AuthPage.js, UnifiedDashboard.js
-- All dashboard and feature components
-- CharacterBuilder.js with user's score pool system integrated
+**Files Updated:**
+- index.css (Complete theme rewrite with ember effects)
+- LandingPage.js, AuthPage.js, UnifiedDashboard.js (Theme objects)
+- 24 additional component files (color updates)
 
 ### RULES CONSISTENCY PASS - EDITION-AWARE SYSTEM (March 8, 2026)
 **Full rules-consistency pass for character creation + level-up with strict 5e 2014/2024 support**

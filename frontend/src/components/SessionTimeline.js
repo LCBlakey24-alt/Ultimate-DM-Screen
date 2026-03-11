@@ -14,13 +14,13 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme - Red (Tron Aries)
 const theme = {
-  primary: '#D4AF37',
-  hover: '#F2D675',
+  primary: '#F59E0B',
+  hover: '#D97706',
   subtle: 'rgba(225, 29, 72, 0.15)',
   glow: '0 0 20px rgba(225, 29, 72, 0.3)',
-  bg: '#0B1530',
-  card: '#121F3D',
-  panel: '#121F3D',
+  bg: '#0B0F19',
+  card: '#111827',
+  panel: '#111827',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
@@ -28,14 +28,14 @@ const theme = {
 };
 
 const EVENT_TYPES = [
-  { id: 'session', label: 'Session', icon: Calendar, color: '#7A5AF8' },
-  { id: 'combat', label: 'Combat', icon: Swords, color: '#F2D675' },
+  { id: 'session', label: 'Session', icon: Calendar, color: '#06B6D4' },
+  { id: 'combat', label: 'Combat', icon: Swords, color: '#D97706' },
   { id: 'npc_met', label: 'NPC Met', icon: Users, color: '#8B5CF6' },
   { id: 'location', label: 'Location', icon: MapPin, color: '#22C55E' },
   { id: 'quest', label: 'Quest', icon: Flag, color: '#F59E0B' },
   { id: 'death', label: 'Death', icon: Skull, color: '#6B7280' },
-  { id: 'level_up', label: 'Level Up', icon: Star, color: '#7A5AF8' },
-  { id: 'major', label: 'Major Event', icon: Crown, color: '#D4AF37' },
+  { id: 'level_up', label: 'Level Up', icon: Star, color: '#06B6D4' },
+  { id: 'major', label: 'Major Event', icon: Crown, color: '#F59E0B' },
   { id: 'milestone', label: 'Milestone', icon: Milestone, color: '#EC4899' }
 ];
 

@@ -13,47 +13,44 @@ import { RookGuide } from '@/components/RookGuide';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Arcane Art-Deco Console Theme
+// Aether & Iron Theme
 const theme = {
   bg: {
-    black: '#0B1530',       // Deep navy
-    dark: '#0F1E42',        // Navy base
-    panel: '#121F3D',       // Panel navy
-    card: '#121F3D',        // Card navy
-    hover: '#172756'        // Hover navy
+    primary: '#0B0F19',
+    surface: '#111827',
+    surfaceHover: '#1F2937'
   },
-  // Player Side - Arcane Purple
-  player: {
-    primary: '#7A5AF8',     // Arcane purple
-    secondary: '#9B6BFF',   // Light purple
-    tertiary: '#5B3FD9',    // Deep purple
-    hover: '#9B6BFF',
-    subtle: 'rgba(122, 90, 248, 0.12)',
-    border: 'rgba(122, 90, 248, 0.35)',
-    glow: '0 0 40px rgba(122, 90, 248, 0.2)',
-    gradient: 'linear-gradient(180deg, rgba(122, 90, 248, 0.15) 0%, transparent 100%)',
-    cyan: '#7A5AF8'
-  },
-  // GM Side - Gold Art-Deco
   gm: {
-    primary: '#D4AF37',     // Metallic gold
-    secondary: '#B8962D',   // Darker gold
-    tertiary: '#1C2C5A',    // Elevated navy
-    hover: '#F2D675',
-    subtle: 'rgba(212, 175, 55, 0.12)',
-    border: 'rgba(212, 175, 55, 0.35)',
-    glow: '0 0 40px rgba(212, 175, 55, 0.2)',
-    gradient: 'linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, transparent 100%)'
+    primary: '#F59E0B',
+    secondary: '#D97706',
+    glow: 'rgba(245, 158, 11, 0.4)',
+    subtle: 'rgba(245, 158, 11, 0.1)'
+  },
+  player: {
+    primary: '#06B6D4',
+    secondary: '#0891B2',
+    glow: 'rgba(6, 182, 212, 0.4)',
+    subtle: 'rgba(6, 182, 212, 0.1)'
   },
   text: {
-    white: '#E8E6E3',       // Warm white
-    secondary: '#9CA3AF',   // Muted text
-    muted: '#6B7280',       // Dim text
-    gold: '#D4AF37'
+    primary: '#F9FAFB',
+    secondary: '#9CA3AF',
+    muted: '#6B7280'
   },
-  border: 'rgba(212, 175, 55, 0.25)',
-  navy: '#0F1E42'
+  border: '#374151'
 };
+
+// Ember Particles Component
+const EmberParticles = () => (
+  <div className="ember-particles">
+    {[...Array(15)].map((_, i) => (
+      <div 
+        key={i} 
+        className={`ember ${i % 3 === 0 ? 'large' : i % 2 === 0 ? 'medium' : 'small'}`}
+      />
+    ))}
+  </div>
+);
 
 function UnifiedDashboard({ username, onLogout }) {
   // Mobile view toggle: 'player' or 'gm'
@@ -249,7 +246,7 @@ function UnifiedDashboard({ username, onLogout }) {
     return (
       <div style={{ 
         minHeight: '100vh', 
-        background: theme.bg.black,
+        background: theme.bg.primary,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -262,28 +259,32 @@ function UnifiedDashboard({ username, onLogout }) {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: theme.bg.black,
+      background: theme.bg.primary,
       display: 'flex',
       flexDirection: 'column',
       position: 'relative'
     }}>
-      {/* Smokey Embers Background */}
-      <div className="smokey-bg" />
+      {/* Ember Background */}
+      <div className="ember-bg" />
+      <EmberParticles />
       
       {/* Header */}
       <header style={{
-        background: theme.bg.dark,
+        background: 'rgba(11, 15, 25, 0.95)',
+        backdropFilter: 'blur(10px)',
         borderBottom: `1px solid ${theme.border}`,
         padding: '16px 32px',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        position: 'relative',
+        zIndex: 10
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <h1 style={{
-            fontWeight: '500',
+            fontWeight: '600',
             fontSize: '20px',
-            color: theme.text.gold,
+            color: theme.gm.primary,
             margin: 0,
             fontFamily: "'Cinzel', serif",
             letterSpacing: '0.1em'
@@ -296,7 +297,7 @@ function UnifiedDashboard({ username, onLogout }) {
             borderLeft: `1px solid ${theme.border}`,
             paddingLeft: '16px'
           }}>
-            Welcome, <span style={{ color: theme.text.white }}>{username}</span>
+            Welcome, <span style={{ color: theme.text.primary }}>{username}</span>
           </span>
         </div>
 
@@ -306,9 +307,9 @@ function UnifiedDashboard({ username, onLogout }) {
               onClick={() => navigate('/admin')}
               data-testid="admin-btn"
               style={{
-                background: 'linear-gradient(135deg, rgba(122, 90, 248, 0.2), rgba(212, 175, 55, 0.2))',
+                background: theme.bg.surfaceHover,
                 border: `1px solid ${theme.border}`,
-                color: theme.text.white,
+                color: theme.text.primary,
                 padding: '8px 16px',
                 display: 'flex',
                 alignItems: 'center',
@@ -416,7 +417,7 @@ function UnifiedDashboard({ username, onLogout }) {
         style={{
           display: 'none',
           padding: '12px 20px',
-          background: theme.bg.panel,
+          background: theme.bg.surface,
           borderBottom: `1px solid ${theme.border}`,
           gap: '0'
         }}
@@ -512,7 +513,7 @@ function UnifiedDashboard({ username, onLogout }) {
             right: 0,
             width: '2px',
             height: '100%',
-            background: `linear-gradient(180deg, ${theme.player.cyan}, transparent)`,
+            background: `linear-gradient(180deg, ${theme.player.primary}, transparent)`,
             boxShadow: theme.player.glow
           }} />
 
@@ -527,7 +528,7 @@ function UnifiedDashboard({ username, onLogout }) {
                 <h2 style={{
                   fontWeight: '400',
                   fontSize: '14px',
-                  color: theme.player.cyan,
+                  color: theme.player.primary,
                   margin: '0 0 8px',
                   display: 'flex',
                   alignItems: 'center',
@@ -541,7 +542,7 @@ function UnifiedDashboard({ username, onLogout }) {
                 <h3 style={{
                   fontWeight: '500',
                   fontSize: '24px',
-                  color: theme.text.white,
+                  color: theme.text.primary,
                   margin: 0,
                   fontFamily: "'Cinzel', serif",
                   letterSpacing: '0.03em'
@@ -553,7 +554,7 @@ function UnifiedDashboard({ username, onLogout }) {
                 onClick={() => navigate('/characters/new')}
                 data-testid="new-character-btn"
                 style={{
-                  background: `linear-gradient(135deg, ${theme.player.primary}, ${theme.player.cyan})`,
+                  background: `linear-gradient(135deg, ${theme.player.primary}, ${theme.player.primary})`,
                   border: 'none',
                   color: '#fff',
                   padding: '12px 24px',
@@ -576,13 +577,13 @@ function UnifiedDashboard({ username, onLogout }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {characters.length === 0 ? (
                 <div style={{
-                  background: theme.bg.card,
+                  background: theme.bg.surface,
                   border: `1px solid ${theme.player.border}`,
                   padding: '60px 40px',
                   textAlign: 'center'
                 }}>
-                  <User size={56} style={{ color: theme.player.cyan, marginBottom: '20px', opacity: 0.5 }} />
-                  <h3 style={{ color: theme.text.white, margin: '0 0 8px', fontSize: '18px' }}>
+                  <User size={56} style={{ color: theme.player.primary, marginBottom: '20px', opacity: 0.5 }} />
+                  <h3 style={{ color: theme.text.primary, margin: '0 0 8px', fontSize: '18px' }}>
                     No Characters Yet
                   </h3>
                   <p style={{ color: theme.text.muted, margin: '0 0 24px', fontSize: '14px' }}>
@@ -609,9 +610,9 @@ function UnifiedDashboard({ username, onLogout }) {
                     data-testid={`character-${char.id}`}
                     className={`card-animated stagger-${Math.min(index + 1, 8)} hover-lift transition-smooth`}
                     style={{
-                      background: theme.bg.card,
+                      background: theme.bg.surface,
                       border: `1px solid ${theme.player.border}`,
-                      borderLeft: `3px solid ${theme.player.cyan}`,
+                      borderLeft: `3px solid ${theme.player.primary}`,
                       padding: '20px 24px',
                       cursor: 'pointer',
                       display: 'flex',
@@ -619,7 +620,7 @@ function UnifiedDashboard({ username, onLogout }) {
                       alignItems: 'center'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = theme.player.cyan;
+                      e.currentTarget.style.borderColor = theme.player.primary;
                       e.currentTarget.style.boxShadow = theme.player.glow;
                     }}
                     onMouseLeave={(e) => {
@@ -629,7 +630,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   >
                     <div>
                       <h3 style={{ 
-                        color: theme.text.white, 
+                        color: theme.text.primary, 
                         margin: '0 0 6px', 
                         fontSize: '18px',
                         fontWeight: '400'
@@ -637,7 +638,7 @@ function UnifiedDashboard({ username, onLogout }) {
                         {char.name}
                       </h3>
                       <p style={{ 
-                        color: theme.player.cyan, 
+                        color: theme.player.primary, 
                         margin: 0, 
                         fontSize: '13px',
                         textTransform: 'uppercase',
@@ -671,7 +672,7 @@ function UnifiedDashboard({ username, onLogout }) {
                       >
                         <Trash2 size={18} />
                       </button>
-                      <ChevronRight size={24} style={{ color: theme.player.cyan }} />
+                      <ChevronRight size={24} style={{ color: theme.player.primary }} />
                     </div>
                   </div>
                 ))
@@ -739,7 +740,7 @@ function UnifiedDashboard({ username, onLogout }) {
                 <h3 style={{
                   fontWeight: '500',
                   fontSize: '24px',
-                  color: theme.text.white,
+                  color: theme.text.primary,
                   margin: 0,
                   fontFamily: "'Cinzel', serif",
                   letterSpacing: '0.03em'
@@ -774,13 +775,13 @@ function UnifiedDashboard({ username, onLogout }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {campaigns.length === 0 ? (
                 <div style={{
-                  background: theme.bg.card,
+                  background: theme.bg.surface,
                   border: `1px solid ${theme.gm.border}`,
                   padding: '60px 40px',
                   textAlign: 'center'
                 }}>
                   <Crown size={56} style={{ color: theme.gm.primary, marginBottom: '20px', opacity: 0.5 }} />
-                  <h3 style={{ color: theme.text.white, margin: '0 0 8px', fontSize: '18px', fontFamily: "'Cinzel', serif" }}>
+                  <h3 style={{ color: theme.text.primary, margin: '0 0 8px', fontSize: '18px', fontFamily: "'Cinzel', serif" }}>
                     No Campaigns Yet
                   </h3>
                   <p style={{ color: theme.text.muted, margin: '0 0 24px', fontSize: '14px' }}>
@@ -808,7 +809,7 @@ function UnifiedDashboard({ username, onLogout }) {
                     data-testid={`campaign-${campaign.id}`}
                     className={`card-animated stagger-${Math.min(index + 1, 8)} hover-lift transition-smooth`}
                     style={{
-                      background: theme.bg.card,
+                      background: theme.bg.surface,
                       border: `1px solid ${theme.gm.border}`,
                       borderLeft: `3px solid ${theme.gm.primary}`,
                       padding: '20px 24px',
@@ -828,7 +829,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   >
                     <div>
                       <h3 style={{ 
-                        color: theme.text.white, 
+                        color: theme.text.primary, 
                         margin: '0 0 6px', 
                         fontSize: '18px',
                         fontWeight: '400'
@@ -899,7 +900,7 @@ function UnifiedDashboard({ username, onLogout }) {
         >
           <div 
             style={{
-              background: theme.bg.panel,
+              background: theme.bg.surface,
               border: `1px solid ${theme.border}`,
               padding: '32px',
               width: '100%',
@@ -908,7 +909,7 @@ function UnifiedDashboard({ username, onLogout }) {
             onClick={e => e.stopPropagation()}
           >
             <h2 style={{ 
-              color: theme.text.white, 
+              color: theme.text.primary, 
               margin: '0 0 8px',
               fontWeight: '400',
               fontSize: '20px'
@@ -951,9 +952,9 @@ function UnifiedDashboard({ username, onLogout }) {
                 width: '100%',
                 minHeight: '100px',
                 padding: '12px',
-                background: theme.bg.dark,
+                background: theme.bg.surface,
                 border: `1px solid ${theme.border}`,
-                color: theme.text.white,
+                color: theme.text.primary,
                 fontSize: '14px',
                 resize: 'vertical',
                 marginBottom: '20px'
@@ -1007,7 +1008,7 @@ function UnifiedDashboard({ username, onLogout }) {
         >
           <div 
             style={{
-              background: theme.bg.panel,
+              background: theme.bg.surface,
               border: `1px solid ${theme.border}`,
               padding: '32px',
               width: '100%',
@@ -1016,7 +1017,7 @@ function UnifiedDashboard({ username, onLogout }) {
             onClick={e => e.stopPropagation()}
           >
             <h2 style={{ 
-              color: theme.text.white, 
+              color: theme.text.primary, 
               margin: '0 0 8px',
               fontWeight: '400',
               fontSize: '20px'
@@ -1028,7 +1029,7 @@ function UnifiedDashboard({ username, onLogout }) {
             </p>
 
             <div style={{
-              background: theme.bg.dark,
+              background: theme.bg.surface,
               border: `1px solid ${theme.border}`,
               padding: '20px',
               marginBottom: '20px',

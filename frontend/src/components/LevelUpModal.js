@@ -12,16 +12,16 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 // Tron Legacy Blue theme for player section
-const playerBlue = '#7A5AF8';
-const playerBlueHover = '#9B6BFF';
+const playerBlue = '#06B6D4';
+const playerBlueHover = '#0891B2';
 const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
-const playerCyan = '#7A5AF8';
+const playerCyan = '#06B6D4';
 const playerCyanGlow = '#22D3EE';
 
 // Ability data - Tron Legacy blue gradient
 const ABILITIES = [
-  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#7A5AF8', icon: Dumbbell },
-  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#7A5AF8', icon: Zap },
+  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#06B6D4', icon: Dumbbell },
+  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#06B6D4', icon: Zap },
   { key: 'constitution', label: 'CON', fullName: 'Constitution', color: '#0EA5E9', icon: Shield },
   { key: 'intelligence', label: 'INT', fullName: 'Intelligence', color: '#6366F1', icon: Brain },
   { key: 'wisdom', label: 'WIS', fullName: 'Wisdom', color: '#8B5CF6', icon: Eye },
@@ -332,7 +332,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
     >
       <div 
         style={{
-          background: '#121F3D',
+          background: '#111827',
           border: '1px solid rgba(212, 175, 55, 0.15)',
           maxWidth: '700px',
           width: '100%',
@@ -560,8 +560,8 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                         isSelected && <Check size={20} color="#22C55E" />
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <AlertCircle size={16} color="#F2D675" />
-                          <span style={{ color: '#F2D675', fontSize: '11px' }}>
+                          <AlertCircle size={16} color="#D97706" />
+                          <span style={{ color: '#D97706', fontSize: '11px' }}>
                             {reqCheck.failed.map(f => `${f.ability} ${f.current}/${f.required}`).join(', ')}
                           </span>
                         </div>
@@ -745,7 +745,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                     }}>
                       <span style={{ color: '#fff', fontSize: '14px' }}>Rolled:</span>
                       <span style={{ 
-                        color: hpRoll === hitDie ? '#7A5AF8' : hpRoll === 1 ? '#ef4444' : playerBlue,
+                        color: hpRoll === hitDie ? '#06B6D4' : hpRoll === 1 ? '#ef4444' : playerBlue,
                         fontSize: '24px',
                         fontWeight: '800'
                       }}>
@@ -1157,7 +1157,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                   disabled={loading}
                   data-testid="confirm-level-up-btn"
                   style={{
-                    background: 'linear-gradient(135deg, #7A5AF8, #0891B2)',
+                    background: 'linear-gradient(135deg, #06B6D4, #0891B2)',
                     border: 'none',
                     padding: '12px 32px',
                     display: 'flex',

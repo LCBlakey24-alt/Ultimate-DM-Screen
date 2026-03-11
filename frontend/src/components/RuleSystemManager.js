@@ -14,13 +14,13 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme - Red (Tron Aries)
 const theme = {
-  primary: '#D4AF37',
-  hover: '#F2D675',
+  primary: '#F59E0B',
+  hover: '#D97706',
   subtle: 'rgba(225, 29, 72, 0.15)',
   glow: '0 0 20px rgba(225, 29, 72, 0.3)',
-  bg: '#0B1530',
-  card: '#121F3D',
-  panel: '#121F3D',
+  bg: '#0B0F19',
+  card: '#111827',
+  panel: '#111827',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
@@ -30,13 +30,13 @@ const theme = {
 };
 
 const CONTENT_TYPES = [
-  { id: 'classes', label: 'Classes', icon: Users, color: '#7A5AF8' },
+  { id: 'classes', label: 'Classes', icon: Users, color: '#06B6D4' },
   { id: 'subclasses', label: 'Subclasses', icon: Users, color: '#6366F1' },
   { id: 'races', label: 'Races/Species', icon: Users, color: '#8B5CF6' },
   { id: 'spells', label: 'Spells', icon: Sparkles, color: '#EC4899' },
   { id: 'items', label: 'Items', icon: Package, color: '#F59E0B' },
   { id: 'feats', label: 'Feats', icon: Shield, color: '#22C55E' },
-  { id: 'monsters', label: 'Monsters', icon: Swords, color: '#F2D675' },
+  { id: 'monsters', label: 'Monsters', icon: Swords, color: '#D97706' },
   { id: 'features', label: 'Class Features', icon: Wand2, color: '#14B8A6' },
 ];
 

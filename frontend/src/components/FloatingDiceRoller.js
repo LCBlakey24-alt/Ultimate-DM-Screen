@@ -4,11 +4,11 @@ import { Dices, X, ChevronUp, Minus } from 'lucide-react';
 // Dark Minimalist Theme - Supports both Player (blue) and GM (red) modes
 const themes = {
   player: {
-    bg: { black: '#0B1530', dark: '#141414', panel: '#121F3D', card: '#121F3D', hover: '#172756' },
+    bg: { black: '#0B0F19', dark: '#141414', panel: '#111827', card: '#111827', hover: '#1F2937' },
     accent: {
-      primary: '#7A5AF8',
-      secondary: '#7A5AF8',
-      hover: '#9B6BFF',
+      primary: '#06B6D4',
+      secondary: '#06B6D4',
+      hover: '#0891B2',
       subtle: 'rgba(59, 130, 246, 0.15)',
       glow: 'rgba(59, 130, 246, 0.4)'
     },
@@ -16,10 +16,10 @@ const themes = {
     border: 'rgba(212, 175, 55, 0.15)'
   },
   gm: {
-    bg: { black: '#0B1530', dark: '#141414', panel: '#121F3D', card: '#121F3D', hover: '#172756' },
+    bg: { black: '#0B0F19', dark: '#141414', panel: '#111827', card: '#111827', hover: '#1F2937' },
     accent: {
-      primary: '#D4AF37',
-      secondary: '#F2D675',
+      primary: '#F59E0B',
+      secondary: '#D97706',
       hover: '#F87171',
       subtle: 'rgba(220, 38, 38, 0.15)',
       glow: 'rgba(220, 38, 38, 0.4)'

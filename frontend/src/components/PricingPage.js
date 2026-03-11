@@ -10,8 +10,8 @@ const API = `${BACKEND_URL}/api`;
 
 // Theme
 const theme = {
-  bg: { black: '#0B1530', dark: '#141414', panel: '#121F3D', card: '#121F3D' },
-  accent: { red: '#D4AF37', blue: '#7A5AF8', gold: '#F59E0B' },
+  bg: { black: '#0B0F19', dark: '#141414', panel: '#111827', card: '#111827' },
+  accent: { red: '#F59E0B', blue: '#06B6D4', gold: '#F59E0B' },
   text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
   border: 'rgba(212, 175, 55, 0.15)'
 };
