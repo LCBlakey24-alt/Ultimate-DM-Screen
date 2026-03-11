@@ -10,6 +10,30 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 
 ## Recent Major Updates (March 2026)
 
+### FANTASY FONT UPDATE - CINZEL/CRIMSON TEXT (March 11, 2026)
+**Updated typography for authentic D&D fantasy aesthetic**
+
+**Fonts:**
+- **Cinzel** - Medieval/fantasy font for all headers (h1-h6)
+- **Crimson Text** - Elegant serif for body text
+- Google Fonts import: `@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');`
+
+**Bug Fixed:**
+- Removed `!important` global font override in App.css (was forcing "Eros Book" font everywhere)
+- Updated all inline font references from Philosopher→Cinzel, Nunito→Crimson Text
+
+**Files Updated:**
+- index.css (Font imports and typography rules)
+- App.css (Removed !important override)
+- LandingPage.js (Inline font family references)
+- AuthPage.js (Inline font family references)
+- UnifiedDashboard.js (Inline font family references)
+
+**Background Texture:**
+- Added SVG noise pattern overlay for subtle parchment/leather texture
+- Uses `::after` pseudo-element on `.ember-bg`
+- Opacity: 0.035 with `mix-blend-mode: overlay`
+
 ### AETHER & IRON THEME WITH EMBER EFFECTS (March 11, 2026)
 **Complete visual redesign with high-contrast dark theme and fire elements**
 
@@ -38,8 +62,8 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 - CSS-only implementation (no JS overhead)
 
 **Typography:**
-- Cinzel for titles and major headings
-- Inter for all interface text
+- Cinzel for titles and major headings (fantasy medieval feel)
+- Crimson Text for all body/interface text (elegant serif)
 - High contrast white on dark backgrounds
 
 **Button Hierarchy:**
