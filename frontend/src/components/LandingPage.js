@@ -179,7 +179,7 @@ function LandingPage() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ 
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "'Cinzel', Georgia, serif",
               fontSize: '20px',
               fontWeight: '600',
               color: theme.gm.primary,
@@ -237,7 +237,7 @@ function LandingPage() {
           {/* Logo and Text */}
           <div style={{ marginBottom: '32px' }}>
             <h1 style={{
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "'Cinzel', Georgia, serif",
               fontSize: 'clamp(2.5rem, 8vw, 5rem)',
               fontWeight: '600',
               color: theme.gm.primary,
@@ -251,7 +251,7 @@ function LandingPage() {
             </h1>
             
             <h1 style={{
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "'Cinzel', Georgia, serif",
               fontSize: 'clamp(3rem, 10vw, 6rem)',
               fontWeight: '600',
               color: theme.text.primary,
@@ -264,7 +264,7 @@ function LandingPage() {
             </h1>
             
             <p style={{
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "'Cinzel', Georgia, serif",
               fontSize: 'clamp(0.9rem, 2vw, 1.2rem)',
               background: `linear-gradient(90deg, ${theme.gm.primary}, ${theme.player.primary})`,
               WebkitBackgroundClip: 'text',
@@ -288,9 +288,9 @@ function LandingPage() {
 
           {/* Headline */}
           <h2 style={{
-            fontFamily: "'Cinzel', serif",
+            fontFamily: "'Cinzel', Georgia, serif",
             fontSize: 'clamp(2rem, 4vw, 3.5rem)',
-            fontWeight: '400',
+            fontWeight: '500',
             color: theme.text.primary,
             marginBottom: '24px',
             lineHeight: '1.2',
@@ -303,7 +303,7 @@ function LandingPage() {
 
           {/* Subheadline */}
           <p style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Crimson Text', Georgia, serif",
             fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
             color: theme.text.secondary,
             maxWidth: '800px',
@@ -323,14 +323,14 @@ function LandingPage() {
               style={{ 
                 padding: '16px 32px', 
                 fontSize: '17px',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Crimson Text', Georgia, serif",
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
                 background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.secondary})`,
                 border: 'none',
                 color: '#0B0F19',
-                fontWeight: '500',
+                fontWeight: '600',
                 letterSpacing: '1px',
                 boxShadow: `0 4px 20px ${theme.gm.glow}`
               }}
@@ -342,14 +342,14 @@ function LandingPage() {
               style={{ 
                 padding: '16px 32px', 
                 fontSize: '17px',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Crimson Text', Georgia, serif",
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
                 background: `linear-gradient(135deg, ${theme.player.primary}, ${theme.player.secondary})`,
                 border: 'none',
                 color: '#0B0F19',
-                fontWeight: '500',
+                fontWeight: '600',
                 letterSpacing: '1px',
                 boxShadow: `0 4px 20px ${theme.player.glow}`
               }}
@@ -419,23 +419,25 @@ function LandingPage() {
         padding: '80px 24px', 
         background: theme.bg.surface,
         borderTop: `1px solid ${theme.border}`,
-        borderBottom: `1px solid ${theme.border}`
+        borderBottom: `1px solid ${theme.border}`,
+        position: 'relative',
+        zIndex: 2
       }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Cinzel', Georgia, serif",
               fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
-              fontWeight: '400',
+              fontWeight: '500',
               color: theme.text.primary,
               marginBottom: '20px'
             }}>
               Your Entire Campaign. <span style={{ color: theme.gm.primary }}>One System.</span>
             </h2>
             <p style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Crimson Text', Georgia, serif",
               color: theme.text.secondary,
-              fontSize: '17px',
+              fontSize: '18px',
               lineHeight: '1.8',
               maxWidth: '800px',
               margin: '0 auto'
@@ -484,22 +486,22 @@ function LandingPage() {
       </section>
 
       {/* App Preview Section - Live Demo Only */}
-      <section style={{ padding: '80px 24px', background: theme.bg.surface }}>
+      <section style={{ padding: '80px 24px', background: theme.bg.surface, position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Cinzel', Georgia, serif",
               fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
-              fontWeight: '400',
+              fontWeight: '500',
               color: theme.text.primary,
               marginBottom: '16px'
             }}>
               Try <span style={{ color: theme.gm.primary }}>ROOK</span> Right Now
             </h2>
             <p style={{ 
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Crimson Text', Georgia, serif",
               color: theme.text.secondary, 
-              fontSize: '16px', 
+              fontSize: '17px', 
               maxWidth: '600px', 
               margin: '0 auto' 
             }}>
@@ -522,9 +524,9 @@ function LandingPage() {
               onClick={() => navigate('/auth')}
               style={{
                 padding: '16px 40px',
-                fontSize: '16px',
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: '400',
+                fontSize: '17px',
+                fontFamily: "'Crimson Text', Georgia, serif",
+                fontWeight: '600',
                 background: theme.gm.primary,
                 border: 'none',
                 color: theme.text.primary,
@@ -539,7 +541,7 @@ function LandingPage() {
       </section>
 
       {/* Who It's For */}
-      <section style={{ padding: '80px 24px', background: theme.bg.primary }}>
+      <section style={{ padding: '80px 24px', background: theme.bg.primary, position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <h2 style={{
@@ -601,7 +603,7 @@ function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" style={{ padding: '80px 24px', background: theme.bg.surface }}>
+      <section id="features" style={{ padding: '80px 24px', background: theme.bg.surface, position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <h2 style={{
@@ -683,7 +685,7 @@ function LandingPage() {
       </section>
 
       {/* Meet ROOK */}
-      <section style={{ padding: '100px 24px', background: theme.bg.surface }}>
+      <section style={{ padding: '100px 24px', background: theme.bg.surface, position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ 
             display: 'grid', 
@@ -809,7 +811,9 @@ function LandingPage() {
         background: theme.bg.primary,
         borderTop: `1px solid ${theme.gm.primaryBorder}`,
         borderBottom: `1px solid ${theme.gm.primaryBorder}`,
-        textAlign: 'center'
+        textAlign: 'center',
+        position: 'relative',
+        zIndex: 2
       }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <h2 style={{
@@ -836,7 +840,7 @@ function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section style={{ padding: '80px 24px', background: theme.bg.surface }}>
+      <section style={{ padding: '80px 24px', background: theme.bg.surface, position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <p style={{
@@ -1222,7 +1226,7 @@ function LandingPage() {
 
       {/* Reviews */}
       {reviews.length > 0 && (
-        <section style={{ padding: '80px 24px', background: theme.bg.primary }}>
+        <section style={{ padding: '80px 24px', background: theme.bg.primary, position: 'relative', zIndex: 2 }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '48px' }}>
               <h2 style={{
@@ -1277,7 +1281,7 @@ function LandingPage() {
       )}
 
       {/* Final CTA */}
-      <section style={{ padding: '80px 24px', textAlign: 'center', background: theme.bg.surface }}>
+      <section style={{ padding: '80px 24px', textAlign: 'center', background: theme.bg.surface, position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <h2 style={{
             fontSize: 'clamp(2rem, 4vw, 3rem)',
@@ -1321,7 +1325,9 @@ function LandingPage() {
       <footer style={{ 
         padding: '40px 24px', 
         borderTop: `1px solid ${theme.border}`,
-        background: theme.bg.primary
+        background: theme.bg.primary,
+        position: 'relative',
+        zIndex: 2
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{
@@ -1334,9 +1340,9 @@ function LandingPage() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span style={{ 
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Cinzel', Georgia, serif",
                 fontSize: '16px',
-                fontWeight: '400',
+                fontWeight: '500',
                 color: theme.text.primary,
                 letterSpacing: '2px'
               }}>

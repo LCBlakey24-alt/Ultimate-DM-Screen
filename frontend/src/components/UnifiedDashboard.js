@@ -286,7 +286,7 @@ function UnifiedDashboard({ username, onLogout }) {
             fontSize: '20px',
             color: theme.gm.primary,
             margin: 0,
-            fontFamily: "'Cinzel', serif",
+            fontFamily: "'Philosopher', Georgia, serif",
             letterSpacing: '0.1em'
           }}>
             ROOKIE QUEST KEEPER
@@ -533,7 +533,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "'Philosopher', Georgia, serif",
                   letterSpacing: '0.1em'
                 }}>
                   <User size={18} />
@@ -544,7 +544,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   fontSize: '24px',
                   color: theme.text.primary,
                   margin: 0,
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "'Philosopher', Georgia, serif",
                   letterSpacing: '0.03em'
                 }}>
                   My Characters
@@ -608,24 +608,17 @@ function UnifiedDashboard({ username, onLogout }) {
                     key={char.id}
                     onClick={() => navigate(`/characters/${char.id}`)}
                     data-testid={`character-${char.id}`}
-                    className={`card-animated stagger-${Math.min(index + 1, 8)} hover-lift transition-smooth`}
+                    className="card-hover-player"
                     style={{
                       background: theme.bg.surface,
-                      border: `1px solid ${theme.player.border}`,
+                      border: `1px solid ${theme.border}`,
                       borderLeft: `3px solid ${theme.player.primary}`,
+                      borderRadius: '8px',
                       padding: '20px 24px',
                       cursor: 'pointer',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = theme.player.primary;
-                      e.currentTarget.style.boxShadow = theme.player.glow;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = theme.player.border;
-                      e.currentTarget.style.boxShadow = 'none';
                     }}
                   >
                     <div>
@@ -633,7 +626,8 @@ function UnifiedDashboard({ username, onLogout }) {
                         color: theme.text.primary, 
                         margin: '0 0 6px', 
                         fontSize: '18px',
-                        fontWeight: '400'
+                        fontWeight: '600',
+                        fontFamily: "'Philosopher', Georgia, serif"
                       }}>
                         {char.name}
                       </h3>
@@ -731,7 +725,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "'Philosopher', Georgia, serif",
                   letterSpacing: '0.1em'
                 }}>
                   <Sword size={18} />
@@ -742,7 +736,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   fontSize: '24px',
                   color: theme.text.primary,
                   margin: 0,
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "'Philosopher', Georgia, serif",
                   letterSpacing: '0.03em'
                 }}>
                   My Campaigns
@@ -781,7 +775,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   textAlign: 'center'
                 }}>
                   <Crown size={56} style={{ color: theme.gm.primary, marginBottom: '20px', opacity: 0.5 }} />
-                  <h3 style={{ color: theme.text.primary, margin: '0 0 8px', fontSize: '18px', fontFamily: "'Cinzel', serif" }}>
+                  <h3 style={{ color: theme.text.primary, margin: '0 0 8px', fontSize: '18px', fontFamily: "'Philosopher', Georgia, serif" }}>
                     No Campaigns Yet
                   </h3>
                   <p style={{ color: theme.text.muted, margin: '0 0 24px', fontSize: '14px' }}>
@@ -807,24 +801,17 @@ function UnifiedDashboard({ username, onLogout }) {
                     key={campaign.id}
                     onClick={() => navigate(`/campaign/${campaign.id}`)}
                     data-testid={`campaign-${campaign.id}`}
-                    className={`card-animated stagger-${Math.min(index + 1, 8)} hover-lift transition-smooth`}
+                    className="card-hover-gm"
                     style={{
                       background: theme.bg.surface,
-                      border: `1px solid ${theme.gm.border}`,
+                      border: `1px solid ${theme.border}`,
                       borderLeft: `3px solid ${theme.gm.primary}`,
+                      borderRadius: '8px',
                       padding: '20px 24px',
                       cursor: 'pointer',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = theme.gm.primary;
-                      e.currentTarget.style.boxShadow = theme.gm.glow;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = theme.gm.border;
-                      e.currentTarget.style.boxShadow = 'none';
                     }}
                   >
                     <div>
@@ -832,7 +819,8 @@ function UnifiedDashboard({ username, onLogout }) {
                         color: theme.text.primary, 
                         margin: '0 0 6px', 
                         fontSize: '18px',
-                        fontWeight: '400'
+                        fontWeight: '600',
+                        fontFamily: "'Philosopher', Georgia, serif"
                       }}>
                         {campaign.name}
                       </h3>
