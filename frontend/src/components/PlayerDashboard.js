@@ -21,13 +21,13 @@ const API = `${BACKEND_URL}/api`;
 
 // Dark Minimalist Theme - BLUE for Players
 const playerTheme = {
-  primary: '#F2A541',
-  hover: '#FFB855',
+  primary: '#7A5AF8',
+  hover: '#9B6BFF',
   subtle: 'rgba(59, 130, 246, 0.15)',
-  border: 'rgba(255, 255, 255, 0.1)',
-  bg: '#0D0D0D',
-  card: '#262626',
-  panel: '#1F1F1F',
+  border: 'rgba(212, 175, 55, 0.15)',
+  bg: '#0B1530',
+  card: '#121F3D',
+  panel: '#121F3D',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080'
@@ -110,13 +110,13 @@ function PlayerDashboard({ username, onLogout }) {
 
   const getClassColor = (charClass) => {
     const colors = {
-      'Fighter': '#E05C3D',
+      'Fighter': '#F2D675',
       'Wizard': '#8B5CF6',
       'Rogue': '#6B7280',
       'Cleric': '#F59E0B',
       'Ranger': '#10B981',
       'Paladin': '#FBBF24',
-      'Barbarian': '#C54B2C',
+      'Barbarian': '#D4AF37',
       'Bard': '#EC4899',
       'Druid': '#22C55E',
       'Monk': '#14B8A6',
@@ -202,7 +202,7 @@ function PlayerDashboard({ username, onLogout }) {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
         background: 'rgba(11, 15, 25, 0.9)',
         backdropFilter: 'blur(12px)',
         position: 'sticky',
@@ -222,7 +222,7 @@ function PlayerDashboard({ username, onLogout }) {
           <div>
             <h1 style={{
               fontSize: '20px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               fontWeight: '800',
               color: '#ffffff'
             }}>
@@ -259,7 +259,7 @@ function PlayerDashboard({ username, onLogout }) {
           padding: '10px',
           background: 'rgba(17, 24, 39, 0.7)',
           backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(212, 175, 55, 0.15)',
           borderRadius: '16px',
           boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3)'
         }}>
@@ -278,7 +278,7 @@ function PlayerDashboard({ username, onLogout }) {
               color: '#ffffff',
               fontWeight: '400',
               fontSize: '14px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -304,7 +304,7 @@ function PlayerDashboard({ username, onLogout }) {
               color: '#ffffff',
               fontWeight: '400',
               fontSize: '14px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -330,7 +330,7 @@ function PlayerDashboard({ username, onLogout }) {
               color: '#ffffff',
               fontWeight: '400',
               fontSize: '14px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -356,7 +356,7 @@ function PlayerDashboard({ username, onLogout }) {
               color: '#ffffff',
               fontWeight: '400',
               fontSize: '14px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -393,7 +393,7 @@ function PlayerDashboard({ username, onLogout }) {
                   color: '#ffffff',
                   fontWeight: '400',
                   fontSize: '16px',
-                  fontFamily: "Eros Book, sans-serif",
+                  fontFamily: "Inter, sans-serif",
                   cursor: 'pointer',
                   boxShadow: '0 4px 20px rgba(34, 211, 238, 0.4)'
                 }}
@@ -415,7 +415,7 @@ function PlayerDashboard({ username, onLogout }) {
                   color: '#ffffff',
                   fontWeight: '400',
                   fontSize: '16px',
-                  fontFamily: "Eros Book, sans-serif",
+                  fontFamily: "Inter, sans-serif",
                   cursor: 'pointer',
                   boxShadow: '0 4px 20px rgba(59, 130, 246, 0.4)'
                 }}
@@ -435,7 +435,7 @@ function PlayerDashboard({ username, onLogout }) {
           }}>
             <h2 style={{
               fontSize: '22px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               fontWeight: '400',
               color: '#ffffff',
               display: 'flex',
@@ -467,7 +467,7 @@ function PlayerDashboard({ username, onLogout }) {
                 color: '#9CA3AF', 
                 fontSize: '18px', 
                 marginBottom: '8px',
-                fontFamily: "Eros Book, sans-serif",
+                fontFamily: "Inter, sans-serif",
                 fontWeight: '400'
               }}>
                 No Characters Yet
@@ -539,7 +539,7 @@ function PlayerDashboard({ username, onLogout }) {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <h3 style={{
                           fontSize: '18px',
-                          fontFamily: "Eros Book, sans-serif",
+                          fontFamily: "Inter, sans-serif",
                           fontWeight: '400',
                           color: '#ffffff',
                           marginBottom: '4px',
@@ -607,8 +607,8 @@ function PlayerDashboard({ username, onLogout }) {
                         background: 'rgba(239, 68, 68, 0.1)',
                         borderRadius: '8px'
                       }}>
-                        <Heart size={14} style={{ color: '#E05C3D' }} />
-                        <span style={{ color: '#E05C3D', fontSize: '13px', fontWeight: '400' }}>
+                        <Heart size={14} style={{ color: '#F2D675' }} />
+                        <span style={{ color: '#F2D675', fontSize: '13px', fontWeight: '400' }}>
                           {char.max_hp || '—'} HP
                         </span>
                       </div>
@@ -643,7 +643,7 @@ function PlayerDashboard({ username, onLogout }) {
           }}>
             <h2 style={{
               fontSize: '22px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               fontWeight: '400',
               color: '#ffffff',
               display: 'flex',
@@ -674,7 +674,7 @@ function PlayerDashboard({ username, onLogout }) {
                 color: '#9CA3AF', 
                 fontSize: '18px', 
                 marginBottom: '8px',
-                fontFamily: "Eros Book, sans-serif",
+                fontFamily: "Inter, sans-serif",
                 fontWeight: '400'
               }}>
                 No Campaigns Joined
@@ -714,7 +714,7 @@ function PlayerDashboard({ username, onLogout }) {
                   <CardContent style={{ padding: '20px' }}>
                     <h3 style={{
                       fontSize: '18px',
-                      fontFamily: "Eros Book, sans-serif",
+                      fontFamily: "Inter, sans-serif",
                       fontWeight: '400',
                       color: '#ffffff',
                       marginBottom: '8px'
@@ -771,7 +771,7 @@ function PlayerDashboard({ username, onLogout }) {
                       fontSize: '16px', 
                       fontWeight: '400',
                       marginBottom: '12px',
-                      fontFamily: "Eros Book, sans-serif"
+                      fontFamily: "Inter, sans-serif"
                     }}>
                       {campaign.name}
                     </h3>
@@ -794,7 +794,7 @@ function PlayerDashboard({ username, onLogout }) {
           <DialogHeader>
             <DialogTitle style={{
               fontSize: '24px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               fontWeight: '400',
               color: '#ffffff'
             }}>

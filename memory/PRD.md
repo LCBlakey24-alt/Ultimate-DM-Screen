@@ -10,51 +10,51 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 
 ## Recent Major Updates (March 2026)
 
-### UI THEME REDESIGN - DARK MODE WITH EMBERS (March 8, 2026)
-**Complete visual theme overhaul for darker, more immersive look**
+### ARCANE ART-DECO CONSOLE REDESIGN (March 11, 2026)
+**Complete visual theme transformation to premium fantasy GM console aesthetic**
 
-**Background Changes:**
-- Changed main background from burgundy (#2B0F0F) to near-black (#0D0D0D)
-- Updated card/panel backgrounds to dark grey (#1F1F1F, #262626)
-- Added smokey embers CSS effect with animated orange/red gradients and floating particles
+**Design Philosophy:**
+- Clean Arcane Art-Deco console aesthetic
+- Dark navy dashboard with metallic gold framing
+- Magical purple accents for arcane/AI elements
+- Modern web-application clarity without heavy textures
 
-**Floating Ember Particles (Added):**
-- 10 animated ember particles that float upward continuously
-- CSS-only implementation using `@keyframes ember-rise`
-- Added to LandingPage.js and AuthPage.js hero sections
-- Creates immersive campfire atmosphere
+**Color Palette:**
+- `--navy-deep`: #0B1530 (Primary background)
+- `--navy-base`: #0F1E42 (Background gradient end)
+- `--navy-panel`: #121F3D (Panel backgrounds)
+- `--navy-hover`: #172756 (Hover states)
+- `--navy-elevated`: #1C2C5A (Elevated panels)
+- `--gold`: #D4AF37 (Metallic gold - GM accent, borders, headings)
+- `--gold-light`: #F2D675 (Gold hover states)
+- `--arcane-purple`: #7A5AF8 (Player accent, magical elements)
+- `--arcane-purple-light`: #9B6BFF (Purple hover states)
+- `--success`: #2ECC71
+- `--danger`: #E74C3C
+- `--info`: #3DA9FC
 
-**Font Size Improvements:**
-- Base body font size increased to 16px
-- Subheadlines increased from 14px to 15-17px
-- Button text increased from 16px to 17px
-- Feature card descriptions increased from 15px to 16px
-- Auth form labels increased from 12px to 13px
-- Input fields increased from 14px to 15px
+**Typography:**
+- Cinzel font for titles and major headings (fantasy elegance)
+- Inter font for all interface text (modern readability)
+- Gold borders using rgba(212, 175, 55, 0.25)
+- Border radius ~14px for panels
 
-**Color Scheme Updates:**
-- `bg.black`: #0D0D0D (near black)
-- `bg.dark`: #1A1A1A (dark grey)
-- `bg.panel`: #1F1F1F (panel grey)
-- `bg.card`: #262626 (card grey)
-- `bg.hover`: #333333 (hover grey)
-- `text.secondary`: #B0B0B0 (light grey for better contrast)
-- `text.muted`: #707070 (muted grey)
-- Orange/gold accent colors preserved (#C54B2C, #F2A541)
+**Button Hierarchy:**
+- Primary (Purple): linear-gradient(135deg, #7A5AF8, #9B6BFF) - Player actions
+- Secondary (Navy): #1C2C5A with gold border - Back/Cancel
+- Gold: linear-gradient(135deg, #D4AF37, #F2D675) - GM/Major actions
 
-**Consistency Fixes:**
-- Fixed DiceRollTooltip.js, LevelUpModal.js, KeyboardShortcuts.js to use new dark grey colors
-- Removed all remaining burgundy colors (#2B0F0F, #4A1F1F, #7A1F1F)
-- Updated App.css to use Eros Book font with font-weight: 400 (no bold)
+**Visual Effects:**
+- Subtle radial gradients for magical depth
+- arcane-pulse animation for background
+- Gold/purple glow effects for active states
+- Smooth 0.2s transitions on all interactions
 
 **Files Updated (25+ components):**
-- index.css (CSS variables + smokey-bg + ember-rise animations)
+- index.css (Complete Arcane CSS variables and utilities)
 - LandingPage.js, AuthPage.js, UnifiedDashboard.js
-- AdminPage.js, CampaignDashboard.js, CampaignList.js
-- CharacterBuilder.js, CharacterSheet.js, CharacterSheetFull.js
-- FloatingDiceRoller.js, GMScreen.js, NPCQuickReference.js
-- DiceRollTooltip.js, LevelUpModal.js, KeyboardShortcuts.js
-- And more component files
+- All dashboard and feature components
+- CharacterBuilder.js with user's score pool system integrated
 
 ### RULES CONSISTENCY PASS - EDITION-AWARE SYSTEM (March 8, 2026)
 **Full rules-consistency pass for character creation + level-up with strict 5e 2014/2024 support**

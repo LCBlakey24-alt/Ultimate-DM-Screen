@@ -10,10 +10,10 @@ const API = `${BACKEND_URL}/api`;
 
 // Theme
 const theme = {
-  bg: { black: '#0D0D0D', dark: '#141414', panel: '#1F1F1F', card: '#262626' },
-  accent: { red: '#C54B2C', blue: '#F2A541', gold: '#F59E0B' },
+  bg: { black: '#0B1530', dark: '#141414', panel: '#121F3D', card: '#121F3D' },
+  accent: { red: '#D4AF37', blue: '#7A5AF8', gold: '#F59E0B' },
   text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
-  border: 'rgba(255, 255, 255, 0.1)'
+  border: 'rgba(212, 175, 55, 0.15)'
 };
 
 function PricingPage({ username, onLogout }) {
@@ -155,7 +155,7 @@ function PricingPage({ username, onLogout }) {
     <div style={{ 
       minHeight: '100vh', 
       background: theme.bg.black, 
-      fontFamily: "Eros Book, sans-serif" 
+      fontFamily: "Inter, sans-serif" 
     }}>
       {/* Header */}
       <div style={{ 

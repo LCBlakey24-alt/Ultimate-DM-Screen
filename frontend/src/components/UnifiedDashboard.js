@@ -13,45 +13,46 @@ import { RookGuide } from '@/components/RookGuide';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Dark Black/Grey Theme with Orange/Gold Accents
+// Arcane Art-Deco Console Theme
 const theme = {
   bg: {
-    black: '#0D0D0D',      // Near black
-    dark: '#1A1A1A',       // Dark grey
-    panel: '#1F1F1F',      // Panel grey
-    card: '#262626',       // Card grey
-    hover: '#333333'       // Hover grey
+    black: '#0B1530',       // Deep navy
+    dark: '#0F1E42',        // Navy base
+    panel: '#121F3D',       // Panel navy
+    card: '#121F3D',        // Card navy
+    hover: '#172756'        // Hover navy
   },
-  // Player Side - Gold/Yellow
+  // Player Side - Arcane Purple
   player: {
-    primary: '#F2A541',    // Golden yellow
-    secondary: '#D99033',  // Darker gold
-    tertiary: '#C07A22',   // Deep gold
-    hover: '#FFB855',
-    subtle: 'rgba(242, 165, 65, 0.12)',
-    border: 'rgba(242, 165, 65, 0.35)',
-    glow: '0 0 40px rgba(242, 165, 65, 0.2)',
-    gradient: 'linear-gradient(180deg, rgba(242, 165, 65, 0.15) 0%, transparent 100%)',
-    cyan: '#F2A541'
+    primary: '#7A5AF8',     // Arcane purple
+    secondary: '#9B6BFF',   // Light purple
+    tertiary: '#5B3FD9',    // Deep purple
+    hover: '#9B6BFF',
+    subtle: 'rgba(122, 90, 248, 0.12)',
+    border: 'rgba(122, 90, 248, 0.35)',
+    glow: '0 0 40px rgba(122, 90, 248, 0.2)',
+    gradient: 'linear-gradient(180deg, rgba(122, 90, 248, 0.15) 0%, transparent 100%)',
+    cyan: '#7A5AF8'
   },
-  // GM Side - Orange/Red
+  // GM Side - Gold Art-Deco
   gm: {
-    primary: '#C54B2C',    // Burnt orange
-    secondary: '#A03D24',  // Medium orange-red
-    tertiary: '#333333',   // Dark grey
-    hover: '#E05C3D',
-    subtle: 'rgba(197, 75, 44, 0.12)',
-    border: 'rgba(197, 75, 44, 0.35)',
-    glow: '0 0 40px rgba(197, 75, 44, 0.2)',
-    gradient: 'linear-gradient(180deg, rgba(197, 75, 44, 0.15) 0%, transparent 100%)'
+    primary: '#D4AF37',     // Metallic gold
+    secondary: '#B8962D',   // Darker gold
+    tertiary: '#1C2C5A',    // Elevated navy
+    hover: '#F2D675',
+    subtle: 'rgba(212, 175, 55, 0.12)',
+    border: 'rgba(212, 175, 55, 0.35)',
+    glow: '0 0 40px rgba(212, 175, 55, 0.2)',
+    gradient: 'linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, transparent 100%)'
   },
   text: {
-    white: '#FFFFFF',
-    secondary: '#B0B0B0',  // Light grey
-    muted: '#707070'       // Muted grey
+    white: '#E8E6E3',       // Warm white
+    secondary: '#9CA3AF',   // Muted text
+    muted: '#6B7280',       // Dim text
+    gold: '#D4AF37'
   },
-  border: 'rgba(255, 255, 255, 0.15)',
-  navy: '#1A1A1A'  // Dark grey accent
+  border: 'rgba(212, 175, 55, 0.25)',
+  navy: '#0F1E42'
 };
 
 function UnifiedDashboard({ username, onLogout }) {

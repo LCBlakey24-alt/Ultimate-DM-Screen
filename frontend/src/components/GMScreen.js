@@ -278,22 +278,22 @@ function GMScreen({ username }) {
 
   // GM Theme - Three shades of Red
   const theme = {
-    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1F1F1F', card: '#262626', hover: '#333333' },
+    bg: { black: '#0B1530', dark: '#141414', panel: '#121F3D', card: '#121F3D', hover: '#172756' },
     accent: { 
-      primary: '#C54B2C',      // Main red
-      secondary: '#E05C3D',    // Light red
+      primary: '#D4AF37',      // Main red
+      secondary: '#F2D675',    // Light red
       tertiary: '#991B1B',     // Dark red
       hover: '#F87171',
       subtle: 'rgba(220, 38, 38, 0.15)',
       glow: '0 0 20px rgba(220, 38, 38, 0.4)',
       // Legacy compatibility
-      red: '#C54B2C', 
+      red: '#D4AF37', 
       redHover: '#F87171', 
       redSubtle: 'rgba(220, 38, 38, 0.15)',
       orange: '#F97316'
     },
     text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
-    border: 'rgba(255, 255, 255, 0.1)'
+    border: 'rgba(212, 175, 55, 0.15)'
   };
 
   return (

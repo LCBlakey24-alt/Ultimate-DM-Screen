@@ -6,10 +6,10 @@ import { getFeatureRequirement } from '@/hooks/useSubscription';
 
 // Theme
 const theme = {
-  bg: { panel: '#1F1F1F', dark: '#0D0D0D' },
+  bg: { panel: '#121F3D', dark: '#0B1530' },
   text: { white: '#FFFFFF', muted: '#808080' },
-  accent: { red: '#C54B2C', cyan: '#F2A541' },
-  border: 'rgba(255, 255, 255, 0.1)'
+  accent: { red: '#D4AF37', cyan: '#7A5AF8' },
+  border: 'rgba(212, 175, 55, 0.15)'
 };
 
 /**
@@ -190,7 +190,7 @@ export function UpgradePrompt({
           <div style={{
             width: '64px',
             height: '64px',
-            background: 'linear-gradient(135deg, #C54B2C 0%, #E05C3D 100%)',
+            background: 'linear-gradient(135deg, #D4AF37 0%, #F2D675 100%)',
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
@@ -239,7 +239,7 @@ export function UpgradePrompt({
             onClick={() => navigate('/pricing')}
             style={{
               width: '100%',
-              background: 'linear-gradient(90deg, #C54B2C 0%, #E05C3D 100%)',
+              background: 'linear-gradient(90deg, #D4AF37 0%, #F2D675 100%)',
               border: 'none',
               color: '#fff',
               padding: '14px 24px',
@@ -346,7 +346,7 @@ export function UpgradePrompt({
 /**
  * LimitIndicator - Shows current usage vs limit
  */
-export function LimitIndicator({ current, limit, label, color = '#C54B2C' }) {
+export function LimitIndicator({ current, limit, label, color = '#D4AF37' }) {
   const percentage = limit > 0 ? (current / limit) * 100 : 0;
   const isAtLimit = current >= limit;
   

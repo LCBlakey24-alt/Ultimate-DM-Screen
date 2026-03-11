@@ -14,21 +14,21 @@ const API = `${BACKEND_URL}/api`;
 
 // Player Theme - Blue
 const theme = {
-  primary: '#F2A541',
-  hover: '#FFB855',
+  primary: '#7A5AF8',
+  hover: '#9B6BFF',
   subtle: 'rgba(59, 130, 246, 0.15)',
-  bg: '#0D0D0D',
-  card: '#262626',
-  panel: '#1F1F1F',
+  bg: '#0B1530',
+  card: '#121F3D',
+  panel: '#121F3D',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
-  border: 'rgba(255, 255, 255, 0.1)'
+  border: 'rgba(212, 175, 55, 0.15)'
 };
 
 const ENTRY_TYPES = [
-  { id: 'session', label: 'Session Summary', icon: Calendar, color: '#F2A541' },
-  { id: 'combat', label: 'Combat', icon: Swords, color: '#E05C3D' },
+  { id: 'session', label: 'Session Summary', icon: Calendar, color: '#7A5AF8' },
+  { id: 'combat', label: 'Combat', icon: Swords, color: '#F2D675' },
   { id: 'npc', label: 'NPC Met', icon: User, color: '#22C55E' },
   { id: 'location', label: 'Location', icon: MapPin, color: '#F59E0B' },
   { id: 'loot', label: 'Loot/Item', icon: Star, color: '#A855F7' },
@@ -158,7 +158,7 @@ function SessionJournal({ characterId, campaignId }) {
             color: theme.text, 
             fontSize: '24px', 
             fontWeight: '400',
-            fontFamily: "Eros Book, sans-serif",
+            fontFamily: "Inter, sans-serif",
             display: 'flex',
             alignItems: 'center',
             gap: '12px'
@@ -525,8 +525,8 @@ function SessionJournal({ characterId, campaignId }) {
                                 style={{
                                   padding: '6px 12px',
                                   background: 'transparent',
-                                  border: `1px solid #E05C3D`,
-                                  color: '#E05C3D',
+                                  border: `1px solid #F2D675`,
+                                  color: '#F2D675',
                                   fontSize: '13px'
                                 }}
                               >

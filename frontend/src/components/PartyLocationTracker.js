@@ -14,42 +14,42 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme - Red
 const theme = {
-  primary: '#C54B2C',
-  hover: '#E05C3D',
+  primary: '#D4AF37',
+  hover: '#F2D675',
   subtle: 'rgba(225, 29, 72, 0.15)',
-  bg: '#0D0D0D',
-  card: '#262626',
-  panel: '#1F1F1F',
+  bg: '#0B1530',
+  card: '#121F3D',
+  panel: '#121F3D',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
-  border: 'rgba(255, 255, 255, 0.1)',
+  border: 'rgba(212, 175, 55, 0.15)',
   success: '#22C55E',
-  cyan: '#F2A541',
+  cyan: '#7A5AF8',
   warning: '#F59E0B'
 };
 
 const PIN_TYPES = {
   capital: { icon: Castle, color: '#EAB308', label: 'Capital' },
-  city: { icon: Building, color: '#F2A541', label: 'City' },
+  city: { icon: Building, color: '#7A5AF8', label: 'City' },
   town: { icon: Home, color: '#22C55E', label: 'Town' },
   village: { icon: Home, color: '#84CC16', label: 'Village' },
   landmark: { icon: Mountain, color: '#8B5CF6', label: 'Landmark' },
-  dungeon: { icon: Mountain, color: '#E05C3D', label: 'Dungeon' },
-  port: { icon: Waves, color: '#F2A541', label: 'Port' },
+  dungeon: { icon: Mountain, color: '#F2D675', label: 'Dungeon' },
+  port: { icon: Waves, color: '#7A5AF8', label: 'Port' },
   forest: { icon: Trees, color: '#16A34A', label: 'Forest' },
-  custom: { icon: MapPin, color: '#C54B2C', label: 'Location' }
+  custom: { icon: MapPin, color: '#D4AF37', label: 'Location' }
 };
 
 const POI_TYPES = {
   shop: { icon: Store, color: '#F59E0B', label: 'Shop' },
   tavern: { icon: Beer, color: '#F97316', label: 'Tavern/Inn' },
   temple: { icon: Church, color: '#8B5CF6', label: 'Temple' },
-  blacksmith: { icon: Hammer, color: '#E05C3D', label: 'Blacksmith' },
-  guild: { icon: Building, color: '#F2A541', label: 'Guild Hall' },
-  library: { icon: BookOpen, color: '#F2A541', label: 'Library' },
+  blacksmith: { icon: Hammer, color: '#F2D675', label: 'Blacksmith' },
+  guild: { icon: Building, color: '#7A5AF8', label: 'Guild Hall' },
+  library: { icon: BookOpen, color: '#7A5AF8', label: 'Library' },
   residence: { icon: Home, color: '#22C55E', label: 'Residence' },
-  other: { icon: MapPin, color: '#C54B2C', label: 'Other' }
+  other: { icon: MapPin, color: '#D4AF37', label: 'Other' }
 };
 
 const TRAVEL_MODES = [
@@ -190,7 +190,7 @@ function PartyLocationTracker({ campaignId }) {
   };
 
   const getPinColor = (pinType) => {
-    return PIN_TYPES[pinType]?.color || '#C54B2C';
+    return PIN_TYPES[pinType]?.color || '#D4AF37';
   };
 
   const getPOIIcon = (poiType) => {
@@ -198,7 +198,7 @@ function PartyLocationTracker({ campaignId }) {
   };
 
   const getPOIColor = (poiType) => {
-    return POI_TYPES[poiType]?.color || '#C54B2C';
+    return POI_TYPES[poiType]?.color || '#D4AF37';
   };
 
   if (loading) {

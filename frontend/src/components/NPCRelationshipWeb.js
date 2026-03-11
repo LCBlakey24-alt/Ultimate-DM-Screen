@@ -14,29 +14,29 @@ const API = `${BACKEND_URL}/api`;
 
 // GM Theme - Red (Tron Aries)
 const theme = {
-  primary: '#C54B2C',
-  hover: '#E05C3D',
+  primary: '#D4AF37',
+  hover: '#F2D675',
   subtle: 'rgba(225, 29, 72, 0.15)',
   glow: '0 0 20px rgba(225, 29, 72, 0.3)',
-  bg: '#0D0D0D',
-  card: '#262626',
-  panel: '#1F1F1F',
+  bg: '#0B1530',
+  card: '#121F3D',
+  panel: '#121F3D',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
-  border: 'rgba(255, 255, 255, 0.1)'
+  border: 'rgba(212, 175, 55, 0.15)'
 };
 
 // Relationship types with colors and icons
 const RELATIONSHIP_TYPES = [
   { id: 'ally', label: 'Ally', color: '#22C55E', icon: HandshakeIcon },
-  { id: 'enemy', label: 'Enemy', color: '#E05C3D', icon: Swords },
+  { id: 'enemy', label: 'Enemy', color: '#F2D675', icon: Swords },
   { id: 'family', label: 'Family', color: '#8B5CF6', icon: Heart },
   { id: 'romantic', label: 'Romantic', color: '#EC4899', icon: Heart },
   { id: 'business', label: 'Business', color: '#F59E0B', icon: Crown },
   { id: 'rival', label: 'Rival', color: '#F97316', icon: AlertCircle },
   { id: 'neutral', label: 'Neutral', color: '#6B7280', icon: HelpCircle },
-  { id: 'servant', label: 'Serves', color: '#F2A541', icon: Shield },
+  { id: 'servant', label: 'Serves', color: '#7A5AF8', icon: Shield },
 ];
 
 function NPCRelationshipWeb({ campaignId }) {
@@ -263,7 +263,7 @@ function NPCRelationshipWeb({ campaignId }) {
               fontSize: '18px', 
               fontWeight: '400',
               margin: 0,
-              fontFamily: "Eros Book, sans-serif"
+              fontFamily: "Inter, sans-serif"
             }}>
               NPC RELATIONSHIP WEB
             </h3>

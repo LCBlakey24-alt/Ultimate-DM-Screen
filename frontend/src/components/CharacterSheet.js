@@ -149,9 +149,9 @@ function CharacterSheet() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0D0D0D',
+      background: '#0B1530',
       padding: '24px',
-      fontFamily: "Eros Book, sans-serif"
+      fontFamily: "Inter, sans-serif"
     }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Header */}
@@ -163,14 +163,14 @@ function CharacterSheet() {
             <div>
               <h1 style={{
                 fontSize: 'clamp(28px, 5vw, 40px)',
-                fontFamily: "Eros Book, sans-serif",
+                fontFamily: "Inter, sans-serif",
                 fontWeight: '800',
                 color: '#ffffff',
                 marginBottom: '4px'
               }}>
                 {character.name}
               </h1>
-              <p style={{ color: '#F2A541', fontSize: '16px' }}>
+              <p style={{ color: '#7A5AF8', fontSize: '16px' }}>
                 Level {character.level} {character.race} {character.character_class}
               </p>
             </div>

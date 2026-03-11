@@ -13,51 +13,58 @@ import TronBackground from '@/components/TronBackground';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-// Dark Black/Grey Theme with Orange/Gold Accents
+// Arcane Art-Deco Console Theme
 const theme = {
   bg: {
-    black: '#0D0D0D',      // Near black
-    dark: '#1A1A1A',       // Dark grey
-    panel: '#1F1F1F',      // Panel grey
-    card: '#262626',       // Card grey
-    hover: '#333333',      // Hover grey
-    elevated: '#2A2A2A'
+    black: '#0B1530',       // Deep navy
+    dark: '#0F1E42',        // Navy base
+    panel: '#121F3D',       // Panel navy
+    card: '#121F3D',        // Card navy
+    hover: '#172756',       // Hover navy
+    elevated: '#1C2C5A'     // Elevated navy
   },
-  // GM Side - Orange/Red
+  // GM Side - Gold Art-Deco
   gm: {
-    primary: '#C54B2C',
-    hover: '#E05C3D',
-    subtle: 'rgba(197, 75, 44, 0.15)',
-    border: 'rgba(197, 75, 44, 0.4)',
-    glow: '0 0 30px rgba(197, 75, 44, 0.3)'
+    primary: '#D4AF37',     // Metallic gold
+    hover: '#F2D675',       // Light gold
+    subtle: 'rgba(212, 175, 55, 0.12)',
+    border: 'rgba(212, 175, 55, 0.25)',
+    glow: '0 0 30px rgba(212, 175, 55, 0.3)'
   },
-  // Player Side - Gold
+  // Player Side - Arcane Purple
   player: {
-    primary: '#F2A541',
-    cyan: '#D99033',
-    hover: '#FFB855',
-    subtle: 'rgba(242, 165, 65, 0.15)',
-    border: 'rgba(242, 165, 65, 0.4)',
-    glow: '0 0 30px rgba(242, 165, 65, 0.3)'
+    primary: '#7A5AF8',     // Arcane purple
+    cyan: '#9B6BFF',        // Light purple
+    hover: '#9B6BFF',
+    subtle: 'rgba(122, 90, 248, 0.12)',
+    border: 'rgba(122, 90, 248, 0.25)',
+    glow: '0 0 30px rgba(122, 90, 248, 0.3)'
   },
   // Accent colors
   accent: {
-    red: '#C54B2C',
-    redHover: '#E05C3D',
-    redSubtle: 'rgba(197, 75, 44, 0.15)',
-    redBorder: 'rgba(197, 75, 44, 0.4)'
+    red: '#D4AF37',         // Gold accent
+    redHover: '#F2D675',
+    redSubtle: 'rgba(212, 175, 55, 0.12)',
+    redBorder: 'rgba(212, 175, 55, 0.25)',
+    purple: '#7A5AF8',
+    purpleGlow: 'rgba(122, 90, 248, 0.4)'
   },
   text: {
-    white: '#FFFFFF',
-    secondary: '#B0B0B0',
-    muted: '#707070',
-    dim: '#505050'
+    white: '#E8E6E3',       // Warm white
+    secondary: '#9CA3AF',   // Muted text
+    muted: '#6B7280',       // Dim text
+    dim: '#4B5563',
+    gold: '#D4AF37'         // Gold text
   },
   border: {
-    dark: 'rgba(255, 255, 255, 0.06)',
-    default: 'rgba(255, 255, 255, 0.1)',
-    hover: 'rgba(255, 255, 255, 0.15)'
-  }
+    dark: 'rgba(212, 175, 55, 0.08)',
+    default: 'rgba(212, 175, 55, 0.25)',
+    hover: 'rgba(212, 175, 55, 0.4)'
+  },
+  // Utility colors
+  success: '#2ECC71',
+  danger: '#E74C3C',
+  info: '#3DA9FC'
 };
 
 function LandingPage() {
@@ -192,7 +199,7 @@ function LandingPage() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ 
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "'Inter', sans-serif",
               fontSize: '20px',
               fontWeight: '400',
               color: theme.text.white,
@@ -247,11 +254,11 @@ function LandingPage() {
           {/* Logo and Text */}
           <div style={{ marginBottom: '32px' }}>
             <h1 style={{
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "'Cinzel', serif",
               fontSize: 'clamp(2.5rem, 8vw, 5rem)',
-              fontWeight: '400',
-              color: theme.text.white,
-              letterSpacing: '8px',
+              fontWeight: '500',
+              color: theme.text.gold,
+              letterSpacing: '0.1em',
               textTransform: 'uppercase',
               margin: 0,
               lineHeight: '1.1'
@@ -260,11 +267,11 @@ function LandingPage() {
             </h1>
             
             <h1 style={{
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "'Cinzel', serif",
               fontSize: 'clamp(3rem, 10vw, 6rem)',
-              fontWeight: '400',
+              fontWeight: '600',
               color: theme.text.white,
-              letterSpacing: '12px',
+              letterSpacing: '0.15em',
               textTransform: 'uppercase',
               margin: '0',
               lineHeight: '1'
@@ -273,12 +280,12 @@ function LandingPage() {
             </h1>
             
             <p style={{
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "'Cinzel', serif",
               fontSize: 'clamp(0.9rem, 2vw, 1.2rem)',
-              background: 'linear-gradient(90deg, #C54B2C, #F2A541)',
+              background: 'linear-gradient(90deg, #D4AF37, #7A5AF8)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              letterSpacing: '6px',
+              letterSpacing: '0.3em',
               textTransform: 'uppercase',
               marginTop: '24px',
               fontWeight: '400'
@@ -291,18 +298,19 @@ function LandingPage() {
           <div style={{
             width: '120px',
             height: '2px',
-            background: 'linear-gradient(90deg, #C54B2C, #F2A541)',
+            background: 'linear-gradient(90deg, #D4AF37, #7A5AF8)',
             margin: '32px auto'
           }} />
 
           {/* Headline */}
           <h2 style={{
-            fontFamily: "Eros Book, sans-serif",
+            fontFamily: "'Cinzel', serif",
             fontSize: 'clamp(2rem, 4vw, 3.5rem)',
             fontWeight: '400',
             color: theme.text.white,
             marginBottom: '24px',
-            lineHeight: '1.2'
+            lineHeight: '1.2',
+            letterSpacing: '0.03em'
           }}>
             <span style={{ color: theme.gm.primary }}>Game Masters</span> &{' '}
             <span style={{ color: theme.player.cyan }}>Players</span>{' '}
@@ -311,7 +319,7 @@ function LandingPage() {
 
           {/* Subheadline */}
           <p style={{
-            fontFamily: "Eros Book, sans-serif",
+            fontFamily: "'Inter', sans-serif",
             fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
             color: theme.text.secondary,
             maxWidth: '800px',
@@ -331,7 +339,7 @@ function LandingPage() {
               style={{ 
                 padding: '16px 32px', 
                 fontSize: '17px',
-                fontFamily: "Eros Book, sans-serif",
+                fontFamily: "'Inter', sans-serif",
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
@@ -349,7 +357,7 @@ function LandingPage() {
               style={{ 
                 padding: '16px 32px', 
                 fontSize: '17px',
-                fontFamily: "Eros Book, sans-serif",
+                fontFamily: "'Inter', sans-serif",
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
@@ -430,7 +438,7 @@ function LandingPage() {
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "'Inter', sans-serif",
               fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
               fontWeight: '400',
               color: theme.text.white,
@@ -439,7 +447,7 @@ function LandingPage() {
               Your Entire Campaign. <span style={{ color: theme.accent.red }}>One System.</span>
             </h2>
             <p style={{
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "'Inter', sans-serif",
               color: theme.text.secondary,
               fontSize: '17px',
               lineHeight: '1.8',
@@ -494,7 +502,7 @@ function LandingPage() {
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <h2 style={{
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "'Inter', sans-serif",
               fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)',
               fontWeight: '400',
               color: theme.text.white,
@@ -503,7 +511,7 @@ function LandingPage() {
               Try <span style={{ color: theme.accent.red }}>ROOK</span> Right Now
             </h2>
             <p style={{ 
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "'Inter', sans-serif",
               color: theme.text.secondary, 
               fontSize: '16px', 
               maxWidth: '600px', 
@@ -529,7 +537,7 @@ function LandingPage() {
               style={{
                 padding: '16px 40px',
                 fontSize: '16px',
-                fontFamily: "Eros Book, sans-serif",
+                fontFamily: "'Inter', sans-serif",
                 fontWeight: '400',
                 background: theme.accent.red,
                 border: 'none',
@@ -1340,7 +1348,7 @@ function LandingPage() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span style={{ 
-                fontFamily: "Eros Book, sans-serif",
+                fontFamily: "'Inter', sans-serif",
                 fontSize: '16px',
                 fontWeight: '400',
                 color: theme.text.white,

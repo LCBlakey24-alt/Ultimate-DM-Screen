@@ -10,31 +10,32 @@ import TronBackground from '@/components/TronBackground';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Dark Black/Grey Theme with Orange/Gold Accents
+// Arcane Art-Deco Console Theme
 const theme = {
   bg: {
-    black: '#0D0D0D',      // Near black
-    dark: '#1A1A1A',       // Dark grey
-    panel: '#1F1F1F',      // Panel grey
-    card: '#262626',       // Card grey
-    hover: '#333333'       // Hover grey
+    black: '#0B1530',       // Deep navy
+    dark: '#0F1E42',        // Navy base
+    panel: '#121F3D',       // Panel navy
+    card: '#121F3D',        // Card navy
+    hover: '#172756'        // Hover navy
   },
   accent: {
-    primary: '#C54B2C',      // Burnt orange
-    secondary: '#A03D24',    // Medium orange-red
-    tertiary: '#333333',     // Dark grey
-    hover: '#E05C3D',
-    subtle: 'rgba(197, 75, 44, 0.15)',
-    red: '#C54B2C',
-    redHover: '#E05C3D',
-    redSubtle: 'rgba(197, 75, 44, 0.15)'
+    primary: '#7A5AF8',      // Arcane purple
+    secondary: '#9B6BFF',    // Light purple
+    tertiary: '#1C2C5A',     // Elevated navy
+    hover: '#9B6BFF',
+    subtle: 'rgba(122, 90, 248, 0.12)',
+    gold: '#D4AF37',
+    goldHover: '#F2D675',
+    goldSubtle: 'rgba(212, 175, 55, 0.12)'
   },
   text: {
-    white: '#FFFFFF',
-    secondary: '#B0B0B0',
-    muted: '#707070'
+    white: '#E8E6E3',
+    secondary: '#9CA3AF',
+    muted: '#6B7280',
+    gold: '#D4AF37'
   },
-  border: 'rgba(255, 255, 255, 0.15)'
+  border: 'rgba(212, 175, 55, 0.25)'
 };
 
 function AuthPage({ onLogin }) {
@@ -183,7 +184,7 @@ function AuthPage({ onLogin }) {
       justifyContent: 'center',
       padding: '20px',
       background: theme.bg.black,
-      fontFamily: "'Eros Book', 'Inter', sans-serif",
+      fontFamily: "'Inter', sans-serif",
       position: 'relative'
     }}>
       {/* Smokey Background Effect */}

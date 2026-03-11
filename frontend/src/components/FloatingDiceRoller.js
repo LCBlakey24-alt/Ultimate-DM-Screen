@@ -4,28 +4,28 @@ import { Dices, X, ChevronUp, Minus } from 'lucide-react';
 // Dark Minimalist Theme - Supports both Player (blue) and GM (red) modes
 const themes = {
   player: {
-    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1F1F1F', card: '#262626', hover: '#333333' },
+    bg: { black: '#0B1530', dark: '#141414', panel: '#121F3D', card: '#121F3D', hover: '#172756' },
     accent: {
-      primary: '#F2A541',
-      secondary: '#F2A541',
-      hover: '#FFB855',
+      primary: '#7A5AF8',
+      secondary: '#7A5AF8',
+      hover: '#9B6BFF',
       subtle: 'rgba(59, 130, 246, 0.15)',
       glow: 'rgba(59, 130, 246, 0.4)'
     },
     text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
-    border: 'rgba(255, 255, 255, 0.1)'
+    border: 'rgba(212, 175, 55, 0.15)'
   },
   gm: {
-    bg: { black: '#0D0D0D', dark: '#141414', panel: '#1F1F1F', card: '#262626', hover: '#333333' },
+    bg: { black: '#0B1530', dark: '#141414', panel: '#121F3D', card: '#121F3D', hover: '#172756' },
     accent: {
-      primary: '#C54B2C',
-      secondary: '#E05C3D',
+      primary: '#D4AF37',
+      secondary: '#F2D675',
       hover: '#F87171',
       subtle: 'rgba(220, 38, 38, 0.15)',
       glow: 'rgba(220, 38, 38, 0.4)'
     },
     text: { white: '#FFFFFF', secondary: '#B3B3B3', muted: '#808080' },
-    border: 'rgba(255, 255, 255, 0.1)'
+    border: 'rgba(212, 175, 55, 0.15)'
   }
 };
 
@@ -154,7 +154,7 @@ function FloatingDiceRoller({ mode = 'player' }) {
         border: `1px solid ${theme.border}`,
         boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
         zIndex: 9999,
-        fontFamily: "Eros Book, sans-serif"
+        fontFamily: "Inter, sans-serif"
       }}
     >
       {/* Header */}
@@ -347,7 +347,7 @@ function FloatingDiceRoller({ mode = 'player' }) {
                       color: roll.isCrit ? '#22c55e' : roll.isFail ? '#ef4444' : theme.text.white,
                       fontWeight: '800',
                       fontSize: '22px',
-                      fontFamily: "Eros Book, sans-serif"
+                      fontFamily: "Inter, sans-serif"
                     }}>
                       {roll.total}
                     </span>

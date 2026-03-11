@@ -13,19 +13,19 @@ import { UpgradePrompt } from '@/components/ui/UpgradePrompt';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Dark Minimalist Theme - NEW #C54B2C
+// Dark Minimalist Theme - NEW #D4AF37
 const theme = {
   bg: {
-    black: '#0D0D0D',
+    black: '#0B1530',
     dark: '#141414',
-    panel: '#1F1F1F',
-    card: '#262626',
-    hover: '#333333',
-    elevated: '#333333'
+    panel: '#121F3D',
+    card: '#121F3D',
+    hover: '#172756',
+    elevated: '#172756'
   },
   accent: {
-    red: '#C54B2C',
-    redHover: '#E05C3D',
+    red: '#D4AF37',
+    redHover: '#F2D675',
     redSubtle: 'rgba(225, 29, 72, 0.15)'
   },
   text: {
@@ -33,7 +33,7 @@ const theme = {
     secondary: '#B3B3B3',
     muted: '#808080'
   },
-  border: 'rgba(255, 255, 255, 0.1)'
+  border: 'rgba(212, 175, 55, 0.15)'
 };
 
 function CampaignList({ username, onLogout }) {
@@ -588,7 +588,7 @@ function CampaignList({ username, onLogout }) {
                       padding: '12px 16px',
                       background: 'rgba(239, 68, 68, 0.1)',
                       border: '1px solid rgba(239, 68, 68, 0.3)',
-                      color: '#E05C3D'
+                      color: '#F2D675'
                     }}
                   >
                     <Trash2 size={18} />

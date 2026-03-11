@@ -12,16 +12,16 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 // Tron Legacy Blue theme for player section
-const playerBlue = '#F2A541';
-const playerBlueHover = '#FFB855';
+const playerBlue = '#7A5AF8';
+const playerBlueHover = '#9B6BFF';
 const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
-const playerCyan = '#F2A541';
+const playerCyan = '#7A5AF8';
 const playerCyanGlow = '#22D3EE';
 
 // Ability data - Tron Legacy blue gradient
 const ABILITIES = [
-  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#F2A541', icon: Dumbbell },
-  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#F2A541', icon: Zap },
+  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#7A5AF8', icon: Dumbbell },
+  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#7A5AF8', icon: Zap },
   { key: 'constitution', label: 'CON', fullName: 'Constitution', color: '#0EA5E9', icon: Shield },
   { key: 'intelligence', label: 'INT', fullName: 'Intelligence', color: '#6366F1', icon: Brain },
   { key: 'wisdom', label: 'WIS', fullName: 'Wisdom', color: '#8B5CF6', icon: Eye },
@@ -332,8 +332,8 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
     >
       <div 
         style={{
-          background: '#1F1F1F',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: '#121F3D',
+          border: '1px solid rgba(212, 175, 55, 0.15)',
           maxWidth: '700px',
           width: '100%',
           maxHeight: '90vh',
@@ -345,7 +345,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
         {/* Header */}
         <div style={{
           padding: '24px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
           background: `linear-gradient(135deg, ${playerBlueSubtle}, transparent)`
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -393,7 +393,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                   style={{
                     flex: 1,
                     height: '4px',
-                    background: getCurrentStep() >= i + 1 ? playerBlue : 'rgba(255, 255, 255, 0.1)',
+                    background: getCurrentStep() >= i + 1 ? playerBlue : 'rgba(212, 175, 55, 0.15)',
                     transition: 'background 0.3s'
                   }}
                 />
@@ -560,8 +560,8 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                         isSelected && <Check size={20} color="#22C55E" />
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <AlertCircle size={16} color="#E05C3D" />
-                          <span style={{ color: '#E05C3D', fontSize: '11px' }}>
+                          <AlertCircle size={16} color="#F2D675" />
+                          <span style={{ color: '#F2D675', fontSize: '11px' }}>
                             {reqCheck.failed.map(f => `${f.ability} ${f.current}/${f.required}`).join(', ')}
                           </span>
                         </div>
@@ -745,7 +745,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                     }}>
                       <span style={{ color: '#fff', fontSize: '14px' }}>Rolled:</span>
                       <span style={{ 
-                        color: hpRoll === hitDie ? '#F2A541' : hpRoll === 1 ? '#ef4444' : playerBlue,
+                        color: hpRoll === hitDie ? '#7A5AF8' : hpRoll === 1 ? '#ef4444' : playerBlue,
                         fontSize: '24px',
                         fontWeight: '800'
                       }}>
@@ -943,7 +943,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                           style={{
                             padding: '16px',
                             background: isSelected ? `${ability.color}20` : '#111',
-                            border: isSelected ? `2px solid ${ability.color}` : '1px solid rgba(255, 255, 255, 0.1)',
+                            border: isSelected ? `2px solid ${ability.color}` : '1px solid rgba(212, 175, 55, 0.15)',
                             cursor: isMaxed && !isSelected ? 'not-allowed' : 'pointer',
                             opacity: isMaxed && !isSelected ? 0.5 : 1,
                             textAlign: 'center'
@@ -995,7 +995,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                         style={{
                           padding: '16px',
                           background: selectedFeat?.name === feat.name ? 'rgba(168, 85, 247, 0.2)' : '#111',
-                          border: selectedFeat?.name === feat.name ? '2px solid #a855f7' : '1px solid rgba(255, 255, 255, 0.1)',
+                          border: selectedFeat?.name === feat.name ? '2px solid #a855f7' : '1px solid rgba(212, 175, 55, 0.15)',
                           cursor: 'pointer',
                           textAlign: 'left',
                           display: 'flex',
@@ -1073,7 +1073,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
               {/* Summary */}
               <div style={{
                 background: '#111',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(212, 175, 55, 0.15)',
                 padding: '20px',
                 marginBottom: '20px'
               }}>
@@ -1157,7 +1157,7 @@ function LevelUpModal({ character, open, onClose, onLevelUp }) {
                   disabled={loading}
                   data-testid="confirm-level-up-btn"
                   style={{
-                    background: 'linear-gradient(135deg, #F2A541, #0891B2)',
+                    background: 'linear-gradient(135deg, #7A5AF8, #0891B2)',
                     border: 'none',
                     padding: '12px 32px',
                     display: 'flex',

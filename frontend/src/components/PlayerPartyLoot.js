@@ -13,26 +13,26 @@ const API = `${BACKEND_URL}/api`;
 
 // Player Theme - Blue (Tron Legacy)
 const theme = {
-  primary: '#F2A541',
-  cyan: '#F2A541',
-  hover: '#FFB855',
+  primary: '#7A5AF8',
+  cyan: '#7A5AF8',
+  hover: '#9B6BFF',
   subtle: 'rgba(59, 130, 246, 0.15)',
   glow: '0 0 20px rgba(6, 182, 212, 0.3)',
-  bg: '#0D0D0D',
-  card: '#262626',
-  panel: '#1F1F1F',
+  bg: '#0B1530',
+  card: '#121F3D',
+  panel: '#121F3D',
   text: '#FFFFFF',
   textSecondary: '#B3B3B3',
   muted: '#808080',
-  border: 'rgba(255, 255, 255, 0.1)',
+  border: 'rgba(212, 175, 55, 0.15)',
   success: '#22C55E',
   warning: '#F59E0B',
   gold: '#EAB308'
 };
 
 const ITEM_TYPES = {
-  weapon: { icon: Swords, color: '#E05C3D' },
-  armor: { icon: Shield, color: '#F2A541' },
+  weapon: { icon: Swords, color: '#F2D675' },
+  armor: { icon: Shield, color: '#7A5AF8' },
   potion: { icon: Heart, color: '#EC4899' },
   scroll: { icon: Wand2, color: '#8B5CF6' },
   wondrous: { icon: Sparkles, color: '#F59E0B' },
@@ -279,7 +279,7 @@ function PlayerPartyLoot({ campaignId, characterId, characterName }) {
                               <span style={{
                                 fontSize: '10px',
                                 padding: '2px 6px',
-                                background: item.rarity === 'rare' ? '#F2A541' :
+                                background: item.rarity === 'rare' ? '#7A5AF8' :
                                            item.rarity === 'very_rare' ? '#8B5CF6' :
                                            item.rarity === 'legendary' ? '#F59E0B' :
                                            item.rarity === 'uncommon' ? '#22C55E' : theme.muted,

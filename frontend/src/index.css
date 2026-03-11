@@ -2,79 +2,249 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== ARCANE ART-DECO FONTS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
 body {
     margin: 0;
-    font-family: 'Eros Book', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
     font-weight: 400;
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #0D0D0D;
+    background: linear-gradient(180deg, #0B1530 0%, #0F1E42 100%);
+    min-height: 100vh;
 }
 
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+/* ===== ARCANE ART-DECO CSS VARIABLES ===== */
 @layer base {
     :root {
-        /* Dark Theme with Orange/Gold Accents */
-        --background: 0 0% 5%;  /* Near black #0D0D0D */
-        --foreground: 0 0% 95%;
-        --card: 0 0% 12%;  /* Dark grey #1F1F1F */
-        --card-foreground: 0 0% 100%;
-        --popover: 0 0% 12%;
-        --popover-foreground: 0 0% 100%;
-        --primary: 18 70% 47%;  /* Burnt orange #C54B2C */
-        --primary-foreground: 0 0% 100%;
-        --secondary: 37 87% 60%;  /* Golden yellow #F2A541 */
+        /* Arcane Navy Theme */
+        --background: 222 60% 12%;  /* Deep navy #0B1530 */
+        --foreground: 45 50% 95%;   /* Warm white */
+        --card: 222 52% 16%;        /* Panel navy #121F3D */
+        --card-foreground: 45 50% 95%;
+        --popover: 222 52% 16%;
+        --popover-foreground: 45 50% 95%;
+        --primary: 43 56% 52%;      /* Metallic gold #D4AF37 */
+        --primary-foreground: 222 60% 12%;
+        --secondary: 255 91% 66%;   /* Arcane purple #7A5AF8 */
         --secondary-foreground: 0 0% 100%;
-        --muted: 0 0% 15%;  /* Dark grey #262626 */
-        --muted-foreground: 0 0% 70%;
-        --accent: 18 70% 47%;  /* Burnt orange #C54B2C */
+        --muted: 222 45% 20%;       /* Muted navy #172756 */
+        --muted-foreground: 220 20% 65%;
+        --accent: 255 91% 66%;      /* Arcane purple */
         --accent-foreground: 0 0% 100%;
-        --destructive: 0 84% 60%;
+        --destructive: 6 78% 57%;   /* Danger red #E74C3C */
         --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 20%;
-        --input: 0 0% 15%;
-        --ring: 18 70% 47%;
-        --chart-1: 18 70% 47%;
-        --chart-2: 37 87% 60%;
-        --chart-3: 0 60% 30%;
-        --chart-4: 0 0% 20%;
-        --chart-5: 340 75% 55%;
-        --radius: 0.625rem;
+        --border: 43 56% 52% / 0.25; /* Gold border */
+        --input: 222 45% 20%;
+        --ring: 43 56% 52%;
+        --chart-1: 43 56% 52%;
+        --chart-2: 255 91% 66%;
+        --chart-3: 145 63% 49%;
+        --chart-4: 199 89% 61%;
+        --chart-5: 6 78% 57%;
+        --radius: 0.875rem;
+        
+        /* Arcane Custom Properties */
+        --gold: #D4AF37;
+        --gold-light: #F2D675;
+        --gold-border: rgba(212, 175, 55, 0.25);
+        --gold-glow: rgba(212, 175, 55, 0.4);
+        --arcane-purple: #7A5AF8;
+        --arcane-purple-light: #9B6BFF;
+        --arcane-glow: rgba(122, 90, 248, 0.4);
+        --navy-deep: #0B1530;
+        --navy-base: #0F1E42;
+        --navy-panel: #121F3D;
+        --navy-hover: #172756;
+        --navy-elevated: #1C2C5A;
+        --success: #2ECC71;
+        --danger: #E74C3C;
+        --info: #3DA9FC;
     }
-    
+
     .dark {
-        --background: 0 0% 5%;
-        --foreground: 0 0% 95%;
-        --card: 0 0% 12%;
-        --card-foreground: 0 0% 100%;
-        --popover: 0 0% 12%;
-        --popover-foreground: 0 0% 100%;
-        --primary: 18 70% 47%;
-        --primary-foreground: 0 0% 100%;
-        --secondary: 0 0% 18%;
+        --background: 222 60% 12%;
+        --foreground: 45 50% 95%;
+        --card: 222 52% 16%;
+        --card-foreground: 45 50% 95%;
+        --popover: 222 52% 16%;
+        --popover-foreground: 45 50% 95%;
+        --primary: 43 56% 52%;
+        --primary-foreground: 222 60% 12%;
+        --secondary: 255 91% 66%;
         --secondary-foreground: 0 0% 100%;
-        --muted: 0 0% 18%;
-        --muted-foreground: 0 0% 60%;
-        --accent: 18 70% 47%;
+        --muted: 222 45% 20%;
+        --muted-foreground: 220 20% 65%;
+        --accent: 255 91% 66%;
         --accent-foreground: 0 0% 100%;
-        --destructive: 0 62% 30%;
+        --destructive: 6 78% 57%;
         --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 18%;
-        --input: 0 0% 18%;
-        --ring: 18 70% 47%;
-        --chart-1: 18 70% 47%;
-        --chart-2: 37 87% 60%;
-        --chart-3: 38 92% 50%;
-        --chart-4: 160 60% 45%;
-        --chart-5: 340 75% 55%;
+        --border: 43 56% 52% / 0.25;
+        --input: 222 45% 20%;
+        --ring: 43 56% 52%;
     }
 }
 
-/* ===== SMOKEY EMBERS BACKGROUND ===== */
+/* ===== ARCANE BACKGROUND EFFECTS ===== */
+.arcane-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0B1530 0%, #0F1E42 100%);
+}
+
+.arcane-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(122, 90, 248, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+        radial-gradient(ellipse 50% 30% at 80% 70%, rgba(122, 90, 248, 0.06) 0%, transparent 35%);
+    animation: arcane-pulse 20s ease-in-out infinite;
+}
+
+@keyframes arcane-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* ===== ARCANE PANEL STYLES ===== */
+.arcane-panel {
+    background: #121F3D;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 14px;
+    box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(212, 175, 55, 0.1);
+    transition: all 0.2s ease;
+}
+
+.arcane-panel:hover {
+    background: #172756;
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 30px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(212, 175, 55, 0.15);
+}
+
+/* ===== ARCANE BUTTON STYLES ===== */
+.arcane-btn-primary {
+    background: linear-gradient(135deg, #7A5AF8 0%, #9B6BFF 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(122, 90, 248, 0.3);
+}
+
+.arcane-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(122, 90, 248, 0.4);
+}
+
+.arcane-btn-secondary {
+    background: #1C2C5A;
+    color: #E8E6E3;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.arcane-btn-secondary:hover {
+    background: #243366;
+    border-color: rgba(212, 175, 55, 0.4);
+}
+
+.arcane-btn-gold {
+    background: linear-gradient(135deg, #D4AF37 0%, #F2D675 100%);
+    color: #0B1530;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.arcane-btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+/* ===== ARCANE TYPOGRAPHY ===== */
+.arcane-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: #D4AF37;
+}
+
+.arcane-heading {
+    font-family: 'Cinzel', serif;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    color: #E8E6E3;
+}
+
+/* ===== ARCANE GLOW EFFECTS ===== */
+.arcane-glow {
+    box-shadow: 0 0 20px rgba(122, 90, 248, 0.4);
+}
+
+.gold-glow {
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+/* ===== ARCANE TAB STYLES ===== */
+.arcane-tab {
+    position: relative;
+    padding-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.arcane-tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.arcane-tab:hover::after {
+    background: rgba(212, 175, 55, 0.5);
+}
+
+.arcane-tab.active::after {
+    background: #D4AF37;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+/* Legacy smokey-bg class - now arcane styled */
 .smokey-bg {
     position: fixed;
     top: 0;
@@ -84,9 +254,9 @@ code {
     pointer-events: none;
     z-index: 0;
     overflow: hidden;
+    background: linear-gradient(180deg, #0B1530 0%, #0F1E42 100%);
 }
 
-/* Smoke layer */
 .smokey-bg::before {
     content: '';
     position: absolute;
@@ -95,35 +265,13 @@ code {
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(ellipse 80% 50% at 20% 40%, rgba(197, 75, 44, 0.1) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(242, 165, 65, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse 100% 80% at 50% 100%, rgba(197, 75, 44, 0.06) 0%, transparent 40%);
-    animation: smoke-drift 20s ease-in-out infinite;
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(122, 90, 248, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+        radial-gradient(ellipse 50% 30% at 80% 70%, rgba(122, 90, 248, 0.06) 0%, transparent 35%);
+    animation: arcane-pulse 20s ease-in-out infinite;
 }
 
-/* Static ember dots */
-.smokey-bg::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(3px 3px at 10% 20%, rgba(255, 120, 50, 0.8) 0%, transparent 100%),
-        radial-gradient(2px 2px at 25% 45%, rgba(255, 180, 80, 0.6) 0%, transparent 100%),
-        radial-gradient(2px 2px at 40% 15%, rgba(255, 100, 30, 0.7) 0%, transparent 100%),
-        radial-gradient(3px 3px at 55% 70%, rgba(255, 150, 60, 0.5) 0%, transparent 100%),
-        radial-gradient(2px 2px at 70% 30%, rgba(255, 200, 100, 0.7) 0%, transparent 100%),
-        radial-gradient(3px 3px at 85% 55%, rgba(255, 130, 40, 0.6) 0%, transparent 100%),
-        radial-gradient(2px 2px at 95% 80%, rgba(255, 160, 70, 0.5) 0%, transparent 100%),
-        radial-gradient(3px 3px at 15% 75%, rgba(255, 110, 35, 0.6) 0%, transparent 100%),
-        radial-gradient(2px 2px at 60% 90%, rgba(255, 190, 90, 0.4) 0%, transparent 100%),
-        radial-gradient(3px 3px at 30% 60%, rgba(255, 140, 50, 0.5) 0%, transparent 100%);
-    animation: ember-float 15s ease-in-out infinite;
-}
-
-/* Floating ember particles container */
+/* Legacy ember particles - now arcane styled */
 .ember-particles {
     position: fixed;
     top: 0;
@@ -137,73 +285,45 @@ code {
 
 .ember-particles .ember {
     position: absolute;
-    width: 4px;
-    height: 4px;
-    background: radial-gradient(circle, rgba(255, 150, 50, 1) 0%, rgba(255, 100, 30, 0.8) 50%, transparent 100%);
+    width: 3px;
+    height: 3px;
+    background: radial-gradient(circle, rgba(122, 90, 248, 0.8) 0%, rgba(212, 175, 55, 0.6) 50%, transparent 100%);
     border-radius: 50%;
-    animation: ember-rise linear infinite;
+    animation: arcane-float linear infinite;
     opacity: 0;
 }
 
-.ember-particles .ember:nth-child(1) { left: 5%; animation-duration: 8s; animation-delay: 0s; }
-.ember-particles .ember:nth-child(2) { left: 15%; animation-duration: 10s; animation-delay: 1s; }
-.ember-particles .ember:nth-child(3) { left: 25%; animation-duration: 7s; animation-delay: 2s; }
-.ember-particles .ember:nth-child(4) { left: 35%; animation-duration: 9s; animation-delay: 0.5s; }
-.ember-particles .ember:nth-child(5) { left: 45%; animation-duration: 11s; animation-delay: 3s; }
-.ember-particles .ember:nth-child(6) { left: 55%; animation-duration: 8s; animation-delay: 1.5s; }
-.ember-particles .ember:nth-child(7) { left: 65%; animation-duration: 10s; animation-delay: 2.5s; }
-.ember-particles .ember:nth-child(8) { left: 75%; animation-duration: 9s; animation-delay: 0.8s; }
-.ember-particles .ember:nth-child(9) { left: 85%; animation-duration: 7s; animation-delay: 1.8s; }
-.ember-particles .ember:nth-child(10) { left: 95%; animation-duration: 12s; animation-delay: 3.5s; }
+.ember-particles .ember:nth-child(1) { left: 5%; animation-duration: 12s; animation-delay: 0s; }
+.ember-particles .ember:nth-child(2) { left: 15%; animation-duration: 15s; animation-delay: 2s; }
+.ember-particles .ember:nth-child(3) { left: 25%; animation-duration: 10s; animation-delay: 4s; }
+.ember-particles .ember:nth-child(4) { left: 35%; animation-duration: 14s; animation-delay: 1s; }
+.ember-particles .ember:nth-child(5) { left: 45%; animation-duration: 16s; animation-delay: 5s; }
+.ember-particles .ember:nth-child(6) { left: 55%; animation-duration: 12s; animation-delay: 3s; }
+.ember-particles .ember:nth-child(7) { left: 65%; animation-duration: 15s; animation-delay: 6s; }
+.ember-particles .ember:nth-child(8) { left: 75%; animation-duration: 13s; animation-delay: 2s; }
+.ember-particles .ember:nth-child(9) { left: 85%; animation-duration: 11s; animation-delay: 4s; }
+.ember-particles .ember:nth-child(10) { left: 95%; animation-duration: 18s; animation-delay: 7s; }
 
-@keyframes ember-rise {
+@keyframes arcane-float {
     0% {
         bottom: -10px;
         opacity: 0;
         transform: translateX(0) scale(0.5);
     }
     10% {
-        opacity: 1;
+        opacity: 0.6;
     }
     50% {
-        opacity: 0.8;
-        transform: translateX(20px) scale(1);
+        opacity: 0.4;
+        transform: translateX(15px) scale(0.8);
     }
     90% {
-        opacity: 0.3;
+        opacity: 0.2;
     }
     100% {
         bottom: 110%;
         opacity: 0;
         transform: translateX(-10px) scale(0.3);
-    }
-}
-
-@keyframes smoke-drift {
-    0%, 100% {
-        transform: translateX(0) translateY(0);
-        opacity: 1;
-    }
-    25% {
-        transform: translateX(2%) translateY(-1%);
-    }
-    50% {
-        transform: translateX(-1%) translateY(1%);
-        opacity: 0.8;
-    }
-    75% {
-        transform: translateX(1%) translateY(-2%);
-    }
-}
-
-@keyframes ember-float {
-    0%, 100% {
-        transform: translateY(0);
-        opacity: 0.7;
-    }
-    50% {
-        transform: translateY(-20px);
-        opacity: 1;
     }
 }
 

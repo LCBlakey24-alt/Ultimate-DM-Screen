@@ -13,23 +13,23 @@ const API = `${BACKEND_URL}/api`;
 // Dual Tron Theme - Aries (Red) + Legacy (Blue)
 const theme = {
   bg: {
-    black: '#0D0D0D',
-    dark: '#1A1A1A',
-    panel: '#1F1F1F',
-    card: '#D99033',
-    hover: '#F2A541'
+    black: '#0B1530',
+    dark: '#0F1E42',
+    panel: '#121F3D',
+    card: '#9B6BFF',
+    hover: '#7A5AF8'
   },
   gm: {
-    primary: '#C54B2C',
-    hover: '#C54B2C',
+    primary: '#D4AF37',
+    hover: '#D4AF37',
     subtle: 'rgba(185, 28, 28, 0.15)',
     border: 'rgba(185, 28, 28, 0.4)',
     glow: '0 0 20px rgba(185, 28, 28, 0.3)'
   },
   player: {
-    primary: '#F2A541',
-    cyan: '#D99033',
-    hover: '#FFB855',
+    primary: '#7A5AF8',
+    cyan: '#9B6BFF',
+    hover: '#9B6BFF',
     subtle: 'rgba(42, 157, 143, 0.15)',
     border: 'rgba(42, 157, 143, 0.4)',
     glow: '0 0 20px rgba(42, 157, 143, 0.3)'
@@ -44,7 +44,7 @@ const theme = {
     secondary: '#B8B8B8',
     muted: '#808080'
   },
-  border: 'rgba(255, 255, 255, 0.1)'
+  border: 'rgba(212, 175, 55, 0.15)'
 };
 
 function AdminPage({ username }) {
@@ -220,7 +220,7 @@ function AdminPage({ username }) {
           marginBottom: '40px',
           paddingBottom: '24px',
           borderBottom: '1px solid',
-          borderImage: 'linear-gradient(90deg, #C54B2C, #F2A541) 1'
+          borderImage: 'linear-gradient(90deg, #D4AF37, #7A5AF8) 1'
         }}>
           <Button 
             onClick={() => navigate('/home')} 
@@ -237,7 +237,7 @@ function AdminPage({ username }) {
             <h1 style={{ 
               fontSize: '28px', 
               color: theme.text.white,
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               fontWeight: '400',
               display: 'flex',
               alignItems: 'center',
@@ -345,7 +345,7 @@ function AdminPage({ username }) {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               letterSpacing: '1px'
             }}
           >
@@ -368,7 +368,7 @@ function AdminPage({ username }) {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               letterSpacing: '1px'
             }}
           >
@@ -391,7 +391,7 @@ function AdminPage({ username }) {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               letterSpacing: '1px'
             }}
           >
@@ -416,7 +416,7 @@ function AdminPage({ username }) {
               <h2 style={{ 
                 color: theme.gm.primary, 
                 fontSize: '18px',
-                fontFamily: "Eros Book, sans-serif",
+                fontFamily: "Inter, sans-serif",
                 fontWeight: '400',
                 display: 'flex',
                 alignItems: 'center',
@@ -457,7 +457,7 @@ function AdminPage({ username }) {
                   fontSize: '14px', 
                   fontWeight: '400', 
                   marginBottom: '20px',
-                  fontFamily: "Eros Book, sans-serif",
+                  fontFamily: "Inter, sans-serif",
                   letterSpacing: '1px'
                 }}>
                   CREATE NEW PROMO CODE
@@ -668,7 +668,7 @@ function AdminPage({ username }) {
             <h2 style={{ 
               color: theme.player.cyan, 
               fontSize: '18px',
-              fontFamily: "Eros Book, sans-serif",
+              fontFamily: "Inter, sans-serif",
               fontWeight: '400',
               marginBottom: '20px',
               display: 'flex',
@@ -774,7 +774,7 @@ function AdminPage({ username }) {
           <h2 style={{ 
             color: theme.legendary.primary, 
             fontSize: '18px',
-            fontFamily: "Eros Book, sans-serif",
+            fontFamily: "Inter, sans-serif",
             fontWeight: '400',
             marginBottom: '20px',
             display: 'flex',

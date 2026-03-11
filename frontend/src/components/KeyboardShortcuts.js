@@ -2,10 +2,10 @@ import React from 'react';
 import { X } from 'lucide-react';
 
 const theme = {
-  accent: '#C54B2C',
-  bg: { dark: '#1A1A1A', card: '#262626', panel: '#1F1F1F' },
-  text: { white: '#FFFFFF', secondary: '#B0B0B0', muted: '#707070' },
-  border: 'rgba(255, 255, 255, 0.15)'
+  accent: '#D4AF37',
+  bg: { dark: '#0F1E42', card: '#121F3D', panel: '#121F3D' },
+  text: { white: '#FFFFFF', secondary: '#9CA3AF', muted: '#6B7280' },
+  border: 'rgba(212, 175, 55, 0.25)'
 };
 
 const shortcuts = [
@@ -51,7 +51,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }) {
             color: theme.text.white, 
             fontSize: '18px', 
             fontWeight: '400',
-            fontFamily: "Eros Book, sans-serif"
+            fontFamily: "Inter, sans-serif"
           }}>
             Keyboard Shortcuts
           </h2>
