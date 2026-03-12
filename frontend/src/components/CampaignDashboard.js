@@ -1,511 +1,229 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map, ChevronDown, ChevronRight, Package, Dice6, Clock, Network, Compass, Building, Backpack } from 'lucide-react';
-import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
-import GodsTab from '@/components/tabs/GodsTab';
-import LocationsTab from '@/components/tabs/LocationsTab';
-import PlayersTab from '@/components/tabs/PlayersTab';
-import InGameNotesTab from '@/components/tabs/InGameNotesTab';
-import MapsTab from '@/components/tabs/MapsTab';
-import SessionRecapAI from '@/components/SessionRecapAI';
-import QuickTips, { TIPS } from '@/components/QuickTips';
-import WorldBuilderTab from '@/components/tabs/WorldBuilderTab';
-import TronBackground from '@/components/TronBackground';
-import { RookGuide } from '@/components/RookGuide';
-// Consolidated Tabs
-import MapsConsolidatedTab from '@/components/tabs/MapsConsolidatedTab';
-import NPCsConsolidatedTab from '@/components/tabs/NPCsConsolidatedTab';
-import InventoryConsolidatedTab from '@/components/tabs/InventoryConsolidatedTab';
-import ChronicleConsolidatedTab from '@/components/tabs/ChronicleConsolidatedTab';
-import CombatConsolidatedTab from '@/components/tabs/CombatConsolidatedTab';
-import ToolsConsolidatedTab from '@/components/tabs/ToolsConsolidatedTab';
+import React, { useEffect, useMemo, useState } from "react";
+import "../App.css";
+import "../styles/designSystem.css";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+function CampaignDashboard() {
+  const [campaignName] = useState("The Cursed Heights");
+  const [campaignSummary] = useState(
+    "A dark fantasy campaign of ancient ruins, uneasy alliances, and rising threats in the highlands."
+  );
 
-// Tron Aries Theme - Red/Orange GM Style
-const theme = {
-  bg: {
-    black: '#0B0F19',
-    dark: '#141414',
-    panel: '#111827',
-    card: '#111827',
-    hover: '#1F2937',
-    elevated: '#1F2937'
-  },
-  // Three shades of red for GM/Campaign side
-  accent: {
-    primary: '#F59E0B',      // Main red
-    secondary: '#D97706',    // Light red  
-    tertiary: '#991B1B',     // Dark red
-    hover: '#F87171',
-    subtle: 'rgba(220, 38, 38, 0.15)',
-    glow: '0 0 20px rgba(220, 38, 38, 0.4)',
-    // Legacy compatibility
-    red: '#F59E0B',
-    redHover: '#F87171',
-    redSubtle: 'rgba(220, 38, 38, 0.15)',
-    orange: '#F97316'
-  },
-  text: {
-    white: '#FFFFFF',
-    secondary: '#B3B3B3',
-    muted: '#808080'
-  },
-  border: 'rgba(212, 175, 55, 0.15)'
-};
+  const [partyMembers] = useState([
+    { name: "Javen Krow", role: "Fighter", level: 2, status: "Active" },
+    { name: "Thalia Emberheart", role: "Sorcerer", level: 2, status: "Active" },
+    { name: "Kael Ironfist", role: "Cleric", level: 2, status: "Active" }
+  ]);
 
-function CampaignDashboard({ username, onLogout }) {
-  const { campaignId } = useParams();
-  const navigate = useNavigate();
-  const [campaign, setCampaign] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('setting');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hoveredTab, setHoveredTab] = useState(null);
+  const [recentActivity] = useState([
+    "Session recap generated for Session 4",
+    "New location added: Ruined Watchtower",
+    "Goblin Boss encounter updated",
+    "Party note added: Strange sigil found in the shrine"
+  ]);
+
+  const [quickLinks] = useState([
+    { title: "Open Session Notes", description: "Review the latest live notes and clues." },
+    { title: "View Encounters", description: "Manage active and prepared combat encounters." },
+    { title: "Open World Map", description: "Jump to the current region and tracked markers." },
+    { title: "Review NPCs", description: "Check important allies, enemies, and quest figures." }
+  ]);
 
   useEffect(() => {
-    fetchCampaign();
-  }, [campaignId]);
+    document.title = `${campaignName} | Rookie Quest`;
+  }, [campaignName]);
 
-  const fetchCampaign = async () => {
-    try {
-      const response = await axios.get(`${API}/campaigns/${campaignId}`);
-      setCampaign(response.data);
-    } catch (error) {
-      toast.error('Failed to load campaign');
-      navigate('/campaigns');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenGMScreen = () => {
-    window.open(`/gm-screen/${campaignId}`, '_blank');
-  };
-
-  const handleTabClick = (tabId) => {
-    setActiveTab(tabId);
-    setMobileMenuOpen(false);
-  };
-
-  // Collapsed groups state
-  const [collapsedGroups, setCollapsedGroups] = useState({});
-  
-  const toggleGroup = (groupId) => {
-    setCollapsedGroups(prev => ({ ...prev, [groupId]: !prev[groupId] }));
-  };
-
-  if (loading) {
-    return (
-      <div className="loading-screen">
-        <div className="loading-spinner"></div>
-      </div>
-    );
-  }
-
-  if (!campaign) return null;
-
-  // Tab Groups with organized structure - CONSOLIDATED
-  const tabGroups = [
-    {
-      id: 'world',
-      label: 'World',
-      icon: Globe,
-      tabs: [
-        { id: 'setting', icon: Book, label: 'Setting' },
-        { id: 'world', icon: Globe, label: 'World Builder' },
-        { id: 'maps', icon: Compass, label: 'Maps' },
-        { id: 'gods', icon: Church, label: 'Gods' },
-        { id: 'locations', icon: MapPin, label: 'Locations' },
-        { id: 'npcs', icon: UserCircle, label: 'NPCs' },
-        { id: 'chronicle', icon: Clock, label: 'Chronicle' },
-      ]
-    },
-    {
-      id: 'combat',
-      label: 'Combat',
-      icon: Swords,
-      tabs: [
-        { id: 'combat', icon: Swords, label: 'Combat' },
-        { id: 'battle-maps', icon: Map, label: 'Battle Maps' },
-      ]
-    },
-    {
-      id: 'tools',
-      label: 'GM Tools',
-      icon: Wand2,
-      tabs: [
-        { id: 'tools', icon: ScrollText, label: 'Tools' },
-        { id: 'inventory', icon: Backpack, label: 'Inventory' },
-      ]
-    },
-  ];
-
-  // Standalone tabs (shown individually, not in groups)
-  const standaloneTabs = [
-    { id: 'session-recap', icon: Sparkles, label: 'AI Recap' },
-    { id: 'players', icon: Users, label: 'Players' },
-    { id: 'ingame-notes', icon: FileText, label: 'Notes' },
-  ];
-
-  // Check if active tab is in a group (auto-expand that group)
-  const getActiveGroup = () => {
-    for (const group of tabGroups) {
-      if (group.tabs.some(t => t.id === activeTab)) {
-        return group.id;
-      }
-    }
-    return null;
-  };
-
-  const activeGroupId = getActiveGroup();
-
-  // Render a single tab button
-  const renderTabButton = (tab, isNested = false) => {
-    const isActive = activeTab === tab.id;
-    const isHovered = hoveredTab === tab.id && !isActive;
-    
-    return (
-      <button
-        key={tab.id}
-        onClick={() => handleTabClick(tab.id)}
-        onMouseEnter={() => setHoveredTab(tab.id)}
-        onMouseLeave={() => setHoveredTab(null)}
-        data-testid={`${tab.id}-tab`}
-        style={{
-          position: 'relative',
-          padding: isNested ? '10px 16px 10px 32px' : '12px 16px',
-          border: 'none',
-          background: isActive ? theme.accent.red : (isHovered ? theme.bg.hover : 'transparent'),
-          color: isActive ? theme.text.white : (isHovered ? theme.text.white : theme.text.secondary),
-          fontWeight: '500',
-          fontSize: isNested ? '13px' : '14px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          transition: 'all 0.15s ease',
-          textAlign: 'left',
-          width: '100%',
-          minHeight: isNested ? '40px' : '44px'
-        }}
-      >
-        <tab.icon size={isNested ? 16 : 18} />
-        <span style={{ flex: 1 }}>{tab.label}</span>
-        
-        {/* Red bar on right side when hovered (not active) */}
-        {isHovered && !isActive && (
-          <div style={{
-            position: 'absolute',
-            right: 0,
-            top: '4px',
-            bottom: '4px',
-            width: '3px',
-            background: theme.accent.red,
-            animation: 'slideIn 0.15s ease'
-          }} />
-        )}
-      </button>
-    );
-  };
-
-  // Render group header
-  const renderGroupHeader = (group) => {
-    const isExpanded = !collapsedGroups[group.id] || activeGroupId === group.id;
-    const hasActiveTab = group.tabs.some(t => t.id === activeTab);
-    
-    return (
-      <button
-        key={`group-${group.id}`}
-        onClick={() => toggleGroup(group.id)}
-        data-testid={`group-${group.id}`}
-        style={{
-          padding: '10px 16px',
-          border: 'none',
-          background: hasActiveTab ? theme.accent.redSubtle : 'transparent',
-          color: hasActiveTab ? theme.accent.red : theme.text.muted,
-          fontWeight: '400',
-          fontSize: '11px',
-          letterSpacing: '1px',
-          textTransform: 'uppercase',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          width: '100%',
-          marginTop: '8px'
-        }}
-      >
-        {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-        <group.icon size={14} />
-        <span>{group.label}</span>
-      </button>
-    );
-  };
+  const campaignStats = useMemo(
+    () => [
+      { label: "Party Size", value: partyMembers.length },
+      { label: "Average Level", value: "2" },
+      { label: "Active Plot Threads", value: "3" },
+      { label: "Last Session", value: "2 days ago" }
+    ],
+    [partyMembers.length]
+  );
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: theme.bg.black,
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      {/* Header */}
-      <div style={{
-        background: theme.bg.dark,
-        borderBottom: `1px solid ${theme.border}`,
-        padding: '12px 16px',
-        position: 'sticky',
-        top: 0,
-        zIndex: 50
-      }}>
-        <div style={{ 
-          maxWidth: '100%', 
-          margin: '0 auto', 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          flexWrap: 'wrap', 
-          gap: '12px' 
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {/* Mobile Menu Toggle */}
-            <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="mobile-menu-toggle"
-              style={{
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                color: theme.accent.red,
-                display: 'none',
-                padding: '8px'
-              }}
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+    <div style={{ padding: "32px" }}>
+      <div
+        className="rq-panel"
+        style={{
+          marginBottom: "24px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "20px",
+          flexWrap: "wrap"
+        }}
+      >
+        <div>
+          <h1 className="rq-title" style={{ margin: 0, fontSize: "40px" }}>
+            {campaignName}
+          </h1>
+          <p className="rq-muted" style={{ marginTop: "10px", marginBottom: 0, maxWidth: "760px" }}>
+            {campaignSummary}
+          </p>
+        </div>
 
-            <Button 
-              data-testid="back-to-campaigns-btn"
-              onClick={() => navigate('/home')} 
-              style={{ 
-                minWidth: '44px', 
-                minHeight: '44px',
-                background: theme.bg.card,
-                border: `1px solid ${theme.border}`
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <button className="rq-button-primary">Open Campaign</button>
+          <button className="rq-button-secondary">Add Note</button>
+          <button className="rq-button-secondary">Manage World</button>
+        </div>
+      </div>
+
+      <div
+        className="rq-panel"
+        style={{
+          marginBottom: "24px",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+          gap: "16px"
+        }}
+      >
+        {campaignStats.map((stat) => (
+          <div key={stat.label} className="rq-card">
+            <div className="rq-muted" style={{ marginBottom: "8px" }}>
+              {stat.label}
+            </div>
+            <div style={{ fontWeight: 700, color: "var(--rq-gold-soft)", fontSize: "20px" }}>
+              {stat.value}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1.4fr 1fr",
+          gap: "24px",
+          alignItems: "start"
+        }}
+      >
+        <div style={{ display: "grid", gap: "24px" }}>
+          <div className="rq-panel">
+            <h2 className="rq-title" style={{ fontSize: "24px", marginTop: 0 }}>
+              Party Overview
+            </h2>
+
+            <div
+              style={{
+                display: "grid",
+                gap: "14px",
+                marginTop: "18px"
               }}
             >
-              <ArrowLeft size={20} color={theme.text.secondary} />
-            </Button>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-              <h1 style={{ 
-                fontSize: 'clamp(18px, 4vw, 24px)', 
-                color: theme.text.white, 
-                marginBottom: '4px',
-                fontWeight: '400',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxWidth: '200px'
-              }}>
-                {campaign.name}
-              </h1>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <span style={{
-                  fontSize: '11px',
-                  color: theme.accent.red,
-                  background: theme.accent.redSubtle,
-                  padding: '2px 8px',
-                  fontWeight: '400'
-                }}>
-                  {campaign.system || '5e 2024'}
-                </span>
+              {partyMembers.map((member) => (
+                <div
+                  key={member.name}
+                  className="rq-card"
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "16px",
+                    flexWrap: "wrap"
+                  }}
+                >
+                  <div>
+                    <div style={{ fontWeight: 700 }}>{member.name}</div>
+                    <div className="rq-muted" style={{ marginTop: "6px" }}>
+                      {member.role} • Level {member.level}
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      padding: "8px 12px",
+                      borderRadius: "999px",
+                      background: "rgba(46,204,113,0.12)",
+                      border: "1px solid rgba(46,204,113,0.25)",
+                      color: "#2ECC71",
+                      fontSize: "13px",
+                      fontWeight: 600
+                    }}
+                  >
+                    {member.status}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rq-panel">
+            <h2 className="rq-title" style={{ fontSize: "24px", marginTop: 0 }}>
+              Recent Activity
+            </h2>
+
+            <div
+              style={{
+                display: "grid",
+                gap: "12px",
+                marginTop: "18px"
+              }}
+            >
+              {recentActivity.map((item, index) => (
+                <div key={`${item}-${index}`} className="rq-card">
+                  <div style={{ fontWeight: 600, marginBottom: "6px" }}>
+                    Update {index + 1}
+                  </div>
+                  <div className="rq-muted">{item}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gap: "24px" }}>
+          <div className="rq-panel">
+            <h2 className="rq-title" style={{ fontSize: "24px", marginTop: 0 }}>
+              Quick Actions
+            </h2>
+
+            <div
+              style={{
+                display: "grid",
+                gap: "14px",
+                marginTop: "18px"
+              }}
+            >
+              {quickLinks.map((link) => (
+                <div key={link.title} className="rq-card">
+                  <div style={{ fontWeight: 700, marginBottom: "6px" }}>{link.title}</div>
+                  <div className="rq-muted" style={{ marginBottom: "12px" }}>
+                    {link.description}
+                  </div>
+                  <button className="rq-button-secondary">Open</button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rq-panel">
+            <h2 className="rq-title" style={{ fontSize: "24px", marginTop: 0 }}>
+              Campaign Focus
+            </h2>
+
+            <div className="rq-card" style={{ marginTop: "18px" }}>
+              <div style={{ fontWeight: 700, marginBottom: "8px" }}>
+                Current Direction
+              </div>
+              <div className="rq-muted">
+                The party is following clues through the ruined shrine while a hidden force manipulates events in the region.
+              </div>
+            </div>
+
+            <div className="rq-card" style={{ marginTop: "14px" }}>
+              <div style={{ fontWeight: 700, marginBottom: "8px" }}>
+                GM Reminder
+              </div>
+              <div className="rq-muted">
+                Keep pressure on the investigation, foreshadow the larger enemy, and reward note-taking and exploration.
               </div>
             </div>
           </div>
-          
-          <Button 
-            data-testid="open-dm-screen-btn"
-            onClick={handleOpenGMScreen}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px',
-              background: theme.accent.red,
-              border: 'none',
-              color: theme.text.white,
-              fontSize: 'clamp(12px, 2vw, 14px)',
-              padding: '10px 16px',
-              minHeight: '44px',
-              fontWeight: '400'
-            }}
-          >
-            <Monitor size={18} />
-            <span className="desktop-only">Open </span>GM Screen
-          </Button>
         </div>
       </div>
-
-      {/* Main Layout */}
-      <div style={{ 
-        display: 'flex', 
-        flex: 1,
-        overflow: 'hidden',
-        position: 'relative'
-      }}>
-        {/* LEFT SIDEBAR */}
-        <div 
-          className={`sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}
-          style={{
-            width: '220px',
-            minWidth: '220px',
-            background: theme.bg.dark,
-            borderRight: `1px solid ${theme.border}`,
-            padding: '16px 0',
-            overflowY: 'auto',
-            transition: 'transform 0.3s ease'
-          }}
-        >
-          <h3 style={{
-            color: theme.text.muted,
-            fontSize: '11px',
-            fontWeight: '400',
-            letterSpacing: '1.5px',
-            textTransform: 'uppercase',
-            marginBottom: '12px',
-            paddingLeft: '16px'
-          }}>
-            Campaign Tools
-          </h3>
-          
-          {/* Grouped Tabs */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            {/* Render tab groups */}
-            {tabGroups.map(group => {
-              const isExpanded = !collapsedGroups[group.id] || activeGroupId === group.id;
-              return (
-                <div key={group.id}>
-                  {renderGroupHeader(group)}
-                  {isExpanded && group.tabs.map(tab => renderTabButton(tab, true))}
-                </div>
-              );
-            })}
-            
-            {/* Divider */}
-            <div style={{ 
-              height: '1px', 
-              background: theme.border, 
-              margin: '12px 16px' 
-            }} />
-            
-            {/* Ungrouped tabs */}
-            {standaloneTabs.map(tab => renderTabButton(tab, false))}
-          </div>
-        </div>
-
-        {/* Mobile Overlay */}
-        {mobileMenuOpen && (
-          <div 
-            className="mobile-overlay"
-            onClick={() => setMobileMenuOpen(false)}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0, 0, 0, 0.7)',
-              zIndex: 39,
-              display: 'none'
-            }}
-          />
-        )}
-
-        {/* MAIN CONTENT */}
-        <div style={{ 
-          flex: 1, 
-          overflowY: 'auto',
-          padding: 'clamp(12px, 3vw, 24px)',
-          background: theme.bg.black
-        }}>
-          {/* Quick Tips */}
-          <QuickTips 
-            tips={TIPS.campaignDashboard} 
-            pageId="campaignDashboard" 
-            title="Campaign Tips"
-          />
-
-          {/* Tab Content */}
-          <div style={{
-            background: theme.bg.panel,
-            border: `1px solid ${theme.border}`,
-            padding: '24px',
-            minHeight: '500px'
-          }}>
-            {/* Rook Guide for Active Tab */}
-            <RookGuide guideId={activeTab} variant="card" />
-            
-            {activeTab === 'setting' && <CampaignSettingTab campaignId={campaignId} />}
-            {activeTab === 'world' && <WorldBuilderTab campaignId={campaignId} />}
-            {activeTab === 'maps' && <MapsConsolidatedTab campaignId={campaignId} />}
-            {activeTab === 'gods' && <GodsTab campaignId={campaignId} />}
-            {activeTab === 'npcs' && <NPCsConsolidatedTab campaignId={campaignId} />}
-            {activeTab === 'locations' && <LocationsTab campaignId={campaignId} />}
-            {activeTab === 'chronicle' && <ChronicleConsolidatedTab campaignId={campaignId} />}
-            {activeTab === 'combat' && <CombatConsolidatedTab campaignId={campaignId} />}
-            {activeTab === 'battle-maps' && <MapsTab campaignId={campaignId} />}
-            {activeTab === 'tools' && <ToolsConsolidatedTab campaignId={campaignId} />}
-            {activeTab === 'inventory' && <InventoryConsolidatedTab campaignId={campaignId} />}
-            {activeTab === 'session-recap' && <SessionRecapAI campaignId={campaignId} />}
-            {activeTab === 'players' && <PlayersTab campaignId={campaignId} />}
-            {activeTab === 'ingame-notes' && <InGameNotesTab campaignId={campaignId} />}
-          </div>
-        </div>
-      </div>
-
-      {/* Responsive Styles */}
-      <style>{`
-        @media (max-width: 640px) {
-          .desktop-logos, .desktop-only {
-            display: none !important;
-          }
-        }
-
-        @media (max-width: 1024px) {
-          .mobile-menu-toggle {
-            display: block !important;
-          }
-
-          .sidebar {
-            position: fixed !important;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            z-index: 40;
-            transform: translateX(-100%);
-          }
-
-          .sidebar.mobile-open {
-            transform: translateX(0);
-          }
-
-          .mobile-overlay {
-            display: block !important;
-          }
-        }
-
-        @media (hover: none) and (pointer: coarse) {
-          button, .clickable-box {
-            min-height: 44px !important;
-            min-width: 44px !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
