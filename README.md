@@ -19,6 +19,9 @@ To reduce copyright and trademark risk:
 
 This project is not affiliated with or endorsed by Wizards of the Coast.
 
+If you run into merge conflict markers in this section (`<<<<<<<`, `=======`, `>>>>>>>`),
+keep the IP & copyright safety block and remove the marker lines before committing.
+
 ## Project structure
 
 - `frontend/` — React + CRACO UI
@@ -108,6 +111,27 @@ App should run on `http://localhost:3000` and call backend at `REACT_APP_BACKEND
    - register/login works
    - token persists across refresh
    - reset password link opens `/reset-password?token=...`
+
+
+## Recommended next updates (priority order)
+
+1. **Character Builder reliability pass**
+   - Enforce ability score bounds in UI and at API validation.
+   - Add selectable build modes (Manual, Standard Array style, Point Allocation style).
+   - Validate race/class/background selections against your own internal rules dataset.
+
+2. **Character creation consistency**
+   - Add derived-stat preview before save (HP, proficiency, spell/DC basics).
+   - Block save when required fields are invalid and show inline field-level errors.
+   - Add autosave + draft recovery for partially built characters.
+
+3. **Deployment hardening**
+   - Add `/api/health` frontend startup check with clear UI message if backend is unreachable.
+   - Add centralized API error handling/toasts for auth-expired and network failures.
+
+4. **Content/IP safety QA**
+   - Keep all public-facing labels system-agnostic / "5e-compatible" and avoid third-party trademarks.
+   - Use only original or properly licensed text/art assets in generated or seeded content.
 
 ## Quick troubleshooting
 
