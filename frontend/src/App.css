@@ -1,19 +1,7 @@
-/* Quest Keeper - Dark Minimalist Design System v8.0 */
-/* New Color Scheme: Burgundy/Orange/Gold/Navy Theme with Eros Book Font */
+/* Quest Keeper - Clean SaaS Design System */
+/* Using Montserrat font from index.css */
 
-/* Custom Font - Eros Book */
-@font-face {
-  font-family: 'Eros Book';
-  src: url('../public/fonts/ErosBookRegular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Inter as fallback only */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap');
-
-/* Global base reset - REMOVED font override to allow index.css Cinzel/Crimson Text fonts */
+/* Global base reset */
 * {
   margin: 0;
   padding: 0;
@@ -365,7 +353,7 @@
 }
 
 body {
-  font-family: 'Cityworm', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg-black);
   color: var(--text-primary);
   min-height: 100vh;
@@ -373,10 +361,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Brand Font - Eros Book is now primary */
+/* Brand Font - Montserrat */
 .brand-font, .logo-title, h1.brand, h2.brand {
-  font-family: 'Eros Book', sans-serif;
-  font-weight: 400;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
 }
 
 /* Main App Container */
@@ -436,13 +424,13 @@ body {
 
 /* ===== TYPOGRAPHY ===== */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Eros Book', sans-serif;
-  font-weight: 400;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 p, span, div, label, a, button {
-  font-family: 'Eros Book', 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 /* ===== PANELS & CARDS ===== */
@@ -477,7 +465,7 @@ p, span, div, label, a, button {
   padding: 12px 16px;
   width: 100%;
   font-size: 14px;
-  font-family: 'Cityworm', 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   transition: all 0.2s ease;
 }
 
@@ -499,7 +487,7 @@ p, span, div, label, a, button {
   width: 100%;
   min-height: 100px;
   resize: vertical;
-  font-family: 'Cityworm', 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 14px;
   transition: all 0.2s ease;
   line-height: 1.6;
@@ -520,7 +508,7 @@ p, span, div, label, a, button {
   padding: 12px 24px;
   font-weight: 600;
   font-size: 14px;
-  font-family: 'Cityworm', 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.15s ease;
   text-transform: uppercase;
@@ -549,7 +537,7 @@ p, span, div, label, a, button {
   padding: 12px 24px;
   font-weight: 600;
   font-size: 14px;
-  font-family: 'Cityworm', 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -571,7 +559,7 @@ p, span, div, label, a, button {
   padding: 10px 20px;
   font-weight: 600;
   font-size: 13px;
-  font-family: 'Cityworm', 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -590,7 +578,7 @@ p, span, div, label, a, button {
   padding: 10px 16px;
   font-weight: 600;
   font-size: 13px;
-  font-family: 'Cityworm', 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -639,7 +627,7 @@ p, span, div, label, a, button {
   border: none;
   color: var(--text-secondary);
   font-size: 14px;
-  font-family: 'Cityworm', 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -699,7 +687,7 @@ p, span, div, label, a, button {
   color: var(--text-secondary);
   font-weight: 500;
   font-size: 13px;
-  font-family: 'Cityworm', 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -1058,8 +1046,8 @@ select option {
 .gradient-text { color: var(--accent-red); }
 .rainbow-text { color: var(--accent-red); }
 .text-glow { color: var(--text-primary); }
-.logo-title { font-family: 'Eros Book', sans-serif; font-size: 42px; color: var(--text-primary); text-transform: uppercase; letter-spacing: 2px; font-weight: 400; }
-.logo-subtitle { font-family: 'Eros Book', sans-serif; font-size: 24px; color: var(--accent-red); text-transform: uppercase; letter-spacing: 3px; font-weight: 400; }
+.logo-title { font-family: 'Montserrat', sans-serif; font-size: 42px; color: var(--text-primary); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+.logo-subtitle { font-family: 'Montserrat', sans-serif; font-size: 24px; color: var(--accent-red); text-transform: uppercase; letter-spacing: 3px; font-weight: 500; }
 .stat-box { background: var(--bg-card); border: 1px solid var(--border-default); padding: 16px; text-align: center; }
 .stat-box-green { background: var(--bg-card); border: 1px solid var(--border-default); }
 .stat-box-gold { background: var(--bg-card); border: 1px solid var(--border-default); }

@@ -56,8 +56,8 @@ const SKILLS = [
 
 // Ability score data - Tron Legacy Blue theme for players
 const ABILITIES = [
-  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#06B6D4', icon: Dumbbell },
-  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#06B6D4', icon: Zap },
+  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#F2A541', icon: Dumbbell },
+  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#F2A541', icon: Zap },
   { key: 'constitution', label: 'CON', fullName: 'Constitution', color: '#0EA5E9', icon: Shield },
   { key: 'intelligence', label: 'INT', fullName: 'Intelligence', color: '#6366F1', icon: Brain },
   { key: 'wisdom', label: 'WIS', fullName: 'Wisdom', color: '#8B5CF6', icon: Eye },
@@ -87,18 +87,18 @@ const SPELL_LEVELS = {
 };
 
 // Blue theme for player section - Tron Legacy aesthetic
-const playerBlue = '#06B6D4';
-const playerBlueHover = '#0891B2';
+const playerBlue = '#F2A541';
+const playerBlueHover = '#FFB855';
 const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
-const playerCyan = '#06B6D4';     // Tron Legacy cyan for highlights
+const playerCyan = '#F2A541';     // Tron Legacy cyan for highlights
 const playerCyanGlow = '#22D3EE'; // Brighter cyan for glows
-const playerSuccess = '#06B6D4';  // Use cyan instead of green for success states
-const playerHP = '#D97706';       // Keep red for HP (damage is universal)
+const playerSuccess = '#F2A541';  // Use cyan instead of green for success states
+const playerHP = '#E05C3D';       // Keep red for HP (damage is universal)
 
 // Dark panel styles (matching dark theme)
 const glassPanel = {
-  background: '#111827',
-  border: '1px solid rgba(212, 175, 55, 0.15)',
+  background: '#1F1F1F',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
 };
 
 // Compact Ability Score Block Component
@@ -157,7 +157,7 @@ function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBon
             fontSize: '22px', 
             fontWeight: '800', 
             color: '#fff',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'Eros Book, sans-serif',
             lineHeight: 1
           }}>
             {score}
@@ -202,8 +202,8 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
             width: '16px',
             height: '16px',
             borderRadius: '3px',
-            border: isProficient ? '2px solid #06B6D4' : '2px solid #475569',
-            background: isProficient ? '#06B6D4' : 'transparent',
+            border: isProficient ? '2px solid #F2A541' : '2px solid #475569',
+            background: isProficient ? '#F2A541' : 'transparent',
             marginRight: '8px',
             display: 'flex',
             alignItems: 'center',
@@ -216,11 +216,11 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
         </button>
       )}
       
-      <Icon size={12} color={isProficient ? '#06B6D4' : '#64748b'} style={{ marginRight: '6px', flexShrink: 0 }} />
+      <Icon size={12} color={isProficient ? '#F2A541' : '#64748b'} style={{ marginRight: '6px', flexShrink: 0 }} />
       
       <span style={{ 
         flex: 1,
-        color: isProficient ? '#06B6D4' : '#e2e8f0',
+        color: isProficient ? '#F2A541' : '#e2e8f0',
         fontSize: '12px',
         fontWeight: isProficient ? '600' : '400',
         whiteSpace: 'nowrap',
@@ -243,7 +243,7 @@ function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onTogg
       <DiceRollButton 
         modifier={totalMod}
         label={skill.name}
-        color={isProficient ? '#06B6D4' : '#fff'}
+        color={isProficient ? '#F2A541' : '#fff'}
         size="small"
         showDice={false}
       />
@@ -257,8 +257,8 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
   
   // Tron Legacy blue gradient for spell levels
   const levelColor = spell.level === 0 ? '#94a3b8' : 
-    spell.level <= 2 ? '#06B6D4' : 
-    spell.level <= 5 ? '#06B6D4' : 
+    spell.level <= 2 ? '#F2A541' : 
+    spell.level <= 5 ? '#F2A541' : 
     spell.level <= 7 ? '#6366F1' : '#8B5CF6';
   
   return (
@@ -285,7 +285,7 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
               width: '24px',
               height: '24px',
               borderRadius: '6px',
-              border: isPrepared ? '2px solid #06B6D4' : '2px solid #475569',
+              border: isPrepared ? '2px solid #F2A541' : '2px solid #475569',
               background: isPrepared ? 'rgba(6, 182, 212, 0.2)' : 'transparent',
               marginRight: '12px',
               display: 'flex',
@@ -294,7 +294,7 @@ function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
               cursor: 'pointer'
             }}
           >
-            {isPrepared && <Check size={14} color="#06B6D4" />}
+            {isPrepared && <Check size={14} color="#F2A541" />}
           </button>
         )}
         
@@ -382,7 +382,7 @@ function FeatureCard({ feature, source }) {
   
   // Tron Legacy blue palette for feature sources
   const sourceColors = {
-    class: { bg: 'rgba(59, 130, 246, 0.12)', text: '#0891B2' },
+    class: { bg: 'rgba(59, 130, 246, 0.12)', text: '#FFB855' },
     race: { bg: 'rgba(6, 182, 212, 0.12)', text: '#22D3EE' },
     feat: { bg: 'rgba(99, 102, 241, 0.12)', text: '#818CF8' },
     background: { bg: 'rgba(139, 92, 246, 0.12)', text: '#A78BFA' }
@@ -510,6 +510,7 @@ function CharacterSheetFull() {
     }
   };
 
+
   const fetchSrdData = async () => {
     try {
       const [spellsRes, classesRes, featsRes] = await Promise.all([
@@ -530,6 +531,43 @@ function CharacterSheetFull() {
     } finally {
       setLoadingSrd(false);
     }
+  };
+
+  const persistCharacterChanges = async (changes, successMessage = null) => {
+    const nextData = { ...(editMode ? editData : character), ...changes };
+
+    if (editMode) {
+      setEditData(nextData);
+      return;
+    }
+
+    try {
+      await axios.put(`${API}/characters/${characterId}`, nextData);
+      setCharacter(nextData);
+      setEditData(nextData);
+      if (successMessage) {
+        toast.success(successMessage);
+      }
+    } catch (error) {
+      toast.error('Failed to update character');
+    }
+  };
+
+  const updateSpellSlotUsage = async (level, slotIndex) => {
+    const usedKey = `spell_slots_${level}_used`;
+    const currentUsed = data[usedKey] || 0;
+    const nextUsed = slotIndex < currentUsed ? slotIndex : slotIndex + 1;
+    await persistCharacterChanges({ [usedKey]: nextUsed });
+  };
+
+  const updateDeathSaves = async (type, value) => {
+    const safeValue = Math.max(0, Math.min(3, value));
+    const field = type === 'success' ? 'death_save_success' : 'death_save_failure';
+    await persistCharacterChanges({ [field]: safeValue });
+  };
+
+  const resetDeathSaves = async () => {
+    await persistCharacterChanges({ death_save_success: 0, death_save_failure: 0 }, 'Death saves reset');
   };
 
   const handleSave = async () => {
@@ -637,6 +675,32 @@ function CharacterSheetFull() {
     );
   }, [character, srdSpells]);
 
+  const sourceData = editMode ? editData : character;
+
+  const equippedWeapons = useMemo(() => {
+    return (sourceData?.equipment || []).filter(item => item.equipped && (item.type === 'weapon' || item.damage));
+  }, [sourceData]);
+
+  const resolvedPreparedSpells = useMemo(() => {
+    const prepared = sourceData?.spells_prepared || [];
+    if (!prepared.length) return [];
+    return prepared.map(spell => {
+      const srdMatch = availableSpells.find(s => s.name === spell.name);
+      return srdMatch || spell;
+    });
+  }, [sourceData, availableSpells]);
+
+  const resolvedKnownSpells = useMemo(() => {
+    const known = sourceData?.spells_known || [];
+    if (!known.length) return [];
+    return known.map(spell => {
+      const srdMatch = availableSpells.find(s => s.name === spell.name);
+      return srdMatch || spell;
+    });
+  }, [sourceData, availableSpells]);
+
+  const portraitUrl = sourceData?.portrait_url || sourceData?.portrait || sourceData?.image_url || '';
+
   // Filtered spells
   const filteredSpells = useMemo(() => {
     let spells = availableSpells;
@@ -705,8 +769,8 @@ function CharacterSheetFull() {
   return (
     <div data-testid="character-sheet-full" style={{
       minHeight: '100vh',
-      background: '#0B0F19',
-      fontFamily: 'Inter, sans-serif'
+      background: '#0D0D0D',
+      fontFamily: 'Eros Book, sans-serif'
     }}>
       {/* Subtle Blue Gradient Background */}
       <div style={{
@@ -742,7 +806,7 @@ function CharacterSheetFull() {
             <div>
               <h1 style={{
                 fontSize: 'clamp(24px, 4vw, 36px)',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'Eros Book, sans-serif',
                 fontWeight: '800',
                 color: '#fff',
                 marginBottom: '4px'
@@ -777,7 +841,7 @@ function CharacterSheetFull() {
                 data-testid="level-up-btn"
                 onClick={() => setShowLevelUpModal(true)}
                 style={{ 
-                  background: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
+                  background: 'linear-gradient(135deg, #F2A541 0%, #0891B2 100%)',
                   border: 'none',
                   borderRadius: '0px',
                   padding: '10px 16px',
@@ -795,7 +859,7 @@ function CharacterSheetFull() {
                 data-testid="join-campaign-btn"
                 onClick={() => setShowJoinModal(true)}
                 style={{ 
-                  background: 'linear-gradient(135deg, #06B6D4 0%, #2563EB 100%)',
+                  background: 'linear-gradient(135deg, #F2A541 0%, #2563EB 100%)',
                   border: 'none',
                   borderRadius: '0px',
                   padding: '10px 16px',
@@ -829,7 +893,7 @@ function CharacterSheetFull() {
                   onClick={handleSave}
                   disabled={saving}
                   style={{ 
-                    background: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)',
+                    background: 'linear-gradient(135deg, #F2A541 0%, #0891B2 100%)',
                     border: 'none',
                     borderRadius: '0px',
                     padding: '10px 16px'
@@ -862,7 +926,7 @@ function CharacterSheetFull() {
           ...glassPanel,
           padding: '10px 16px',
           marginBottom: '12px',
-          background: 'linear-gradient(180deg, #111827 0%, #111827 100%)',
+          background: 'linear-gradient(180deg, #1F1F1F 0%, #1A1A1A 100%)',
           borderBottom: '2px solid rgba(59, 130, 246, 0.3)'
         }}>
           {/* Character Info Row */}
@@ -1056,10 +1120,10 @@ function CharacterSheetFull() {
               alignItems: 'center',
               gap: '6px'
             }}>
-              <Activity size={14} color="#06B6D4" />
+              <Activity size={14} color="#F2A541" />
               <div>
                 <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>SPEED</span>
-                <span style={{ color: '#06B6D4', fontWeight: '400', fontSize: '14px' }}>
+                <span style={{ color: '#F2A541', fontWeight: '400', fontSize: '14px' }}>
                   {data.speed}ft
                 </span>
               </div>
@@ -1177,6 +1241,45 @@ function CharacterSheetFull() {
             flexDirection: 'column',
             gap: '10px'
           }}>
+            {/* Portrait */}
+            <div style={{ ...glassPanel, padding: '10px' }}>
+              <h4 style={{ color: '#67e8f9', fontSize: '10px', fontWeight: '400', marginBottom: '8px', letterSpacing: '0.5px' }}>
+                PORTRAIT
+              </h4>
+              <div style={{
+                width: '100%',
+                aspectRatio: '3 / 4',
+                borderRadius: '10px',
+                overflow: 'hidden',
+                border: '1px solid rgba(242, 165, 65, 0.25)',
+                background: 'linear-gradient(180deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {portraitUrl ? (
+                  <img
+                    src={portraitUrl}
+                    alt={`${data.name} portrait`}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      objectPosition: 'center top',
+                      background: 'rgba(15, 23, 42, 0.4)'
+                    }}
+                  />
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '12px' }}>
+                    <User size={28} color="#64748b" style={{ marginBottom: '8px' }} />
+                    <div style={{ color: '#64748b', fontSize: '10px', lineHeight: '1.4' }}>
+                      No portrait generated yet
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* All Skills Box */}
             <div style={{ ...glassPanel, padding: '10px', flex: 1 }}>
               <h4 style={{ color: '#67e8f9', fontSize: '10px', fontWeight: '400', marginBottom: '8px', letterSpacing: '0.5px' }}>
@@ -1206,12 +1309,12 @@ function CharacterSheetFull() {
                         background: isProficient ? 'rgba(6, 182, 212, 0.08)' : 'transparent',
                         borderRadius: '3px',
                         cursor: editMode ? 'pointer' : 'default',
-                        borderLeft: isProficient ? '2px solid #06B6D4' : '2px solid transparent'
+                        borderLeft: isProficient ? '2px solid #F2A541' : '2px solid transparent'
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', minWidth: 0 }}>
                         <span style={{ 
-                          color: isProficient ? '#06B6D4' : '#94a3b8', 
+                          color: isProficient ? '#F2A541' : '#94a3b8', 
                           fontSize: '10px',
                           fontWeight: isProficient ? '600' : '400',
                           textDecoration: isProficient ? 'underline' : 'none',
@@ -1228,7 +1331,7 @@ function CharacterSheetFull() {
                       <DiceRollButton 
                         modifier={totalMod}
                         label={skill.name}
-                        color={isProficient ? '#06B6D4' : '#64748b'}
+                        color={isProficient ? '#F2A541' : '#64748b'}
                         size="small"
                         showDice={false}
                       />
@@ -1347,6 +1450,33 @@ function CharacterSheetFull() {
                       })}
                     </>
                   ) : null}
+
+                  {/* Always Available: Unarmed Strike */}
+                  <>
+                    <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>BASIC ATTACK</div>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px 10px',
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      borderRadius: '6px',
+                      borderLeft: '3px solid #ef4444'
+                    }}>
+                      <span style={{ color: '#e2e8f0', fontSize: '12px', fontWeight: '500' }}>Unarmed Strike</span>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <DiceRollButton
+                          modifier={calculateModifier(data.strength) + profBonus}
+                          label="Unarmed Strike Attack"
+                          color="#ef4444"
+                          size="small"
+                        />
+                        <span style={{ color: '#94a3b8', fontSize: '10px' }}>
+                          1{calculateModifier(data.strength) >= 0 ? `+${calculateModifier(data.strength)}` : calculateModifier(data.strength)}
+                        </span>
+                      </div>
+                    </div>
+                  </>
 
                   {/* Cast a Spell (if caster) */}
                   {data.spellcasting_ability && (
@@ -1513,33 +1643,6 @@ function CharacterSheetFull() {
                     </>
                   )}
 
-                  {/* Spell slots for bonus action spells */}
-                  {data.spellcasting_ability && (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>SPELL SLOTS</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
-                        {[1, 2, 3, 4, 5].map(level => {
-                          const maxSlots = data[`spell_slots_${level}`] || 0;
-                          const usedSlots = data[`spell_slots_${level}_used`] || 0;
-                          if (maxSlots === 0) return null;
-                          return (
-                            <div key={level} style={{ textAlign: 'center', padding: '4px', background: 'rgba(168, 85, 247, 0.1)', borderRadius: '4px' }}>
-                              <div style={{ color: '#a855f7', fontSize: '9px' }}>L{level}</div>
-                              <div style={{ display: 'flex', justifyContent: 'center', gap: '2px' }}>
-                                {Array.from({ length: maxSlots }).map((_, idx) => (
-                                  <div key={idx} style={{
-                                    width: '8px', height: '8px', borderRadius: '2px',
-                                    border: '1px solid #a855f7',
-                                    background: idx < usedSlots ? 'transparent' : '#a855f7'
-                                  }} />
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </>
-                  )}
                 </div>
               </div>
 
@@ -1652,32 +1755,102 @@ function CharacterSheetFull() {
                     <span style={{ color: '#22d3ee', fontWeight: '400', fontSize: '13px' }}>{data.temp_hp || 0}</span>
                   </div>
 
+                  {/* Spell Resources */}
+                  {data.spellcasting_ability && (
+                    <div style={{
+                      padding: '8px 10px',
+                      background: 'rgba(168, 85, 247, 0.08)',
+                      borderRadius: '6px'
+                    }}>
+                      <span style={{ color: '#a855f7', fontSize: '10px', display: 'block', marginBottom: '6px' }}>Spell Resources</span>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(level => {
+                          const maxSlots = data[`spell_slots_${level}`] || 0;
+                          const usedSlots = data[`spell_slots_${level}_used`] || 0;
+                          if (maxSlots === 0) return null;
+                          return (
+                            <div key={level} style={{ textAlign: 'center', padding: '4px', background: 'rgba(168, 85, 247, 0.1)', borderRadius: '4px' }}>
+                              <div style={{ color: '#a855f7', fontSize: '9px', marginBottom: '2px' }}>L{level}</div>
+                              <div style={{ display: 'flex', justifyContent: 'center', gap: '2px', flexWrap: 'wrap' }}>
+                                {Array.from({ length: maxSlots }).map((_, idx) => (
+                                  <button
+                                    key={idx}
+                                    onClick={() => updateSpellSlotUsage(level, idx)}
+                                    style={{
+                                      width: '10px',
+                                      height: '10px',
+                                      borderRadius: '2px',
+                                      border: '1px solid #a855f7',
+                                      background: idx < usedSlots ? 'transparent' : '#a855f7',
+                                      cursor: 'pointer',
+                                      padding: 0
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Death Saves */}
                   <div style={{
                     padding: '8px 10px',
                     background: 'rgba(148, 163, 184, 0.05)',
                     borderRadius: '6px'
                   }}>
-                    <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginBottom: '4px' }}>Death Saves</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block' }}>Death Saves</span>
+                      <button
+                        onClick={resetDeathSaves}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: '#64748b',
+                          fontSize: '9px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Reset
+                      </button>
+                    </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                         <span style={{ color: '#22c55e', fontSize: '9px' }}>Pass</span>
                         {[0, 1, 2].map(i => (
-                          <div key={`s-${i}`} style={{
-                            width: '10px', height: '10px', borderRadius: '50%',
-                            border: '2px solid #22c55e',
-                            background: i < (data.death_save_success || 0) ? '#22c55e' : 'transparent'
-                          }} />
+                          <button
+                            key={`s-${i}`}
+                            onClick={() => updateDeathSaves('success', i < (data.death_save_success || 0) ? i : i + 1)}
+                            style={{
+                              width: '10px',
+                              height: '10px',
+                              borderRadius: '50%',
+                              border: '2px solid #22c55e',
+                              background: i < (data.death_save_success || 0) ? '#22c55e' : 'transparent',
+                              cursor: 'pointer',
+                              padding: 0
+                            }}
+                          />
                         ))}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                         <span style={{ color: '#ef4444', fontSize: '9px' }}>Fail</span>
                         {[0, 1, 2].map(i => (
-                          <div key={`f-${i}`} style={{
-                            width: '10px', height: '10px', borderRadius: '50%',
-                            border: '2px solid #ef4444',
-                            background: i < (data.death_save_failure || 0) ? '#ef4444' : 'transparent'
-                          }} />
+                          <button
+                            key={`f-${i}`}
+                            onClick={() => updateDeathSaves('failure', i < (data.death_save_failure || 0) ? i : i + 1)}
+                            style={{
+                              width: '10px',
+                              height: '10px',
+                              borderRadius: '50%',
+                              border: '2px solid #ef4444',
+                              background: i < (data.death_save_failure || 0) ? '#ef4444' : 'transparent',
+                              cursor: 'pointer',
+                              padding: 0
+                            }}
+                          />
                         ))}
                       </div>
                     </div>
@@ -1939,14 +2112,14 @@ function CharacterSheetFull() {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: '#64748b', fontSize: '11px' }}>Attack Bonus</span>
-                      <span style={{ color: '#06B6D4', fontWeight: '400', fontSize: '14px' }}>
+                      <span style={{ color: '#F2A541', fontWeight: '400', fontSize: '14px' }}>
                         {data.spellcasting_ability ? `+${profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}` : '—'}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ color: '#64748b', fontSize: '11px' }}>Prepared</span>
-                      <span style={{ color: '#06B6D4', fontWeight: '400', fontSize: '14px' }}>
-                        {data.spells_prepared?.length || 0} / {Math.max(1, calculateModifier(data[data.spellcasting_ability] || 10) + (data.level || 1))}
+                      <span style={{ color: '#F2A541', fontWeight: '400', fontSize: '14px' }}>
+                        {resolvedPreparedSpells.length} / {Math.max(1, calculateModifier(data[data.spellcasting_ability] || 10) + (data.level || 1))}
                       </span>
                     </div>
                   </div>
@@ -2041,7 +2214,7 @@ function CharacterSheetFull() {
                       transition: 'all 0.2s'
                     }}
                   >
-                    PREPARED SPELLS ({data.spells_prepared?.length || 0})
+                    PREPARED SPELLS ({resolvedPreparedSpells.length})
                   </button>
                   <button
                     onClick={() => setSpellViewMode('known')}
@@ -2058,7 +2231,7 @@ function CharacterSheetFull() {
                       transition: 'all 0.2s'
                     }}
                   >
-                    ALL KNOWN SPELLS ({data.spells_known?.length || 0})
+                    ALL KNOWN SPELLS ({resolvedKnownSpells.length})
                   </button>
                 </div>
 
@@ -2097,7 +2270,7 @@ function CharacterSheetFull() {
               {/* Prepared Spells View */}
               {spellViewMode === 'prepared' && (
                 <div>
-                  {(!data.spells_prepared || data.spells_prepared.length === 0) ? (
+                  {(resolvedPreparedSpells.length === 0) ? (
                     <div style={{ 
                       ...glassPanel, 
                       padding: '40px', 
@@ -2112,7 +2285,7 @@ function CharacterSheetFull() {
                     </div>
                   ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '8px' }}>
-                      {data.spells_prepared
+                      {resolvedPreparedSpells
                         .filter(spell => {
                           const matchesSearch = spell.name.toLowerCase().includes(spellSearch.toLowerCase());
                           const matchesLevel = spellLevelFilter === 'all' || spell.level === parseInt(spellLevelFilter);
@@ -2125,18 +2298,8 @@ function CharacterSheetFull() {
                             isPrepared={true}
                             onTogglePrepare={(s) => {
                               // Unprepare the spell
-                              const newPrepared = (data.spells_prepared || []).filter(sp => sp.name !== s.name);
-                              const newData = { ...editData, spells_prepared: newPrepared };
-                              setEditData(newData);
-                              if (!editMode) {
-                                // Auto-save when not in edit mode
-                                axios.put(`${API}/characters/${characterId}`, newData)
-                                  .then(() => {
-                                    setCharacter(newData);
-                                    toast.success(`${s.name} unprepared`);
-                                  })
-                                  .catch(() => toast.error('Failed to update spells'));
-                              }
+                              const newPrepared = resolvedPreparedSpells.filter(sp => sp.name !== s.name);
+                              persistCharacterChanges({ spells_prepared: newPrepared }, `${s.name} unprepared`);
                             }}
                             canPrepare={true}
                           />
@@ -2165,34 +2328,14 @@ function CharacterSheetFull() {
                           isPrepared={isPrepared}
                           onTogglePrepare={(s) => {
                             if (isPrepared) {
-                              // Unprepare
-                              const newPrepared = (data.spells_prepared || []).filter(sp => sp.name !== s.name);
-                              const newData = { ...editData, spells_prepared: newPrepared };
-                              setEditData(newData);
-                              if (!editMode) {
-                                axios.put(`${API}/characters/${characterId}`, newData)
-                                  .then(() => {
-                                    setCharacter(newData);
-                                    toast.success(`${s.name} unprepared`);
-                                  })
-                                  .catch(() => toast.error('Failed to update spells'));
-                              }
+                              const newPrepared = resolvedPreparedSpells.filter(sp => sp.name !== s.name);
+                              persistCharacterChanges({ spells_prepared: newPrepared }, `${s.name} unprepared`);
                             } else {
-                              // Prepare
-                              const newPrepared = [...(data.spells_prepared || []), s];
-                              const newKnown = data.spells_known?.some(sp => sp.name === s.name) 
-                                ? data.spells_known 
-                                : [...(data.spells_known || []), s];
-                              const newData = { ...editData, spells_prepared: newPrepared, spells_known: newKnown };
-                              setEditData(newData);
-                              if (!editMode) {
-                                axios.put(`${API}/characters/${characterId}`, newData)
-                                  .then(() => {
-                                    setCharacter(newData);
-                                    toast.success(`${s.name} prepared!`);
-                                  })
-                                  .catch(() => toast.error('Failed to update spells'));
-                              }
+                              const newPrepared = [...resolvedPreparedSpells, s];
+                              const newKnown = resolvedKnownSpells.some(sp => sp.name === s.name)
+                                ? resolvedKnownSpells
+                                : [...resolvedKnownSpells, s];
+                              persistCharacterChanges({ spells_prepared: newPrepared, spells_known: newKnown }, `${s.name} prepared!`);
                             }
                           }}
                           canPrepare={true}
