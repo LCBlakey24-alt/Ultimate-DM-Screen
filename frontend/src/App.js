@@ -24,6 +24,7 @@ import CampaignList from '@/components/CampaignList';
 import { KeyboardShortcutsModal, ShortcutsHint } from '@/components/KeyboardShortcuts';
 import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 import { SubscriptionProvider } from '@/hooks/useSubscription';
+import { API_BASE } from '@/lib/api';
 
 const API = API_BASE;
 

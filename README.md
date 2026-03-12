@@ -6,6 +6,19 @@ A full-stack tabletop RPG companion with:
 - auth + account management + subscription support
 - AI-assisted generation features
 
+
+## IP & copyright safety
+
+This project is intended for **system-agnostic / 5e-compatible** tabletop play.
+
+To reduce copyright and trademark risk:
+- Do not use official brand names, logos, or trade dress from third-party publishers.
+- Do not ship proprietary setting text, character names, artwork, or book excerpts.
+- Prefer original/homebrew content or open-licensed rules content you are permitted to use.
+- Configure AI prompts/content generation to avoid proprietary franchises and to create original material.
+
+This project is not affiliated with or endorsed by Wizards of the Coast.
+
 ## Project structure
 
 - `frontend/` — React + CRACO UI
