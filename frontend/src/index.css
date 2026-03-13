@@ -456,3 +456,15 @@ p, span, div, label, button, input, textarea, select {
     display: contents !important;
   }
 }
+
+/* Logo pulse animation */
+@keyframes pulse {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.9;
+  }
+}

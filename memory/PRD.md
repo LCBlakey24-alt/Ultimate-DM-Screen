@@ -15,6 +15,7 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - GM Screen with comprehensive tools (combat, dice, monsters, NPCs, etc.)
 - Stripe integration for subscription tiers
 - **Support for both D&D 5e 2014 and 2024 rules**
+- **Custom logos integrated throughout app**
 
 ## Implemented Features (as of March 2026)
 
@@ -23,6 +24,9 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] Admin panel
 - [x] Unified dashboard with side-by-side Player/GM sections
 - [x] Inline campaign creation modal
+- [x] **Subscription tier badge showing campaign limits**
+- [x] **Proactive campaign limit check before creation**
+- [x] **Custom mini logo in dashboard header**
 
 ### Character System
 - [x] Full character sheet with compact layout
@@ -33,30 +37,22 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] 3-column Combat tab (Actions, Bonus Actions, Reactions)
 - [x] Clickable dice rolls with toast notifications
 - [x] **Level Up Wizard** with HP/ASI/Feat selection
+- [x] **Dynamic spellcasting tab** - shows correct ability (INT/WIS/CHA) based on class
+- [x] **Spell slots display** based on character level and class type
+- [x] Cantrips and prepared spells tracking
 - [x] Spells, Inventory, Notes tabs
 
-### Rules Data
-- [x] **Comprehensive 5e rules file** (`/app/frontend/src/data/characterRules5e.js`)
-  - All 12 PHB classes with features at each level
-  - All core races with subraces and traits
-  - Backgrounds with 2014/2024 variations
-  - Multiclassing requirements and proficiencies
-  - ASI levels, hit dice, proficiency bonuses
-- [x] **Spell database** (`/app/frontend/src/data/spellDatabase.js`)
-  - Cantrips through 5th level spells
-  - All spellcasting classes
+### Branding & UI
+- [x] **Custom Rookie Quest Keeper logos** (main + mini)
+- [x] Grand hero logo with glow effect on landing page
+- [x] Mini dragon compass logo in nav/header
+- [x] Logo on auth pages
 
-### Campaign Management
-- [x] Campaign CRUD operations
-- [x] World-building tools (Setting, Maps, Gods, Locations, NPCs)
-- [x] Combat encounters and battle maps
-
-### GM Screen
-- [x] "Fantasy Sunset" theme
-- [x] Combat control with initiative
-- [x] NPC Name Generator
-- [x] Dice Roller, Monster Lookup, Random Tables
-- [x] Loot Generator, Party Overview, Session Notes
+### Pricing & Subscriptions
+- [x] **Monthly/Yearly billing toggle**
+- [x] **Yearly savings display** (e.g., "Save £7.89/year (~16% off)")
+- [x] Per-month equivalent shown for yearly plans
+- [x] Promo code support
 
 ### Combat System
 - [x] **Combat Page with Fantasy Sunset theme**
@@ -69,14 +65,18 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] Resend (email)
 - [x] Emergent LLM Key (ROOK AI)
 
+## Known Issues
+1. **Production Login/Password Reset** - User reports inability to login on production site. Preview works correctly. May be database or Resend email config issue on production deployment.
+
 ## Upcoming Tasks (P1)
 1. Add multiclass option to Level Up Wizard
-2. Integrate spell database into character sheet
+2. ~~Integrate spell database into character sheet~~ ✅ DONE
 3. Test Stripe checkout flow
 
 ## Future Tasks (P2+)
 - Real-time Campaign Sync (WebSockets)
 - Backend refactoring (split server.py)
+- Custom rules JSON upload system
 
 ## Technical Architecture
 ```
@@ -84,16 +84,23 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 ├── backend/
 │   └── server.py
 └── frontend/
+    ├── public/
+    │   └── images/
+    │       ├── logo-main.png   (full "Rookie Quest" logo)
+    │       └── logo-mini.png   (dragon compass logo)
     └── src/
         ├── components/
-        │   ├── CharacterBuilder.js (enhanced with 2014/2024)
-        │   ├── CharacterSheetFull.js
+        │   ├── AuthPage.js         (mini logo added)
+        │   ├── CharacterBuilder.js (2014/2024 editions)
+        │   ├── CharacterSheetFull.js (dynamic spells by class)
         │   ├── CombatPage.js
         │   ├── GMScreen.js
+        │   ├── LandingPage.js      (grand hero logo with glow)
         │   ├── LevelUpWizard.js
-        │   └── UnifiedDashboard.js
+        │   ├── PricingPage.js      (yearly savings display)
+        │   └── UnifiedDashboard.js (tier badge, mini logo)
         └── data/
-            ├── characterRules5e.js (NEW - comprehensive rules)
+            ├── characterRules5e.js
             └── spellDatabase.js
 ```
 

@@ -71,15 +71,22 @@ export default function LandingPage() {
           maxWidth: '1400px',
           margin: '0 auto'
         }}>
-          <div style={{
-            fontFamily: "'Cinzel', serif",
-            fontSize: '24px',
-            fontWeight: '700',
-            background: 'linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            ROOK
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <img 
+              src="/images/logo-mini.png" 
+              alt="ROOK" 
+              style={{ height: '40px', width: 'auto', filter: 'drop-shadow(0 2px 8px rgba(139, 92, 246, 0.5))' }}
+            />
+            <span style={{
+              fontFamily: "'Cinzel', serif",
+              fontSize: '24px',
+              fontWeight: '700',
+              background: 'linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>
+              ROOK
+            </span>
           </div>
           
           <div style={{ display: 'flex', gap: '16px' }}>
@@ -139,27 +146,48 @@ export default function LandingPage() {
             maxWidth: '800px',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2)'
           }}>
+            {/* Grand Logo */}
+            <div style={{
+              position: 'relative',
+              marginBottom: '32px'
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '350px',
+                height: '350px',
+                background: 'radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, rgba(236, 72, 153, 0.2) 40%, transparent 70%)',
+                borderRadius: '50%',
+                filter: 'blur(40px)',
+                animation: 'pulse 4s ease-in-out infinite'
+              }} />
+              <img 
+                src="/images/logo-main.png" 
+                alt="Rookie Quest Keeper"
+                style={{
+                  position: 'relative',
+                  width: '300px',
+                  maxWidth: '80%',
+                  height: 'auto',
+                  filter: 'drop-shadow(0 0 30px rgba(139, 92, 246, 0.6)) drop-shadow(0 0 60px rgba(236, 72, 153, 0.4))',
+                  margin: '0 auto',
+                  display: 'block'
+                }}
+              />
+            </div>
+            
             <h1 style={{
               fontFamily: "'Cinzel', serif",
-              fontSize: 'clamp(2.5rem, 6vw, 4rem)',
-              fontWeight: '700',
-              marginBottom: '8px',
-              background: 'linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
-            }}>
-              ROOKIE QUEST
-            </h1>
-            <h2 style={{
-              fontFamily: "'Cinzel', serif",
-              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-              fontWeight: '600',
-              color: '#F8FAFC',
-              marginBottom: '24px',
-              letterSpacing: '0.1em'
+              fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+              fontWeight: '500',
+              marginBottom: '16px',
+              letterSpacing: '0.15em',
+              color: '#94A3B8'
             }}>
               KEEPER
-            </h2>
+            </h1>
             
             <p style={{
               fontSize: '18px',

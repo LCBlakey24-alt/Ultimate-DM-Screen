@@ -177,17 +177,28 @@ export default function AuthPage({ onLogin }) {
         <div 
           onClick={() => navigate('/')}
           style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginBottom: '40px',
+            cursor: 'pointer'
+          }}
+        >
+          <img 
+            src="/images/logo-mini.png" 
+            alt="ROOK" 
+            style={{ height: '50px', width: 'auto', filter: 'drop-shadow(0 2px 8px rgba(139, 92, 246, 0.5))' }}
+          />
+          <span style={{
             fontFamily: "'Cinzel', serif",
             fontSize: '32px',
             fontWeight: '700',
-            marginBottom: '40px',
-            cursor: 'pointer',
             background: 'linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
-          }}
-        >
-          ROOK
+          }}>
+            ROOK
+          </span>
         </div>
 
         {/* Glass Panel */}

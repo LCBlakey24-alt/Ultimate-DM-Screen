@@ -348,9 +348,28 @@ function PricingPage({ username, onLogout }) {
                       </span>
                     )}
                   </div>
-                  {billingCycle === 'yearly' && price > 0 && (
-                    <p style={{ color: theme.text.muted, fontSize: '12px', marginTop: '4px' }}>
-                      (£{(price / 12).toFixed(2)}/month)
+                  {billingCycle === 'yearly' && price > 0 && plan.price_monthly && (
+                    <>
+                      <p style={{ color: theme.text.muted, fontSize: '12px', marginTop: '4px' }}>
+                        (£{(price / 12).toFixed(2)}/month)
+                      </p>
+                      <p style={{ 
+                        color: '#22c55e', 
+                        fontSize: '12px', 
+                        marginTop: '6px',
+                        fontWeight: '600' 
+                      }}>
+                        Save £{(plan.price_monthly * 12 - price).toFixed(2)}/year (~{Math.round((1 - price / (plan.price_monthly * 12)) * 100)}% off)
+                      </p>
+                    </>
+                  )}
+                  {billingCycle === 'monthly' && price > 0 && plan.price_yearly && (
+                    <p style={{ 
+                      color: theme.text.muted, 
+                      fontSize: '11px', 
+                      marginTop: '6px' 
+                    }}>
+                      Or £{plan.price_yearly}/year (save ~{Math.round((1 - plan.price_yearly / (price * 12)) * 100)}%)
                     </p>
                   )}
                 </div>

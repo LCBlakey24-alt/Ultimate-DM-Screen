@@ -338,7 +338,12 @@ function UnifiedDashboard({ username, onLogout }) {
         position: 'relative',
         zIndex: 10
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <img 
+            src="/images/logo-mini.png" 
+            alt="ROOK" 
+            style={{ height: '36px', width: 'auto', filter: 'drop-shadow(0 2px 6px rgba(245, 158, 11, 0.4))' }}
+          />
           <h1 style={{
             fontWeight: '600',
             fontSize: '20px',
