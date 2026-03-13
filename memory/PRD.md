@@ -14,6 +14,7 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - Compact, single-frame character sheets with scrollable inner containers
 - GM Screen with comprehensive tools (combat, dice, monsters, NPCs, etc.)
 - Stripe integration for subscription tiers
+- **Support for both D&D 5e 2014 and 2024 rules**
 
 ## Implemented Features (as of March 2026)
 
@@ -21,96 +22,81 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] User authentication (JWT-based)
 - [x] Admin panel
 - [x] Unified dashboard with side-by-side Player/GM sections
-- [x] Inline campaign creation modal (no navigation away)
-- [x] Character creation via CharacterBuilder
+- [x] Inline campaign creation modal
 
 ### Character System
 - [x] Full character sheet with compact layout
-- [x] Ability scores with saving throw rolls
-- [x] Skills list with proficiency indicators
-- [x] Combat stats (HP, AC, Initiative, Speed)
+- [x] **Edition selector (2014 vs 2024 rules)**
+- [x] **Subrace selection** (High Elf, Wood Elf, Hill Dwarf, etc.)
+- [x] **Subclass selection** with level-appropriate timing
+- [x] **ASI bonuses** displayed inline (base + racial bonus = final)
 - [x] 3-column Combat tab (Actions, Bonus Actions, Reactions)
 - [x] Clickable dice rolls with toast notifications
+- [x] **Level Up Wizard** with HP/ASI/Feat selection
 - [x] Spells, Inventory, Notes tabs
-- [x] Improved text readability (larger font sizes)
-- [x] **Level Up Wizard** - Multi-step guided level up with HP/ASI/Feat
+
+### Rules Data
+- [x] **Comprehensive 5e rules file** (`/app/frontend/src/data/characterRules5e.js`)
+  - All 12 PHB classes with features at each level
+  - All core races with subraces and traits
+  - Backgrounds with 2014/2024 variations
+  - Multiclassing requirements and proficiencies
+  - ASI levels, hit dice, proficiency bonuses
+- [x] **Spell database** (`/app/frontend/src/data/spellDatabase.js`)
+  - Cantrips through 5th level spells
+  - All spellcasting classes
 
 ### Campaign Management
 - [x] Campaign CRUD operations
 - [x] World-building tools (Setting, Maps, Gods, Locations, NPCs)
-- [x] Chronicle for session tracking
 - [x] Combat encounters and battle maps
 
 ### GM Screen
-- [x] "Fantasy Sunset" theme applied
-- [x] Combat control with encounter selection
+- [x] "Fantasy Sunset" theme
+- [x] Combat control with initiative
 - [x] NPC Name Generator
-- [x] Dice Roller
-- [x] Monster Lookup
-- [x] Custom Creatures Manager
-- [x] Random Tables
-- [x] Loot Generator
-- [x] Party Overview
-- [x] Session Notes
+- [x] Dice Roller, Monster Lookup, Random Tables
+- [x] Loot Generator, Party Overview, Session Notes
 
 ### Combat System
 - [x] **Combat Page with Fantasy Sunset theme**
 - [x] Initiative tracker with turn order
 - [x] HP tracking with +/- buttons
-- [x] Death saves with visual indicators
-- [x] Conditions management
-- [x] Battle map with tokens
-
-### Spell System
-- [x] **Comprehensive spell database** (`/app/frontend/src/data/spellDatabase.js`)
-  - Cantrips through 5th level spells
-  - All spellcasting classes covered
-  - Spell slots and pact magic tables
-  - Helper functions for class spell lists
+- [x] Death saves, conditions management
 
 ### Integrations
-- [x] Stripe (subscription tiers on landing page)
+- [x] Stripe (subscription tiers)
 - [x] Resend (email)
-- [x] Emergent LLM Key (ROOK AI features)
-- [x] PyMuPDF (PDF extraction)
-
-## Removed/Deprecated Components
-- PlayerDashboard.js → UnifiedDashboard
-- CampaignList.js → UnifiedDashboard
-- CharacterSheet.js → CharacterSheetFull
-- FloatingDiceRoller.js (removed)
-- LevelUpModal.js → LevelUpWizard
-
-## Known Issues
-- **Production Deployment Risk** - Previous "blank screen" issue; root cause unknown
+- [x] Emergent LLM Key (ROOK AI)
 
 ## Upcoming Tasks (P1)
-1. Integrate spell database into character sheet spells tab
-2. Add spell slot tracking to character sheet
+1. Add multiclass option to Level Up Wizard
+2. Integrate spell database into character sheet
 3. Test Stripe checkout flow
 
 ## Future Tasks (P2+)
 - Real-time Campaign Sync (WebSockets)
-- Backend refactoring (split server.py into modular routers)
-- Quick Start Tutorial for GMs
+- Backend refactoring (split server.py)
 
 ## Technical Architecture
 ```
 /app
 ├── backend/
-│   └── server.py (monolithic)
+│   └── server.py
 └── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── CharacterSheetFull.js
-    │   │   ├── CombatPage.js (Fantasy Sunset themed)
-    │   │   ├── GMScreen.js
-    │   │   ├── LevelUpWizard.js
-    │   │   └── UnifiedDashboard.js
-    │   └── data/
-    │       └── spellDatabase.js (NEW - comprehensive spell data)
+    └── src/
+        ├── components/
+        │   ├── CharacterBuilder.js (enhanced with 2014/2024)
+        │   ├── CharacterSheetFull.js
+        │   ├── CombatPage.js
+        │   ├── GMScreen.js
+        │   ├── LevelUpWizard.js
+        │   └── UnifiedDashboard.js
+        └── data/
+            ├── characterRules5e.js (NEW - comprehensive rules)
+            └── spellDatabase.js
 ```
 
-## Test Credentials (Preview Environment Only)
+## Test Credentials (Preview Only)
 - Email: lcblakey24@outlook.com
 - Password: LCBlakey24?!

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
-import { User, Sword, Shield, Sparkles, Dices, ChevronLeft, Save, RotateCcw } from "lucide-react";
+import { User, Sword, Shield, Sparkles, Dices, ChevronLeft, Save, RotateCcw, BookOpen, Info } from "lucide-react";
 import {
   BACKGROUND_OPTIONS,
   CLASS_OPTIONS,
@@ -18,6 +18,7 @@ import {
   calculatePointBuyCost,
   validateAbilityScores
 } from "../lib/characterRules";
+import { RACES, CLASSES, BACKGROUNDS, EDITIONS } from "../data/characterRules5e";
 import { API_BASE } from "../lib/api";
 
 const DRAFT_KEY = "rq_character_builder_draft_v1";
@@ -44,8 +45,9 @@ const getClassPrimaryAbility = (className) => {
 };
 
 const getInitialState = () => ({
-  name: "", race: "", className: "", background: "", portrait: "",
+  name: "", race: "", subrace: "", className: "", subclass: "", background: "", portrait: "",
   method: "standard",
+  edition: "2014",
   stats: { strength: 15, dexterity: 14, constitution: 13, intelligence: 12, wisdom: 10, charisma: 8 }
 });
 
@@ -71,19 +73,63 @@ export default function CharacterBuilder({ onCreateCharacter }) {
   
   const [name, setName] = useState(initialState.name);
   const [race, setRace] = useState(initialState.race);
+  const [subrace, setSubrace] = useState(initialState.subrace || "");
   const [className, setClassName] = useState(initialState.className);
+  const [subclass, setSubclass] = useState(initialState.subclass || "");
   const [background, setBackground] = useState(initialState.background);
   const [portrait, setPortrait] = useState(initialState.portrait);
   const [method, setMethod] = useState(initialState.method);
+  const [edition, setEdition] = useState(initialState.edition || "2014");
   const [stats, setStats] = useState(initialState.stats);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Get race data with subraces
+  const raceData = RACES[race] || null;
+  const availableSubraces = raceData?.subraces ? Object.keys(raceData.subraces) : [];
+  
+  // Get class data with subclasses
+  const classData = CLASSES[className] || null;
+  const availableSubclasses = classData?.subclasses || [];
+
+  // Get background data
+  const backgroundData = BACKGROUNDS[background] || null;
+
+  // Calculate ASI from race (2014) or background (2024)
+  const asiSource = edition === "2014" ? raceData : backgroundData;
+  const asiBonus = useMemo(() => {
+    const bonus = { strength: 0, dexterity: 0, constitution: 0, intelligence: 0, wisdom: 0, charisma: 0 };
+    if (!asiSource) return bonus;
+    
+    if (edition === "2014" && raceData) {
+      const asi = raceData.asi2014 || {};
+      if (asi.all) {
+        // Human +1 all
+        ABILITIES.forEach(a => bonus[a] = asi.all);
+      } else {
+        Object.entries(asi).forEach(([stat, val]) => {
+          if (stat !== 'choice' && bonus[stat] !== undefined) bonus[stat] = val;
+        });
+      }
+      // Add subrace ASI
+      if (subrace && raceData.subraces?.[subrace]?.asi2014) {
+        Object.entries(raceData.subraces[subrace].asi2014).forEach(([stat, val]) => {
+          if (bonus[stat] !== undefined) bonus[stat] += val;
+        });
+      }
+    } else if (edition === "2024" && backgroundData?.asi2024) {
+      Object.entries(backgroundData.asi2024).forEach(([stat, val]) => {
+        if (bonus[stat] !== undefined) bonus[stat] = val;
+      });
+    }
+    return bonus;
+  }, [edition, raceData, backgroundData, subrace, asiSource]);
+
   // Auto-save draft
   useEffect(() => {
-    const draft = { name, race, className, background, portrait, method, stats };
+    const draft = { name, race, subrace, className, subclass, background, portrait, method, edition, stats };
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-  }, [name, race, className, background, portrait, method, stats]);
+  }, [name, race, subrace, className, subclass, background, portrait, method, edition, stats]);
 
   const pointBuySpent = useMemo(
     () => ABILITIES.reduce((sum, ability) => sum + calculatePointBuyCost(stats[ability]), 0),
@@ -92,26 +138,36 @@ export default function CharacterBuilder({ onCreateCharacter }) {
   const pointBuyRemaining = POINT_BUY_TOTAL - pointBuySpent;
 
   const derivedStats = useMemo(() => {
-    const conMod = getModifier(stats.constitution);
-    const dexMod = getModifier(stats.dexterity);
+    // Apply ASI bonuses to base stats
+    const finalStats = {};
+    ABILITIES.forEach(a => {
+      finalStats[a] = Number(stats[a]) + asiBonus[a];
+    });
+    
+    const conMod = Math.floor((finalStats.constitution - 10) / 2);
+    const dexMod = Math.floor((finalStats.dexterity - 10) / 2);
     const primaryAbility = getClassPrimaryAbility(className);
-    const primaryMod = getModifier(stats[primaryAbility]);
+    const primaryMod = Math.floor((finalStats[primaryAbility] - 10) / 2);
+    const hitDie = classData?.hitDie || 8;
+    
     return {
-      hp: Math.max(1, 8 + conMod),
+      hp: Math.max(1, hitDie + conMod),
       ac: 10 + dexMod,
       proficiency: 2,
       spellDC: 8 + 2 + primaryMod,
       spellAttack: 2 + primaryMod,
-      primaryAbility
+      primaryAbility,
+      hitDie,
+      finalStats
     };
-  }, [stats, className]);
+  }, [stats, className, asiBonus, classData]);
 
   const clearDraft = () => {
     localStorage.removeItem(DRAFT_KEY);
     const reset = getInitialState();
-    setName(reset.name); setRace(reset.race); setClassName(reset.className);
-    setBackground(reset.background); setPortrait(reset.portrait);
-    setMethod(reset.method); setStats(reset.stats); setErrors({});
+    setName(reset.name); setRace(reset.race); setSubrace(""); setClassName(reset.className);
+    setSubclass(""); setBackground(reset.background); setPortrait(reset.portrait);
+    setMethod(reset.method); setEdition(reset.edition); setStats(reset.stats); setErrors({});
   };
 
   const setMethodAndStats = (nextMethod) => {
@@ -159,12 +215,28 @@ export default function CharacterBuilder({ onCreateCharacter }) {
       return;
     }
 
+    // Use final stats with ASI bonuses
+    const finalStats = derivedStats.finalStats;
+    
     const payload = {
-      name: name.trim(), race, character_class: className, background, level: 1,
-      strength: Number(stats.strength), dexterity: Number(stats.dexterity),
-      constitution: Number(stats.constitution), intelligence: Number(stats.intelligence),
-      wisdom: Number(stats.wisdom), charisma: Number(stats.charisma),
-      notes: `Method: ${method}`, portrait_url: portrait || ""
+      name: name.trim(), 
+      race, 
+      subrace: subrace || null,
+      character_class: className, 
+      subclass: subclass || null,
+      background, 
+      level: 1,
+      edition,
+      strength: Number(finalStats.strength), 
+      dexterity: Number(finalStats.dexterity),
+      constitution: Number(finalStats.constitution), 
+      intelligence: Number(finalStats.intelligence),
+      wisdom: Number(finalStats.wisdom), 
+      charisma: Number(finalStats.charisma),
+      max_hp: derivedStats.hp,
+      current_hp: derivedStats.hp,
+      notes: `Edition: ${edition}, Method: ${method}`, 
+      portrait_url: portrait || ""
     };
 
     try {
@@ -287,6 +359,39 @@ export default function CharacterBuilder({ onCreateCharacter }) {
           <p style={{ color: theme.text.muted, marginBottom: '32px' }}>Build your hero for the adventure ahead</p>
 
           <form onSubmit={handleSubmit}>
+            {/* Edition Selection */}
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '1.1rem', color: theme.sunset.gold, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <BookOpen size={20} /> Rules Edition
+              </h3>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                {Object.entries(EDITIONS).map(([key, ed]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setEdition(key)}
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      background: edition === key ? 'linear-gradient(135deg, #F59E0B, #D97706)' : 'rgba(245, 158, 11, 0.1)',
+                      border: edition === key ? 'none' : `1px solid ${theme.border}`,
+                      borderRadius: '12px',
+                      color: edition === key ? '#0F0A1E' : theme.text.primary,
+                      cursor: 'pointer',
+                      textAlign: 'left'
+                    }}
+                  >
+                    <div style={{ fontWeight: '600', fontSize: '16px', marginBottom: '4px' }}>{ed.name}</div>
+                    <div style={{ fontSize: '12px', opacity: 0.8 }}>{ed.description}</div>
+                  </button>
+                ))}
+              </div>
+              <p style={{ fontSize: '13px', color: theme.text.muted, marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Info size={14} />
+                {edition === '2014' ? 'Ability bonuses come from Race selection' : 'Ability bonuses come from Background (Origin)'}
+              </p>
+            </div>
+
             {/* Basic Info Section */}
             <div style={{ marginBottom: '32px' }}>
               <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '1.1rem', color: theme.sunset.pink, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -308,28 +413,71 @@ export default function CharacterBuilder({ onCreateCharacter }) {
 
                 <div>
                   <label style={labelStyle}>Race / Species *</label>
-                  <select value={race} onChange={(e) => setRace(e.target.value)} style={selectStyle}>
+                  <select value={race} onChange={(e) => { setRace(e.target.value); setSubrace(""); }} style={selectStyle}>
                     <option value="">Select race...</option>
-                    {RACE_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+                    {Object.keys(RACES).map((r) => <option key={r} value={r}>{r}</option>)}
                   </select>
                   {errors.race && <div style={{ color: '#EF4444', fontSize: '13px', marginTop: '6px' }}>{errors.race}</div>}
+                  {raceData && edition === '2014' && (
+                    <div style={{ fontSize: '12px', color: theme.sunset.gold, marginTop: '6px' }}>
+                      ASI: {Object.entries(raceData.asi2014 || {}).map(([k, v]) => k === 'all' ? `+${v} All` : `+${v} ${k.substring(0, 3).toUpperCase()}`).join(', ')}
+                    </div>
+                  )}
                 </div>
+
+                {/* Subrace Selection */}
+                {availableSubraces.length > 0 && (
+                  <div>
+                    <label style={labelStyle}>Subrace</label>
+                    <select value={subrace} onChange={(e) => setSubrace(e.target.value)} style={selectStyle}>
+                      <option value="">Select subrace...</option>
+                      {availableSubraces.map((sr) => <option key={sr} value={sr}>{sr}</option>)}
+                    </select>
+                    {subrace && edition === '2014' && raceData.subraces?.[subrace]?.asi2014 && (
+                      <div style={{ fontSize: '12px', color: theme.sunset.gold, marginTop: '6px' }}>
+                        Subrace ASI: {Object.entries(raceData.subraces[subrace].asi2014).map(([k, v]) => `+${v} ${k.substring(0, 3).toUpperCase()}`).join(', ')}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div>
                   <label style={labelStyle}>Class *</label>
-                  <select value={className} onChange={(e) => setClassName(e.target.value)} style={selectStyle}>
+                  <select value={className} onChange={(e) => { setClassName(e.target.value); setSubclass(""); }} style={selectStyle}>
                     <option value="">Select class...</option>
-                    {CLASS_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+                    {Object.keys(CLASSES).map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                   {errors.className && <div style={{ color: '#EF4444', fontSize: '13px', marginTop: '6px' }}>{errors.className}</div>}
+                  {classData && (
+                    <div style={{ fontSize: '12px', color: theme.text.muted, marginTop: '6px' }}>
+                      Hit Die: d{classData.hitDie} • Primary: {classData.primaryAbility?.toUpperCase()}
+                    </div>
+                  )}
                 </div>
 
+                {/* Subclass Selection (usually at level 1-3) */}
+                {availableSubclasses.length > 0 && (
+                  <div>
+                    <label style={labelStyle}>Subclass (Choose at Lv 3)</label>
+                    <select value={subclass} onChange={(e) => setSubclass(e.target.value)} style={selectStyle}>
+                      <option value="">Select later...</option>
+                      {availableSubclasses.map((sc) => <option key={sc} value={sc}>{sc}</option>)}
+                    </select>
+                  </div>
+                )}
+
                 <div>
-                  <label style={labelStyle}>Background</label>
+                  <label style={labelStyle}>Background {edition === '2024' && '(Origin) *'}</label>
                   <select value={background} onChange={(e) => setBackground(e.target.value)} style={selectStyle}>
                     <option value="">Select background...</option>
-                    {BACKGROUND_OPTIONS.map((b) => <option key={b} value={b}>{b}</option>)}
+                    {Object.keys(BACKGROUNDS).map((b) => <option key={b} value={b}>{b}</option>)}
                   </select>
+                  {backgroundData && edition === '2024' && backgroundData.asi2024 && (
+                    <div style={{ fontSize: '12px', color: theme.sunset.gold, marginTop: '6px' }}>
+                      ASI: {Object.entries(backgroundData.asi2024).map(([k, v]) => `+${v} ${k.substring(0, 3).toUpperCase()}`).join(', ')}
+                      {backgroundData.originFeat2024 && <> • Feat: {backgroundData.originFeat2024}</>}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -385,33 +533,45 @@ export default function CharacterBuilder({ onCreateCharacter }) {
               {/* Ability Score Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}>
                 {ABILITIES.map((ability) => {
-                  const score = stats[ability] || 10;
-                  const mod = getModifier(score);
+                  const baseScore = stats[ability] || 10;
+                  const bonus = asiBonus[ability] || 0;
+                  const finalScore = Number(baseScore) + bonus;
+                  const mod = Math.floor((finalScore - 10) / 2);
                   return (
                     <div key={ability} style={abilityCardStyle}>
                       <div style={{ fontSize: '12px', color: theme.text.muted, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                         {formatAbility(ability)}
                       </div>
-                      <input
-                        type="number"
-                        min={MIN_ABILITY_SCORE}
-                        max={MAX_ABILITY_SCORE}
-                        value={score}
-                        onChange={(e) => handleStatChange(ability, e.target.value)}
-                        disabled={method === "standard"}
-                        style={{
-                          width: '70px',
-                          padding: '10px',
-                          background: 'rgba(15, 10, 30, 0.8)',
-                          border: `1px solid ${theme.border}`,
-                          borderRadius: '8px',
-                          color: theme.text.primary,
-                          fontSize: '20px',
-                          fontWeight: 'bold',
-                          textAlign: 'center',
-                          outline: 'none'
-                        }}
-                      />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}>
+                        <input
+                          type="number"
+                          min={MIN_ABILITY_SCORE}
+                          max={MAX_ABILITY_SCORE}
+                          value={baseScore}
+                          onChange={(e) => handleStatChange(ability, e.target.value)}
+                          disabled={method === "standard"}
+                          style={{
+                            width: '60px',
+                            padding: '10px',
+                            background: 'rgba(15, 10, 30, 0.8)',
+                            border: `1px solid ${theme.border}`,
+                            borderRadius: '8px',
+                            color: theme.text.primary,
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            textAlign: 'center',
+                            outline: 'none'
+                          }}
+                        />
+                        {bonus !== 0 && (
+                          <span style={{ color: bonus > 0 ? '#10B981' : '#EF4444', fontSize: '14px', fontWeight: '600' }}>
+                            {bonus > 0 ? '+' : ''}{bonus}
+                          </span>
+                        )}
+                        <span style={{ fontSize: '20px', fontWeight: 'bold', color: theme.text.primary, marginLeft: '4px' }}>
+                          = {finalScore}
+                        </span>
+                      </div>
                       <div style={{ marginTop: '8px', fontSize: '16px', fontWeight: '600', color: mod >= 0 ? theme.sunset.gold : '#EF4444' }}>
                         {formatModifier(mod)}
                       </div>
