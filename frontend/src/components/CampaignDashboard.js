@@ -26,36 +26,43 @@ import ToolsConsolidatedTab from '@/components/tabs/ToolsConsolidatedTab';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Tron Aries Theme - Red/Orange GM Style
+// Fantasy Sunset Theme - Matching Landing Page & Character Builder
 const theme = {
   bg: {
-    black: '#0B0F19',
-    dark: '#141414',
-    panel: '#111827',
-    card: '#111827',
-    hover: '#1F2937',
-    elevated: '#1F2937'
+    black: '#0F0A1E',
+    dark: '#1A112E',
+    panel: 'rgba(26, 17, 46, 0.85)',
+    card: 'rgba(26, 17, 46, 0.9)',
+    hover: '#2E1F45',
+    elevated: '#2E1F45',
+    surface: 'rgba(26, 17, 46, 0.8)'
   },
-  // Three shades of red for GM/Campaign side
+  sunset: {
+    purple: '#8B5CF6',
+    pink: '#EC4899',
+    gold: '#F59E0B'
+  },
   accent: {
-    primary: '#F59E0B',      // Main red
-    secondary: '#D97706',    // Light red  
-    tertiary: '#991B1B',     // Dark red
-    hover: '#F87171',
-    subtle: 'rgba(220, 38, 38, 0.15)',
-    glow: '0 0 20px rgba(220, 38, 38, 0.4)',
-    // Legacy compatibility
-    red: '#F59E0B',
-    redHover: '#F87171',
-    redSubtle: 'rgba(220, 38, 38, 0.15)',
+    primary: '#F59E0B',      // Gold
+    secondary: '#8B5CF6',    // Purple
+    tertiary: '#EC4899',     // Pink
+    hover: '#A855F7',
+    subtle: 'rgba(139, 92, 246, 0.15)',
+    glow: '0 0 20px rgba(139, 92, 246, 0.4)',
+    gm: '#F59E0B',
+    red: '#F59E0B',          // Legacy - now gold
+    redHover: '#FBBF24',
+    redSubtle: 'rgba(245, 158, 11, 0.15)',
     orange: '#F97316'
   },
   text: {
     white: '#FFFFFF',
-    secondary: '#B3B3B3',
-    muted: '#808080'
+    primary: '#F8FAFC',
+    secondary: '#94A3B8',
+    muted: '#64748B'
   },
-  border: 'rgba(212, 175, 55, 0.15)'
+  border: 'rgba(139, 92, 246, 0.3)',
+  gradient: 'linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B)'
 };
 
 function CampaignDashboard({ username, onLogout }) {
@@ -176,11 +183,12 @@ function CampaignDashboard({ username, onLogout }) {
         onMouseEnter={() => setHoveredTab(tab.id)}
         onMouseLeave={() => setHoveredTab(null)}
         data-testid={`${tab.id}-tab`}
+        className={`tab-glow press-scale ${isActive ? 'tab-active' : ''}`}
         style={{
           position: 'relative',
           padding: isNested ? '10px 16px 10px 32px' : '12px 16px',
           border: 'none',
-          background: isActive ? theme.accent.red : (isHovered ? theme.bg.hover : 'transparent'),
+          background: isActive ? theme.gradient : (isHovered ? 'rgba(139, 92, 246, 0.15)' : 'transparent'),
           color: isActive ? theme.text.white : (isHovered ? theme.text.white : theme.text.secondary),
           fontWeight: '500',
           fontSize: isNested ? '13px' : '14px',
@@ -188,16 +196,19 @@ function CampaignDashboard({ username, onLogout }) {
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
-          transition: 'all 0.15s ease',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           textAlign: 'left',
           width: '100%',
-          minHeight: isNested ? '40px' : '44px'
+          minHeight: isNested ? '40px' : '44px',
+          borderRadius: '8px',
+          margin: '2px 8px',
+          maxWidth: 'calc(100% - 16px)'
         }}
       >
-        <tab.icon size={isNested ? 16 : 18} />
+        <tab.icon size={isNested ? 16 : 18} style={{ color: isActive ? '#fff' : theme.sunset.purple }} />
         <span style={{ flex: 1 }}>{tab.label}</span>
         
-        {/* Red bar on right side when hovered (not active) */}
+        {/* Purple bar on right side when hovered (not active) */}
         {isHovered && !isActive && (
           <div style={{
             position: 'absolute',
@@ -205,7 +216,8 @@ function CampaignDashboard({ username, onLogout }) {
             top: '4px',
             bottom: '4px',
             width: '3px',
-            background: theme.accent.red,
+            borderRadius: '2px',
+            background: theme.sunset.purple,
             animation: 'slideIn 0.15s ease'
           }} />
         )}
@@ -250,13 +262,17 @@ function CampaignDashboard({ username, onLogout }) {
   return (
     <div style={{
       minHeight: '100vh',
-      background: theme.bg.black,
+      background: `linear-gradient(180deg, rgba(15, 10, 30, 0.92) 0%, rgba(15, 10, 30, 0.98) 100%), url('https://static.prod-images.emergentagent.com/jobs/b9fc55bd-0a80-4d15-9934-a7087e3445c8/images/9be68b2095230a13a9d52ed25ea5ba93da54c6f47b915d5cd89f4c7b8992a6d3.png')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
       display: 'flex',
       flexDirection: 'column'
     }}>
       {/* Header */}
       <div style={{
-        background: theme.bg.dark,
+        background: 'rgba(26, 17, 46, 0.95)',
+        backdropFilter: 'blur(12px)',
         borderBottom: `1px solid ${theme.border}`,
         padding: '12px 16px',
         position: 'sticky',
@@ -364,7 +380,8 @@ function CampaignDashboard({ username, onLogout }) {
           style={{
             width: '220px',
             minWidth: '220px',
-            background: theme.bg.dark,
+            background: 'rgba(26, 17, 46, 0.9)',
+            backdropFilter: 'blur(12px)',
             borderRight: `1px solid ${theme.border}`,
             padding: '16px 0',
             overflowY: 'auto',
@@ -372,13 +389,14 @@ function CampaignDashboard({ username, onLogout }) {
           }}
         >
           <h3 style={{
-            color: theme.text.muted,
+            color: theme.sunset.gold,
             fontSize: '11px',
-            fontWeight: '400',
+            fontWeight: '500',
             letterSpacing: '1.5px',
             textTransform: 'uppercase',
             marginBottom: '12px',
-            paddingLeft: '16px'
+            paddingLeft: '16px',
+            fontFamily: "'Cinzel', serif"
           }}>
             Campaign Tools
           </h3>
@@ -431,7 +449,7 @@ function CampaignDashboard({ username, onLogout }) {
           flex: 1, 
           overflowY: 'auto',
           padding: 'clamp(12px, 3vw, 24px)',
-          background: theme.bg.black
+          background: 'transparent'
         }}>
           {/* Quick Tips */}
           <QuickTips 
@@ -442,10 +460,13 @@ function CampaignDashboard({ username, onLogout }) {
 
           {/* Tab Content */}
           <div style={{
-            background: theme.bg.panel,
+            background: 'rgba(26, 17, 46, 0.85)',
+            backdropFilter: 'blur(16px)',
             border: `1px solid ${theme.border}`,
+            borderRadius: '20px',
             padding: '24px',
-            minHeight: '500px'
+            minHeight: '500px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
           }}>
             {/* Rook Guide for Active Tab */}
             <RookGuide guideId={activeTab} variant="card" />
