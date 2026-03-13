@@ -7,6 +7,7 @@ import {
   Plus, Minus, Skull, Wind, Edit3, Dices, Target, Sparkles, ArrowUp
 } from 'lucide-react';
 import LevelUpWizard from './LevelUpWizard';
+import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, SPELL_DATABASE } from '../data/spellDatabase';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -739,36 +740,115 @@ export default function CharacterSheetFull() {
             {activeTab === 'spells' && (
               <div style={{ ...scrollBoxStyle, flex: 1, padding: '4px' }}>
                 <h4 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.purple, marginBottom: '16px', fontSize: '1.1rem' }}>Spellcasting</h4>
-                {['Wizard', 'Cleric', 'Bard', 'Druid', 'Sorcerer', 'Warlock', 'Paladin', 'Ranger'].includes(character.character_class) && (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
-                    <div style={{ background: 'rgba(139, 92, 246, 0.1)', padding: '14px', borderRadius: '8px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500' }}>SPELL DC</div>
-                      <div style={{ fontSize: '24px', fontWeight: 'bold', color: theme.sunset.purple }}>{8 + profBonus + getModifier(abilities.intelligence)}</div>
-                    </div>
-                    <div style={{ background: 'rgba(139, 92, 246, 0.1)', padding: '14px', borderRadius: '8px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500' }}>SPELL ATK</div>
-                      <button onClick={() => rollDice('1d20', profBonus + getModifier(abilities.intelligence), 'Spell Attack')} style={{ background: 'none', border: 'none', fontSize: '24px', fontWeight: 'bold', color: theme.sunset.pink, cursor: 'pointer' }}>
-                        +{profBonus + getModifier(abilities.intelligence)}
-                      </button>
-                    </div>
-                    <div style={{ background: 'rgba(139, 92, 246, 0.1)', padding: '14px', borderRadius: '8px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500' }}>ABILITY</div>
-                      <div style={{ fontSize: '18px', fontWeight: '600', color: theme.sunset.gold }}>INT</div>
-                    </div>
-                  </div>
-                )}
-                {character.spells?.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {character.spells.map((spell, i) => (
-                      <div key={i} style={{ padding: '14px', background: 'rgba(15, 10, 30, 0.5)', borderRadius: '8px' }}>
-                        <div style={{ fontWeight: '600', color: theme.text.primary, fontSize: '15px' }}>{spell.name}</div>
-                        <div style={{ color: theme.text.muted, fontSize: '14px' }}>{spell.level ? `Level ${spell.level}` : 'Cantrip'} • {spell.school}</div>
+                {(() => {
+                  const classInfo = SPELLCASTING_CLASSES[character.character_class];
+                  if (!classInfo) {
+                    return <div style={{ color: theme.text.muted, textAlign: 'center', padding: '24px', fontSize: '15px' }}>
+                      {character.character_class} is not a spellcasting class
+                    </div>;
+                  }
+                  
+                  const spellAbility = classInfo.ability;
+                  const spellAbilityMod = getModifier(abilities[spellAbility] || 10);
+                  const spellDC = 8 + profBonus + spellAbilityMod;
+                  const spellAttackBonus = profBonus + spellAbilityMod;
+                  const level = character.level || 1;
+                  
+                  // Get spell slots based on class type
+                  const slots = classInfo.pactMagic 
+                    ? PACT_MAGIC_SLOTS[level]
+                    : classInfo.halfCaster 
+                      ? SPELL_SLOTS[Math.floor(level / 2)] || {}
+                      : SPELL_SLOTS[level] || {};
+                  
+                  return (
+                    <>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
+                        <div style={{ background: 'rgba(139, 92, 246, 0.1)', padding: '14px', borderRadius: '8px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500' }}>SPELL DC</div>
+                          <div style={{ fontSize: '24px', fontWeight: 'bold', color: theme.sunset.purple }}>{spellDC}</div>
+                        </div>
+                        <div style={{ background: 'rgba(139, 92, 246, 0.1)', padding: '14px', borderRadius: '8px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500' }}>SPELL ATK</div>
+                          <button onClick={() => rollDice('1d20', spellAttackBonus, 'Spell Attack')} style={{ background: 'none', border: 'none', fontSize: '24px', fontWeight: 'bold', color: theme.sunset.pink, cursor: 'pointer' }}>
+                            +{spellAttackBonus}
+                          </button>
+                        </div>
+                        <div style={{ background: 'rgba(139, 92, 246, 0.1)', padding: '14px', borderRadius: '8px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500' }}>ABILITY</div>
+                          <div style={{ fontSize: '18px', fontWeight: '600', color: theme.sunset.gold }}>{spellAbility.substring(0, 3).toUpperCase()}</div>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div style={{ color: theme.text.muted, textAlign: 'center', padding: '24px', fontSize: '15px' }}>No spells known</div>
-                )}
+                      
+                      {/* Spell Slots */}
+                      {Object.keys(slots).length > 0 && (
+                        <div style={{ marginBottom: '20px' }}>
+                          <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500', marginBottom: '10px' }}>
+                            {classInfo.pactMagic ? 'PACT MAGIC SLOTS' : 'SPELL SLOTS'}
+                          </div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {classInfo.pactMagic ? (
+                              <div style={{ padding: '10px 16px', background: 'rgba(236, 72, 153, 0.15)', borderRadius: '8px', textAlign: 'center' }}>
+                                <div style={{ fontSize: '11px', color: theme.text.muted }}>Lvl {slots.level}</div>
+                                <div style={{ fontSize: '18px', fontWeight: 'bold', color: theme.sunset.pink }}>{slots.slots}</div>
+                              </div>
+                            ) : (
+                              Object.entries(slots).map(([lvl, count]) => (
+                                <div key={lvl} style={{ padding: '10px 16px', background: 'rgba(236, 72, 153, 0.15)', borderRadius: '8px', textAlign: 'center', minWidth: '55px' }}>
+                                  <div style={{ fontSize: '11px', color: theme.text.muted }}>Lvl {lvl}</div>
+                                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: theme.sunset.pink }}>{count}</div>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Cantrips */}
+                      {character.cantrips_known?.length > 0 && (
+                        <div style={{ marginBottom: '16px' }}>
+                          <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500', marginBottom: '8px' }}>CANTRIPS</div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            {character.cantrips_known.map((cantrip, i) => (
+                              <span key={i} style={{ 
+                                padding: '6px 12px', 
+                                background: 'rgba(139, 92, 246, 0.2)', 
+                                borderRadius: '16px',
+                                fontSize: '13px',
+                                color: theme.sunset.purple
+                              }}>
+                                {cantrip.name || cantrip}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Known/Prepared Spells */}
+                      {(character.spells_known?.length > 0 || character.spells_prepared?.length > 0 || character.spells?.length > 0) ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500' }}>
+                            {classInfo.type === 'prepared' ? 'PREPARED SPELLS' : 'SPELLS KNOWN'}
+                          </div>
+                          {(character.spells_known || character.spells_prepared || character.spells || []).map((spell, i) => (
+                            <div key={i} style={{ padding: '14px', background: 'rgba(15, 10, 30, 0.5)', borderRadius: '8px' }}>
+                              <div style={{ fontWeight: '600', color: theme.text.primary, fontSize: '15px' }}>{spell.name || spell}</div>
+                              {spell.level !== undefined && (
+                                <div style={{ color: theme.text.muted, fontSize: '14px' }}>
+                                  Level {spell.level} {spell.school && `• ${spell.school}`}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div style={{ color: theme.text.muted, textAlign: 'center', padding: '24px', fontSize: '15px' }}>
+                          No spells {classInfo.type === 'prepared' ? 'prepared' : 'known'} yet
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             )}
 

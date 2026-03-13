@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, UploadFile, File, Request
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, UploadFile, File, Request, WebSocket, WebSocketDisconnect
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -9,7 +9,7 @@ import json
 import re
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Set
 import uuid
 from datetime import datetime, timezone, timedelta
 import bcrypt
@@ -20,6 +20,8 @@ import base64
 import asyncio
 import secrets
 import resend
+import socketio
+import aiofiles
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -84,6 +86,119 @@ app = FastAPI()
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
+# ==================== WEBSOCKET REAL-TIME SYNC ====================
+
+class ConnectionManager:
+    """Manages WebSocket connections for real-time campaign sync"""
+    def __init__(self):
+        # Maps campaign_id -> set of WebSocket connections
+        self.campaign_connections: Dict[str, Set[WebSocket]] = {}
+        # Maps user_id -> WebSocket for direct messages
+        self.user_connections: Dict[str, WebSocket] = {}
+        # Maps campaign_id -> set of connected user_ids
+        self.campaign_users: Dict[str, Set[str]] = {}
+
+    async def connect(self, websocket: WebSocket, user_id: str, campaign_id: str = None):
+        await websocket.accept()
+        self.user_connections[user_id] = websocket
+        
+        if campaign_id:
+            if campaign_id not in self.campaign_connections:
+                self.campaign_connections[campaign_id] = set()
+                self.campaign_users[campaign_id] = set()
+            self.campaign_connections[campaign_id].add(websocket)
+            self.campaign_users[campaign_id].add(user_id)
+            
+            # Notify others in campaign
+            await self.broadcast_to_campaign(campaign_id, {
+                "type": "user_joined",
+                "user_id": user_id,
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }, exclude=websocket)
+
+    def disconnect(self, websocket: WebSocket, user_id: str, campaign_id: str = None):
+        if user_id in self.user_connections:
+            del self.user_connections[user_id]
+        
+        if campaign_id:
+            if campaign_id in self.campaign_connections:
+                self.campaign_connections[campaign_id].discard(websocket)
+            if campaign_id in self.campaign_users:
+                self.campaign_users[campaign_id].discard(user_id)
+
+    async def broadcast_to_campaign(self, campaign_id: str, message: dict, exclude: WebSocket = None):
+        """Broadcast message to all connections in a campaign"""
+        if campaign_id in self.campaign_connections:
+            for connection in self.campaign_connections[campaign_id]:
+                if connection != exclude:
+                    try:
+                        await connection.send_json(message)
+                    except Exception:
+                        pass
+
+    async def send_to_user(self, user_id: str, message: dict):
+        """Send message to a specific user"""
+        if user_id in self.user_connections:
+            try:
+                await self.user_connections[user_id].send_json(message)
+            except Exception:
+                pass
+
+    def get_campaign_users(self, campaign_id: str) -> Set[str]:
+        """Get list of connected users in a campaign"""
+        return self.campaign_users.get(campaign_id, set())
+
+ws_manager = ConnectionManager()
+
+# ==================== CUSTOM RULES MODELS ====================
+
+class CustomRulesUpload(BaseModel):
+    """Model for uploading custom rules JSON"""
+    name: str  # Name of the ruleset (e.g., "Homebrew Classes v2")
+    description: str = ""
+    rules_type: str  # "classes", "races", "spells", "items", "feats", "backgrounds", "full"
+    content: Dict[str, Any]  # The actual rules JSON
+    is_public: bool = False  # Can others view/copy this ruleset?
+
+class CustomRuleset(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    owner_id: str  # User who uploaded this
+    name: str
+    description: str = ""
+    rules_type: str
+    content: Dict[str, Any]
+    is_public: bool = False
+    shared_with: List[str] = []  # List of user_ids who have access
+    shared_campaigns: List[str] = []  # Campaigns that have access
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class CampaignInvite(BaseModel):
+    """Campaign invite/join link"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    campaign_id: str
+    created_by: str  # GM user_id
+    code: str = Field(default_factory=lambda: secrets.token_urlsafe(8))
+    expires_at: Optional[str] = None
+    max_uses: Optional[int] = None
+    uses: int = 0
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class CampaignMember(BaseModel):
+    """Player membership in a campaign"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    campaign_id: str
+    user_id: str
+    username: str
+    role: str = "player"  # "player", "co-gm", "spectator"
+    character_id: Optional[str] = None
+    joined_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    # Rulesets shared with this player from the campaign
+    shared_rulesets: List[str] = []
 
 # ==================== MODELS ====================
 
@@ -8606,6 +8721,490 @@ async def initialize_rule_systems():
     
     await db.rule_systems.insert_one(starter_system.model_dump())
     logger.info("Initialized starter rule system (Fantasy d20)")
+
+
+# ==================== WEBSOCKET ENDPOINTS ====================
+
+@app.websocket("/ws/campaign/{campaign_id}")
+async def websocket_campaign_sync(websocket: WebSocket, campaign_id: str):
+    """WebSocket endpoint for real-time campaign synchronization"""
+    # Get token from query params
+    token = websocket.query_params.get("token")
+    if not token:
+        await websocket.close(code=4001, reason="Missing authentication token")
+        return
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user_id = payload.get("sub")
+    except jwt.ExpiredSignatureError:
+        await websocket.close(code=4002, reason="Token expired")
+        return
+    except jwt.InvalidTokenError:
+        await websocket.close(code=4003, reason="Invalid token")
+        return
+    
+    # Verify user has access to this campaign
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        await websocket.close(code=4004, reason="Campaign not found")
+        return
+    
+    # Check if user is GM or a member
+    is_gm = campaign.get("dm_user_id") == user_id
+    member = await db.campaign_members.find_one({"campaign_id": campaign_id, "user_id": user_id})
+    
+    if not is_gm and not member:
+        await websocket.close(code=4005, reason="Not a member of this campaign")
+        return
+    
+    await ws_manager.connect(websocket, user_id, campaign_id)
+    
+    try:
+        # Send initial state
+        await websocket.send_json({
+            "type": "connected",
+            "campaign_id": campaign_id,
+            "user_id": user_id,
+            "is_gm": is_gm,
+            "online_users": list(ws_manager.get_campaign_users(campaign_id))
+        })
+        
+        while True:
+            data = await websocket.receive_json()
+            message_type = data.get("type")
+            
+            if message_type == "character_update":
+                # Broadcast character HP, conditions, etc.
+                await ws_manager.broadcast_to_campaign(campaign_id, {
+                    "type": "character_update",
+                    "character_id": data.get("character_id"),
+                    "updates": data.get("updates"),
+                    "from_user": user_id
+                }, exclude=websocket)
+                
+            elif message_type == "dice_roll":
+                # Broadcast dice roll to campaign
+                await ws_manager.broadcast_to_campaign(campaign_id, {
+                    "type": "dice_roll",
+                    "roller": data.get("roller_name", "Unknown"),
+                    "roll_type": data.get("roll_type"),
+                    "dice": data.get("dice"),
+                    "result": data.get("result"),
+                    "total": data.get("total"),
+                    "from_user": user_id
+                }, exclude=websocket)
+                
+            elif message_type == "combat_update":
+                # GM broadcasts combat state
+                if is_gm:
+                    await ws_manager.broadcast_to_campaign(campaign_id, {
+                        "type": "combat_update",
+                        "combat_data": data.get("combat_data")
+                    }, exclude=websocket)
+                    
+            elif message_type == "ping":
+                await websocket.send_json({"type": "pong"})
+                
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket, user_id, campaign_id)
+        await ws_manager.broadcast_to_campaign(campaign_id, {
+            "type": "user_left",
+            "user_id": user_id
+        })
+
+
+# ==================== CUSTOM RULES ENDPOINTS ====================
+
+@api_router.post("/rulesets")
+async def upload_custom_ruleset(ruleset: CustomRulesUpload, username: str = Depends(get_current_user)):
+    """Upload a custom ruleset (classes, races, spells, etc.)"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Validate rules_type
+    valid_types = ["classes", "races", "spells", "items", "feats", "backgrounds", "full", "monsters"]
+    if ruleset.rules_type not in valid_types:
+        raise HTTPException(status_code=400, detail=f"Invalid rules_type. Must be one of: {valid_types}")
+    
+    new_ruleset = CustomRuleset(
+        owner_id=str(user.get("_id")),
+        name=ruleset.name,
+        description=ruleset.description,
+        rules_type=ruleset.rules_type,
+        content=ruleset.content,
+        is_public=ruleset.is_public
+    )
+    
+    await db.custom_rulesets.insert_one(new_ruleset.model_dump())
+    
+    return {"message": "Ruleset uploaded successfully", "ruleset_id": new_ruleset.id}
+
+@api_router.get("/rulesets")
+async def get_user_rulesets(username: str = Depends(get_current_user)):
+    """Get all rulesets available to the user (owned + shared + public)"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user_id = str(user.get("_id"))
+    
+    # Get owned rulesets
+    owned = await db.custom_rulesets.find({"owner_id": user_id}).to_list(100)
+    
+    # Get rulesets shared with user
+    shared = await db.custom_rulesets.find({"shared_with": user_id}).to_list(100)
+    
+    # Get public rulesets
+    public = await db.custom_rulesets.find({"is_public": True, "owner_id": {"$ne": user_id}}).to_list(50)
+    
+    # Clean _id from results
+    for r in owned + shared + public:
+        r.pop("_id", None)
+    
+    return {
+        "owned": owned,
+        "shared": shared,
+        "public": public
+    }
+
+@api_router.get("/rulesets/{ruleset_id}")
+async def get_ruleset(ruleset_id: str, username: str = Depends(get_current_user)):
+    """Get a specific ruleset"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user_id = str(user.get("_id"))
+    
+    ruleset = await db.custom_rulesets.find_one({"id": ruleset_id})
+    if not ruleset:
+        raise HTTPException(status_code=404, detail="Ruleset not found")
+    
+    # Check access
+    is_owner = ruleset.get("owner_id") == user_id
+    is_shared = user_id in ruleset.get("shared_with", [])
+    is_public = ruleset.get("is_public", False)
+    
+    if not (is_owner or is_shared or is_public):
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    ruleset.pop("_id", None)
+    return ruleset
+
+@api_router.put("/rulesets/{ruleset_id}")
+async def update_ruleset(ruleset_id: str, updates: Dict[str, Any], username: str = Depends(get_current_user)):
+    """Update a ruleset (owner only)"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    ruleset = await db.custom_rulesets.find_one({"id": ruleset_id})
+    if not ruleset:
+        raise HTTPException(status_code=404, detail="Ruleset not found")
+    
+    if ruleset.get("owner_id") != str(user.get("_id")):
+        raise HTTPException(status_code=403, detail="Only owner can update ruleset")
+    
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.custom_rulesets.update_one({"id": ruleset_id}, {"$set": updates})
+    
+    return {"message": "Ruleset updated"}
+
+@api_router.delete("/rulesets/{ruleset_id}")
+async def delete_ruleset(ruleset_id: str, username: str = Depends(get_current_user)):
+    """Delete a ruleset (owner only)"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    ruleset = await db.custom_rulesets.find_one({"id": ruleset_id})
+    if not ruleset:
+        raise HTTPException(status_code=404, detail="Ruleset not found")
+    
+    if ruleset.get("owner_id") != str(user.get("_id")):
+        raise HTTPException(status_code=403, detail="Only owner can delete ruleset")
+    
+    await db.custom_rulesets.delete_one({"id": ruleset_id})
+    return {"message": "Ruleset deleted"}
+
+@api_router.post("/rulesets/{ruleset_id}/share")
+async def share_ruleset(ruleset_id: str, share_data: Dict[str, Any], username: str = Depends(get_current_user)):
+    """Share a ruleset with users or campaigns"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    ruleset = await db.custom_rulesets.find_one({"id": ruleset_id})
+    if not ruleset:
+        raise HTTPException(status_code=404, detail="Ruleset not found")
+    
+    if ruleset.get("owner_id") != str(user.get("_id")):
+        raise HTTPException(status_code=403, detail="Only owner can share ruleset")
+    
+    updates = {}
+    
+    # Share with specific users
+    if "user_ids" in share_data:
+        current_shared = ruleset.get("shared_with", [])
+        new_shared = list(set(current_shared + share_data["user_ids"]))
+        updates["shared_with"] = new_shared
+    
+    # Share with campaigns
+    if "campaign_ids" in share_data:
+        current_campaigns = ruleset.get("shared_campaigns", [])
+        new_campaigns = list(set(current_campaigns + share_data["campaign_ids"]))
+        updates["shared_campaigns"] = new_campaigns
+    
+    if updates:
+        await db.custom_rulesets.update_one({"id": ruleset_id}, {"$set": updates})
+    
+    return {"message": "Ruleset sharing updated"}
+
+
+# ==================== CAMPAIGN INVITE/JOIN ENDPOINTS ====================
+
+@api_router.post("/campaigns/{campaign_id}/invite")
+async def create_campaign_invite(campaign_id: str, invite_data: Dict[str, Any] = None, username: str = Depends(get_current_user)):
+    """Create an invite link for a campaign (GM only)"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    if campaign.get("dm_user_id") != str(user.get("_id")):
+        raise HTTPException(status_code=403, detail="Only GM can create invites")
+    
+    invite_data = invite_data or {}
+    
+    invite = CampaignInvite(
+        campaign_id=campaign_id,
+        created_by=str(user.get("_id")),
+        max_uses=invite_data.get("max_uses"),
+        expires_at=(datetime.now(timezone.utc) + timedelta(days=invite_data.get("expires_days", 7))).isoformat() if invite_data.get("expires_days") else None
+    )
+    
+    await db.campaign_invites.insert_one(invite.model_dump())
+    
+    return {
+        "invite_code": invite.code,
+        "invite_url": f"/join/{invite.code}",
+        "expires_at": invite.expires_at
+    }
+
+@api_router.post("/campaigns/join/{invite_code}")
+async def join_campaign_by_invite(invite_code: str, username: str = Depends(get_current_user)):
+    """Join a campaign using an invite code"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user_id = str(user.get("_id"))
+    
+    invite = await db.campaign_invites.find_one({"code": invite_code})
+    if not invite:
+        raise HTTPException(status_code=404, detail="Invalid invite code")
+    
+    # Check expiration
+    if invite.get("expires_at"):
+        if datetime.fromisoformat(invite["expires_at"]) < datetime.now(timezone.utc):
+            raise HTTPException(status_code=400, detail="Invite has expired")
+    
+    # Check max uses
+    if invite.get("max_uses") and invite.get("uses", 0) >= invite["max_uses"]:
+        raise HTTPException(status_code=400, detail="Invite has reached max uses")
+    
+    campaign_id = invite["campaign_id"]
+    
+    # Check if already a member
+    existing = await db.campaign_members.find_one({"campaign_id": campaign_id, "user_id": user_id})
+    if existing:
+        raise HTTPException(status_code=400, detail="Already a member of this campaign")
+    
+    # Get campaign details
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    # Can't join your own campaign as a player
+    if campaign.get("dm_user_id") == user_id:
+        raise HTTPException(status_code=400, detail="You are the GM of this campaign")
+    
+    # Get rulesets shared with this campaign
+    shared_rulesets = await db.custom_rulesets.find({"shared_campaigns": campaign_id}).to_list(50)
+    shared_ruleset_ids = [r["id"] for r in shared_rulesets]
+    
+    # Create membership
+    member = CampaignMember(
+        campaign_id=campaign_id,
+        user_id=user_id,
+        username=user.get("username", user.get("email")),
+        shared_rulesets=shared_ruleset_ids
+    )
+    
+    await db.campaign_members.insert_one(member.model_dump())
+    
+    # Update invite uses
+    await db.campaign_invites.update_one({"code": invite_code}, {"$inc": {"uses": 1}})
+    
+    # Copy shared rulesets to user's shared list
+    for ruleset_id in shared_ruleset_ids:
+        await db.custom_rulesets.update_one(
+            {"id": ruleset_id},
+            {"$addToSet": {"shared_with": user_id}}
+        )
+    
+    # Notify GM via WebSocket if connected
+    await ws_manager.send_to_user(campaign.get("dm_user_id"), {
+        "type": "player_joined",
+        "campaign_id": campaign_id,
+        "player": {
+            "user_id": user_id,
+            "username": user.get("username")
+        }
+    })
+    
+    return {
+        "message": "Successfully joined campaign",
+        "campaign_id": campaign_id,
+        "campaign_name": campaign.get("name"),
+        "shared_rulesets": shared_ruleset_ids
+    }
+
+@api_router.get("/campaigns/{campaign_id}/members")
+async def get_campaign_members(campaign_id: str, username: str = Depends(get_current_user)):
+    """Get all members of a campaign"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    members = await db.campaign_members.find({"campaign_id": campaign_id}).to_list(100)
+    for m in members:
+        m.pop("_id", None)
+    
+    # Add GM info
+    gm_user = await db.users.find_one({"_id": campaign.get("dm_user_id")}) if campaign.get("dm_user_id") else None
+    
+    return {
+        "gm": {
+            "user_id": campaign.get("dm_user_id"),
+            "username": gm_user.get("username") if gm_user else "Unknown"
+        },
+        "members": members,
+        "online_users": list(ws_manager.get_campaign_users(campaign_id))
+    }
+
+@api_router.post("/campaigns/{campaign_id}/share-rulesets")
+async def share_rulesets_with_campaign(campaign_id: str, data: Dict[str, Any], username: str = Depends(get_current_user)):
+    """Share rulesets with all members of a campaign (GM only)"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    campaign = await db.campaigns.find_one({"id": campaign_id})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    if campaign.get("dm_user_id") != str(user.get("_id")):
+        raise HTTPException(status_code=403, detail="Only GM can share rulesets")
+    
+    ruleset_ids = data.get("ruleset_ids", [])
+    
+    # Verify ownership of rulesets
+    for ruleset_id in ruleset_ids:
+        ruleset = await db.custom_rulesets.find_one({"id": ruleset_id})
+        if not ruleset or ruleset.get("owner_id") != str(user.get("_id")):
+            raise HTTPException(status_code=403, detail=f"Cannot share ruleset {ruleset_id}")
+    
+    # Get all campaign members
+    members = await db.campaign_members.find({"campaign_id": campaign_id}).to_list(100)
+    member_ids = [m["user_id"] for m in members]
+    
+    # Share rulesets with campaign and all members
+    for ruleset_id in ruleset_ids:
+        await db.custom_rulesets.update_one(
+            {"id": ruleset_id},
+            {
+                "$addToSet": {
+                    "shared_campaigns": campaign_id,
+                    "shared_with": {"$each": member_ids}
+                }
+            }
+        )
+        
+        # Update each member's shared_rulesets
+        await db.campaign_members.update_many(
+            {"campaign_id": campaign_id},
+            {"$addToSet": {"shared_rulesets": ruleset_id}}
+        )
+    
+    # Notify all members via WebSocket
+    await ws_manager.broadcast_to_campaign(campaign_id, {
+        "type": "rulesets_shared",
+        "ruleset_ids": ruleset_ids,
+        "from_gm": True
+    })
+    
+    return {"message": f"Shared {len(ruleset_ids)} rulesets with campaign members"}
+
+@api_router.post("/rulesets/upload-file")
+async def upload_ruleset_file(file: UploadFile = File(...), username: str = Depends(get_current_user)):
+    """Upload a JSON file containing custom rules"""
+    user = await db.users.find_one({"email": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not file.filename.endswith('.json'):
+        raise HTTPException(status_code=400, detail="File must be a JSON file")
+    
+    # Read and parse the file
+    try:
+        content = await file.read()
+        rules_data = json.loads(content.decode('utf-8'))
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON file")
+    
+    # Determine rules type from content
+    rules_type = "full"
+    if "classes" in rules_data and len(rules_data) == 1:
+        rules_type = "classes"
+    elif "races" in rules_data and len(rules_data) == 1:
+        rules_type = "races"
+    elif "spells" in rules_data and len(rules_data) == 1:
+        rules_type = "spells"
+    elif "feats" in rules_data and len(rules_data) == 1:
+        rules_type = "feats"
+    elif "backgrounds" in rules_data and len(rules_data) == 1:
+        rules_type = "backgrounds"
+    elif "monsters" in rules_data and len(rules_data) == 1:
+        rules_type = "monsters"
+    
+    # Create the ruleset
+    new_ruleset = CustomRuleset(
+        owner_id=str(user.get("_id")),
+        name=file.filename.replace('.json', ''),
+        description=f"Uploaded from {file.filename}",
+        rules_type=rules_type,
+        content=rules_data,
+        is_public=False
+    )
+    
+    await db.custom_rulesets.insert_one(new_ruleset.model_dump())
+    
+    return {
+        "message": "Ruleset uploaded successfully",
+        "ruleset_id": new_ruleset.id,
+        "rules_type": rules_type,
+        "name": new_ruleset.name
+    }
 
 
 # Include the router in the main app

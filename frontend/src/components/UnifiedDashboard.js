@@ -83,11 +83,25 @@ function UnifiedDashboard({ username, onLogout }) {
   const [uploadingRuleset, setUploadingRuleset] = useState(false);
   const [selectedEdition, setSelectedEdition] = useState('2014');
   const [contentSummary, setContentSummary] = useState(null);
+  
+  // Subscription state for tier limits
+  const [subscriptionInfo, setSubscriptionInfo] = useState(null);
 
   useEffect(() => {
     fetchAllData();
     fetchContentSummary();
+    fetchSubscriptionInfo();
   }, []);
+
+  // Fetch subscription info
+  const fetchSubscriptionInfo = async () => {
+    try {
+      const response = await axios.get(`${API}/subscription/status`);
+      setSubscriptionInfo(response.data);
+    } catch (error) {
+      console.error('Failed to fetch subscription info:', error);
+    }
+  };
 
   useEffect(() => {
     const adminUsers = ['rookiequestadmin', 'criticalfusion', 'admin', 'lcblakey24'];
@@ -785,9 +799,42 @@ function UnifiedDashboard({ username, onLogout }) {
                 }}>
                   My Campaigns
                 </h3>
+                {/* Subscription tier badge */}
+                {subscriptionInfo && (
+                  <span style={{
+                    fontSize: '11px',
+                    padding: '4px 10px',
+                    borderRadius: '4px',
+                    background: subscriptionInfo.campaigns_limit === -1 
+                      ? 'rgba(245, 158, 11, 0.2)'
+                      : 'rgba(139, 92, 246, 0.2)',
+                    color: subscriptionInfo.campaigns_limit === -1 
+                      ? theme.gm.primary 
+                      : theme.player.primary,
+                    fontWeight: '500',
+                    marginTop: '4px'
+                  }}>
+                    {subscriptionInfo.campaigns_limit === -1 
+                      ? `${subscriptionInfo.tier_name} · Unlimited` 
+                      : `${subscriptionInfo.tier_name} · ${campaigns.length}/${subscriptionInfo.campaigns_limit} campaigns`}
+                  </span>
+                )}
               </div>
               <Button
-                onClick={() => setShowCreateCampaignModal(true)}
+                onClick={() => {
+                  // Check campaign limit before showing modal
+                  const limit = subscriptionInfo?.campaigns_limit ?? 0;
+                  const currentCount = campaigns.length;
+                  if (limit !== -1 && currentCount >= limit) {
+                    toast.error(
+                      `Your ${subscriptionInfo?.tier_name || 'Free'} plan allows ${limit} campaign(s). Upgrade to Quest Master or Legendary for unlimited campaigns!`,
+                      { duration: 5000 }
+                    );
+                    navigate('/pricing');
+                    return;
+                  }
+                  setShowCreateCampaignModal(true);
+                }}
                 data-testid="new-campaign-btn"
                 style={{
                   background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
@@ -822,22 +869,45 @@ function UnifiedDashboard({ username, onLogout }) {
                   <h3 style={{ color: theme.text.primary, margin: '0 0 8px', fontSize: '18px', fontFamily: "'Montserrat', sans-serif" }}>
                     No Campaigns Yet
                   </h3>
-                  <p style={{ color: theme.text.muted, margin: '0 0 24px', fontSize: '14px' }}>
-                    Create your first campaign to start GMing
-                  </p>
-                  <Button
-                    onClick={() => setShowCreateCampaignModal(true)}
-                    style={{
-                      background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
-                      border: 'none',
-                      padding: '14px 28px',
-                      color: '#0B1530',
-                      fontWeight: '500',
-                      boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
-                    }}
-                  >
-                    Create Campaign
-                  </Button>
+                  {subscriptionInfo && subscriptionInfo.campaigns_limit === 0 ? (
+                    <>
+                      <p style={{ color: theme.text.muted, margin: '0 0 24px', fontSize: '14px' }}>
+                        Your {subscriptionInfo.tier_name} plan is for players. Upgrade to Quest Master or Legendary to create campaigns.
+                      </p>
+                      <Button
+                        onClick={() => navigate('/pricing')}
+                        style={{
+                          background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
+                          border: 'none',
+                          padding: '14px 28px',
+                          color: '#0B1530',
+                          fontWeight: '500',
+                          boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                        }}
+                      >
+                        Upgrade to GM
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <p style={{ color: theme.text.muted, margin: '0 0 24px', fontSize: '14px' }}>
+                        Create your first campaign to start GMing
+                      </p>
+                      <Button
+                        onClick={() => setShowCreateCampaignModal(true)}
+                        style={{
+                          background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
+                          border: 'none',
+                          padding: '14px 28px',
+                          color: '#0B1530',
+                          fontWeight: '500',
+                          boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                        }}
+                      >
+                        Create Campaign
+                      </Button>
+                    </>
+                  )}
                 </div>
               ) : (
                 campaigns.map((campaign, index) => (

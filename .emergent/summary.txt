@@ -1,58 +1,76 @@
 <analysis>**original_problem_statement:**
-The user's primary goal is to build a TTRPG application called Rookie Quest Keeper (ROOK). The project has undergone multiple, full UI/UX redesigns driven by the user's specific aesthetic requirements. A critical recent event was the user uploading their entire project codebase as a zip file, requesting the agent to repair a disconnected frontend. The agent's task was to reconnect all components to the backend API, restore functionality, and continue refining the UI/UX based on user feedback, which has now settled on a Fantasy Sunset theme. The user is now focused on improving the usability and layout of core pages like the character sheet and ensuring all pages have a consistent theme, in addition to fixing functional gaps like missing actions for characters.
+The user wants to build a TTRPG application called Rookie Quest Keeper (ROOK). The initial project involved reconnecting a disconnected full-stack application from a user-provided zip file. The project has since evolved through multiple UI/UX redesigns, settling on a Fantasy Sunset theme.
 
-**PRODUCT REQUIREMENTS:**
-1.  **Full-Stack Reconnection:** Repair the application by reconnecting frontend components (, , , etc.) to the backend APIs after a user-provided code upload.
-2.  **UI/UX Implementation (Fantasy Sunset):** Implement and apply a new Fantasy Sunset theme (dark purples, pinks, gold, with a fantasy sunset landscape background) across the entire application, including landing, auth, dashboards, character builder, and character sheets.
-3.  **Layout & Usability Overhaul:** Redesign core pages like  to be a compact, single-frame layout that avoids page scrolling, using scrollable inner containers instead.
-4.  **Functional Completeness:** Ensure character sheets dynamically display all available Actions, Bonus Actions, and Reactions based on class and level, with clickable dice roll functionality.
-5.  **Restore Core Features:** Re-implement the Stripe pricing/subscription tier section on the landing page, which was lost during a redesign.
-6.  **Stress Testing:** Perform comprehensive testing of the character creation and GM screen flows to identify and fix bugs in the user journey.
+The current set of goals are:
+1.  **Implement Real-time Campaign Sync:** Use WebSockets to enable live updates between the GM and players within a campaign.
+2.  **Custom Rules System:** Allow users (GMs) to upload custom JSON files containing game rules (e.g., for classes, races). These rules should be integrated into the character builder and be shareable with players in the same campaign.
+3.  **Enhance Character Development:**
+    *   Thoroughly test the character level-up and multiclassing systems to ensure they comply with D&D 5e rules (both 2014 and 2024 editions).
+    *   Integrate the created  to show class-specific spell lists.
+4.  **Improve Combat Tracker:** Add functional enhancements like an initiative roller.
+5.  **Code Cleanup:** Delete unused/deprecated component files.
+6.  **Bug Fix:** Address an issue where users on free/player tiers cannot create campaigns.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack React/FastAPI app with a MongoDB database. All major frontend components, previously disconnected, have been successfully reconnected to the backend APIs. The entire application has been rebranded with the Fantasy Sunset theme, which features a dark purple background, a fantasy sunset landscape image, and glassmorphism panels. The  component has been significantly redesigned into a compact, single-frame layout that avoids page scrolling. It features clickable actions that trigger dice rolls with toast notifications. The floating dice roller has been removed. The Stripe-powered pricing section has been restored to the landing page.
+The application is a full-stack React/FastAPI app with a MongoDB database. The Fantasy Sunset theme (dark purple, glassmorphism, sunset gradients) has been applied consistently across major pages including the Landing Page, Auth, Unified Dashboard, Character Builder, Character Sheet, and GM Screen.
+
+Key components and features include:
+-   A central  for managing characters and campaigns, with inline modals for creation. Redundant pages have been removed.
+-   A detailed  that supports both 2014 and 2024 D&D 5e rules, including dynamic subrace/subclass selection and automatic Ability Score Increase (ASI) calculations.
+-   A compact, single-frame  with improved text readability and a multi-step  modal.
+-   A themed  and .
+-   The backend has initial boilerplate code in  to support WebSockets and custom rule file uploads, but the functionality is not yet implemented.
 
 **Last working item**:
--   **Last item agent was working:** Redesigning the  tab within . The user requested that the long, single list of actions be replaced with three side-by-side, independently scrollable boxes for Actions, Bonus Actions, and Reactions. The agent successfully implemented this layout change.
+-   **Last item agent was working:** Setting up the backend for real-time campaign synchronization and a custom rules upload system. The agent installed usage: websockets [--version | <uri>] and  and added initial boilerplate code to . This included a  class, Pydantic models for custom rules, and stubs for the WebSocket and API endpoints.
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** Y (Verified via screenshot, which confirmed the 3-column layout and content.)
--   **Which testing method agent to use?** Frontend testing agent (to verify responsiveness and scroll functionality within the new boxes).
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Both. A backend testing agent is needed to verify the WebSocket connection and the CRUD APIs for custom rules. A frontend testing agent is needed to verify the real-time UI updates and the file upload/sharing flow.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
 -   **Issue 1: Production Deployment Risk (P1)**
-    -   **Description:** The user has previously reported their live production site going completely blank after a deployment. The root cause was never found. This remains a high-risk issue for the next time the user deploys.
-    -   **Next debug checklist:** When the user deploys next, if the issue recurs, the agent must guide them to check their hosting provider's build logs and browser console for errors.
-    -   **Why fix this issue?** It makes the entire application unusable in production.
+    -   **Description:** The user's live production site has previously gone completely blank after deployment. The root cause was never identified, posing a high risk for future deployments.
     -   **Status:** BLOCKED (on user deployment action)
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Frontend
 
--   **Issue 2: Password Reset Flow on Production (P2)**
-    -   **Description:** A previous fix for an incorrect password reset URL is pending user deployment and verification on their live site.
+-   **Issue 2: Campaign Creation Fails for Free Tiers (P2)**
+    -   **Description:** The user reported an error could not create when making a new campaign. The agent identified this is because the 'Free' and 'Player' subscription tiers are configured to allow  campaigns. The UI flow was improved, but the core logic remains, preventing certain users from creating campaigns.
+    -   **Next debug checklist:**
+        1.  Review the campaign creation endpoint in .
+        2.  On the frontend (), when the creation fails due to this limit, display a clear, user-friendly error message explaining the tier limitation and how to upgrade.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** Y
+
+-   **Issue 3: Password Reset & Admin Access on Production (P2)**
+    -   **Description:** The password reset flow and admin account access are not confirmed to be working on the user's production environment.
     -   **Status:** USER VERIFICATION PENDING
 
--   **Issue 3: Admin Account Access on Production (P2)**
-    -   **Description:** The user's admin account does not work on the production site, likely due to database differences.
-    -   **Status:** BLOCKED (on user action)
-
 **In progress Task List**:
--   **Task 1: Complete and Verify UI/UX Refinements (P0)**
-    -   **Where to resume:** The agent has implemented the 3-box layout for the Combat tab. The next steps are to apply the Fantasy Sunset theme to the remaining bland pages, such as the GM Screen, as requested by the user. The agent should also perform the planned test of the Stripe checkout flow.
-    -   **What will be achieved:** A visually consistent application where all pages adhere to the Fantasy Sunset theme, with improved usability on core screens.
+-   **Task 1: Implement Real-time Campaign Sync & Custom Rules System (P0)**
+    -   **Where to resume:** Continue implementing the backend logic in .
+        1.  Flesh out the WebSocket endpoint () to handle connection management and broadcast messages to clients in the same campaign room.
+        2.  Implement the custom rules API endpoints () to handle file uploads (saving to a persistent store), database record creation (in MongoDB), retrieval, and deletion.
+        3.  After the backend is complete, build the frontend UI for uploading and managing custom rules, likely on the GM Screen or a new settings page.
+        4.  Integrate WebSocket listeners on the frontend (e.g., , ) to receive and display live updates.
+    -   **What will be achieved:** A dynamic, collaborative experience for users, and extensibility through custom game rules.
     -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Should Test frontend/backend/both after fix?** Both
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **P1: Combat Tracker Enhancements:** Implement an initiative roller, HP tracking for monsters/players, and a clear turn order display.
-    -   **P2: Real-time Campaign Sync:** Implement WebSockets for live updates between players and GMs (e.g., HP changes, dice rolls).
-    -   **P2: Character Level Up Wizard:** Create a guided flow for players to level up their characters.
+    -   **P1: Enhance & Test Character Development:**
+        -   Implement multiclassing logic in the  and .
+        -   Conduct thorough testing of the entire level-up flow for single and multiclass characters against 5e rules.
+        -   Integrate  into the  to display a character's available spells based on their class and level.
+    -   **P1: Code Cleanup and Refactoring:**
+        -   Delete unused component files: , , and .
+        -   Refactor  into smaller, modular routers to improve maintainability.
+    -   **P2: Combat Tracker Enhancements:** Implement a dedicated initiative roller and improve the turn order display on the .
 
 -   **Future Tasks:**
-    -   Backend refactoring: Split  into modular routers.
     -   Quick Start Tutorial for new GMs.
     -   AI-powered travel time estimation.
     -   Session Notes/Journal feature.
@@ -60,23 +78,21 @@ The application is a full-stack React/FastAPI app with a MongoDB database. All m
     -   Shareable World Codex for players.
 
 **Completed work in this session**
--   **Full-Stack Reconnection:** Reconnected the entire frontend to the backend after the user uploaded a  of their project. This included fixing , , and  to fetch live data from the API.
--   **Full UI Rebrand to Fantasy Sunset:**
-    -   Implemented a new theme with a fantasy sunset background, glassmorphism panels, and a purple/pink/gold color palette.
-    -   Applied the theme to , , , , and .
--   **Character Sheet Overhaul:**
-    -   Completely redesigned  into a compact, single-frame layout, moving ability scores to the left and skills into an adjacent scrollable column.
-    -   Redesigned the  tab to use three side-by-side, scrollable boxes for Actions, Bonus Actions, and Reactions.
-    -   Implemented clickable actions (e.g., Unarmed Strike) that trigger dice rolls and display results in a toast notification.
--   **Stripe Integration Restored:** Re-added the four-tier pricing section (, , , ) to the .
--   **Functionality & UX Fixes:**
-    -   Removed the floating dice roller that was obstructing UI elements.
-    -   Ensured character sheets display a dynamic list of actions, bonus actions, and reactions based on character data.
-    -   Iterated through multiple font changes (Cinzel, Montserrat) before settling on the theme-specific fonts.
--   **Stress Testing:** Successfully ran a comprehensive test suite using the testing agent, which validated the Character Builder, Character Sheet, and GM Screen flows.
+-   **UI/UX Consistency:**
+    -   Applied the Fantasy Sunset theme to  and .
+    -   Increased text sizes across  for better readability.
+-   **Navigation and App Flow:**
+    -   Removed redundant  and  routes, consolidating all entry actions into the  at the  route.
+    -   Replaced page navigation for campaign creation with an inline modal on the dashboard.
+-   **Character System Overhaul:**
+    -   Upgraded  to support both 2014 and 2024 D&D 5e rule editions, with a UI selector.
+    -   Implemented dynamic subrace/subclass selection and automatic calculation and display of Ability Score Increases (ASIs).
+    -   Created and integrated a new multi-step  modal, accessible from the character sheet.
+-   **Backend Foundation:**
+    -   Began the implementation of WebSockets and a custom rules API by installing dependencies and adding boilerplate code to .
 
 **Earlier issues found/mentioned but not fixed**
--   **Production Deployment Failures:** The root cause of the user's production site going completely blank after a previous deployment was never diagnosed. This remains a critical unaddressed risk.
+-   **Production Deployment Failures:** The root cause of the production site going blank after deployment remains unknown and is a critical risk.
 
 **Known issue recurrence from previous fork**
 -   None.
@@ -85,83 +101,87 @@ The application is a full-stack React/FastAPI app with a MongoDB database. All m
 
 
 **Key Technical Concepts**
--   **Full-Stack Reconnection:** Diagnosing and fixing components that expect props instead of making API calls.
--   **CSS Theming:** Using a combination of a global , a component-specific , and a shared JavaScript  object to manage a complex visual theme.
--   **Glassmorphism:** Using  and semi-transparent backgrounds to create frosted glass UI panels.
--   **Compact UI Design:** Designing components to fit within a single viewport frame, using internal scrolling containers () to manage large amounts of content instead of page scrolling.
--   **Dynamic Action Rendering:** Generating UI elements (like a character's available actions) based on data fetched from the backend.
--   **Client-Side Dice Rolls:** Implementing interactive UI elements that perform calculations (dice rolls) and provide immediate feedback via toast notifications.
+-   **WebSockets:** For real-time communication between clients, using FastAPI's WebSocket support.
+-   **Dynamic Rule Engine:** The  now dynamically adjusts options based on a selected game edition by reading from a central  file.
+-   **File Upload/Management:** The new feature requires handling JSON file uploads on the backend, storing them, and associating them with campaigns/users.
+-   **Component Consolidation:** Functionality from multiple components (, ) was merged into a single, more robust component ().
 
 **key DB schema**
--   No changes made to the database schema in this session.
+-   **Proposed  collection:**
+    -   :  (links to user)
+    -   : 
+    -   : 
+    -   :  (the raw JSON content of the uploaded rules)
 
 **changes in tech stack**
--   None.
+-   **Added Backend Dependencies:** usage: websockets [--version | <uri>], .
 
 **All files of reference**
--   : The most heavily modified file, featuring the new single-frame layout and 3-column combat tab.
--   : Rewritten to match the new theme and layout.
--   : Rewritten for the new theme and includes the restored Stripe pricing section.
--   : Rewritten for the new theme.
--   : New file containing the shared Fantasy Sunset theme variables.
--   : Contains the global styles, background image, and font imports for the theme.
--   : Contains component-level styles for glassmorphism panels and other elements.
--   : Modified to remove the floating dice roller.
+-   : Core backend file, currently being modified for WebSockets.
+-   : Central user dashboard.
+-   : For character creation.
+-   : New level-up modal.
+-   : New data source for character rules.
 
 **Areas that need refactoring**:
--   **Backend Monolith:**  remains a large monolithic file and should be broken down into smaller, domain-specific routers for better maintainability.
+-   **Backend Monolith:**  is growing and should be split into modular routers (e.g., , , ) for maintainability.
+-   **Unused Files:** The component files , , and  need to be physically deleted.
 
 **key api endpoints**
--   : Reconnected to  and .
--   : Used by .
--   : Reconnected to  and .
--   : Used by .
+-   **In Progress:**
+    -   : WebSocket connection endpoint.
+    -   : To upload a custom rule JSON file.
+    -   : To list a user's custom rule sets.
+    -   : To delete a rule set.
+    -   : To associate a rule set with a campaign for sharing.
 
 **Critical Info for New Agent**
--   **The user's production environment is fragile.** The blank screen issue after deployment is a major risk. Be prepared to guide the user on debugging their deployment pipeline if it occurs again.
--   **The user is highly visual and prefers compact, single-frame layouts.** Avoid solutions that require scrolling the entire page. Use internal scrollable containers for dense content.
--   **The current theme is Fantasy Sunset.** All new UI work should adhere to this style (dark purple, pink, gold, glass panels, fantasy landscape background).
--   **Functionality is now the priority.** The user has explicitly stated, We need to focus on the ability to use the site rather than how good the site looks. Ensure all UI changes are backed by solid, testable functionality.
--   **The agent has successfully used the  for stress tests.** This is a good precedent to follow for any significant new feature or refactor.
+-   The top priority is building the **real-time sync and custom rules** feature. Start by completing the backend implementation in  before moving to the frontend.
+-   After the sync feature, follow the user's requested order: enhance character development (multiclassing, spell integration), then clean up unused files.
+-   The campaign creation bug is a logic issue, not just a UI one. The backend tier limit is the root cause and should be addressed with better user feedback on the frontend.
+-   Remember to physically **delete** the unused component files, not just remove their imports or routes.
 
 **documents and test reports created in this job**
--    (from font fix)
--    (from stress test)
--   Numerous image mockups for the Ethereal Dusk and Fantasy Sunset themes were generated and are available in the message history.
+-   New data file: 
+-   New data file: 
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **10. : Go with all suggested actions plus one thing I've noticed on the character page... (requests 3-column combat tab layout). (Status: Addressed)**
--   9. : On the landing page, I can't see anywhere that talks about the stripe payments or the memberships... is that still integrated? (Status: Addressed)
--   8. : (Agrees to the compact character sheet layout and asks to proceed). (Status: Addressed)
--   7. : (Requests major redesign of character sheet layout to be more compact, remove floating dice roller, and add dynamic actions with dice rolls). (Status: Addressed)
--   6. : (Asks to apply sunset theme to all pages, neaten up UI, and run a stress test on the site). (Status: Addressed)
--   5. : Yes perfect exactly that (approving the fantasy sunset mockups). (Status: Addressed)
--   4. : (Clarifies they want a fantasy landscape sunset, not a space theme). (Status: Addressed)
--   3. : Could you generate an image of option b? Could we have the sunset glow in the background... (Status: Addressed)
--   2. : (Asks for design ideas for a full rebrand with a sunset theme). (Status: Addressed)
--   1. : Suggest next ideas? (Status: Addressed)
+1.  **User:** Wants to build real-time campaign sync, custom JSON rule uploads/sharing, and test the linking functionality.
+2.  **User:** Wants to continue with character development: test level ups, implement multiclassing, and ensure compliance with 5e 2014/2024 rules.
+3.  **User:** Requests combat tracker improvements, deletion of unused component files, and integration of class spells.
+4.  **Agent:** Proposes a plan to build the Level Up Wizard.
+5.  **User:** Approves the plan, asks to continue with other suggestions, and requests removal of unnecessary pages.
+6.  **Agent:** Summarizes work on the GM Screen.
+7.  **Agent:** Asks for the next task.
+8.  **User:** Reports major issues: redundant character/campaign pages that need removal and an error preventing campaign creation. Asks agent to fix these before continuing.
+9.  **Agent:** Acknowledges the issues and starts investigation.
+10. **User:** Approves the initial plan from the start of the session and asks for the text on the character page to be made larger.
 
 **Project Health Check:**
--   **Broken:** The user's production deployment pipeline is considered unreliable and at high risk of failure, as the root cause of a previous blank screen issue was never identified.
+-   **Broken:**
+    -   The user's production deployment pipeline is considered unreliable.
+    -   The campaign creation logic for free/player tiers is a functional bug that prevents users from creating campaigns.
+-   **Mocked:** N/A
 
 **3rd Party Integrations**
--   **Stripe:** For subscriptions (pricing tiers are visible on the landing page).
+-   **Stripe:** For subscriptions.
 -   **resend:** For emails.
--   **Emergent LLM Key (via ):** For ROOK AI features.
+-   **Emergent LLM Key (via ):** For AI features.
 -   **PyMuPDF:** For PDF text extraction.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES. The agent ran a comprehensive stress test after reconnecting the application, which passed.
+-   **Testing agent used after significant changes:** NO (in this session). Agent used screenshots for UI verification.
 -   **Troubleshoot agent used after agent stuck in loop:** NO.
--   **Test files created:** None were permanently added, but the testing agent generated and ran tests in its environment.
--   **Known regressions:** None.
+-   **Test files created:** None.
+-   **Known regressions:** The campaign creation error reported by the user.
 
 **Credentials to test flow:**
--   **Admin User:**
-    -   **Email:** 
-    -   **Password:** 
-    -   **Note:** This account is for the **preview environment's database only**.
+-   **Email:** 
+-   **Password:** 
+-   **Note:** This account is for the **preview environment's database only**.
 
 **What agent forgot to execute**
--   In the user's last message, they asked to apply the sunset theme to all bland pages like the **GM screen**. The agent implemented the  tab redesign but has not yet started theming the GM screen.
--   The agent planned to test the Stripe checkout flow but was interrupted by the user's request for the Combat tab layout change. This test is still pending.</analysis>
+-   **Stripe Checkout Test:** A planned test of the Stripe checkout flow was never performed.
+-   **Delete Unused Files:** The agent removed routes for deprecated components but did not delete the physical files (, ) as requested.
+-   **Address Campaign Creation Limit:** The agent fixed the UI flow for campaign creation but did not address the underlying backend logic that caused the user's error (tier-based campaign limits).
+-   **Integrate :** The agent created  but did not integrate it into the frontend to display character spells.</analysis>
