@@ -15,8 +15,8 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - GM Screen with comprehensive tools (combat, dice, monsters, NPCs, etc.)
 - Stripe integration for subscription tiers
 - **Support for both D&D 5e 2014 and 2024 rules**
-- **Custom logos integrated throughout app**
 - **SRD/OGL compliant content only**
+- **Mobile and tablet responsive**
 
 ## Implemented Features (as of March 2026)
 
@@ -27,7 +27,8 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] Inline campaign creation modal
 - [x] **Subscription tier badge showing campaign limits**
 - [x] **Proactive campaign limit check before creation**
-- [x] **Custom mini logo in dashboard header**
+- [x] **Custom mini logo in dashboard header (floating animation)**
+- [x] **Mobile navigation toggle (Player/GM tabs)**
 
 ### Character System
 - [x] Full character sheet with compact layout
@@ -37,12 +38,13 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] **ASI bonuses** displayed inline (base + racial bonus = final)
 - [x] 3-column Combat tab (Actions, Bonus Actions, Reactions)
 - [x] **3D Dramatic Dice Roller** - animated bouncing dice with glow effects
-- [x] **All clickable rolls** - Saving throws, skill checks, attack rolls all trigger 3D dice
-- [x] **Level Up Wizard with MULTICLASSING** - choose to continue class or multiclass
-- [x] **Dynamic spellcasting tab** - shows correct ability (INT/WIS/CHA) based on class
-- [x] **Spell slots display** based on character level and class type
+- [x] **All clickable rolls** - Saving throws, skill checks, attack rolls trigger 3D dice
+- [x] **Level Up Wizard with MULTICLASSING** - choose to continue or multiclass
+- [x] **Dynamic spellcasting tab** - correct ability (INT/WIS/CHA) by class
+- [x] **Spell slots display** based on level and class type
 - [x] Cantrips and prepared spells tracking
-- [x] Spells, Inventory, Notes tabs
+- [x] **Enhanced Notes tab** - Personal notes + GM synced notes + timeline hint
+- [x] Spells, Inventory, Notes tabs with animated hover effects
 
 ### Branding & UI
 - [x] **Custom Rookie Quest Keeper logos** (main + mini)
@@ -51,6 +53,9 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] **Fixed background** that scrolls with page
 - [x] Mini dragon compass logo in nav/header
 - [x] Logo on auth pages
+- [x] **Tab hover animations** with glow effect
+- [x] **Card hover effects** with scale and shadow
+- [x] **Press scale animation** on buttons
 
 ### Pricing & Subscriptions
 - [x] **Monthly/Yearly billing toggle**
@@ -64,11 +69,21 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] HP tracking with +/- buttons
 - [x] Death saves, conditions management
 
-### GM-Player Sync (NEW)
-- [x] **Campaign Timeline** - Events visible to GM and players
-- [x] **GM Note Sync** - Push notes from GM to player character notes
-- [x] **Session Recaps** - Auto-synced to players
+### GM-Player Sync
+- [x] **Campaign Timeline API** - Events visible to GM and players
+- [x] **GM Note Sync API** - Push notes from GM to player character notes
+- [x] **Session Recaps sync** to players
 - [x] **Player Timeline API** - View all events across joined campaigns
+- [x] **"Sync to Players" button** on GM Screen notes
+
+### Mobile Responsiveness
+- [x] **Mobile navigation toggle** (Player Hub / GM Side)
+- [x] **Responsive grids** - single column on mobile
+- [x] **Touch-friendly tap targets** (44px minimum)
+- [x] **Safe area support** for notched devices
+- [x] **Smooth scrolling** on mobile
+- [x] **Responsive character sheet** - stacks columns on mobile
+- [x] **Responsive text sizes** - smaller on mobile
 
 ### Integrations
 - [x] Stripe (subscription tiers)
@@ -76,19 +91,19 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] Emergent LLM Key (ROOK AI)
 
 ## Known Issues
-1. **Production Login/Password Reset** - User reports inability to login on production site. Preview works correctly. May be database or Resend email config issue on production deployment.
+1. **Production Login/Password Reset** - User reports inability to login on production site. Preview works correctly.
 
 ## Upcoming Tasks (P1)
-1. Build frontend UI for player timeline display
-2. Add GM note sync UI on GM Screen
-3. Test spell dice clicking functionality
-4. Test all class actions (Barbarian rage, etc.)
+1. Test spell clicking for damage rolls
+2. Verify all class actions work (Barbarian rage, etc.)
+3. Build player timeline UI component
+4. Real-time WebSocket sync
 
 ## Future Tasks (P2+)
-- Real-time Campaign Sync (WebSockets)
-- Backend refactoring (split server.py)
+- Backend refactoring (split server.py into modules)
 - Custom rules JSON upload system
 - Quick Start Tutorial for GMs
+- Combat Log feature
 
 ## Technical Architecture
 ```
@@ -98,25 +113,38 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 └── frontend/
     ├── public/
     │   └── images/
-    │       ├── logo-main.png   (full "Rookie Quest" logo)
-    │       └── logo-mini.png   (dragon compass logo)
+    │       ├── logo-main.png
+    │       └── logo-mini.png
     └── src/
+        ├── index.css (responsive utilities, animations)
         ├── components/
         │   ├── ui/
-        │   │   └── DiceRoller3D.js  (NEW - 3D animated dice)
-        │   ├── AuthPage.js         (mini logo added)
-        │   ├── CharacterBuilder.js (2014/2024 editions)
-        │   ├── CharacterSheetFull.js (3D dice, dynamic spells)
+        │   │   └── DiceRoller3D.js
+        │   ├── AuthPage.js
+        │   ├── CharacterBuilder.js
+        │   ├── CharacterSheetFull.js
         │   ├── CombatPage.js
-        │   ├── GMScreen.js
-        │   ├── LandingPage.js      (grand animated KEEPER)
-        │   ├── LevelUpWizard.js    (MULTICLASSING support)
-        │   ├── PricingPage.js      (yearly savings display)
-        │   └── UnifiedDashboard.js (tier badge, mini logo)
+        │   ├── GMScreen.js (with Sync to Players)
+        │   ├── LandingPage.js (grand KEEPER title)
+        │   ├── LevelUpWizard.js (multiclassing)
+        │   ├── PricingPage.js
+        │   └── UnifiedDashboard.js
         └── data/
-            ├── characterRules5e.js (multiclass requirements)
+            ├── characterRules5e.js
             └── spellDatabase.js
 ```
+
+## CSS Animation Classes Added
+- `.tab-glow` - Hover glow effect for tabs
+- `.tab-active` - Active tab with persistent glow
+- `.card-hover` - Card hover with scale and shadow
+- `.press-scale` - Scale down on press
+- `.icon-float` - Floating animation for icons
+- `.glow-border` - Animated glow border
+- `.mobile-stack` - Stack on mobile
+- `.mobile-hide` - Hide on mobile
+- `.mobile-full` - Full width on mobile
+- `.mobile-grid-1` - Single column grid on mobile
 
 ## New API Endpoints
 - `GET /api/campaigns/{id}/timeline` - Get campaign timeline events

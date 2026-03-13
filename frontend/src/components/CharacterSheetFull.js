@@ -431,10 +431,10 @@ export default function CharacterSheetFull() {
       />
 
       {/* Main Content - Fills remaining space */}
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '220px 200px 1fr', gap: '16px', overflow: 'hidden', minHeight: 0 }}>
+      <div className="character-sheet-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: '220px 200px 1fr', gap: '16px', overflow: 'hidden', minHeight: 0 }}>
         
         {/* LEFT COLUMN: Abilities + Saving Throws */}
-        <div style={{ ...panelStyle, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="card-hover" style={{ ...panelStyle, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <h3 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.purple, marginBottom: '12px', fontSize: '1rem', flexShrink: 0 }}>Ability Scores</h3>
           
           <div style={{ ...scrollBoxStyle, flex: 1 }}>
@@ -573,22 +573,25 @@ export default function CharacterSheetFull() {
           </div>
 
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+          <div style={{ display: 'flex', gap: '8px', flexShrink: 0, flexWrap: 'wrap' }}>
             {['combat', 'spells', 'inventory', 'notes'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
+                className={`tab-glow press-scale ${activeTab === tab ? 'tab-active' : ''}`}
                 style={{
-                  flex: 1,
-                  padding: '12px',
+                  flex: '1 1 auto',
+                  minWidth: '80px',
+                  padding: '12px 16px',
                   background: activeTab === tab ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' : 'rgba(139, 92, 246, 0.1)',
                   border: activeTab === tab ? 'none' : `1px solid ${theme.border}`,
-                  borderRadius: '8px',
+                  borderRadius: '10px',
                   color: theme.text.primary,
                   fontSize: '15px',
                   fontWeight: activeTab === tab ? '600' : '400',
                   cursor: 'pointer',
-                  textTransform: 'capitalize'
+                  textTransform: 'capitalize',
+                  transition: 'all 0.3s ease'
                 }}
               >
                 {tab}
@@ -599,9 +602,9 @@ export default function CharacterSheetFull() {
           {/* Tab Content - Scrollable */}
           <div style={{ ...panelStyle, flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             {activeTab === 'combat' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', height: '100%', overflow: 'hidden' }}>
+              <div className="character-combat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', height: '100%', overflow: 'hidden' }}>
                 {/* Actions Box */}
-                <div style={{ 
+                <div className="card-hover" style={{ 
                   background: 'rgba(239, 68, 68, 0.05)', 
                   border: '1px solid rgba(239, 68, 68, 0.2)', 
                   borderRadius: '12px', 
@@ -851,11 +854,75 @@ export default function CharacterSheetFull() {
             )}
 
             {activeTab === 'notes' && (
-              <div style={{ ...scrollBoxStyle, flex: 1, padding: '4px' }}>
-                <h4 style={{ fontFamily: "'Cinzel', serif", color: theme.text.primary, marginBottom: '16px', fontSize: '1.1rem' }}>Character Notes</h4>
-                <div style={{ whiteSpace: 'pre-wrap', color: theme.text.secondary, lineHeight: '1.7', fontSize: '15px' }}>
-                  {character.notes || 'No notes yet.'}
+              <div style={{ ...scrollBoxStyle, flex: 1, padding: '4px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {/* Character Notes Section */}
+                <div>
+                  <h4 style={{ fontFamily: "'Cinzel', serif", color: theme.text.primary, marginBottom: '12px', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <BookOpen size={18} style={{ color: theme.sunset.purple }} />
+                    Character Notes
+                  </h4>
+                  <div style={{ 
+                    whiteSpace: 'pre-wrap', 
+                    color: theme.text.secondary, 
+                    lineHeight: '1.7', 
+                    fontSize: '15px',
+                    background: 'rgba(15, 10, 30, 0.5)',
+                    borderRadius: '10px',
+                    padding: '16px',
+                    minHeight: '80px'
+                  }}>
+                    {character.notes || 'No personal notes yet.'}
+                  </div>
                 </div>
+                
+                {/* GM Synced Notes Section */}
+                {character.gm_notes && character.gm_notes.length > 0 && (
+                  <div>
+                    <h4 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.gold, marginBottom: '12px', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Sparkles size={18} style={{ color: theme.sunset.gold }} />
+                      GM Updates
+                    </h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {character.gm_notes.slice(0, 5).map((note, i) => (
+                        <div key={i} className="card-hover" style={{
+                          background: 'rgba(245, 158, 11, 0.1)',
+                          border: '1px solid rgba(245, 158, 11, 0.2)',
+                          borderRadius: '10px',
+                          padding: '14px'
+                        }}>
+                          <div style={{ fontSize: '13px', color: theme.sunset.gold, fontWeight: '600', marginBottom: '6px' }}>
+                            {note.title || 'GM Note'}
+                          </div>
+                          <div style={{ fontSize: '14px', color: theme.text.secondary, lineHeight: '1.5' }}>
+                            {note.content}
+                          </div>
+                          {note.timestamp && (
+                            <div style={{ fontSize: '11px', color: theme.text.muted, marginTop: '8px' }}>
+                              {new Date(note.timestamp).toLocaleDateString()}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Campaign Timeline Hint */}
+                {character.campaign_id && (
+                  <div style={{ 
+                    marginTop: 'auto',
+                    padding: '12px 16px',
+                    background: 'rgba(139, 92, 246, 0.1)',
+                    border: '1px solid rgba(139, 92, 246, 0.2)',
+                    borderRadius: '8px',
+                    fontSize: '13px',
+                    color: theme.text.muted,
+                    textAlign: 'center'
+                  }}>
+                    <Sparkles size={14} style={{ display: 'inline', marginRight: '6px', color: theme.sunset.purple }} />
+                    Your GM can sync session notes and updates to you directly
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -547,3 +547,306 @@ p, span, div, label, button, input, textarea, select {
   80% { content: "5"; }
   90% { content: "16"; }
 }
+
+/* ===== ENHANCED TAB & BUTTON ANIMATIONS ===== */
+
+/* Tab hover glow effect */
+.tab-glow {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.tab-glow:hover::before {
+  opacity: 1;
+}
+
+.tab-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3), 0 0 30px rgba(236, 72, 153, 0.2);
+}
+
+/* Active tab with persistent glow */
+.tab-active {
+  position: relative;
+  animation: tabGlowPulse 2s ease-in-out infinite;
+}
+
+@keyframes tabGlowPulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); }
+  50% { box-shadow: 0 0 25px rgba(139, 92, 246, 0.6), 0 0 35px rgba(236, 72, 153, 0.3); }
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* Button ripple effect */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.3) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.btn-ripple:hover::after {
+  opacity: 1;
+}
+
+/* Subtle float animation for icons */
+.icon-float {
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Glow border animation */
+.glow-border {
+  position: relative;
+}
+
+.glow-border::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), rgba(236, 72, 153, 0.5), rgba(245, 158, 11, 0.5));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.glow-border:hover::after {
+  opacity: 1;
+  animation: glowRotate 3s linear infinite;
+}
+
+@keyframes glowRotate {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* Scale on press */
+.press-scale:active {
+  transform: scale(0.97);
+}
+
+/* ===== MOBILE RESPONSIVE UTILITIES ===== */
+
+/* Mobile-first breakpoints */
+@media (max-width: 640px) {
+  /* Stack layouts on mobile */
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+  
+  /* Full width on mobile */
+  .mobile-full {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Hide on mobile */
+  .mobile-hide {
+    display: none !important;
+  }
+  
+  /* Smaller padding on mobile */
+  .mobile-pad-sm {
+    padding: 12px !important;
+  }
+  
+  /* Smaller text on mobile */
+  .mobile-text-sm {
+    font-size: 14px !important;
+  }
+  
+  /* Single column grid on mobile */
+  .mobile-grid-1 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Two column grid on mobile */
+  .mobile-grid-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Adjust modal size for mobile */
+  .mobile-modal {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    margin: 10px !important;
+    max-height: 90vh !important;
+  }
+  
+  /* Bottom sheet style for mobile */
+  .mobile-bottom-sheet {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 80vh !important;
+  }
+}
+
+/* Tablet breakpoints */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tablet-grid-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .tablet-pad-md {
+    padding: 16px !important;
+  }
+  
+  .tablet-hide {
+    display: none !important;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (pointer: coarse) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Larger touch targets */
+  .touch-target {
+    padding: 12px 16px !important;
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  .safe-area-bottom {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-top {
+    padding-top: max(16px, env(safe-area-inset-top));
+  }
+}
+
+/* Smooth scroll for mobile */
+@media (max-width: 1024px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Better scrollable containers on mobile */
+  .scroll-smooth {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}
+
+/* ===== RESPONSIVE CHARACTER SHEET ===== */
+@media (max-width: 768px) {
+  .character-sheet-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  
+  .character-combat-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .character-stats-row {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+}
+
+/* ===== RESPONSIVE DASHBOARD ===== */
+@media (max-width: 1024px) {
+  .dashboard-split {
+    flex-direction: column !important;
+  }
+  
+  .dashboard-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ===== LANDSCAPE MOBILE ===== */
+@media (max-width: 896px) and (orientation: landscape) {
+  .landscape-compact {
+    padding: 8px !important;
+  }
+  
+  .landscape-hide {
+    display: none !important;
+  }
+}
+
+/* More aggressive mobile styles */
+@media screen and (max-width: 768px) {
+  .dashboard-split,
+  .mobile-stack,
+  [style*="display: flex"][style*="flex-direction: row"] {
+    flex-direction: column !important;
+  }
+  
+  .mobile-full,
+  [style*="width: 50%"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Hide long text on mobile */
+  .mobile-hide {
+    display: none !important;
+  }
+  
+  /* Character sheet responsive */
+  .character-sheet-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  
+  .character-combat-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Smaller fonts on mobile */
+  h1 { font-size: 24px !important; }
+  h2 { font-size: 20px !important; }
+  h3 { font-size: 16px !important; }
+  
+  /* Compact padding */
+  .mobile-pad-sm {
+    padding: 10px !important;
+  }
+}

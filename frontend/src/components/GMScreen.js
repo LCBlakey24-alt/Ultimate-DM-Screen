@@ -389,6 +389,7 @@ function GMScreen({ username }) {
                   onMouseEnter={() => setHoveredTab(tab.id)}
                   onMouseLeave={() => setHoveredTab(null)}
                   data-testid={`tab-${tab.id}`}
+                  className={`tab-glow press-scale ${isActive ? 'tab-active' : ''}`}
                   style={{
                     position: 'relative',
                     padding: '12px 16px',
@@ -401,12 +402,12 @@ function GMScreen({ username }) {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
-                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     textAlign: 'left',
                     width: '100%',
                     minHeight: '46px',
                     overflow: 'hidden',
-                    borderRadius: isActive ? '0' : '0'
+                    borderRadius: '6px'
                   }}
                 >
                   <tab.icon size={18} />
@@ -984,7 +985,7 @@ function GMScreen({ username }) {
                 <FileText size={24} style={{ color: theme.accent.secondary }} /> Session Notes
               </h2>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div className="mobile-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 {/* Add Note */}
                 <div>
                   <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '12px' }}>Quick Note</h3>
@@ -1005,27 +1006,63 @@ function GMScreen({ username }) {
                     }}
                     placeholder="Write a quick note about the session... NPCs met, events, plot points, etc."
                   />
-                  <Button 
-                    onClick={handleSubmitNote} 
-                    disabled={processingNote || !quickNote.trim()} 
-                    style={{ width: '100%', display: 'flex', gap: '8px', justifyContent: 'center', background: theme.gradient, color: theme.text.primary, border: 'none', borderRadius: '10px', padding: '14px', fontSize: '15px' }}
-                  >
-                    {processingNote ? <Loader size={16} className="animate-spin" /> : <Send size={16} />} Save Note
-                  </Button>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <Button 
+                      onClick={handleSubmitNote} 
+                      disabled={processingNote || !quickNote.trim()} 
+                      className="press-scale"
+                      style={{ flex: 1, display: 'flex', gap: '8px', justifyContent: 'center', background: theme.gradient, color: theme.text.primary, border: 'none', borderRadius: '10px', padding: '14px', fontSize: '15px' }}
+                    >
+                      {processingNote ? <Loader size={16} className="animate-spin" /> : <Send size={16} />} Save Note
+                    </Button>
+                    <Button 
+                      onClick={async () => {
+                        if (!quickNote.trim()) return;
+                        try {
+                          await axios.post(`${API}/campaigns/${campaignId}/sync-note`, {
+                            note_content: quickNote,
+                            note_type: 'gm_note',
+                            title: 'Session Update',
+                            create_timeline_event: true
+                          });
+                          toast.success('Note synced to all players!');
+                          setQuickNote('');
+                        } catch (err) {
+                          toast.error('Failed to sync note');
+                        }
+                      }}
+                      disabled={!quickNote.trim()}
+                      className="press-scale tab-glow"
+                      style={{ 
+                        display: 'flex', 
+                        gap: '8px', 
+                        justifyContent: 'center', 
+                        background: 'rgba(139, 92, 246, 0.2)', 
+                        color: theme.accent.secondary, 
+                        border: `1px solid ${theme.accent.secondary}`, 
+                        borderRadius: '10px', 
+                        padding: '14px', 
+                        fontSize: '14px',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      <Users size={16} /> Sync to Players
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Notes List */}
                 <div>
                   <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '12px' }}>Recent Notes ({sessionNotes.length})</h3>
-                  <div style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div className="scroll-smooth" style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {sessionNotes.length === 0 ? (
-                      <div style={{ background: theme.bg.card, border: `2px dashed ${theme.border}`, padding: '30px', textAlign: 'center' }}>
+                      <div className="card-hover" style={{ background: theme.bg.card, border: `2px dashed ${theme.border}`, padding: '30px', textAlign: 'center', borderRadius: '10px' }}>
                         <FileText size={32} style={{ color: theme.text.muted, margin: '0 auto 12px' }} />
                         <p style={{ color: theme.text.secondary, fontSize: '13px' }}>No notes yet</p>
                       </div>
                     ) : (
                       sessionNotes.map(note => (
-                        <div key={note.id} style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, padding: '12px' }}>
+                        <div key={note.id} className="card-hover" style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, padding: '12px', borderRadius: '8px' }}>
                           <div style={{ fontSize: '10px', color: theme.text.muted, marginBottom: '6px' }}>
                             {new Date(note.created_at).toLocaleString()}
                           </div>

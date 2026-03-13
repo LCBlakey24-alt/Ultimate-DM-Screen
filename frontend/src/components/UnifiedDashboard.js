@@ -336,15 +336,18 @@ function UnifiedDashboard({ username, onLogout }) {
         justifyContent: 'space-between',
         alignItems: 'center',
         position: 'relative',
-        zIndex: 10
+        zIndex: 10,
+        flexWrap: 'wrap',
+        gap: '12px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="mobile-stack" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <img 
             src="/images/logo-mini.png" 
             alt="ROOK" 
+            className="icon-float"
             style={{ height: '36px', width: 'auto', filter: 'drop-shadow(0 2px 6px rgba(245, 158, 11, 0.4))' }}
           />
-          <h1 style={{
+          <h1 className="mobile-hide" style={{
             fontWeight: '600',
             fontSize: '20px',
             color: theme.gm.primary,
@@ -354,7 +357,7 @@ function UnifiedDashboard({ username, onLogout }) {
           }}>
             ROOKIE QUEST KEEPER
           </h1>
-          <span style={{ 
+          <span className="mobile-hide" style={{ 
             color: theme.text.muted, 
             fontSize: '13px',
             borderLeft: `1px solid ${theme.border}`,
@@ -495,21 +498,23 @@ function UnifiedDashboard({ username, onLogout }) {
         `}</style>
         <button
           onClick={() => setMobileView('player')}
-          className="transition-smooth"
+          className="tab-glow press-scale"
           style={{
             flex: 1,
             padding: '12px',
             background: mobileView === 'player' ? theme.player.primary : 'transparent',
             border: `1px solid ${mobileView === 'player' ? theme.player.primary : theme.border}`,
             borderRight: 'none',
+            borderRadius: '8px 0 0 8px',
             color: mobileView === 'player' ? '#fff' : theme.text.muted,
             fontSize: '13px',
-            fontWeight: '400',
+            fontWeight: '500',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px'
+            gap: '8px',
+            transition: 'all 0.3s ease'
           }}
         >
           <Sword size={16} />
@@ -517,13 +522,14 @@ function UnifiedDashboard({ username, onLogout }) {
         </button>
         <button
           onClick={() => setMobileView('gm')}
-          className="transition-smooth"
+          className="tab-glow press-scale"
           style={{
             flex: 1,
             padding: '12px',
             background: mobileView === 'gm' ? theme.gm.primary : 'transparent',
             border: `1px solid ${mobileView === 'gm' ? theme.gm.primary : theme.border}`,
-            color: mobileView === 'gm' ? '#fff' : theme.text.muted,
+            borderRadius: '0 8px 8px 0',
+            color: mobileView === 'gm' ? '#0B1530' : theme.text.muted,
             fontSize: '13px',
             fontWeight: '400',
             cursor: 'pointer',
