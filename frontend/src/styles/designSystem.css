@@ -317,3 +317,106 @@ body {
 .animate-in {
   animation: fadeIn 0.3s ease-out;
 }
+
+/* ============ ROOKIE QUEST (RQ) CLASSES ============ */
+/* These classes are used by the GitHub uploaded components */
+
+/* RQ Colors */
+:root {
+  --rq-bg-main: var(--bg-primary);
+  --rq-bg-panel: var(--bg-card);
+  --rq-bg-panel-soft: var(--bg-secondary);
+  --rq-text-main: var(--text-primary);
+  --rq-text-soft: var(--text-secondary);
+  --rq-text-muted: var(--text-muted);
+  --rq-gold: #E7B94C;
+  --rq-border: var(--border-subtle);
+}
+
+/* RQ Panels */
+.rq-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+}
+
+/* RQ Cards */
+.rq-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+/* RQ Titles */
+.rq-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+/* RQ Muted text */
+.rq-muted {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* RQ Stats */
+.rq-stat {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  text-align: center;
+}
+
+/* RQ Buttons */
+.rq-button-primary {
+  padding: 10px 20px;
+  background: var(--player-primary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.rq-button-primary:hover {
+  background: var(--player-hover);
+}
+
+.rq-button-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rq-button-secondary {
+  padding: 10px 20px;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.rq-button-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-muted);
+}
+

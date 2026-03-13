@@ -1,1340 +1,275 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { 
-  ArrowLeft, Edit, Heart, Shield, Zap, User, Sword, Book, 
-  Sparkles, Save, X, Target, Activity, TrendingUp, Award, Link2,
-  Star, Flame, Wand2, ScrollText, Crown, Dumbbell, Brain, Eye,
-  MessageCircle, Plus, Minus, ChevronDown, ChevronUp, Check, Search,
-  BookOpen, Swords, Package, Coins, Feather, Moon, Sun, CircleDot, RefreshCw
+import "../App.css";
+import "../styles/designSystem.css";
+import {
+  Heart, Shield, Zap, Swords, BookOpen, Backpack,
+  ChevronDown, ChevronUp, Plus, Minus, Edit3, Save, X,
+  Skull, Star, Award, Target, Clock, Eye, Search,
+  Dices, Sparkles, Users, Scroll, Flame, Droplet, Wind, Mountain
 } from 'lucide-react';
-import LoadingSkeleton from '@/components/LoadingSkeleton';
-import JoinCampaignModal from '@/components/JoinCampaignModal';
-import LevelUpModal from '@/components/LevelUpModal';
-import DiceRollTooltip from '@/components/DiceRollTooltip';
-import { RookSuggestionPopup, useRookSuggestions } from './RookSuggestions';
-import { DiceRollButton } from '@/components/DiceRollButton';
-import { 
-  getClassActions, 
-  getClassBonusActions, 
-  getClassReactions, 
-  getClassPassives,
-  getClassActionModifiers,
-  getHighestFeatureVersion,
-  getClassHitDie 
-} from '@/data/classFeatures';
-import TronBackground from '@/components/TronBackground';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Skills with their linked abilities
+// Ability score utilities
+const getModifier = (score) => Math.floor((score - 10) / 2);
+const formatModifier = (mod) => (mod >= 0 ? `+${mod}` : `${mod}`);
+
+// Skills data
 const SKILLS = [
-  { name: 'Acrobatics', ability: 'dexterity', icon: Activity },
-  { name: 'Animal Handling', ability: 'wisdom', icon: Heart },
-  { name: 'Arcana', ability: 'intelligence', icon: Sparkles },
-  { name: 'Athletics', ability: 'strength', icon: Dumbbell },
-  { name: 'Deception', ability: 'charisma', icon: MessageCircle },
-  { name: 'History', ability: 'intelligence', icon: Book },
-  { name: 'Insight', ability: 'wisdom', icon: Eye },
-  { name: 'Intimidation', ability: 'charisma', icon: Flame },
-  { name: 'Investigation', ability: 'intelligence', icon: Search },
-  { name: 'Medicine', ability: 'wisdom', icon: Heart },
-  { name: 'Nature', ability: 'intelligence', icon: Sun },
-  { name: 'Perception', ability: 'wisdom', icon: Eye },
-  { name: 'Performance', ability: 'charisma', icon: Star },
-  { name: 'Persuasion', ability: 'charisma', icon: MessageCircle },
-  { name: 'Religion', ability: 'intelligence', icon: Moon },
-  { name: 'Sleight of Hand', ability: 'dexterity', icon: Feather },
-  { name: 'Stealth', ability: 'dexterity', icon: Eye },
-  { name: 'Survival', ability: 'wisdom', icon: Target }
+  { name: 'Acrobatics', ability: 'dexterity' },
+  { name: 'Animal Handling', ability: 'wisdom' },
+  { name: 'Arcana', ability: 'intelligence' },
+  { name: 'Athletics', ability: 'strength' },
+  { name: 'Deception', ability: 'charisma' },
+  { name: 'History', ability: 'intelligence' },
+  { name: 'Insight', ability: 'wisdom' },
+  { name: 'Intimidation', ability: 'charisma' },
+  { name: 'Investigation', ability: 'intelligence' },
+  { name: 'Medicine', ability: 'wisdom' },
+  { name: 'Nature', ability: 'intelligence' },
+  { name: 'Perception', ability: 'wisdom' },
+  { name: 'Performance', ability: 'charisma' },
+  { name: 'Persuasion', ability: 'charisma' },
+  { name: 'Religion', ability: 'intelligence' },
+  { name: 'Sleight of Hand', ability: 'dexterity' },
+  { name: 'Stealth', ability: 'dexterity' },
+  { name: 'Survival', ability: 'wisdom' }
 ];
 
-// Ability score data - Tron Legacy Blue theme for players
-const ABILITIES = [
-  { key: 'strength', label: 'STR', fullName: 'Strength', color: '#F2A541', icon: Dumbbell },
-  { key: 'dexterity', label: 'DEX', fullName: 'Dexterity', color: '#F2A541', icon: Zap },
-  { key: 'constitution', label: 'CON', fullName: 'Constitution', color: '#0EA5E9', icon: Shield },
-  { key: 'intelligence', label: 'INT', fullName: 'Intelligence', color: '#6366F1', icon: Brain },
-  { key: 'wisdom', label: 'WIS', fullName: 'Wisdom', color: '#8B5CF6', icon: Eye },
-  { key: 'charisma', label: 'CHA', fullName: 'Charisma', color: '#A855F7', icon: Star }
-];
-
-// Tab configuration - Consolidated for less clicking
-const TABS = [
-  { id: 'combat', label: 'Combat', icon: Sword },
-  { id: 'character', label: 'Character', icon: User },
-  { id: 'spells', label: 'Spells', icon: Wand2 },
-  { id: 'inventory', label: 'Inventory', icon: Package }
-];
-
-// Spell level labels
-const SPELL_LEVELS = {
-  0: 'Cantrip',
-  1: '1st Level',
-  2: '2nd Level', 
-  3: '3rd Level',
-  4: '4th Level',
-  5: '5th Level',
-  6: '6th Level',
-  7: '7th Level',
-  8: '8th Level',
-  9: '9th Level'
+const ABILITY_NAMES = {
+  strength: 'STR',
+  dexterity: 'DEX',
+  constitution: 'CON',
+  intelligence: 'INT',
+  wisdom: 'WIS',
+  charisma: 'CHA'
 };
 
-// Blue theme for player section - Tron Legacy aesthetic
-const playerBlue = '#F2A541';
-const playerBlueHover = '#FFB855';
-const playerBlueSubtle = 'rgba(59, 130, 246, 0.15)';
-const playerCyan = '#F2A541';     // Tron Legacy cyan for highlights
-const playerCyanGlow = '#22D3EE'; // Brighter cyan for glows
-const playerSuccess = '#F2A541';  // Use cyan instead of green for success states
-const playerHP = '#E05C3D';       // Keep red for HP (damage is universal)
-
-// Dark panel styles (matching dark theme)
-const glassPanel = {
-  background: '#1F1F1F',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-};
-
-// Compact Ability Score Block Component
-function AbilityScoreBlock({ ability, score, modifier, isProficientSave, profBonus, onClick, isEditing, onScoreChange }) {
-  const Icon = ability.icon;
-  const saveModifier = isProficientSave ? modifier + profBonus : modifier;
-  
-  return (
-    <div 
-      data-testid={`ability-${ability.key}`}
-      style={{
-        ...glassPanel,
-        padding: '10px 8px',
-        transition: 'all 0.2s ease',
-        textAlign: 'center',
-        minWidth: '70px'
-      }}
-      className="hover:border-cyan-500/30"
-    >
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        gap: '4px',
-        marginBottom: '4px'
-      }}>
-        <Icon size={12} color={ability.color} />
-        <span style={{ 
-          color: ability.color, 
-          fontSize: '10px', 
-          fontWeight: '400',
-          letterSpacing: '0.5px'
-        }}>
-          {ability.label}
-        </span>
-      </div>
-      
-      {isEditing ? (
-        <Input
-          type="number"
-          value={score}
-          onChange={(e) => onScoreChange(ability.key, parseInt(e.target.value) || 10)}
-          style={{ 
-            width: '50px', 
-            textAlign: 'center', 
-            margin: '0 auto',
-            fontSize: '16px',
-            fontWeight: '800',
-            padding: '4px'
-          }}
-          onClick={(e) => e.stopPropagation()}
-        />
-      ) : (
-        <>
-          <div style={{ 
-            fontSize: '22px', 
-            fontWeight: '800', 
-            color: '#fff',
-            fontFamily: 'Eros Book, sans-serif',
-            lineHeight: 1
-          }}>
-            {score}
-          </div>
-          {/* Clickable ability check dice roll */}
-          <DiceRollButton 
-            modifier={modifier}
-            label={`${ability.fullName} Check`}
-            color={ability.color}
-            size="small"
-          />
-        </>
-      )}
-    </div>
-  );
-}
-
-// Compact Skill Row Component
-function SkillRow({ skill, abilityMod, profBonus, isProficient, isExpert, onToggle, isEditing }) {
-  const Icon = skill.icon;
-  const totalMod = abilityMod + (isProficient ? profBonus : 0) + (isExpert ? profBonus : 0);
-  
-  const ability = ABILITIES.find(a => a.key === skill.ability);
-  
-  return (
-    <div 
-      data-testid={`skill-${skill.name.toLowerCase().replace(/ /g, '-')}`}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '5px 8px',
-        borderRadius: '6px',
-        background: isProficient ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
-        transition: 'all 0.15s ease'
-      }}
-      className="hover:bg-slate-700/30"
-    >
-      {isEditing && (
-        <button
-          onClick={() => onToggle(skill.name)}
-          style={{
-            width: '16px',
-            height: '16px',
-            borderRadius: '3px',
-            border: isProficient ? '2px solid #F2A541' : '2px solid #475569',
-            background: isProficient ? '#F2A541' : 'transparent',
-            marginRight: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            flexShrink: 0
-          }}
-        >
-          {isProficient && <Check size={10} color="#fff" />}
-        </button>
-      )}
-      
-      <Icon size={12} color={isProficient ? '#F2A541' : '#64748b'} style={{ marginRight: '6px', flexShrink: 0 }} />
-      
-      <span style={{ 
-        flex: 1,
-        color: isProficient ? '#F2A541' : '#e2e8f0',
-        fontSize: '12px',
-        fontWeight: isProficient ? '600' : '400',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis'
-      }}>
-        {skill.name}
-      </span>
-      
-      <span style={{ 
-        color: ability?.color || '#64748b', 
-        fontSize: '9px',
-        marginRight: '8px',
-        opacity: 0.7
-      }}>
-        {ability?.label}
-      </span>
-      
-      {/* Clickable skill check dice roll */}
-      <DiceRollButton 
-        modifier={totalMod}
-        label={skill.name}
-        color={isProficient ? '#F2A541' : '#fff'}
-        size="small"
-        showDice={false}
-      />
-    </div>
-  );
-}
-
-// Spell Card Component
-function SpellCard({ spell, isPrepared, onTogglePrepare, canPrepare }) {
-  const [expanded, setExpanded] = useState(false);
-  
-  // Tron Legacy blue gradient for spell levels
-  const levelColor = spell.level === 0 ? '#94a3b8' : 
-    spell.level <= 2 ? '#F2A541' : 
-    spell.level <= 5 ? '#F2A541' : 
-    spell.level <= 7 ? '#6366F1' : '#8B5CF6';
-  
-  return (
-    <div 
-      data-testid={`spell-${spell.name.toLowerCase().replace(/ /g, '-')}`}
-      style={{
-        ...glassPanel,
-        padding: '12px 16px',
-        marginBottom: '8px'
-      }}
-    >
-      <div 
-        style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          cursor: 'pointer' 
-        }}
-        onClick={() => setExpanded(!expanded)}
-      >
-        {canPrepare && (
-          <button
-            onClick={(e) => { e.stopPropagation(); onTogglePrepare(spell); }}
-            style={{
-              width: '24px',
-              height: '24px',
-              borderRadius: '6px',
-              border: isPrepared ? '2px solid #F2A541' : '2px solid #475569',
-              background: isPrepared ? 'rgba(6, 182, 212, 0.2)' : 'transparent',
-              marginRight: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer'
-            }}
-          >
-            {isPrepared && <Check size={14} color="#F2A541" />}
-          </button>
-        )}
-        
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: '#fff', fontWeight: '400', fontSize: '14px' }}>
-              {spell.name}
-            </span>
-            {spell.concentration && (
-              <span style={{ 
-                background: '#7c3aed20',
-                color: '#a78bfa',
-                fontSize: '9px',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                fontWeight: '400'
-              }}>
-                CONC
-              </span>
-            )}
-            {spell.ritual && (
-              <span style={{ 
-                background: '#06b6d420',
-                color: '#22d3ee',
-                fontSize: '9px',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                fontWeight: '400'
-              }}>
-                RITUAL
-              </span>
-            )}
-          </div>
-          <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
-            <span style={{ color: levelColor, fontSize: '11px' }}>
-              {SPELL_LEVELS[spell.level]}
-            </span>
-            <span style={{ color: '#64748b', fontSize: '11px' }}>
-              {spell.school}
-            </span>
-          </div>
-        </div>
-        
-        {expanded ? <ChevronUp size={18} color="#64748b" /> : <ChevronDown size={18} color="#64748b" />}
-      </div>
-      
-      {expanded && (
-        <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '12px' }}>
-            <div>
-              <span style={{ color: '#64748b', fontSize: '10px' }}>CASTING TIME</span>
-              <p style={{ color: '#e2e8f0', fontSize: '12px' }}>{spell.casting_time}</p>
-            </div>
-            <div>
-              <span style={{ color: '#64748b', fontSize: '10px' }}>RANGE</span>
-              <p style={{ color: '#e2e8f0', fontSize: '12px' }}>{spell.range}</p>
-            </div>
-            <div>
-              <span style={{ color: '#64748b', fontSize: '10px' }}>COMPONENTS</span>
-              <p style={{ color: '#e2e8f0', fontSize: '12px' }}>{spell.components?.join(', ')}</p>
-            </div>
-            <div>
-              <span style={{ color: '#64748b', fontSize: '10px' }}>DURATION</span>
-              <p style={{ color: '#e2e8f0', fontSize: '12px' }}>{spell.duration}</p>
-            </div>
-          </div>
-          <p style={{ color: '#cbd5e1', fontSize: '12px', lineHeight: '1.6' }}>
-            {spell.description}
-          </p>
-          {spell.higher_levels && (
-            <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '6px' }}>
-              <span style={{ color: '#3b82f6', fontSize: '10px', fontWeight: '400' }}>AT HIGHER LEVELS</span>
-              <p style={{ color: '#93c5fd', fontSize: '11px', marginTop: '4px' }}>{spell.higher_levels}</p>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Feature Card Component
-function FeatureCard({ feature, source }) {
-  const [expanded, setExpanded] = useState(false);
-  
-  // Tron Legacy blue palette for feature sources
-  const sourceColors = {
-    class: { bg: 'rgba(59, 130, 246, 0.12)', text: '#FFB855' },
-    race: { bg: 'rgba(6, 182, 212, 0.12)', text: '#22D3EE' },
-    feat: { bg: 'rgba(99, 102, 241, 0.12)', text: '#818CF8' },
-    background: { bg: 'rgba(139, 92, 246, 0.12)', text: '#A78BFA' }
-  };
-  
-  const colors = sourceColors[source] || sourceColors.class;
-  
-  return (
-    <div 
-      data-testid={`feature-${feature.name?.toLowerCase().replace(/ /g, '-')}`}
-      style={{
-        ...glassPanel,
-        padding: '12px 16px',
-        marginBottom: '8px'
-      }}
-    >
-      <div 
-        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
-        onClick={() => setExpanded(!expanded)}
-      >
-        <Crown size={16} color={colors.text} style={{ marginRight: '12px' }} />
-        <div style={{ flex: 1 }}>
-          <span style={{ color: '#fff', fontWeight: '400', fontSize: '14px' }}>
-            {feature.name}
-          </span>
-          <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-            <span style={{ 
-              background: colors.bg, 
-              color: colors.text, 
-              fontSize: '9px', 
-              padding: '2px 6px', 
-              borderRadius: '4px',
-              textTransform: 'uppercase',
-              fontWeight: '400'
-            }}>
-              {source}
-            </span>
-            {feature.level && (
-              <span style={{ color: '#64748b', fontSize: '11px' }}>Level {feature.level}</span>
-            )}
-            {feature.uses_per_rest && (
-              <span style={{ color: '#64748b', fontSize: '11px' }}>
-                {feature.uses_at_level?.[1] || 1}x per {feature.uses_per_rest} rest
-              </span>
-            )}
-          </div>
-        </div>
-        {expanded ? <ChevronUp size={18} color="#64748b" /> : <ChevronDown size={18} color="#64748b" />}
-      </div>
-      
-      {expanded && (
-        <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
-          <p style={{ color: '#cbd5e1', fontSize: '12px', lineHeight: '1.6' }}>
-            {feature.description}
-          </p>
-          {feature.benefits && (
-            <ul style={{ marginTop: '8px', paddingLeft: '16px' }}>
-              {feature.benefits.map((benefit, i) => (
-                <li key={i} style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '4px' }}>
-                  {benefit}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Main Component
-function CharacterSheetFull() {
+export default function CharacterSheetFull() {
   const { characterId } = useParams();
   const navigate = useNavigate();
   const [character, setCharacter] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('combat');
-  const [editMode, setEditMode] = useState(false);
-  const [editData, setEditData] = useState({});
-  const [saving, setSaving] = useState(false);
-  const [showJoinModal, setShowJoinModal] = useState(false);
-  const [showLevelUpModal, setShowLevelUpModal] = useState(false);
-  
-  // SRD Data
-  const [srdSpells, setSrdSpells] = useState([]);
-  const [srdClasses, setSrdClasses] = useState([]);
-  const [srdFeats, setSrdFeats] = useState([]);
-  const [loadingSrd, setLoadingSrd] = useState(true);
-  
-  // Spell filtering
-  const [spellSearch, setSpellSearch] = useState('');
-  const [spellLevelFilter, setSpellLevelFilter] = useState('all');
-  const [spellViewMode, setSpellViewMode] = useState('prepared'); // 'prepared' or 'known'
-  
-  // ROOK Suggestions
-  const { currentSuggestion, showRandomTip, dismissSuggestion } = useRookSuggestions(
-    character?.character_class, 
-    character?.level || 1
-  );
+  const [currentHp, setCurrentHp] = useState(0);
+  const [tempHp, setTempHp] = useState(0);
+  const [deathSaves, setDeathSaves] = useState({ successes: 0, failures: 0 });
 
-  // Fetch character data
   useEffect(() => {
-    fetchCharacter();
-    fetchSrdData();
-  }, [characterId]);
-
-  // Show random tip after load
-  useEffect(() => {
-    if (character && !loading) {
-      const timer = setTimeout(() => showRandomTip(), 5000);
-      return () => clearTimeout(timer);
+    if (characterId) {
+      fetchCharacter();
     }
-  }, [character, loading]);
+  }, [characterId]);
 
   const fetchCharacter = async () => {
     try {
+      setLoading(true);
+      setError(null);
       const response = await axios.get(`${API}/characters/${characterId}`);
-      setCharacter(response.data);
-      setEditData(response.data);
-    } catch (error) {
+      const charData = response.data;
+      setCharacter(charData);
+      setCurrentHp(charData.hp || charData.max_hp || 10);
+      setTempHp(charData.temp_hp || 0);
+    } catch (err) {
+      console.error('Failed to fetch character:', err);
+      setError('Failed to load character');
       toast.error('Failed to load character');
-      navigate('/player');
     } finally {
       setLoading(false);
     }
   };
 
-
-  const fetchSrdData = async () => {
-    try {
-      const [spellsRes, classesRes, featsRes] = await Promise.all([
-        axios.get(`${API}/srd/spells`),
-        axios.get(`${API}/srd/classes`),
-        axios.get(`${API}/srd/feats`)
-      ]);
-      setSrdSpells(spellsRes.data.spells || []);
-      
-      const classData = classesRes.data.classes || [];
-      setSrdClasses(classData);
-      
-      // Get feats from dedicated endpoint
-      const featsData = featsRes.data.feats || [];
-      setSrdFeats(featsData);
-    } catch (error) {
-      console.error('Failed to load SRD data:', error);
-    } finally {
-      setLoadingSrd(false);
-    }
-  };
-
-  const persistCharacterChanges = async (changes, successMessage = null) => {
-    const nextData = { ...(editMode ? editData : character), ...changes };
-
-    if (editMode) {
-      setEditData(nextData);
-      return;
-    }
-
-    try {
-      await axios.put(`${API}/characters/${characterId}`, nextData);
-      setCharacter(nextData);
-      setEditData(nextData);
-      if (successMessage) {
-        toast.success(successMessage);
-      }
-    } catch (error) {
-      toast.error('Failed to update character');
-    }
-  };
-
-  const updateSpellSlotUsage = async (level, slotIndex) => {
-    const usedKey = `spell_slots_${level}_used`;
-    const currentUsed = data[usedKey] || 0;
-    const nextUsed = slotIndex < currentUsed ? slotIndex : slotIndex + 1;
-    await persistCharacterChanges({ [usedKey]: nextUsed });
-  };
-
-  const updateDeathSaves = async (type, value) => {
-    const safeValue = Math.max(0, Math.min(3, value));
-    const field = type === 'success' ? 'death_save_success' : 'death_save_failure';
-    await persistCharacterChanges({ [field]: safeValue });
-  };
-
-  const resetDeathSaves = async () => {
-    await persistCharacterChanges({ death_save_success: 0, death_save_failure: 0 }, 'Death saves reset');
-  };
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      await axios.put(`${API}/characters/${characterId}`, editData);
-      toast.success('Character updated!');
-      setCharacter(editData);
-      setEditMode(false);
-    } catch (error) {
-      toast.error('Failed to save changes');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // Calculations
-  const calculateModifier = useCallback((score) => Math.floor((score - 10) / 2), []);
-  
-  const getModifierDisplay = useCallback((score) => {
-    const mod = calculateModifier(score);
-    return mod >= 0 ? `+${mod}` : `${mod}`;
-  }, [calculateModifier]);
-
-  const getModifier = useCallback((score) => {
-    return calculateModifier(score);
-  }, [calculateModifier]);
-
-  // Get class features based on character class and level (from SRD for the Character tab)
-  const classFeatures = useMemo(() => {
-    if (!character || !srdClasses.length) return [];
-    const classData = srdClasses.find(c => 
-      c.name.toLowerCase() === character.character_class?.toLowerCase()
-    );
-    if (!classData) return [];
-    return classData.features?.filter(f => f.level <= character.level) || [];
-  }, [character, srdClasses]);
-
-  // Get dynamic combat features from classFeatures.js for the Combat tab
-  const combatFeatures = useMemo(() => {
-    if (!character) return { actions: [], bonusActions: [], reactions: [], passives: [], actionModifiers: [] };
-    
-    // Get the primary class and level
-    const primaryClass = character.character_class?.toLowerCase();
-    const primaryLevel = character.level || 1;
-    
-    // Get features for primary class
-    let actions = getClassActions(primaryClass, primaryLevel);
-    let bonusActions = getClassBonusActions(primaryClass, primaryLevel);
-    let reactions = getClassReactions(primaryClass, primaryLevel);
-    let passives = getClassPassives(primaryClass, primaryLevel);
-    let actionModifiers = getClassActionModifiers(primaryClass, primaryLevel);
-    
-    // Handle multiclass - aggregate features from all classes
-    if (character.multiclass_levels && Object.keys(character.multiclass_levels).length > 0) {
-      Object.entries(character.multiclass_levels).forEach(([className, classLevel]) => {
-        const mcActions = getClassActions(className.toLowerCase(), classLevel);
-        const mcBonusActions = getClassBonusActions(className.toLowerCase(), classLevel);
-        const mcReactions = getClassReactions(className.toLowerCase(), classLevel);
-        const mcPassives = getClassPassives(className.toLowerCase(), classLevel);
-        const mcActionModifiers = getClassActionModifiers(className.toLowerCase(), classLevel);
-        
-        // Merge without duplicates (by name)
-        const mergeUnique = (existing, newItems) => {
-          const names = new Set(existing.map(f => f.name));
-          return [...existing, ...newItems.filter(f => !names.has(f.name))];
-        };
-        
-        actions = mergeUnique(actions, mcActions);
-        bonusActions = mergeUnique(bonusActions, mcBonusActions);
-        reactions = mergeUnique(reactions, mcReactions);
-        passives = mergeUnique(passives, mcPassives);
-        actionModifiers = mergeUnique(actionModifiers, mcActionModifiers);
-      });
-    }
-    
-    // Deduplicate scaling features (e.g., take highest Sneak Attack version)
-    const dedupeScaling = (features) => {
-      const grouped = {};
-      features.forEach(f => {
-        // Check if this is a scaling feature (name contains parentheses like "Sneak Attack (2d6)")
-        const baseName = f.name.replace(/\s*\([^)]*\)$/, '');
-        if (!grouped[baseName] || f.level > grouped[baseName].level) {
-          grouped[baseName] = f;
-        }
-      });
-      return Object.values(grouped);
-    };
-    
+  // Calculate derived stats
+  const abilities = useMemo(() => {
+    if (!character) return {};
     return {
-      actions,
-      bonusActions,
-      reactions,
-      passives,
-      actionModifiers: dedupeScaling(actionModifiers)
+      strength: character.strength || 10,
+      dexterity: character.dexterity || 10,
+      constitution: character.constitution || 10,
+      intelligence: character.intelligence || 10,
+      wisdom: character.wisdom || 10,
+      charisma: character.charisma || 10
     };
   }, [character]);
 
-  // Get available spells for class
-  const availableSpells = useMemo(() => {
-    if (!character || !srdSpells.length) return [];
-    const classLower = character.character_class?.toLowerCase();
-    return srdSpells.filter(spell => 
-      spell.classes?.includes(classLower)
-    );
-  }, [character, srdSpells]);
+  const proficiencyBonus = useMemo(() => {
+    if (!character) return 2;
+    const level = character.level || 1;
+    return Math.ceil(level / 4) + 1;
+  }, [character]);
 
-  const sourceData = editMode ? editData : character;
+  const maxHp = useMemo(() => {
+    if (!character) return 10;
+    return character.max_hp || (8 + getModifier(abilities.constitution));
+  }, [character, abilities]);
 
-  const equippedWeapons = useMemo(() => {
-    return (sourceData?.equipment || []).filter(item => item.equipped && (item.type === 'weapon' || item.damage));
-  }, [sourceData]);
+  const armorClass = useMemo(() => {
+    if (!character) return 10;
+    return character.ac || (10 + getModifier(abilities.dexterity));
+  }, [character, abilities]);
 
-  const resolvedPreparedSpells = useMemo(() => {
-    const prepared = sourceData?.spells_prepared || [];
-    if (!prepared.length) return [];
-    return prepared.map(spell => {
-      const srdMatch = availableSpells.find(s => s.name === spell.name);
-      return srdMatch || spell;
-    });
-  }, [sourceData, availableSpells]);
+  const initiative = useMemo(() => {
+    return getModifier(abilities.dexterity);
+  }, [abilities]);
 
-  const resolvedKnownSpells = useMemo(() => {
-    const known = sourceData?.spells_known || [];
-    if (!known.length) return [];
-    return known.map(spell => {
-      const srdMatch = availableSpells.find(s => s.name === spell.name);
-      return srdMatch || spell;
-    });
-  }, [sourceData, availableSpells]);
+  const speed = useMemo(() => {
+    return character?.speed || 30;
+  }, [character]);
 
-  const portraitUrl = sourceData?.portrait_url || sourceData?.portrait || sourceData?.image_url || '';
-
-  // Filtered spells
-  const filteredSpells = useMemo(() => {
-    let spells = availableSpells;
-    if (spellSearch) {
-      spells = spells.filter(s => 
-        s.name.toLowerCase().includes(spellSearch.toLowerCase())
-      );
-    }
-    if (spellLevelFilter !== 'all') {
-      spells = spells.filter(s => s.level === parseInt(spellLevelFilter));
-    }
-    return spells.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
-  }, [availableSpells, spellSearch, spellLevelFilter]);
-
-  // Toggle spell preparation
-  const toggleSpellPrepared = (spell) => {
-    const current = editData.spells_known || [];
-    const exists = current.find(s => s.name === spell.name);
-    if (exists) {
-      setEditData({
-        ...editData,
-        spells_known: current.filter(s => s.name !== spell.name)
-      });
-    } else {
-      setEditData({
-        ...editData,
-        spells_known: [...current, { name: spell.name, level: spell.level, school: spell.school }]
-      });
+  const handleHpChange = async (delta) => {
+    const newHp = Math.max(0, Math.min(maxHp, currentHp + delta));
+    setCurrentHp(newHp);
+    
+    try {
+      await axios.patch(`${API}/characters/${characterId}`, { hp: newHp });
+    } catch (err) {
+      console.error('Failed to update HP:', err);
     }
   };
 
-  // Toggle skill proficiency
-  const toggleSkillProficiency = (skillName) => {
-    const current = editData.skill_proficiencies || [];
-    const skillKey = skillName.toLowerCase().replace(/ /g, '_');
-    if (current.includes(skillKey)) {
-      setEditData({
-        ...editData,
-        skill_proficiencies: current.filter(s => s !== skillKey)
-      });
-    } else {
-      setEditData({
-        ...editData,
-        skill_proficiencies: [...current, skillKey]
-      });
-    }
+  const handleDeathSave = (type, success) => {
+    setDeathSaves(prev => ({
+      ...prev,
+      [type]: Math.min(3, prev[type] + (success ? 1 : 0))
+    }));
   };
 
-  const updateAbilityScore = (ability, value) => {
-    setEditData({ ...editData, [ability]: value });
+  const resetDeathSaves = () => {
+    setDeathSaves({ successes: 0, failures: 0 });
   };
 
   if (loading) {
     return (
-      <div style={{ padding: '24px', minHeight: '100vh', background: '#0B0F19' }}>
-        <LoadingSkeleton type="card" count={3} />
+      <div style={{ minHeight: "100vh", background: "var(--rq-bg-main)", padding: "20px" }}>
+        <div className="rq-panel" style={{ textAlign: "center", padding: "40px" }}>
+          <div className="rq-muted">Loading character...</div>
+        </div>
       </div>
     );
   }
 
-  if (!character) return null;
-
-  const data = editMode ? editData : character;
-  const profBonus = data.proficiency_bonus || Math.ceil(1 + data.level / 4);
+  if (error || !character) {
+    return (
+      <div style={{ minHeight: "100vh", background: "var(--rq-bg-main)", padding: "20px" }}>
+        <div className="rq-panel" style={{ textAlign: "center", padding: "40px" }}>
+          <h2 className="rq-title">Character Not Found</h2>
+          <p className="rq-muted">{error || "The character you're looking for doesn't exist."}</p>
+          <button className="rq-button-secondary" onClick={() => navigate('/home')}>
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div data-testid="character-sheet-full" style={{
-      minHeight: '100vh',
-      background: '#0D0D0D',
-      fontFamily: 'Eros Book, sans-serif'
-    }}>
-      {/* Subtle Blue Gradient Background */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'radial-gradient(ellipse at top, rgba(59, 130, 246, 0.06) 0%, transparent 50%)',
-        pointerEvents: 'none'
-      }} />
-
-      <div style={{ position: 'relative', zIndex: 1, padding: '24px', maxWidth: '1600px', margin: '0 auto' }}>
+    <div style={{ minHeight: "100vh", background: "var(--rq-bg-main)", padding: "20px" }}>
+      <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
         {/* Header */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'flex-start', 
-          marginBottom: '24px',
-          flexWrap: 'wrap',
-          gap: '16px'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Button 
-              data-testid="back-btn"
-              onClick={() => navigate('/player')} 
-              style={{ 
-                background: 'rgba(30, 41, 59, 0.6)',
-                border: '1px solid rgba(148, 163, 184, 0.2)',
-                borderRadius: '12px',
-                padding: '12px'
-              }}
-            >
-              <ArrowLeft size={20} color="#94a3b8" />
-            </Button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            {character.portrait_url && (
+              <img
+                src={character.portrait_url}
+                alt="portrait"
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  objectFit: "cover",
+                  borderRadius: "12px",
+                  border: "2px solid var(--rq-gold)"
+                }}
+              />
+            )}
             <div>
-              <h1 style={{
-                fontSize: 'clamp(24px, 4vw, 36px)',
-                fontFamily: 'Eros Book, sans-serif',
-                fontWeight: '800',
-                color: '#fff',
-                marginBottom: '4px'
-              }}>
-                {data.name}
-              </h1>
-              <p style={{ color: '#67e8f9', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                Level {editMode ? (
-                  <Input
-                    type="number"
-                    min="1"
-                    max="20"
-                    value={editData.level}
-                    onChange={(e) => {
-                      const newLevel = Math.min(20, Math.max(1, parseInt(e.target.value) || 1));
-                      setEditData({ ...editData, level: newLevel, proficiency_bonus: Math.ceil(newLevel / 4) + 1 });
-                    }}
-                    style={{ width: '50px', padding: '2px 6px', textAlign: 'center', fontSize: '14px', display: 'inline-block' }}
-                  />
-                ) : (
-                  data.level
-                )} {data.race} {data.character_class}
-                {data.subclass && ` (${data.subclass})`}
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            {/* Level Up Button - Only show if not at max level and not in edit mode */}
-            {!editMode && data.level < 20 && (
-              <Button 
-                data-testid="level-up-btn"
-                onClick={() => setShowLevelUpModal(true)}
-                style={{ 
-                  background: 'linear-gradient(135deg, #F2A541 0%, #0891B2 100%)',
-                  border: 'none',
-                  borderRadius: '0px',
-                  padding: '10px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                <TrendingUp size={16} />
-                Level Up
-              </Button>
-            )}
-            {!data.campaign_id && (
-              <Button 
-                data-testid="join-campaign-btn"
-                onClick={() => setShowJoinModal(true)}
-                style={{ 
-                  background: 'linear-gradient(135deg, #F2A541 0%, #2563EB 100%)',
-                  border: 'none',
-                  borderRadius: '0px',
-                  padding: '10px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                <Link2 size={16} />
-                Join Campaign
-              </Button>
-            )}
-            {editMode ? (
-              <>
-                <Button 
-                  data-testid="cancel-edit-btn"
-                  onClick={() => { setEditMode(false); setEditData(character); }}
-                  style={{ 
-                    background: 'transparent',
-                    border: '1px solid #475569',
-                    borderRadius: '0px',
-                    padding: '10px 16px',
-                    color: '#94a3b8'
-                  }}
-                >
-                  <X size={16} style={{ marginRight: '6px' }} />
-                  Cancel
-                </Button>
-                <Button 
-                  data-testid="save-btn"
-                  onClick={handleSave}
-                  disabled={saving}
-                  style={{ 
-                    background: 'linear-gradient(135deg, #F2A541 0%, #0891B2 100%)',
-                    border: 'none',
-                    borderRadius: '0px',
-                    padding: '10px 16px'
-                  }}
-                >
-                  <Save size={16} style={{ marginRight: '6px' }} />
-                  {saving ? 'Saving...' : 'Save'}
-                </Button>
-              </>
-            ) : (
-              <Button 
-                data-testid="edit-btn"
-                onClick={() => setEditMode(true)}
-                style={{ 
-                  background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
-                  border: 'none',
-                  borderRadius: '0px',
-                  padding: '10px 16px'
-                }}
-              >
-                <Edit size={16} style={{ marginRight: '6px' }} />
-                Edit
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {/* ALWAYS VISIBLE SECTION - All Core Stats in One Unified Bar */}
-        <div style={{
-          ...glassPanel,
-          padding: '10px 16px',
-          marginBottom: '12px',
-          background: 'linear-gradient(180deg, #1F1F1F 0%, #1A1A1A 100%)',
-          borderBottom: '2px solid rgba(59, 130, 246, 0.3)'
-        }}>
-          {/* Character Info Row */}
-          <div style={{
-            display: 'flex',
-            gap: '6px',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            marginBottom: '10px',
-            paddingBottom: '10px',
-            borderBottom: '1px solid rgba(148, 163, 184, 0.15)'
-          }}>
-            {/* Name */}
-            <div style={{
-              padding: '6px 12px',
-              background: 'rgba(103, 232, 249, 0.1)',
-              border: '1px solid rgba(103, 232, 249, 0.3)',
-              borderRadius: '6px'
-            }}>
-              <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>NAME</span>
-              <span style={{ color: '#67e8f9', fontWeight: '400', fontSize: '14px' }}>{data.name}</span>
-            </div>
-
-            {/* Race */}
-            <div style={{
-              padding: '6px 12px',
-              background: 'rgba(34, 197, 94, 0.1)',
-              border: '1px solid rgba(34, 197, 94, 0.3)',
-              borderRadius: '6px'
-            }}>
-              <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>RACE</span>
-              <span style={{ color: '#22c55e', fontWeight: '400', fontSize: '13px' }}>{data.race}</span>
-            </div>
-
-            {/* Class */}
-            <div style={{
-              padding: '6px 12px',
-              background: 'rgba(168, 85, 247, 0.1)',
-              border: '1px solid rgba(168, 85, 247, 0.3)',
-              borderRadius: '6px'
-            }}>
-              <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>CLASS</span>
-              <span style={{ color: '#a855f7', fontWeight: '400', fontSize: '13px' }}>
-                Lvl {data.level} {data.character_class}
-              </span>
-            </div>
-
-            {/* Subclass (if applicable) */}
-            {data.subclass && (
-              <div style={{
-                padding: '6px 12px',
-                background: 'rgba(236, 72, 153, 0.1)',
-                border: '1px solid rgba(236, 72, 153, 0.3)',
-                borderRadius: '6px'
-              }}>
-                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>SUBCLASS</span>
-                <span style={{ color: '#ec4899', fontWeight: '400', fontSize: '13px' }}>{data.subclass}</span>
+              <h1 className="rq-title" style={{ margin: 0 }}>{character.name}</h1>
+              <div className="rq-muted">
+                {character.race} {character.character_class} • Level {character.level || 1}
               </div>
-            )}
-
-            {/* Background */}
-            {data.background && (
-              <div style={{
-                padding: '6px 12px',
-                background: 'rgba(251, 146, 60, 0.1)',
-                border: '1px solid rgba(251, 146, 60, 0.3)',
-                borderRadius: '6px'
-              }}>
-                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>BACKGROUND</span>
-                <span style={{ color: '#fb923c', fontWeight: '400', fontSize: '13px' }}>{data.background}</span>
-              </div>
-            )}
-
-            {/* Multiclass info (if applicable) */}
-            {data.multiclass_levels && Object.keys(data.multiclass_levels).length > 0 && (
-              <div style={{
-                padding: '6px 12px',
-                background: 'rgba(234, 179, 8, 0.1)',
-                border: '1px solid rgba(234, 179, 8, 0.3)',
-                borderRadius: '6px'
-              }}>
-                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>MULTICLASS</span>
-                <span style={{ color: '#eab308', fontWeight: '400', fontSize: '12px' }}>
-                  {Object.entries(data.multiclass_levels).map(([cls, lvl]) => `${cls} ${lvl}`).join(' / ')}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Stats Row - all boxes line up */}
-          <div style={{
-            display: 'flex',
-            gap: '6px',
-            flexWrap: 'wrap',
-            alignItems: 'center'
-          }}>
-            {/* HP */}
-            <div data-testid="hp-display" style={{
-              padding: '6px 10px',
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              <Heart size={14} color="#ef4444" />
-              <div>
-                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>HP</span>
-                {editMode ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                    <Input
-                      type="number"
-                      value={editData.current_hit_points}
-                      onChange={(e) => setEditData({ ...editData, current_hit_points: parseInt(e.target.value) || 0 })}
-                      style={{ width: '32px', padding: '2px', textAlign: 'center', fontSize: '12px' }}
-                    />
-                    <span style={{ color: '#64748b', fontSize: '10px' }}>/</span>
-                    <Input
-                      type="number"
-                      value={editData.max_hit_points}
-                      onChange={(e) => setEditData({ ...editData, max_hit_points: parseInt(e.target.value) || 0 })}
-                      style={{ width: '32px', padding: '2px', textAlign: 'center', fontSize: '12px' }}
-                    />
-                  </div>
-                ) : (
-                  <span style={{ color: '#ef4444', fontWeight: '400', fontSize: '14px' }}>
-                    {data.current_hit_points}/{data.max_hit_points}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* AC */}
-            <div data-testid="ac-display" style={{
-              padding: '6px 10px',
-              background: 'rgba(59, 130, 246, 0.1)',
-              border: '1px solid rgba(59, 130, 246, 0.3)',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              <Shield size={14} color="#3b82f6" />
-              <div>
-                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>AC</span>
-                {editMode ? (
-                  <Input
-                    type="number"
-                    value={editData.armor_class}
-                    onChange={(e) => setEditData({ ...editData, armor_class: parseInt(e.target.value) || 10 })}
-                    style={{ width: '32px', padding: '2px', textAlign: 'center', fontSize: '12px' }}
-                  />
-                ) : (
-                  <span style={{ color: '#3b82f6', fontWeight: '400', fontSize: '14px' }}>
-                    {data.armor_class}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Initiative */}
-            <div data-testid="initiative-display" style={{
-              padding: '6px 10px',
-              background: 'rgba(234, 179, 8, 0.1)',
-              border: '1px solid rgba(234, 179, 8, 0.3)',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              <Zap size={14} color="#eab308" />
-              <div>
-                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>INIT</span>
-                <DiceRollButton 
-                  modifier={getModifier(data.dexterity)}
-                  label="Initiative"
-                  color="#eab308"
-                  size="small"
-                />
-              </div>
-            </div>
-
-            {/* Speed */}
-            <div data-testid="speed-display" style={{
-              padding: '6px 10px',
-              background: 'rgba(6, 182, 212, 0.1)',
-              border: '1px solid rgba(6, 182, 212, 0.3)',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              <Activity size={14} color="#F2A541" />
-              <div>
-                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>SPEED</span>
-                <span style={{ color: '#F2A541', fontWeight: '400', fontSize: '14px' }}>
-                  {data.speed}ft
-                </span>
-              </div>
-            </div>
-
-            {/* Proficiency */}
-            <div data-testid="prof-display" style={{
-              padding: '6px 10px',
-              background: 'rgba(139, 92, 246, 0.1)',
-              border: '1px solid rgba(139, 92, 246, 0.3)',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              <Award size={14} color="#8B5CF6" />
-              <div>
-                <span style={{ color: '#94a3b8', fontSize: '8px', display: 'block', letterSpacing: '0.5px' }}>PROF</span>
-                <span style={{ color: '#8B5CF6', fontWeight: '400', fontSize: '14px' }}>
-                  +{profBonus}
-                </span>
-              </div>
-            </div>
-
-            {/* Divider */}
-            <div style={{ width: '1px', height: '32px', background: 'rgba(148, 163, 184, 0.3)', margin: '0 2px' }} />
-
-            {/* Ability Score + Saving Throw Combined Boxes */}
-            {ABILITIES.map(ability => {
-              const mod = calculateModifier(data[ability.key]);
-              const isProficientSave = data.saving_throw_proficiencies?.includes(ability.key);
-              const saveMod = isProficientSave ? mod + profBonus : mod;
-              const Icon = ability.icon;
-              
-              return (
-                <div
-                  key={`ability-save-${ability.key}`}
-                  data-testid={`ability-save-${ability.key}`}
-                  style={{
-                    background: 'rgba(30, 41, 59, 0.5)',
-                    border: '1px solid rgba(148, 163, 184, 0.15)',
-                    borderRadius: '6px',
-                    overflow: 'hidden',
-                    minWidth: '52px'
-                  }}
-                >
-                  {/* Top: Ability Modifier */}
-                  <div style={{
-                    padding: '6px 10px',
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '2px'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Icon size={12} color={ability.color} />
-                      <span style={{ color: ability.color, fontSize: '9px', fontWeight: '400' }}>
-                        {ability.label}
-                      </span>
-                    </div>
-                    <DiceRollButton 
-                      modifier={mod}
-                      label={`${ability.fullName} Check`}
-                      color={ability.color}
-                      size="small"
-                      showDice={false}
-                    />
-                  </div>
-                  
-                  {/* Divider line */}
-                  <div style={{ 
-                    height: '1px', 
-                    background: 'rgba(148, 163, 184, 0.3)',
-                    margin: '0'
-                  }} />
-                  
-                  {/* Bottom: Saving Throw - highlighted if proficient */}
-                  <div style={{
-                    padding: '4px 10px',
-                    textAlign: 'center',
-                    background: isProficientSave ? `${ability.color}20` : 'transparent',
-                    borderTop: isProficientSave ? `1px solid ${ability.color}40` : 'none'
-                  }}>
-                    <span style={{ 
-                      color: isProficientSave ? ability.color : '#64748b', 
-                      fontSize: '8px', 
-                      display: 'block',
-                      fontWeight: isProficientSave ? '600' : '400',
-                      textDecoration: isProficientSave ? 'underline' : 'none'
-                    }}>
-                      SAVE
-                    </span>
-                    <DiceRollButton 
-                      modifier={saveMod}
-                      label={`${ability.fullName} Save`}
-                      color={isProficientSave ? ability.color : '#64748b'}
-                      size="small"
-                      showDice={false}
-                    />
-                  </div>
+              {character.background && (
+                <div className="rq-muted" style={{ fontSize: "14px" }}>
+                  {character.background}
                 </div>
-              );
-            })}
+              )}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button className="rq-button-secondary" onClick={() => navigate('/home')}>
+              Back to Home
+            </button>
+            <button className="rq-button-secondary" onClick={() => navigate('/player')}>
+              My Characters
+            </button>
           </div>
         </div>
 
-        {/* MAIN CONTENT AREA with Left Sidebar */}
-        <div style={{ display: 'flex', gap: '12px' }}>
-          {/* LEFT SIDEBAR - All Skills Only */}
-          <div style={{ 
-            width: '180px', 
-            flexShrink: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '10px'
-          }}>
-            {/* Portrait */}
-            <div style={{ ...glassPanel, padding: '10px' }}>
-              <h4 style={{ color: '#67e8f9', fontSize: '10px', fontWeight: '400', marginBottom: '8px', letterSpacing: '0.5px' }}>
-                PORTRAIT
-              </h4>
-              <div style={{
-                width: '100%',
-                aspectRatio: '3 / 4',
-                borderRadius: '10px',
-                overflow: 'hidden',
-                border: '1px solid rgba(242, 165, 65, 0.25)',
-                background: 'linear-gradient(180deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                {portraitUrl ? (
-                  <img
-                    src={portraitUrl}
-                    alt={`${data.name} portrait`}
+        {/* Main Content */}
+        <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "20px" }}>
+          {/* Left Sidebar - Abilities & Skills */}
+          <div style={{ display: "grid", gap: "16px" }}>
+            {/* Ability Scores */}
+            <div className="rq-card">
+              <h3 style={{ marginBottom: "12px" }}>Ability Scores</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
+                {Object.entries(abilities).map(([ability, score]) => (
+                  <div
+                    key={ability}
                     style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain',
-                      objectPosition: 'center top',
-                      background: 'rgba(15, 23, 42, 0.4)'
+                      textAlign: "center",
+                      padding: "10px",
+                      background: "var(--rq-bg-panel-soft)",
+                      borderRadius: "8px"
                     }}
-                  />
-                ) : (
-                  <div style={{ textAlign: 'center', padding: '12px' }}>
-                    <User size={28} color="#64748b" style={{ marginBottom: '8px' }} />
-                    <div style={{ color: '#64748b', fontSize: '10px', lineHeight: '1.4' }}>
-                      No portrait generated yet
+                  >
+                    <div className="rq-muted" style={{ fontSize: "12px" }}>
+                      {ABILITY_NAMES[ability]}
+                    </div>
+                    <div style={{ fontSize: "24px", fontWeight: "bold" }}>{score}</div>
+                    <div style={{ fontSize: "14px", color: "var(--rq-gold)" }}>
+                      {formatModifier(getModifier(score))}
                     </div>
                   </div>
-                )}
+                ))}
               </div>
             </div>
 
-            {/* All Skills Box */}
-            <div style={{ ...glassPanel, padding: '10px', flex: 1 }}>
-              <h4 style={{ color: '#67e8f9', fontSize: '10px', fontWeight: '400', marginBottom: '8px', letterSpacing: '0.5px' }}>
-                ALL SKILLS
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            {/* Proficiency Bonus */}
+            <div className="rq-card" style={{ textAlign: "center" }}>
+              <div className="rq-muted">Proficiency Bonus</div>
+              <div style={{ fontSize: "28px", fontWeight: "bold", color: "var(--rq-gold)" }}>
+                +{proficiencyBonus}
+              </div>
+            </div>
+
+            {/* Skills */}
+            <div className="rq-card">
+              <h3 style={{ marginBottom: "12px" }}>Skills</h3>
+              <div style={{ display: "grid", gap: "6px", fontSize: "13px" }}>
                 {SKILLS.map(skill => {
-                  const abilityMod = calculateModifier(data[skill.ability]);
-                  const isProficient = (editMode ? editData : data).skill_proficiencies?.includes(skill.name.toLowerCase().replace(/ /g, '_'));
-                  const totalMod = abilityMod + (isProficient ? profBonus : 0);
-                  const ability = ABILITIES.find(a => a.key === skill.ability);
+                  const abilityMod = getModifier(abilities[skill.ability]);
+                  const isProficient = character.skill_proficiencies?.includes(skill.name);
+                  const bonus = abilityMod + (isProficient ? proficiencyBonus : 0);
                   
                   return (
                     <div
                       key={skill.name}
-                      data-testid={`skill-${skill.name.toLowerCase().replace(/ /g, '-')}`}
-                      onClick={() => {
-                        if (editMode) {
-                          toggleSkillProficiency(skill.name);
-                        }
-                      }}
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '3px 5px',
-                        background: isProficient ? 'rgba(6, 182, 212, 0.08)' : 'transparent',
-                        borderRadius: '3px',
-                        cursor: editMode ? 'pointer' : 'default',
-                        borderLeft: isProficient ? '2px solid #F2A541' : '2px solid transparent'
+                        display: "flex",
+                        justifyContent: "space-between",
+                        padding: "4px 8px",
+                        background: isProficient ? "rgba(255, 215, 0, 0.1)" : "transparent",
+                        borderRadius: "4px"
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', minWidth: 0 }}>
-                        <span style={{ 
-                          color: isProficient ? '#F2A541' : '#94a3b8', 
-                          fontSize: '10px',
-                          fontWeight: isProficient ? '600' : '400',
-                          textDecoration: isProficient ? 'underline' : 'none',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis'
-                        }}>
-                          {skill.name}
-                        </span>
-                        <span style={{ color: '#4b5563', fontSize: '8px' }}>
-                          ({ability?.label})
-                        </span>
-                      </div>
-                      <DiceRollButton 
-                        modifier={totalMod}
-                        label={skill.name}
-                        color={isProficient ? '#F2A541' : '#64748b'}
-                        size="small"
-                        showDice={false}
-                      />
+                      <span style={{ color: isProficient ? "var(--rq-gold)" : "inherit" }}>
+                        {isProficient && "● "}{skill.name}
+                      </span>
+                      <span style={{ fontWeight: "bold" }}>{formatModifier(bonus)}</span>
                     </div>
                   );
                 })}
@@ -1342,1167 +277,204 @@ function CharacterSheetFull() {
             </div>
           </div>
 
-          {/* RIGHT CONTENT - Tabs and Tab Content */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {/* Tab Navigation */}
-            <div style={{
-              display: 'flex',
-              gap: '4px',
-              marginBottom: '12px',
-              overflowX: 'auto',
-              paddingBottom: '4px'
-            }}>
-          {TABS.map(tab => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                data-testid={`tab-${tab.id}`}
-                onClick={() => setActiveTab(tab.id)}
-                style={{
-                  ...glassPanel,
-                  padding: '10px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  background: isActive 
-                    ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(168, 85, 247, 0.2) 100%)'
-                    : 'rgba(30, 41, 59, 0.6)',
-                  border: isActive 
-                    ? '1px solid rgba(59, 130, 246, 0.5)'
-                    : '1px solid rgba(148, 163, 184, 0.1)',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                <Icon size={18} color={isActive ? '#60a5fa' : '#64748b'} />
-                <span style={{ 
-                  color: isActive ? '#fff' : '#94a3b8',
-                  fontSize: '14px',
-                  fontWeight: isActive ? '600' : '400'
-                }}>
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
+          {/* Right Content Area */}
+          <div style={{ display: "grid", gap: "16px" }}>
+            {/* Combat Stats Row */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+              {/* HP */}
+              <div className="rq-card" style={{ textAlign: "center" }}>
+                <div className="rq-muted" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                  <Heart size={16} /> Hit Points
+                </div>
+                <div style={{ fontSize: "28px", fontWeight: "bold", margin: "8px 0" }}>
+                  <span style={{ color: currentHp < maxHp / 2 ? "#ef4444" : "inherit" }}>
+                    {currentHp}
+                  </span>
+                  <span className="rq-muted"> / {maxHp}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
+                  <button className="rq-button-secondary" style={{ padding: "4px 12px" }} onClick={() => handleHpChange(-1)}>
+                    <Minus size={16} />
+                  </button>
+                  <button className="rq-button-secondary" style={{ padding: "4px 12px" }} onClick={() => handleHpChange(1)}>
+                    <Plus size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* AC */}
+              <div className="rq-card" style={{ textAlign: "center" }}>
+                <div className="rq-muted" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                  <Shield size={16} /> Armor Class
+                </div>
+                <div style={{ fontSize: "32px", fontWeight: "bold", margin: "8px 0" }}>
+                  {armorClass}
+                </div>
+              </div>
+
+              {/* Initiative */}
+              <div className="rq-card" style={{ textAlign: "center" }}>
+                <div className="rq-muted" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                  <Zap size={16} /> Initiative
+                </div>
+                <div style={{ fontSize: "32px", fontWeight: "bold", margin: "8px 0" }}>
+                  {formatModifier(initiative)}
+                </div>
+              </div>
+
+              {/* Speed */}
+              <div className="rq-card" style={{ textAlign: "center" }}>
+                <div className="rq-muted" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                  <Wind size={16} /> Speed
+                </div>
+                <div style={{ fontSize: "32px", fontWeight: "bold", margin: "8px 0" }}>
+                  {speed} ft
+                </div>
+              </div>
+            </div>
+
+            {/* Death Saves */}
+            {currentHp === 0 && (
+              <div className="rq-card">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                  <h3 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Skull size={20} /> Death Saves
+                  </h3>
+                  <button className="rq-button-secondary" style={{ padding: "4px 12px" }} onClick={resetDeathSaves}>
+                    Reset
+                  </button>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                  <div>
+                    <div className="rq-muted" style={{ marginBottom: "8px" }}>Successes</div>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      {[0, 1, 2].map(i => (
+                        <button
+                          key={i}
+                          onClick={() => handleDeathSave('successes', deathSaves.successes <= i)}
+                          style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "50%",
+                            border: "2px solid var(--rq-gold)",
+                            background: deathSaves.successes > i ? "var(--rq-gold)" : "transparent",
+                            cursor: "pointer"
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="rq-muted" style={{ marginBottom: "8px" }}>Failures</div>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      {[0, 1, 2].map(i => (
+                        <button
+                          key={i}
+                          onClick={() => handleDeathSave('failures', deathSaves.failures <= i)}
+                          style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "50%",
+                            border: "2px solid #ef4444",
+                            background: deathSaves.failures > i ? "#ef4444" : "transparent",
+                            cursor: "pointer"
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tabs */}
+            <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "8px" }}>
+              {['combat', 'spells', 'inventory', 'notes'].map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={activeTab === tab ? "rq-button-primary" : "rq-button-secondary"}
+                  style={{ textTransform: "capitalize" }}
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
 
             {/* Tab Content */}
-            <div style={{ minHeight: '350px' }}>
-          {/* Combat Tab - Actions, Bonus Actions, Reactions */}
-          {activeTab === 'combat' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-              {/* ACTIONS Column */}
-              <div style={{ ...glassPanel, padding: '12px' }}>
-                <h3 style={{ color: '#ef4444', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Swords size={16} /> ACTIONS
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {/* Weapon Attacks */}
-                  {(data.attacks || []).length > 0 || (data.equipment || []).filter(e => e.equipped && (e.type === 'weapon' || e.damage)).length > 0 ? (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginBottom: '2px' }}>ATTACK</div>
-                      {(data.attacks || []).map((attack, i) => {
-                        const abilityMod = attack.ability ? calculateModifier(data[attack.ability]) : calculateModifier(data.strength);
-                        const attackBonus = abilityMod + (attack.proficient !== false ? profBonus : 0) + (attack.bonus || 0);
-                        return (
-                          <div key={i} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '8px 10px',
-                            background: 'rgba(239, 68, 68, 0.1)',
-                            borderRadius: '6px',
-                            borderLeft: '3px solid #ef4444'
-                          }}>
-                            <span style={{ color: '#e2e8f0', fontSize: '12px', fontWeight: '500' }}>{attack.name}</span>
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              <DiceRollButton modifier={attackBonus} label={`${attack.name} Attack`} color="#ef4444" size="small" />
-                              <span style={{ color: '#94a3b8', fontSize: '10px' }}>{attack.damage || `1d6+${abilityMod}`}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {(data.equipment || []).filter(e => e.equipped && (e.type === 'weapon' || e.damage)).map((weapon, i) => {
-                        const isFinesse = weapon.properties?.includes('finesse');
-                        const abilityMod = isFinesse ? Math.max(calculateModifier(data.strength), calculateModifier(data.dexterity)) : calculateModifier(data.strength);
-                        const attackBonus = abilityMod + profBonus;
-                        return (
-                          <div key={`eq-${i}`} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '8px 10px',
-                            background: 'rgba(239, 68, 68, 0.1)',
-                            borderRadius: '6px',
-                            borderLeft: '3px solid #ef4444'
-                          }}>
-                            <span style={{ color: '#e2e8f0', fontSize: '12px', fontWeight: '500' }}>{weapon.name}</span>
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              <DiceRollButton modifier={attackBonus} label={`${weapon.name} Attack`} color="#ef4444" size="small" />
-                              <span style={{ color: '#94a3b8', fontSize: '10px' }}>{weapon.damage || '1d6'}{abilityMod >= 0 ? '+' : ''}{abilityMod}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </>
-                  ) : null}
-
-                  {/* Always Available: Unarmed Strike */}
-                  <>
-                    <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>BASIC ATTACK</div>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '8px 10px',
-                      background: 'rgba(239, 68, 68, 0.08)',
-                      borderRadius: '6px',
-                      borderLeft: '3px solid #ef4444'
-                    }}>
-                      <span style={{ color: '#e2e8f0', fontSize: '12px', fontWeight: '500' }}>Unarmed Strike</span>
-                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        <DiceRollButton
-                          modifier={calculateModifier(data.strength) + profBonus}
-                          label="Unarmed Strike Attack"
-                          color="#ef4444"
-                          size="small"
-                        />
-                        <span style={{ color: '#94a3b8', fontSize: '10px' }}>
-                          1{calculateModifier(data.strength) >= 0 ? `+${calculateModifier(data.strength)}` : calculateModifier(data.strength)}
-                        </span>
-                      </div>
-                    </div>
-                  </>
-
-                  {/* Cast a Spell (if caster) */}
-                  {data.spellcasting_ability && (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>CAST A SPELL</div>
-                      <div style={{
-                        padding: '8px 10px',
-                        background: 'rgba(168, 85, 247, 0.1)',
-                        borderRadius: '6px',
-                        borderLeft: '3px solid #a855f7'
-                      }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                          <span style={{ color: '#a855f7', fontSize: '11px', fontWeight: '500' }}>Spell Attack</span>
-                          <span style={{ color: '#a855f7', fontWeight: '400', fontSize: '13px' }}>+{profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ color: '#a855f7', fontSize: '11px', fontWeight: '500' }}>Save DC</span>
-                          <span style={{ color: '#a855f7', fontWeight: '400', fontSize: '13px' }}>{8 + profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* Class Actions */}
-                  {combatFeatures.actions.length > 0 && (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>CLASS ACTIONS</div>
-                      {combatFeatures.actions.map((action, i) => (
-                        <div key={`class-action-${i}`} style={{
-                          padding: '8px 10px',
-                          background: 'rgba(99, 102, 241, 0.1)',
-                          borderRadius: '6px',
-                          borderLeft: '3px solid #6366f1',
-                          marginBottom: '4px'
-                        }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <span style={{ color: '#818cf8', fontSize: '12px', fontWeight: '500' }}>{action.name}</span>
-                            {action.uses && <span style={{ color: '#64748b', fontSize: '9px', background: 'rgba(99, 102, 241, 0.2)', padding: '2px 6px', borderRadius: '4px' }}>{action.uses}</span>}
-                          </div>
-                          <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginTop: '2px' }}>{action.description}</span>
-                        </div>
-                      ))}
-                    </>
-                  )}
-
-                  {/* Action Modifiers (like Sneak Attack, Divine Smite) */}
-                  {combatFeatures.actionModifiers.length > 0 && (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>ATTACK MODIFIERS</div>
-                      {combatFeatures.actionModifiers.map((mod, i) => (
-                        <div key={`action-mod-${i}`} style={{
-                          padding: '8px 10px',
-                          background: 'rgba(236, 72, 153, 0.1)',
-                          borderRadius: '6px',
-                          borderLeft: '3px solid #ec4899',
-                          marginBottom: '4px'
-                        }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <span style={{ color: '#f472b6', fontSize: '12px', fontWeight: '500' }}>{mod.name}</span>
-                            {mod.uses && <span style={{ color: '#64748b', fontSize: '9px', background: 'rgba(236, 72, 153, 0.2)', padding: '2px 6px', borderRadius: '4px' }}>{mod.uses}</span>}
-                          </div>
-                          <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginTop: '2px' }}>{mod.description}</span>
-                        </div>
-                      ))}
-                    </>
-                  )}
-
-                  {/* Standard Actions */}
-                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>STANDARD ACTIONS</div>
-                  {[
-                    { name: 'Dash', desc: 'Double movement' },
-                    { name: 'Disengage', desc: 'No opportunity attacks' },
-                    { name: 'Dodge', desc: 'Attacks have disadvantage' },
-                    { name: 'Help', desc: 'Give ally advantage' },
-                    { name: 'Hide', desc: 'Stealth check' },
-                    { name: 'Ready', desc: 'Prepare a reaction' },
-                  ].map(action => (
-                    <div key={action.name} style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '6px 10px',
-                      background: 'rgba(148, 163, 184, 0.05)',
-                      borderRadius: '4px'
-                    }}>
-                      <span style={{ color: '#e2e8f0', fontSize: '11px' }}>{action.name}</span>
-                      <span style={{ color: '#64748b', fontSize: '9px' }}>{action.desc}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* BONUS ACTIONS Column */}
-              <div style={{ ...glassPanel, padding: '12px' }}>
-                <h3 style={{ color: '#f59e0b', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Zap size={16} /> BONUS ACTIONS
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {/* Dynamic Class Bonus Actions from classFeatures.js */}
-                  {combatFeatures.bonusActions.length > 0 ? (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginBottom: '2px' }}>CLASS FEATURES</div>
-                      {combatFeatures.bonusActions.map((action, i) => (
-                        <div key={`class-ba-${i}`} style={{
-                          padding: '8px 10px',
-                          background: 'rgba(245, 158, 11, 0.1)',
-                          borderRadius: '6px',
-                          borderLeft: '3px solid #f59e0b',
-                          marginBottom: '4px'
-                        }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <span style={{ color: '#fbbf24', fontSize: '12px', fontWeight: '500' }}>{action.name}</span>
-                            {action.uses && <span style={{ color: '#64748b', fontSize: '9px', background: 'rgba(245, 158, 11, 0.2)', padding: '2px 6px', borderRadius: '4px' }}>{action.uses}</span>}
-                          </div>
-                          <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginTop: '2px' }}>{action.description}</span>
-                        </div>
-                      ))}
-                    </>
-                  ) : (
-                    <div style={{ color: '#64748b', fontSize: '11px', padding: '12px', textAlign: 'center', border: '1px dashed rgba(148, 163, 184, 0.2)', borderRadius: '6px' }}>
-                      No class bonus actions at this level.
-                    </div>
-                  )}
-
-                  {/* Custom bonus actions from character data */}
-                  {data.bonus_actions?.length > 0 && (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>CUSTOM</div>
-                      {data.bonus_actions.map((action, i) => (
-                        <div key={`custom-ba-${i}`} style={{
-                          padding: '8px 10px',
-                          background: 'rgba(245, 158, 11, 0.08)',
-                          borderRadius: '6px',
-                          borderLeft: '3px solid #b45309'
-                        }}>
-                          <span style={{ color: '#fbbf24', fontSize: '12px', fontWeight: '500', display: 'block' }}>{action.name}</span>
-                          {action.description && <span style={{ color: '#94a3b8', fontSize: '10px' }}>{action.description}</span>}
-                        </div>
-                      ))}
-                    </>
-                  )}
-
-                  {/* Two-Weapon Fighting (if has offhand) */}
-                  {(data.equipment || []).filter(e => e.equipped && e.offhand).length > 0 && (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>OFFHAND ATTACK</div>
-                      {(data.equipment || []).filter(e => e.equipped && e.offhand).map((weapon, i) => {
-                        const abilityMod = calculateModifier(data.dexterity);
-                        return (
-                          <div key={`off-${i}`} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '8px 10px',
-                            background: 'rgba(245, 158, 11, 0.1)',
-                            borderRadius: '6px',
-                            borderLeft: '3px solid #f59e0b'
-                          }}>
-                            <span style={{ color: '#fbbf24', fontSize: '12px', fontWeight: '500' }}>{weapon.name}</span>
-                            <span style={{ color: '#94a3b8', fontSize: '10px' }}>{weapon.damage || '1d6'}</span>
-                          </div>
-                        );
-                      })}
-                    </>
-                  )}
-
-                </div>
-              </div>
-
-              {/* REACTIONS Column */}
-              <div style={{ ...glassPanel, padding: '12px' }}>
-                <h3 style={{ color: '#3b82f6', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <RefreshCw size={16} /> REACTIONS
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {/* Opportunity Attack - Everyone has this */}
-                  <div style={{
-                    padding: '8px 10px',
-                    background: 'rgba(59, 130, 246, 0.1)',
-                    borderRadius: '6px',
-                    borderLeft: '3px solid #3b82f6'
-                  }}>
-                    <span style={{ color: '#60a5fa', fontSize: '12px', fontWeight: '500', display: 'block' }}>Opportunity Attack</span>
-                    <span style={{ color: '#94a3b8', fontSize: '10px' }}>When enemy leaves your reach</span>
-                  </div>
-
-                  {/* Dynamic Class Reactions from classFeatures.js */}
-                  {combatFeatures.reactions.length > 0 && (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>CLASS FEATURES</div>
-                      {combatFeatures.reactions.map((reaction, i) => (
-                        <div key={`class-react-${i}`} style={{
-                          padding: '8px 10px',
-                          background: 'rgba(59, 130, 246, 0.1)',
-                          borderRadius: '6px',
-                          borderLeft: '3px solid #3b82f6',
-                          marginBottom: '4px'
-                        }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <span style={{ color: '#60a5fa', fontSize: '12px', fontWeight: '500' }}>{reaction.name}</span>
-                            {reaction.uses && <span style={{ color: '#64748b', fontSize: '9px', background: 'rgba(59, 130, 246, 0.2)', padding: '2px 6px', borderRadius: '4px' }}>{reaction.uses}</span>}
-                          </div>
-                          <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginTop: '2px' }}>{reaction.description}</span>
-                        </div>
-                      ))}
-                    </>
-                  )}
-
-                  {/* Custom reactions from character data */}
-                  {data.reactions?.length > 0 && (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '2px' }}>CUSTOM</div>
-                      {data.reactions.map((reaction, i) => (
-                        <div key={`custom-react-${i}`} style={{
-                          padding: '8px 10px',
-                          background: 'rgba(59, 130, 246, 0.08)',
-                          borderRadius: '6px',
-                          borderLeft: '3px solid #1d4ed8'
-                        }}>
-                          <span style={{ color: '#60a5fa', fontSize: '12px', fontWeight: '500', display: 'block' }}>{reaction.name}</span>
-                          {reaction.description && <span style={{ color: '#94a3b8', fontSize: '10px' }}>{reaction.description}</span>}
-                        </div>
-                      ))}
-                    </>
-                  )}
-
-                  {/* Passive Abilities Section */}
-                  {combatFeatures.passives.length > 0 && (
-                    <>
-                      <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '12px', marginBottom: '4px' }}>PASSIVE ABILITIES</div>
-                      <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
-                        {combatFeatures.passives.map((passive, i) => (
-                          <div key={`passive-${i}`} style={{
-                            padding: '6px 10px',
-                            background: 'rgba(34, 197, 94, 0.08)',
-                            borderRadius: '4px',
-                            marginBottom: '4px',
-                            borderLeft: '2px solid #22c55e'
-                          }}>
-                            <span style={{ color: '#4ade80', fontSize: '11px', fontWeight: '500', display: 'block' }}>{passive.name}</span>
-                            <span style={{ color: '#64748b', fontSize: '9px' }}>{passive.description}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-
-                  {/* Combat Resources */}
-                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '12px', marginBottom: '4px' }}>COMBAT RESOURCES</div>
-                  
-                  {/* Hit Dice */}
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '8px 10px',
-                    background: 'rgba(239, 68, 68, 0.05)',
-                    borderRadius: '6px'
-                  }}>
-                    <span style={{ color: '#94a3b8', fontSize: '11px' }}>Hit Dice</span>
-                    <span style={{ color: '#ef4444', fontWeight: '400', fontSize: '13px' }}>
-                      {data.hit_dice_remaining ?? data.level}/{data.level}d{data.hit_die || 8}
-                    </span>
-                  </div>
-
-                  {/* Temp HP */}
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '8px 10px',
-                    background: 'rgba(34, 211, 238, 0.05)',
-                    borderRadius: '6px'
-                  }}>
-                    <span style={{ color: '#94a3b8', fontSize: '11px' }}>Temp HP</span>
-                    <span style={{ color: '#22d3ee', fontWeight: '400', fontSize: '13px' }}>{data.temp_hp || 0}</span>
-                  </div>
-
-                  {/* Spell Resources */}
-                  {data.spellcasting_ability && (
-                    <div style={{
-                      padding: '8px 10px',
-                      background: 'rgba(168, 85, 247, 0.08)',
-                      borderRadius: '6px'
-                    }}>
-                      <span style={{ color: '#a855f7', fontSize: '10px', display: 'block', marginBottom: '6px' }}>Spell Resources</span>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(level => {
-                          const maxSlots = data[`spell_slots_${level}`] || 0;
-                          const usedSlots = data[`spell_slots_${level}_used`] || 0;
-                          if (maxSlots === 0) return null;
-                          return (
-                            <div key={level} style={{ textAlign: 'center', padding: '4px', background: 'rgba(168, 85, 247, 0.1)', borderRadius: '4px' }}>
-                              <div style={{ color: '#a855f7', fontSize: '9px', marginBottom: '2px' }}>L{level}</div>
-                              <div style={{ display: 'flex', justifyContent: 'center', gap: '2px', flexWrap: 'wrap' }}>
-                                {Array.from({ length: maxSlots }).map((_, idx) => (
-                                  <button
-                                    key={idx}
-                                    onClick={() => updateSpellSlotUsage(level, idx)}
-                                    style={{
-                                      width: '10px',
-                                      height: '10px',
-                                      borderRadius: '2px',
-                                      border: '1px solid #a855f7',
-                                      background: idx < usedSlots ? 'transparent' : '#a855f7',
-                                      cursor: 'pointer',
-                                      padding: 0
-                                    }}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Death Saves */}
-                  <div style={{
-                    padding: '8px 10px',
-                    background: 'rgba(148, 163, 184, 0.05)',
-                    borderRadius: '6px'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                      <span style={{ color: '#94a3b8', fontSize: '10px', display: 'block' }}>Death Saves</span>
-                      <button
-                        onClick={resetDeathSaves}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          color: '#64748b',
-                          fontSize: '9px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Reset
-                      </button>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <span style={{ color: '#22c55e', fontSize: '9px' }}>Pass</span>
-                        {[0, 1, 2].map(i => (
-                          <button
-                            key={`s-${i}`}
-                            onClick={() => updateDeathSaves('success', i < (data.death_save_success || 0) ? i : i + 1)}
-                            style={{
-                              width: '10px',
-                              height: '10px',
-                              borderRadius: '50%',
-                              border: '2px solid #22c55e',
-                              background: i < (data.death_save_success || 0) ? '#22c55e' : 'transparent',
-                              cursor: 'pointer',
-                              padding: 0
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <span style={{ color: '#ef4444', fontSize: '9px' }}>Fail</span>
-                        {[0, 1, 2].map(i => (
-                          <button
-                            key={`f-${i}`}
-                            onClick={() => updateDeathSaves('failure', i < (data.death_save_failure || 0) ? i : i + 1)}
-                            style={{
-                              width: '10px',
-                              height: '10px',
-                              borderRadius: '50%',
-                              border: '2px solid #ef4444',
-                              background: i < (data.death_save_failure || 0) ? '#ef4444' : 'transparent',
-                              cursor: 'pointer',
-                              padding: 0
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Conditions */}
-                  <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: '400', marginTop: '8px', marginBottom: '4px' }}>CONDITIONS</div>
-                  {(!data.conditions?.length) ? (
-                    <div style={{ color: '#22c55e', fontSize: '11px', padding: '6px', textAlign: 'center' }}>None</div>
-                  ) : (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                      {data.conditions.map((condition, i) => (
-                        <span key={i} style={{
-                          padding: '3px 6px',
-                          background: 'rgba(245, 158, 11, 0.2)',
-                          borderRadius: '4px',
-                          color: '#fbbf24',
-                          fontSize: '10px'
-                        }}>{condition}</span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Character Tab - Info, Features, Feats, Personality */}
-          {activeTab === 'character' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '350px 1fr', gap: '12px' }}>
-              {/* Left Column: Character Info + Personality */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {/* Character Info */}
-                <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#67e8f9', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
-                    Character Info
-                  </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {[
-                      { label: 'Race', value: data.race },
-                      { label: 'Class', value: data.character_class },
-                      { label: 'Subclass', value: data.subclass || 'None' },
-                      { label: 'Background', value: data.background || 'None' },
-                      { label: 'Alignment', value: data.alignment },
-                      { label: 'Experience', value: `${data.experience_points || 0} XP` }
-                    ].map(item => (
-                      <div key={item.label} style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between',
-                        padding: '6px 10px',
-                        background: 'rgba(30, 41, 59, 0.4)',
-                        borderRadius: '6px'
-                      }}>
-                        <span style={{ color: '#64748b', fontSize: '12px' }}>{item.label}</span>
-                        <span style={{ color: '#e2e8f0', fontSize: '12px', fontWeight: '500' }}>{item.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Personality */}
-                <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#ec4899', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
-                    Personality
-                  </h3>
-                  {['personality_traits', 'ideals', 'bonds', 'flaws'].map(field => (
-                    <div key={field} style={{ marginBottom: '10px' }}>
-                      <label style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
-                        {field.replace('_', ' ')}
-                      </label>
-                      {editMode ? (
-                        <textarea
-                          value={editData[field] || ''}
-                          onChange={(e) => setEditData({ ...editData, [field]: e.target.value })}
-                          style={{
-                            width: '100%',
-                            minHeight: '40px',
-                            padding: '8px',
-                            background: 'rgba(30, 41, 59, 0.6)',
-                            border: '1px solid rgba(148, 163, 184, 0.2)',
-                            borderRadius: '6px',
-                            color: '#e2e8f0',
-                            fontSize: '12px',
-                            resize: 'vertical'
-                          }}
-                        />
-                      ) : (
-                        <p style={{ color: '#e2e8f0', fontSize: '12px', lineHeight: '1.5' }}>
-                          {data[field] || 'Not specified'}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Right Column: Features & Feats */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', alignContent: 'start' }}>
-                {/* Class Features */}
-                <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#60a5fa', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
-                    Class Features ({data.character_class})
-                  </h3>
-                  <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
-                    {classFeatures.length === 0 ? (
-                      <p style={{ color: '#64748b', fontSize: '12px' }}>No class features loaded.</p>
-                    ) : (
-                      classFeatures.map((feature, i) => (
-                        <FeatureCard key={i} feature={feature} source="class" />
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Racial Traits */}
-                <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#22d3ee', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
-                    Racial Traits ({data.race})
-                  </h3>
-                  <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
-                    {!data.racial_traits?.length ? (
-                      <p style={{ color: '#64748b', fontSize: '12px' }}>No racial traits recorded.</p>
-                    ) : (
-                      data.racial_traits.map((trait, i) => (
-                        <FeatureCard key={i} feature={trait} source="race" />
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* Feats */}
-                <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#fb923c', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
-                    Feats
-                  </h3>
-                  <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
-                    {!data.feats?.length ? (
-                      <p style={{ color: '#64748b', fontSize: '12px' }}>No feats selected.</p>
-                    ) : (
-                      data.feats.map((feat, i) => (
-                        <FeatureCard key={i} feature={feat} source="feat" />
-                      ))
-                    )}
-                    
-                    {/* Available Feats from SRD */}
-                    {editMode && srdFeats.length > 0 && (
-                      <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
-                        <h4 style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '8px' }}>AVAILABLE FEATS</h4>
-                        {srdFeats.filter(f => !data.feats?.some(df => df.name === f.name)).slice(0, 5).map((feat, i) => (
-                          <button
-                            key={i}
-                            onClick={() => {
-                              setEditData({
-                                ...editData,
-                                feats: [...(editData.feats || []), { name: feat.name, description: feat.description }]
-                              });
-                            }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px',
-                              padding: '6px 10px',
-                              background: 'rgba(249, 115, 22, 0.1)',
-                              border: '1px solid rgba(249, 115, 22, 0.3)',
-                              borderRadius: '6px',
-                              marginBottom: '6px',
-                              width: '100%',
-                              cursor: 'pointer',
-                              textAlign: 'left'
-                            }}
-                          >
-                            <Plus size={12} color="#fb923c" />
-                            <span style={{ color: '#fb923c', fontSize: '11px' }}>{feat.name}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Backstory & Notes */}
-                <div style={{ ...glassPanel, padding: '14px' }}>
-                  <h3 style={{ color: '#a855f7', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat' }}>
-                    Backstory & Notes
-                  </h3>
-                  <div style={{ marginBottom: '12px' }}>
-                    <label style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginBottom: '4px' }}>BACKSTORY</label>
-                    {editMode ? (
-                      <textarea
-                        value={editData.backstory || ''}
-                        onChange={(e) => setEditData({ ...editData, backstory: e.target.value })}
-                        style={{
-                          width: '100%',
-                          minHeight: '80px',
-                          padding: '8px',
-                          background: 'rgba(30, 41, 59, 0.6)',
-                          border: '1px solid rgba(148, 163, 184, 0.2)',
-                          borderRadius: '6px',
-                          color: '#e2e8f0',
-                          fontSize: '12px',
-                          resize: 'vertical'
-                        }}
-                      />
-                    ) : (
-                      <p style={{ color: '#e2e8f0', fontSize: '12px', lineHeight: '1.5', maxHeight: '80px', overflowY: 'auto' }}>
-                        {data.backstory || 'No backstory written yet.'}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label style={{ color: '#94a3b8', fontSize: '10px', display: 'block', marginBottom: '4px' }}>NOTES</label>
-                    {editMode ? (
-                      <textarea
-                        value={editData.notes || ''}
-                        onChange={(e) => setEditData({ ...editData, notes: e.target.value })}
-                        style={{
-                          width: '100%',
-                          minHeight: '80px',
-                          padding: '8px',
-                          background: 'rgba(30, 41, 59, 0.6)',
-                          border: '1px solid rgba(148, 163, 184, 0.2)',
-                          borderRadius: '6px',
-                          color: '#e2e8f0',
-                          fontSize: '12px',
-                          resize: 'vertical'
-                        }}
-                      />
-                    ) : (
-                      <p style={{ color: '#e2e8f0', fontSize: '12px', lineHeight: '1.5', maxHeight: '80px', overflowY: 'auto' }}>
-                        {data.notes || 'No notes yet.'}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Spells Tab */}
-          {activeTab === 'spells' && (
-            <div>
-              {/* Spellcasting Stats & Spell Slots */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginBottom: '20px' }}>
-                {/* Spellcasting Info */}
-                <div style={{ ...glassPanel, padding: '16px' }}>
-                  <h4 style={{ color: '#a855f7', fontSize: '12px', fontWeight: '400', marginBottom: '12px' }}>SPELLCASTING</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: '#64748b', fontSize: '11px' }}>Ability</span>
-                      <span style={{ color: '#8B5CF6', fontWeight: '400', fontSize: '14px', textTransform: 'capitalize' }}>
-                        {data.spellcasting_ability || 'None'}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: '#64748b', fontSize: '11px' }}>Save DC</span>
-                      <span style={{ color: '#6366F1', fontWeight: '400', fontSize: '14px' }}>
-                        {data.spellcasting_ability ? 8 + profBonus + calculateModifier(data[data.spellcasting_ability] || 10) : '—'}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: '#64748b', fontSize: '11px' }}>Attack Bonus</span>
-                      <span style={{ color: '#F2A541', fontWeight: '400', fontSize: '14px' }}>
-                        {data.spellcasting_ability ? `+${profBonus + calculateModifier(data[data.spellcasting_ability] || 10)}` : '—'}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: '#64748b', fontSize: '11px' }}>Prepared</span>
-                      <span style={{ color: '#F2A541', fontWeight: '400', fontSize: '14px' }}>
-                        {resolvedPreparedSpells.length} / {Math.max(1, calculateModifier(data[data.spellcasting_ability] || 10) + (data.level || 1))}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Spell Slots */}
-                <div style={{ ...glassPanel, padding: '16px' }}>
-                  <h4 style={{ color: '#3b82f6', fontSize: '12px', fontWeight: '400', marginBottom: '12px' }}>SPELL SLOTS</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '6px' }}>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(level => {
-                      const slotKey = `spell_slots_${level}`;
-                      const usedKey = `spell_slots_${level}_used`;
-                      const maxSlots = data[slotKey] || 0;
-                      const usedSlots = data[usedKey] || 0;
-                      const availableSlots = Math.max(0, maxSlots - usedSlots);
-                      
-                      return (
-                        <div key={level} style={{ textAlign: 'center' }}>
-                          <div style={{ 
-                            color: maxSlots > 0 ? '#3b82f6' : '#475569', 
-                            fontSize: '10px', 
-                            marginBottom: '4px',
-                            fontWeight: '400'
-                          }}>
-                            {level}
-                          </div>
-                          <div style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '2px'
-                          }}>
-                            {maxSlots > 0 ? (
-                              Array.from({ length: maxSlots }).map((_, idx) => (
-                                <div
-                                  key={idx}
-                                  onClick={() => {
-                                    if (editMode) {
-                                      const newUsed = idx < usedSlots ? idx : idx + 1;
-                                      setEditData({ ...editData, [usedKey]: newUsed });
-                                    }
-                                  }}
-                                  style={{
-                                    width: '14px',
-                                    height: '14px',
-                                    borderRadius: '3px',
-                                    border: '2px solid #3b82f6',
-                                    background: idx < usedSlots ? 'transparent' : '#3b82f6',
-                                    cursor: editMode ? 'pointer' : 'default',
-                                    transition: 'all 0.15s ease'
-                                  }}
-                                />
-                              ))
-                            ) : (
-                              <div style={{
-                                width: '14px',
-                                height: '14px',
-                                borderRadius: '3px',
-                                background: '#1e293b',
-                                border: '1px solid #334155'
-                              }} />
-                            )}
-                          </div>
-                          {maxSlots > 0 && (
-                            <div style={{ color: '#64748b', fontSize: '9px', marginTop: '2px' }}>
-                              {availableSlots}/{maxSlots}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Spell Filters */}
-              <div style={{ marginBottom: '20px' }}>
-                {/* Sub-tabs: Prepared vs Known */}
-                <div style={{ display: 'flex', gap: '0', marginBottom: '16px' }}>
-                  <button
-                    onClick={() => setSpellViewMode('prepared')}
-                    data-testid="spells-tab-prepared"
-                    style={{
-                      flex: 1,
-                      padding: '12px 24px',
-                      background: spellViewMode === 'prepared' ? 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' : 'rgba(30, 41, 59, 0.5)',
-                      border: 'none',
-                      color: spellViewMode === 'prepared' ? '#fff' : '#94a3b8',
-                      fontSize: '14px',
-                      fontWeight: '400',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    PREPARED SPELLS ({resolvedPreparedSpells.length})
-                  </button>
-                  <button
-                    onClick={() => setSpellViewMode('known')}
-                    data-testid="spells-tab-known"
-                    style={{
-                      flex: 1,
-                      padding: '12px 24px',
-                      background: spellViewMode === 'known' ? 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)' : 'rgba(30, 41, 59, 0.5)',
-                      border: 'none',
-                      color: spellViewMode === 'known' ? '#fff' : '#94a3b8',
-                      fontSize: '14px',
-                      fontWeight: '400',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    ALL KNOWN SPELLS ({resolvedKnownSpells.length})
-                  </button>
-                </div>
-
-                {/* Search and Filter */}
-                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                  <div style={{ position: 'relative', flex: '1', minWidth: '200px' }}>
-                    <Search size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <Input
-                      data-testid="spell-search"
-                      placeholder="Search spells..."
-                      value={spellSearch}
-                      onChange={(e) => setSpellSearch(e.target.value)}
-                      style={{ paddingLeft: '40px' }}
-                    />
-                  </div>
-                  <select
-                    data-testid="spell-level-filter"
-                    value={spellLevelFilter}
-                    onChange={(e) => setSpellLevelFilter(e.target.value)}
-                    style={{
-                      ...glassPanel,
-                      padding: '10px 16px',
-                      color: '#e2e8f0',
-                      fontSize: '14px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <option value="all">All Levels</option>
-                    {Object.entries(SPELL_LEVELS).map(([level, label]) => (
-                      <option key={level} value={level}>{label}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Prepared Spells View */}
-              {spellViewMode === 'prepared' && (
+            <div className="rq-card">
+              {activeTab === 'combat' && (
                 <div>
-                  {(resolvedPreparedSpells.length === 0) ? (
-                    <div style={{ 
-                      ...glassPanel, 
-                      padding: '40px', 
-                      textAlign: 'center',
-                      borderStyle: 'dashed'
-                    }}>
-                      <Wand2 size={48} color="#3b82f6" style={{ marginBottom: '16px', opacity: 0.5 }} />
-                      <h4 style={{ color: '#e2e8f0', marginBottom: '8px' }}>No Spells Prepared</h4>
-                      <p style={{ color: '#64748b', fontSize: '14px' }}>
-                        Go to "All Known Spells" to prepare spells for your adventure.
-                      </p>
+                  <h3 style={{ marginBottom: "16px" }}>Combat Actions</h3>
+                  <div style={{ display: "grid", gap: "12px" }}>
+                    <div className="rq-card" style={{ background: "var(--rq-bg-panel-soft)" }}>
+                      <div style={{ fontWeight: "bold" }}>Unarmed Strike</div>
+                      <div className="rq-muted">
+                        +{proficiencyBonus + getModifier(abilities.strength)} to hit • 
+                        1 + {getModifier(abilities.strength)} bludgeoning damage
+                      </div>
+                    </div>
+                    {character.weapons?.map((weapon, i) => (
+                      <div key={i} className="rq-card" style={{ background: "var(--rq-bg-panel-soft)" }}>
+                        <div style={{ fontWeight: "bold" }}>{weapon.name}</div>
+                        <div className="rq-muted">
+                          {weapon.attack_bonus && `+${weapon.attack_bonus} to hit`}
+                          {weapon.damage && ` • ${weapon.damage}`}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'spells' && (
+                <div>
+                  <h3 style={{ marginBottom: "16px" }}>Spellcasting</h3>
+                  {character.spells && character.spells.length > 0 ? (
+                    <div style={{ display: "grid", gap: "8px" }}>
+                      {character.spells.map((spell, i) => (
+                        <div key={i} className="rq-card" style={{ background: "var(--rq-bg-panel-soft)" }}>
+                          <div style={{ fontWeight: "bold" }}>{spell.name}</div>
+                          <div className="rq-muted">{spell.level ? `Level ${spell.level}` : 'Cantrip'} • {spell.school}</div>
+                        </div>
+                      ))}
                     </div>
                   ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '8px' }}>
-                      {resolvedPreparedSpells
-                        .filter(spell => {
-                          const matchesSearch = spell.name.toLowerCase().includes(spellSearch.toLowerCase());
-                          const matchesLevel = spellLevelFilter === 'all' || spell.level === parseInt(spellLevelFilter);
-                          return matchesSearch && matchesLevel;
-                        })
-                        .map(spell => (
-                          <SpellCard
-                            key={spell.name}
-                            spell={spell}
-                            isPrepared={true}
-                            onTogglePrepare={(s) => {
-                              // Unprepare the spell
-                              const newPrepared = resolvedPreparedSpells.filter(sp => sp.name !== s.name);
-                              persistCharacterChanges({ spells_prepared: newPrepared }, `${s.name} unprepared`);
-                            }}
-                            canPrepare={true}
-                          />
-                        ))
-                      }
-                    </div>
+                    <div className="rq-muted">No spells known.</div>
                   )}
                 </div>
               )}
 
-              {/* Known Spells View */}
-              {spellViewMode === 'known' && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '8px' }}>
-                  {loadingSrd ? (
-                    <p style={{ color: '#64748b' }}>Loading spells...</p>
-                  ) : filteredSpells.length === 0 ? (
-                    <p style={{ color: '#64748b' }}>No spells available for your class.</p>
+              {activeTab === 'inventory' && (
+                <div>
+                  <h3 style={{ marginBottom: "16px" }}>Inventory</h3>
+                  {character.equipment && character.equipment.length > 0 ? (
+                    <div style={{ display: "grid", gap: "8px" }}>
+                      {character.equipment.map((item, i) => (
+                        <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px", background: "var(--rq-bg-panel-soft)", borderRadius: "6px" }}>
+                          <span>{item.name || item}</span>
+                          {item.quantity && <span className="rq-muted">x{item.quantity}</span>}
+                        </div>
+                      ))}
+                    </div>
                   ) : (
-                    filteredSpells.map(spell => {
-                      const isKnown = data.spells_known?.some(s => s.name === spell.name);
-                      const isPrepared = data.spells_prepared?.some(s => s.name === spell.name);
-                      return (
-                        <SpellCard
-                          key={spell.name}
-                          spell={spell}
-                          isPrepared={isPrepared}
-                          onTogglePrepare={(s) => {
-                            if (isPrepared) {
-                              const newPrepared = resolvedPreparedSpells.filter(sp => sp.name !== s.name);
-                              persistCharacterChanges({ spells_prepared: newPrepared }, `${s.name} unprepared`);
-                            } else {
-                              const newPrepared = [...resolvedPreparedSpells, s];
-                              const newKnown = resolvedKnownSpells.some(sp => sp.name === s.name)
-                                ? resolvedKnownSpells
-                                : [...resolvedKnownSpells, s];
-                              persistCharacterChanges({ spells_prepared: newPrepared, spells_known: newKnown }, `${s.name} prepared!`);
-                            }
-                          }}
-                          canPrepare={true}
-                        />
-                      );
-                    })
+                    <div className="rq-muted">No items in inventory.</div>
                   )}
                 </div>
               )}
+
+              {activeTab === 'notes' && (
+                <div>
+                  <h3 style={{ marginBottom: "16px" }}>Character Notes</h3>
+                  <div style={{ whiteSpace: "pre-wrap" }}>
+                    {character.notes || "No notes yet."}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-
-          {/* Inventory Tab - Equipment, Items, Currency */}
-          {activeTab === 'inventory' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-              {/* Currency - Full */}
-              <div style={{ ...glassPanel, padding: '14px' }}>
-                <h3 style={{ color: '#eab308', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Coins size={14} color="#eab308" />
-                  Currency
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
-                  {['copper', 'silver', 'electrum', 'gold', 'platinum'].map(coin => (
-                    <div key={coin} style={{ textAlign: 'center', padding: '10px 6px', background: 'rgba(234, 179, 8, 0.1)', borderRadius: '6px' }}>
-                      <span style={{ 
-                        color: coin === 'gold' ? '#eab308' : coin === 'platinum' ? '#94a3b8' : coin === 'copper' ? '#b45309' : coin === 'silver' ? '#9ca3af' : '#a855f7',
-                        fontSize: '10px',
-                        display: 'block',
-                        marginBottom: '4px',
-                        textTransform: 'uppercase'
-                      }}>
-                        {coin.slice(0, 2)}
-                      </span>
-                      {editMode ? (
-                        <Input
-                          type="number"
-                          value={editData.currency?.[coin] || 0}
-                          onChange={(e) => setEditData({
-                            ...editData,
-                            currency: { ...editData.currency, [coin]: parseInt(e.target.value) || 0 }
-                          })}
-                          style={{ width: '100%', textAlign: 'center', padding: '4px', fontSize: '14px' }}
-                        />
-                      ) : (
-                        <span style={{ color: '#fff', fontWeight: '400', fontSize: '16px' }}>
-                          {data.currency?.[coin] || 0}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                {/* Total in GP */}
-                <div style={{ marginTop: '10px', padding: '8px', background: 'rgba(234, 179, 8, 0.05)', borderRadius: '6px', textAlign: 'center' }}>
-                  <span style={{ color: '#94a3b8', fontSize: '10px' }}>TOTAL (in GP): </span>
-                  <span style={{ color: '#eab308', fontWeight: '400', fontSize: '14px' }}>
-                    {(
-                      (data.currency?.platinum || 0) * 10 +
-                      (data.currency?.gold || 0) +
-                      (data.currency?.electrum || 0) * 0.5 +
-                      (data.currency?.silver || 0) * 0.1 +
-                      (data.currency?.copper || 0) * 0.01
-                    ).toFixed(2)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Equipment */}
-              <div style={{ ...glassPanel, padding: '14px' }}>
-                <h3 style={{ color: '#ef4444', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Swords size={14} color="#ef4444" />
-                  Equipment
-                </h3>
-                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  {!data.equipment?.length ? (
-                    <div style={{ color: '#64748b', fontSize: '12px', padding: '20px', textAlign: 'center', border: '1px dashed rgba(148, 163, 184, 0.2)', borderRadius: '6px' }}>
-                      No equipment recorded.
-                    </div>
-                  ) : (
-                    data.equipment.map((item, i) => (
-                      <div key={i} style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '8px 10px',
-                        background: item.equipped ? 'rgba(34, 197, 94, 0.1)' : 'rgba(30, 41, 59, 0.3)',
-                        borderRadius: '6px',
-                        marginBottom: '4px'
-                      }}>
-                        <span style={{ color: item.equipped ? '#22c55e' : '#e2e8f0', fontSize: '12px' }}>
-                          {item.name}
-                        </span>
-                        {item.equipped && (
-                          <span style={{ color: '#22c55e', fontSize: '9px', fontWeight: '400', padding: '2px 6px', background: 'rgba(34, 197, 94, 0.2)', borderRadius: '4px' }}>EQUIPPED</span>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {/* Inventory */}
-              <div style={{ ...glassPanel, padding: '14px' }}>
-                <h3 style={{ color: '#3b82f6', fontSize: '13px', fontWeight: '400', marginBottom: '12px', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Package size={14} color="#3b82f6" />
-                  Inventory
-                </h3>
-                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  {!data.inventory?.length ? (
-                    <div style={{ color: '#64748b', fontSize: '12px', padding: '20px', textAlign: 'center', border: '1px dashed rgba(148, 163, 184, 0.2)', borderRadius: '6px' }}>
-                      No items in inventory.
-                    </div>
-                  ) : (
-                    data.inventory.map((item, i) => (
-                      <div key={i} style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '8px 10px',
-                        background: 'rgba(59, 130, 246, 0.05)',
-                        borderRadius: '6px',
-                        marginBottom: '4px'
-                      }}>
-                        <span style={{ color: '#e2e8f0', fontSize: '12px' }}>{item.name}</span>
-                        <span style={{ color: '#64748b', fontSize: '11px' }}>x{item.quantity || 1}</span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-            </div>  {/* End of Tab Content */}
-          </div>  {/* End of RIGHT CONTENT */}
-        </div>  {/* End of MAIN CONTENT AREA */}
+          </div>
+        </div>
       </div>
-
-      {/* Join Campaign Modal */}
-      <JoinCampaignModal
-        characterId={characterId}
-        characterName={character.name}
-        open={showJoinModal}
-        onOpenChange={setShowJoinModal}
-        onSuccess={() => fetchCharacter()}
-      />
-
-      {/* Level Up Modal */}
-      <LevelUpModal
-        character={character}
-        open={showLevelUpModal}
-        onClose={() => setShowLevelUpModal(false)}
-        onLevelUp={(updatedCharacter) => {
-          setCharacter(updatedCharacter);
-          setEditData(updatedCharacter);
-        }}
-      />
-
-      {/* ROOK Suggestions */}
-      <RookSuggestionPopup
-        suggestion={currentSuggestion}
-        onDismiss={dismissSuggestion}
-        position="bottom-right"
-      />
-
-      {/* First-time dice roll tooltip */}
-      <DiceRollTooltip />
     </div>
   );
 }
-
-export default CharacterSheetFull;

@@ -10,29 +10,42 @@ An all-in-one campaign operating system for 5e combining worldbuilding, AI conte
 
 ## Recent Major Updates (March 2026)
 
-### FANTASY FONT UPDATE - CINZEL/CRIMSON TEXT (March 11, 2026)
-**Updated typography for authentic D&D fantasy aesthetic**
+### FRONTEND-BACKEND RECONNECTION (March 13, 2026)
+**Repaired disconnected components to restore full functionality**
 
-**Fonts:**
-- **Cinzel** - Medieval/fantasy font for all headers (h1-h6)
-- **Crimson Text** - Elegant serif for body text
-- Google Fonts import: `@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');`
+**Fixed Components:**
+- **PlayerDashboard.js** - Now fetches characters from backend API instead of expecting props
+- **CampaignList.js** - Now fetches campaigns from backend API with create campaign modal
+- **CharacterSheetFull.js** - Now loads character using `characterId` from route params (useParams)
+- **CharacterBuilder.js** - Copied from user's GitHub project with proper API integration
 
-**Bug Fixed:**
-- Removed `!important` global font override in App.css (was forcing "Eros Book" font everywhere)
-- Updated all inline font references from Philosopher→Cinzel, Nunito→Crimson Text
+**New Files Created:**
+- `/app/frontend/src/data/characterOptions.js` - Race, Class, Background options
+- `/app/frontend/src/lib/characterRules.js` - Ability score validation and calculation utilities
+- `/app/frontend/src/lib/api.js` - API base URL configuration
 
-**Files Updated:**
-- index.css (Font imports and typography rules)
-- App.css (Removed !important override)
-- LandingPage.js (Inline font family references)
-- AuthPage.js (Inline font family references)
-- UnifiedDashboard.js (Inline font family references)
+**CSS Updates:**
+- Added `rq-*` CSS classes to designSystem.css for GitHub project component compatibility
+- `.rq-panel`, `.rq-card`, `.rq-title`, `.rq-muted`, `.rq-button-primary`, `.rq-button-secondary`
 
-**Background Texture:**
-- Added SVG noise pattern overlay for subtle parchment/leather texture
-- Uses `::after` pseudo-element on `.ember-bg`
-- Opacity: 0.035 with `mix-blend-mode: overlay`
+**All Routes Working:**
+- `/auth` - Authentication (login/register/reset)
+- `/home` - UnifiedDashboard
+- `/player` - PlayerDashboard with character list
+- `/campaigns` - CampaignList with search and create
+- `/characters/new` - CharacterBuilder
+- `/characters/:characterId` - CharacterSheetFull
+- `/campaign/:campaignId` - CampaignDashboard
+- `/gm-screen/:campaignId` - DMScreen
+- `/pricing`, `/admin`, `/account` - Other pages
+
+### FONT UPDATE - MONTSERRAT (March 12, 2026)
+**User requested clean, modern SaaS-style font**
+
+**Current Fonts:**
+- **Montserrat** - Clean sans-serif for headers and body text
+- Removed fantasy fonts (Cinzel, Crimson Text, Eros Book)
+- Professional "Notion meets Roll20" aesthetic
 
 ### AETHER & IRON THEME WITH EMBER EFFECTS (March 11, 2026)
 **Complete visual redesign with high-contrast dark theme and fire elements**
