@@ -285,6 +285,219 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Pricing Section */}
+        <section style={{
+          padding: '80px 24px',
+          background: 'rgba(15, 10, 30, 0.95)'
+        }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <h2 style={{
+              fontFamily: "'Cinzel', serif",
+              fontSize: '2.5rem',
+              textAlign: 'center',
+              marginBottom: '16px',
+              color: '#F8FAFC'
+            }}>
+              Choose Your Path
+            </h2>
+            <p style={{
+              textAlign: 'center',
+              color: '#94A3B8',
+              marginBottom: '48px',
+              fontSize: '18px'
+            }}>
+              Start free, upgrade when you're ready
+            </p>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: '24px',
+              maxWidth: '1100px',
+              margin: '0 auto'
+            }}>
+              {/* Free Tier */}
+              <div style={{
+                background: 'rgba(26, 17, 46, 0.6)',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
+                borderRadius: '20px',
+                padding: '32px',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '1.5rem', color: '#94A3B8', marginBottom: '8px' }}>Free</h3>
+                <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#F8FAFC', marginBottom: '8px' }}>$0</div>
+                <p style={{ color: '#64748B', marginBottom: '24px', fontSize: '14px' }}>Forever free to explore</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, flex: 1 }}>
+                  {['Create 2 characters', 'Join campaigns', 'Basic character sheet', 'Dice roller'].map((feature, i) => (
+                    <li key={i} style={{ color: '#94A3B8', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ color: '#10B981' }}>✓</span> {feature}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => navigate('/auth')}
+                  style={{
+                    marginTop: '24px',
+                    padding: '14px',
+                    background: 'rgba(139, 92, 246, 0.1)',
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                    borderRadius: '12px',
+                    color: '#F8FAFC',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Get Started
+                </button>
+              </div>
+
+              {/* Player Tier */}
+              <div style={{
+                background: 'rgba(26, 17, 46, 0.6)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+                borderRadius: '20px',
+                padding: '32px',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '1.5rem', color: '#8B5CF6', marginBottom: '8px' }}>Player</h3>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#F8FAFC' }}>$3.99</span>
+                  <span style={{ color: '#64748B' }}>/month</span>
+                </div>
+                <p style={{ color: '#64748B', marginBottom: '24px', fontSize: '14px' }}>Perfect for adventurers</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, flex: 1 }}>
+                  {['Unlimited characters', 'Advanced character sheets', 'Inventory management', 'Spell tracking', 'Session notes'].map((feature, i) => (
+                    <li key={i} style={{ color: '#94A3B8', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ color: '#8B5CF6' }}>✓</span> {feature}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => navigate('/pricing')}
+                  style={{
+                    marginTop: '24px',
+                    padding: '14px',
+                    background: 'linear-gradient(135deg, #8B5CF6, #7C3AED)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    color: 'white',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 16px rgba(139, 92, 246, 0.3)'
+                  }}
+                >
+                  Choose Player
+                </button>
+              </div>
+
+              {/* GM Tier */}
+              <div style={{
+                background: 'rgba(26, 17, 46, 0.6)',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                borderRadius: '20px',
+                padding: '32px',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '1.5rem', color: '#F59E0B', marginBottom: '8px' }}>Game Master</h3>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#F8FAFC' }}>$3.99</span>
+                  <span style={{ color: '#64748B' }}>/month</span>
+                </div>
+                <p style={{ color: '#64748B', marginBottom: '24px', fontSize: '14px' }}>For storytellers & world builders</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, flex: 1 }}>
+                  {['Create campaigns', 'Combat tracker', 'NPC & monster tools', 'ROOK AI generation', 'World building tools'].map((feature, i) => (
+                    <li key={i} style={{ color: '#94A3B8', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ color: '#F59E0B' }}>✓</span> {feature}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => navigate('/pricing')}
+                  style={{
+                    marginTop: '24px',
+                    padding: '14px',
+                    background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    color: '#0F0A1E',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 16px rgba(245, 158, 11, 0.3)'
+                  }}
+                >
+                  Choose GM
+                </button>
+              </div>
+
+              {/* Legendary Tier */}
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15))',
+                border: '2px solid rgba(236, 72, 153, 0.5)',
+                borderRadius: '20px',
+                padding: '32px',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '-30px',
+                  background: 'linear-gradient(135deg, #EC4899, #8B5CF6)',
+                  color: 'white',
+                  padding: '4px 40px',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  transform: 'rotate(45deg)'
+                }}>
+                  BEST VALUE
+                </div>
+                <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '1.5rem', background: 'linear-gradient(135deg, #EC4899, #F59E0B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '8px' }}>Legendary</h3>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#F8FAFC' }}>$5.99</span>
+                  <span style={{ color: '#64748B' }}>/month</span>
+                </div>
+                <p style={{ color: '#64748B', marginBottom: '24px', fontSize: '14px' }}>The complete experience</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, flex: 1 }}>
+                  {['All Player features', 'All GM features', 'Priority support', 'Early access to new features', 'Exclusive content'].map((feature, i) => (
+                    <li key={i} style={{ color: '#94A3B8', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ color: '#EC4899' }}>✓</span> {feature}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => navigate('/pricing')}
+                  style={{
+                    marginTop: '24px',
+                    padding: '14px',
+                    background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    color: 'white',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 16px rgba(236, 72, 153, 0.4)'
+                  }}
+                >
+                  Go Legendary
+                </button>
+              </div>
+            </div>
+
+            <p style={{ textAlign: 'center', color: '#64748B', marginTop: '32px', fontSize: '14px' }}>
+              Save ~17% with yearly billing • All plans include 14-day free trial
+            </p>
+          </div>
+        </section>
+
         {/* CTA Section */}
         <section style={{
           padding: '100px 24px',
