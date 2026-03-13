@@ -1,24 +1,26 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'sonner';
-import "../App.css";
-import "../styles/designSystem.css";
 import {
-  Heart, Shield, Zap, Swords, BookOpen, Backpack,
-  ChevronDown, ChevronUp, Plus, Minus, Edit3, Save, X,
-  Skull, Star, Award, Target, Clock, Eye, Search,
-  Dices, Sparkles, Users, Scroll, Flame, Droplet, Wind, Mountain
+  Heart, Shield, Zap, Swords, BookOpen, Backpack, ChevronLeft,
+  Plus, Minus, Skull, Eye, Scroll, Flame, Wind, Edit3
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Ability score utilities
+// Theme
+const theme = {
+  bg: { primary: '#0F0A1E', surface: '#1A112E', elevated: '#2E1F45' },
+  sunset: { purple: '#8B5CF6', pink: '#EC4899', gold: '#F59E0B' },
+  text: { primary: '#F8FAFC', secondary: '#94A3B8', muted: '#64748B' },
+  border: 'rgba(139, 92, 246, 0.3)'
+};
+
 const getModifier = (score) => Math.floor((score - 10) / 2);
 const formatModifier = (mod) => (mod >= 0 ? `+${mod}` : `${mod}`);
 
-// Skills data
 const SKILLS = [
   { name: 'Acrobatics', ability: 'dexterity' },
   { name: 'Animal Handling', ability: 'wisdom' },
@@ -40,14 +42,7 @@ const SKILLS = [
   { name: 'Survival', ability: 'wisdom' }
 ];
 
-const ABILITY_NAMES = {
-  strength: 'STR',
-  dexterity: 'DEX',
-  constitution: 'CON',
-  intelligence: 'INT',
-  wisdom: 'WIS',
-  charisma: 'CHA'
-};
+const ABILITY_SHORT = { strength: 'STR', dexterity: 'DEX', constitution: 'CON', intelligence: 'INT', wisdom: 'WIS', charisma: 'CHA' };
 
 export default function CharacterSheetFull() {
   const { characterId } = useParams();
@@ -57,26 +52,19 @@ export default function CharacterSheetFull() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('combat');
   const [currentHp, setCurrentHp] = useState(0);
-  const [tempHp, setTempHp] = useState(0);
   const [deathSaves, setDeathSaves] = useState({ successes: 0, failures: 0 });
 
   useEffect(() => {
-    if (characterId) {
-      fetchCharacter();
-    }
+    if (characterId) fetchCharacter();
   }, [characterId]);
 
   const fetchCharacter = async () => {
     try {
       setLoading(true);
-      setError(null);
       const response = await axios.get(`${API}/characters/${characterId}`);
-      const charData = response.data;
-      setCharacter(charData);
-      setCurrentHp(charData.hp || charData.max_hp || 10);
-      setTempHp(charData.temp_hp || 0);
+      setCharacter(response.data);
+      setCurrentHp(response.data.hp || response.data.max_hp || 10);
     } catch (err) {
-      console.error('Failed to fetch character:', err);
       setError('Failed to load character');
       toast.error('Failed to load character');
     } finally {
@@ -84,7 +72,6 @@ export default function CharacterSheetFull() {
     }
   };
 
-  // Calculate derived stats
   const abilities = useMemo(() => {
     if (!character) return {};
     return {
@@ -97,57 +84,55 @@ export default function CharacterSheetFull() {
     };
   }, [character]);
 
-  const proficiencyBonus = useMemo(() => {
-    if (!character) return 2;
-    const level = character.level || 1;
-    return Math.ceil(level / 4) + 1;
-  }, [character]);
-
-  const maxHp = useMemo(() => {
-    if (!character) return 10;
-    return character.max_hp || (8 + getModifier(abilities.constitution));
-  }, [character, abilities]);
-
-  const armorClass = useMemo(() => {
-    if (!character) return 10;
-    return character.ac || (10 + getModifier(abilities.dexterity));
-  }, [character, abilities]);
-
-  const initiative = useMemo(() => {
-    return getModifier(abilities.dexterity);
-  }, [abilities]);
-
-  const speed = useMemo(() => {
-    return character?.speed || 30;
-  }, [character]);
+  const profBonus = useMemo(() => Math.ceil((character?.level || 1) / 4) + 1, [character]);
+  const maxHp = character?.max_hp || (8 + getModifier(abilities.constitution));
+  const ac = character?.ac || (10 + getModifier(abilities.dexterity));
+  const initiative = getModifier(abilities.dexterity);
+  const speed = character?.speed || 30;
 
   const handleHpChange = async (delta) => {
     const newHp = Math.max(0, Math.min(maxHp, currentHp + delta));
     setCurrentHp(newHp);
-    
     try {
       await axios.patch(`${API}/characters/${characterId}`, { hp: newHp });
     } catch (err) {
-      console.error('Failed to update HP:', err);
+      console.error('Failed to update HP');
     }
   };
 
-  const handleDeathSave = (type, success) => {
-    setDeathSaves(prev => ({
-      ...prev,
-      [type]: Math.min(3, prev[type] + (success ? 1 : 0))
-    }));
+  // Styles
+  const pageStyle = { minHeight: '100vh', background: theme.bg.primary, padding: '24px' };
+  const panelStyle = {
+    background: 'rgba(26, 17, 46, 0.8)',
+    backdropFilter: 'blur(16px)',
+    border: `1px solid ${theme.border}`,
+    borderRadius: '16px',
+    padding: '20px'
   };
-
-  const resetDeathSaves = () => {
-    setDeathSaves({ successes: 0, failures: 0 });
+  const statBoxStyle = {
+    background: 'rgba(15, 10, 30, 0.6)',
+    border: `1px solid ${theme.border}`,
+    borderRadius: '12px',
+    padding: '16px',
+    textAlign: 'center'
   };
+  const tabStyle = (active) => ({
+    padding: '12px 24px',
+    background: active ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' : 'transparent',
+    border: active ? 'none' : `1px solid ${theme.border}`,
+    borderRadius: '10px',
+    color: theme.text.primary,
+    fontSize: '14px',
+    fontWeight: active ? '600' : '400',
+    cursor: 'pointer',
+    transition: 'all 0.2s'
+  });
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", background: "var(--rq-bg-main)", padding: "20px" }}>
-        <div className="rq-panel" style={{ textAlign: "center", padding: "40px" }}>
-          <div className="rq-muted">Loading character...</div>
+      <div style={pageStyle}>
+        <div style={{ ...panelStyle, textAlign: 'center', padding: '60px' }}>
+          <div style={{ color: theme.text.muted }}>Loading character...</div>
         </div>
       </div>
     );
@@ -155,12 +140,12 @@ export default function CharacterSheetFull() {
 
   if (error || !character) {
     return (
-      <div style={{ minHeight: "100vh", background: "var(--rq-bg-main)", padding: "20px" }}>
-        <div className="rq-panel" style={{ textAlign: "center", padding: "40px" }}>
-          <h2 className="rq-title">Character Not Found</h2>
-          <p className="rq-muted">{error || "The character you're looking for doesn't exist."}</p>
-          <button className="rq-button-secondary" onClick={() => navigate('/home')}>
-            Back to Home
+      <div style={pageStyle}>
+        <div style={{ ...panelStyle, textAlign: 'center', padding: '60px' }}>
+          <h2 style={{ fontFamily: "'Cinzel', serif", color: theme.text.primary, marginBottom: '16px' }}>Character Not Found</h2>
+          <p style={{ color: theme.text.muted, marginBottom: '24px' }}>{error}</p>
+          <button onClick={() => navigate('/home')} style={{ padding: '12px 24px', background: 'linear-gradient(135deg, #8B5CF6, #EC4899)', border: 'none', borderRadius: '10px', color: 'white', cursor: 'pointer' }}>
+            Back to Dashboard
           </button>
         </div>
       </div>
@@ -168,108 +153,70 @@ export default function CharacterSheetFull() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--rq-bg-main)", padding: "20px" }}>
-      <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+    <div style={pageStyle}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            {character.portrait_url && (
-              <img
-                src={character.portrait_url}
-                alt="portrait"
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  objectFit: "cover",
-                  borderRadius: "12px",
-                  border: "2px solid var(--rq-gold)"
-                }}
-              />
-            )}
-            <div>
-              <h1 className="rq-title" style={{ margin: 0 }}>{character.name}</h1>
-              <div className="rq-muted">
-                {character.race} {character.character_class} • Level {character.level || 1}
-              </div>
-              {character.background && (
-                <div className="rq-muted" style={{ fontSize: "14px" }}>
-                  {character.background}
-                </div>
-              )}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+          <button onClick={() => navigate('/home')} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: theme.text.secondary, cursor: 'pointer' }}>
+            <ChevronLeft size={20} /> Back to Dashboard
+          </button>
+          <button onClick={() => navigate(`/characters/${characterId}/edit`)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: 'rgba(139, 92, 246, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.primary, cursor: 'pointer' }}>
+            <Edit3 size={16} /> Edit Character
+          </button>
+        </div>
+
+        {/* Character Header Card */}
+        <div style={{ ...panelStyle, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+          {character.portrait_url && (
+            <img src={character.portrait_url} alt="portrait" style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '16px', border: `2px solid ${theme.sunset.gold}` }} />
+          )}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: '2rem', background: 'linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '4px' }}>
+              {character.name}
+            </h1>
+            <div style={{ color: theme.text.secondary, fontSize: '16px' }}>
+              {character.race} {character.character_class} • Level {character.level || 1}
             </div>
-          </div>
-          <div style={{ display: "flex", gap: "10px" }}>
-            <button className="rq-button-secondary" onClick={() => navigate('/home')}>
-              Back to Home
-            </button>
-            <button className="rq-button-secondary" onClick={() => navigate('/player')}>
-              My Characters
-            </button>
+            {character.background && <div style={{ color: theme.text.muted, fontSize: '14px', marginTop: '4px' }}>{character.background}</div>}
           </div>
         </div>
 
-        {/* Main Content */}
-        <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "20px" }}>
-          {/* Left Sidebar - Abilities & Skills */}
-          <div style={{ display: "grid", gap: "16px" }}>
+        {/* Main Layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '24px' }}>
+          {/* Left Sidebar */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {/* Ability Scores */}
-            <div className="rq-card">
-              <h3 style={{ marginBottom: "12px" }}>Ability Scores</h3>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
+            <div style={panelStyle}>
+              <h3 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.purple, marginBottom: '16px', fontSize: '1rem' }}>Ability Scores</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {Object.entries(abilities).map(([ability, score]) => (
-                  <div
-                    key={ability}
-                    style={{
-                      textAlign: "center",
-                      padding: "10px",
-                      background: "var(--rq-bg-panel-soft)",
-                      borderRadius: "8px"
-                    }}
-                  >
-                    <div className="rq-muted" style={{ fontSize: "12px" }}>
-                      {ABILITY_NAMES[ability]}
-                    </div>
-                    <div style={{ fontSize: "24px", fontWeight: "bold" }}>{score}</div>
-                    <div style={{ fontSize: "14px", color: "var(--rq-gold)" }}>
-                      {formatModifier(getModifier(score))}
-                    </div>
+                  <div key={ability} style={statBoxStyle}>
+                    <div style={{ fontSize: '11px', color: theme.text.muted, letterSpacing: '1px', marginBottom: '4px' }}>{ABILITY_SHORT[ability]}</div>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: theme.text.primary }}>{score}</div>
+                    <div style={{ fontSize: '14px', color: theme.sunset.gold, fontWeight: '600' }}>{formatModifier(getModifier(score))}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Proficiency Bonus */}
-            <div className="rq-card" style={{ textAlign: "center" }}>
-              <div className="rq-muted">Proficiency Bonus</div>
-              <div style={{ fontSize: "28px", fontWeight: "bold", color: "var(--rq-gold)" }}>
-                +{proficiencyBonus}
-              </div>
+            {/* Proficiency */}
+            <div style={{ ...panelStyle, textAlign: 'center' }}>
+              <div style={{ color: theme.text.muted, fontSize: '12px', marginBottom: '4px' }}>Proficiency Bonus</div>
+              <div style={{ fontSize: '32px', fontWeight: 'bold', color: theme.sunset.pink }}>+{profBonus}</div>
             </div>
 
             {/* Skills */}
-            <div className="rq-card">
-              <h3 style={{ marginBottom: "12px" }}>Skills</h3>
-              <div style={{ display: "grid", gap: "6px", fontSize: "13px" }}>
+            <div style={panelStyle}>
+              <h3 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.purple, marginBottom: '16px', fontSize: '1rem' }}>Skills</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px' }}>
                 {SKILLS.map(skill => {
-                  const abilityMod = getModifier(abilities[skill.ability]);
+                  const mod = getModifier(abilities[skill.ability]);
                   const isProficient = character.skill_proficiencies?.includes(skill.name);
-                  const bonus = abilityMod + (isProficient ? proficiencyBonus : 0);
-                  
+                  const bonus = mod + (isProficient ? profBonus : 0);
                   return (
-                    <div
-                      key={skill.name}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        padding: "4px 8px",
-                        background: isProficient ? "rgba(255, 215, 0, 0.1)" : "transparent",
-                        borderRadius: "4px"
-                      }}
-                    >
-                      <span style={{ color: isProficient ? "var(--rq-gold)" : "inherit" }}>
-                        {isProficient && "● "}{skill.name}
-                      </span>
-                      <span style={{ fontWeight: "bold" }}>{formatModifier(bonus)}</span>
+                    <div key={skill.name} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 10px', background: isProficient ? 'rgba(245, 158, 11, 0.1)' : 'transparent', borderRadius: '6px' }}>
+                      <span style={{ color: isProficient ? theme.sunset.gold : theme.text.secondary }}>{isProficient && '● '}{skill.name}</span>
+                      <span style={{ fontWeight: '600', color: theme.text.primary }}>{formatModifier(bonus)}</span>
                     </div>
                   );
                 })}
@@ -277,109 +224,71 @@ export default function CharacterSheetFull() {
             </div>
           </div>
 
-          {/* Right Content Area */}
-          <div style={{ display: "grid", gap: "16px" }}>
+          {/* Right Content */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {/* Combat Stats Row */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
               {/* HP */}
-              <div className="rq-card" style={{ textAlign: "center" }}>
-                <div className="rq-muted" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+              <div style={panelStyle}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: theme.text.muted, fontSize: '12px', marginBottom: '8px' }}>
                   <Heart size={16} /> Hit Points
                 </div>
-                <div style={{ fontSize: "28px", fontWeight: "bold", margin: "8px 0" }}>
-                  <span style={{ color: currentHp < maxHp / 2 ? "#ef4444" : "inherit" }}>
-                    {currentHp}
-                  </span>
-                  <span className="rq-muted"> / {maxHp}</span>
+                <div style={{ textAlign: 'center', fontSize: '28px', fontWeight: 'bold', marginBottom: '12px' }}>
+                  <span style={{ color: currentHp < maxHp / 2 ? '#EF4444' : theme.text.primary }}>{currentHp}</span>
+                  <span style={{ color: theme.text.muted }}> / {maxHp}</span>
                 </div>
-                <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
-                  <button className="rq-button-secondary" style={{ padding: "4px 12px" }} onClick={() => handleHpChange(-1)}>
-                    <Minus size={16} />
-                  </button>
-                  <button className="rq-button-secondary" style={{ padding: "4px 12px" }} onClick={() => handleHpChange(1)}>
-                    <Plus size={16} />
-                  </button>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                  <button onClick={() => handleHpChange(-1)} style={{ padding: '8px 16px', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', color: '#EF4444', cursor: 'pointer' }}><Minus size={16} /></button>
+                  <button onClick={() => handleHpChange(1)} style={{ padding: '8px 16px', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px', color: '#10B981', cursor: 'pointer' }}><Plus size={16} /></button>
                 </div>
               </div>
 
               {/* AC */}
-              <div className="rq-card" style={{ textAlign: "center" }}>
-                <div className="rq-muted" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+              <div style={{ ...panelStyle, textAlign: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: theme.text.muted, fontSize: '12px', marginBottom: '8px' }}>
                   <Shield size={16} /> Armor Class
                 </div>
-                <div style={{ fontSize: "32px", fontWeight: "bold", margin: "8px 0" }}>
-                  {armorClass}
-                </div>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', color: theme.sunset.purple }}>{ac}</div>
               </div>
 
               {/* Initiative */}
-              <div className="rq-card" style={{ textAlign: "center" }}>
-                <div className="rq-muted" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+              <div style={{ ...panelStyle, textAlign: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: theme.text.muted, fontSize: '12px', marginBottom: '8px' }}>
                   <Zap size={16} /> Initiative
                 </div>
-                <div style={{ fontSize: "32px", fontWeight: "bold", margin: "8px 0" }}>
-                  {formatModifier(initiative)}
-                </div>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', color: theme.sunset.pink }}>{formatModifier(initiative)}</div>
               </div>
 
               {/* Speed */}
-              <div className="rq-card" style={{ textAlign: "center" }}>
-                <div className="rq-muted" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+              <div style={{ ...panelStyle, textAlign: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: theme.text.muted, fontSize: '12px', marginBottom: '8px' }}>
                   <Wind size={16} /> Speed
                 </div>
-                <div style={{ fontSize: "32px", fontWeight: "bold", margin: "8px 0" }}>
-                  {speed} ft
-                </div>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', color: theme.sunset.gold }}>{speed} ft</div>
               </div>
             </div>
 
             {/* Death Saves */}
             {currentHp === 0 && (
-              <div className="rq-card">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                  <h3 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Skull size={20} /> Death Saves
-                  </h3>
-                  <button className="rq-button-secondary" style={{ padding: "4px 12px" }} onClick={resetDeathSaves}>
-                    Reset
-                  </button>
+              <div style={panelStyle}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#EF4444', fontFamily: "'Cinzel', serif" }}><Skull size={20} /> Death Saves</h3>
+                  <button onClick={() => setDeathSaves({ successes: 0, failures: 0 })} style={{ padding: '6px 12px', background: 'rgba(139, 92, 246, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '8px', color: theme.text.primary, cursor: 'pointer', fontSize: '13px' }}>Reset</button>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                   <div>
-                    <div className="rq-muted" style={{ marginBottom: "8px" }}>Successes</div>
-                    <div style={{ display: "flex", gap: "8px" }}>
+                    <div style={{ color: theme.text.muted, marginBottom: '8px', fontSize: '13px' }}>Successes</div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
                       {[0, 1, 2].map(i => (
-                        <button
-                          key={i}
-                          onClick={() => handleDeathSave('successes', deathSaves.successes <= i)}
-                          style={{
-                            width: "32px",
-                            height: "32px",
-                            borderRadius: "50%",
-                            border: "2px solid var(--rq-gold)",
-                            background: deathSaves.successes > i ? "var(--rq-gold)" : "transparent",
-                            cursor: "pointer"
-                          }}
-                        />
+                        <button key={i} onClick={() => setDeathSaves(p => ({ ...p, successes: p.successes <= i ? i + 1 : i }))} style={{ width: '32px', height: '32px', borderRadius: '50%', border: `2px solid ${theme.sunset.gold}`, background: deathSaves.successes > i ? theme.sunset.gold : 'transparent', cursor: 'pointer' }} />
                       ))}
                     </div>
                   </div>
                   <div>
-                    <div className="rq-muted" style={{ marginBottom: "8px" }}>Failures</div>
-                    <div style={{ display: "flex", gap: "8px" }}>
+                    <div style={{ color: theme.text.muted, marginBottom: '8px', fontSize: '13px' }}>Failures</div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
                       {[0, 1, 2].map(i => (
-                        <button
-                          key={i}
-                          onClick={() => handleDeathSave('failures', deathSaves.failures <= i)}
-                          style={{
-                            width: "32px",
-                            height: "32px",
-                            borderRadius: "50%",
-                            border: "2px solid #ef4444",
-                            background: deathSaves.failures > i ? "#ef4444" : "transparent",
-                            cursor: "pointer"
-                          }}
-                        />
+                        <button key={i} onClick={() => setDeathSaves(p => ({ ...p, failures: p.failures <= i ? i + 1 : i }))} style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #EF4444', background: deathSaves.failures > i ? '#EF4444' : 'transparent', cursor: 'pointer' }} />
                       ))}
                     </div>
                   </div>
@@ -388,39 +297,31 @@ export default function CharacterSheetFull() {
             )}
 
             {/* Tabs */}
-            <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "8px" }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {['combat', 'spells', 'inventory', 'notes'].map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={activeTab === tab ? "rq-button-primary" : "rq-button-secondary"}
-                  style={{ textTransform: "capitalize" }}
-                >
-                  {tab}
+                <button key={tab} onClick={() => setActiveTab(tab)} style={tabStyle(activeTab === tab)}>
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
               ))}
             </div>
 
             {/* Tab Content */}
-            <div className="rq-card">
+            <div style={panelStyle}>
               {activeTab === 'combat' && (
                 <div>
-                  <h3 style={{ marginBottom: "16px" }}>Combat Actions</h3>
-                  <div style={{ display: "grid", gap: "12px" }}>
-                    <div className="rq-card" style={{ background: "var(--rq-bg-panel-soft)" }}>
-                      <div style={{ fontWeight: "bold" }}>Unarmed Strike</div>
-                      <div className="rq-muted">
-                        +{proficiencyBonus + getModifier(abilities.strength)} to hit • 
-                        1 + {getModifier(abilities.strength)} bludgeoning damage
+                  <h3 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.pink, marginBottom: '16px' }}>Combat Actions</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ ...statBoxStyle, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontWeight: '600', color: theme.text.primary }}>Unarmed Strike</div>
+                        <div style={{ color: theme.text.muted, fontSize: '13px' }}>+{profBonus + getModifier(abilities.strength)} to hit • 1 + {getModifier(abilities.strength)} bludgeoning</div>
                       </div>
+                      <Swords size={20} style={{ color: theme.sunset.purple }} />
                     </div>
                     {character.weapons?.map((weapon, i) => (
-                      <div key={i} className="rq-card" style={{ background: "var(--rq-bg-panel-soft)" }}>
-                        <div style={{ fontWeight: "bold" }}>{weapon.name}</div>
-                        <div className="rq-muted">
-                          {weapon.attack_bonus && `+${weapon.attack_bonus} to hit`}
-                          {weapon.damage && ` • ${weapon.damage}`}
-                        </div>
+                      <div key={i} style={{ ...statBoxStyle, textAlign: 'left' }}>
+                        <div style={{ fontWeight: '600', color: theme.text.primary }}>{weapon.name}</div>
+                        <div style={{ color: theme.text.muted, fontSize: '13px' }}>{weapon.attack_bonus && `+${weapon.attack_bonus} to hit`} {weapon.damage && `• ${weapon.damage}`}</div>
                       </div>
                     ))}
                   </div>
@@ -429,45 +330,45 @@ export default function CharacterSheetFull() {
 
               {activeTab === 'spells' && (
                 <div>
-                  <h3 style={{ marginBottom: "16px" }}>Spellcasting</h3>
-                  {character.spells && character.spells.length > 0 ? (
-                    <div style={{ display: "grid", gap: "8px" }}>
+                  <h3 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.purple, marginBottom: '16px' }}>Spellcasting</h3>
+                  {character.spells?.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {character.spells.map((spell, i) => (
-                        <div key={i} className="rq-card" style={{ background: "var(--rq-bg-panel-soft)" }}>
-                          <div style={{ fontWeight: "bold" }}>{spell.name}</div>
-                          <div className="rq-muted">{spell.level ? `Level ${spell.level}` : 'Cantrip'} • {spell.school}</div>
+                        <div key={i} style={{ ...statBoxStyle, textAlign: 'left' }}>
+                          <div style={{ fontWeight: '600', color: theme.text.primary }}>{spell.name}</div>
+                          <div style={{ color: theme.text.muted, fontSize: '13px' }}>{spell.level ? `Level ${spell.level}` : 'Cantrip'} • {spell.school}</div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="rq-muted">No spells known.</div>
+                    <div style={{ color: theme.text.muted, textAlign: 'center', padding: '40px' }}>No spells known</div>
                   )}
                 </div>
               )}
 
               {activeTab === 'inventory' && (
                 <div>
-                  <h3 style={{ marginBottom: "16px" }}>Inventory</h3>
-                  {character.equipment && character.equipment.length > 0 ? (
-                    <div style={{ display: "grid", gap: "8px" }}>
+                  <h3 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.gold, marginBottom: '16px' }}>Inventory</h3>
+                  {character.equipment?.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {character.equipment.map((item, i) => (
-                        <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px", background: "var(--rq-bg-panel-soft)", borderRadius: "6px" }}>
-                          <span>{item.name || item}</span>
-                          {item.quantity && <span className="rq-muted">x{item.quantity}</span>}
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'rgba(15, 10, 30, 0.5)', borderRadius: '8px' }}>
+                          <span style={{ color: theme.text.primary }}>{item.name || item}</span>
+                          {item.quantity && <span style={{ color: theme.text.muted }}>x{item.quantity}</span>}
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="rq-muted">No items in inventory.</div>
+                    <div style={{ color: theme.text.muted, textAlign: 'center', padding: '40px' }}>No items</div>
                   )}
                 </div>
               )}
 
               {activeTab === 'notes' && (
                 <div>
-                  <h3 style={{ marginBottom: "16px" }}>Character Notes</h3>
-                  <div style={{ whiteSpace: "pre-wrap" }}>
-                    {character.notes || "No notes yet."}
+                  <h3 style={{ fontFamily: "'Cinzel', serif", color: theme.text.primary, marginBottom: '16px' }}>Character Notes</h3>
+                  <div style={{ whiteSpace: 'pre-wrap', color: theme.text.secondary, lineHeight: '1.7' }}>
+                    {character.notes || 'No notes yet.'}
                   </div>
                 </div>
               )}
