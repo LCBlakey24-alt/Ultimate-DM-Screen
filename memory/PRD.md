@@ -33,11 +33,7 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] Clickable dice rolls with toast notifications
 - [x] Spells, Inventory, Notes tabs
 - [x] Improved text readability (larger font sizes)
-- [x] **NEW: Level Up Wizard** - Multi-step guided level up with:
-  - HP method selection (average vs roll)
-  - Interactive dice rolling
-  - ASI/Feat selection at appropriate levels
-  - Full 5e feat list with descriptions
+- [x] **Level Up Wizard** - Multi-step guided level up with HP/ASI/Feat
 
 ### Campaign Management
 - [x] Campaign CRUD operations
@@ -57,6 +53,21 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] Party Overview
 - [x] Session Notes
 
+### Combat System
+- [x] **Combat Page with Fantasy Sunset theme**
+- [x] Initiative tracker with turn order
+- [x] HP tracking with +/- buttons
+- [x] Death saves with visual indicators
+- [x] Conditions management
+- [x] Battle map with tokens
+
+### Spell System
+- [x] **Comprehensive spell database** (`/app/frontend/src/data/spellDatabase.js`)
+  - Cantrips through 5th level spells
+  - All spellcasting classes covered
+  - Spell slots and pact magic tables
+  - Helper functions for class spell lists
+
 ### Integrations
 - [x] Stripe (subscription tiers on landing page)
 - [x] Resend (email)
@@ -64,46 +75,40 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 - [x] PyMuPDF (PDF extraction)
 
 ## Removed/Deprecated Components
-- PlayerDashboard.js (functionality moved to UnifiedDashboard)
-- CampaignList.js (functionality moved to UnifiedDashboard)
-- CharacterSheet.js (replaced by CharacterSheetFull)
-- FloatingDiceRoller.js (removed per user request)
-- LevelUpModal.js (replaced by LevelUpWizard)
+- PlayerDashboard.js → UnifiedDashboard
+- CampaignList.js → UnifiedDashboard
+- CharacterSheet.js → CharacterSheetFull
+- FloatingDiceRoller.js (removed)
+- LevelUpModal.js → LevelUpWizard
 
 ## Known Issues
-- **Production Deployment Risk** - Previous "blank screen" issue after deployment; root cause unknown
-- **Password Reset URL** - Fix pending user verification on production
-- **Admin Account on Production** - May not work due to database differences
+- **Production Deployment Risk** - Previous "blank screen" issue; root cause unknown
 
 ## Upcoming Tasks (P1)
-1. Test Stripe checkout flow
-2. Combat Tracker Enhancements - Initiative roller, HP tracking, turn order display
+1. Integrate spell database into character sheet spells tab
+2. Add spell slot tracking to character sheet
+3. Test Stripe checkout flow
 
 ## Future Tasks (P2+)
 - Real-time Campaign Sync (WebSockets)
 - Backend refactoring (split server.py into modular routers)
 - Quick Start Tutorial for GMs
-- AI-powered travel time estimation
-- Session Notes/Journal feature
-- "Fog of war" map view for players
-- Shareable World Codex
 
 ## Technical Architecture
 ```
 /app
 ├── backend/
-│   └── server.py (monolithic - needs refactoring)
+│   └── server.py (monolithic)
 └── frontend/
     ├── src/
     │   ├── components/
-    │   │   ├── AuthPage.js
-    │   │   ├── CharacterBuilder.js
     │   │   ├── CharacterSheetFull.js
+    │   │   ├── CombatPage.js (Fantasy Sunset themed)
     │   │   ├── GMScreen.js
-    │   │   ├── LandingPage.js
-    │   │   ├── LevelUpWizard.js  # NEW
+    │   │   ├── LevelUpWizard.js
     │   │   └── UnifiedDashboard.js
-    │   └── index.css (global styles)
+    │   └── data/
+    │       └── spellDatabase.js (NEW - comprehensive spell data)
 ```
 
 ## Test Credentials (Preview Environment Only)

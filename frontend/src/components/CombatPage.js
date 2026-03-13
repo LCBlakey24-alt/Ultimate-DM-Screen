@@ -487,67 +487,80 @@ function CombatPage() {
 
   if (!scenarioData) return null;
 
+  // Fantasy Sunset theme
+  const theme = {
+    bg: { primary: '#0F0A1E', surface: '#1A112E', panel: 'rgba(26, 17, 46, 0.95)' },
+    text: { primary: '#F8FAFC', secondary: '#94A3B8', muted: '#64748B' },
+    border: 'rgba(139, 92, 246, 0.3)',
+    sunset: { purple: '#8B5CF6', pink: '#EC4899', gold: '#F59E0B' },
+    gradient: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)'
+  };
+
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: 'linear-gradient(180deg, #030014 0%, #0a0a2e 100%)',
+      background: `linear-gradient(180deg, rgba(15, 10, 30, 0.95) 0%, rgba(15, 10, 30, 0.98) 100%), url('https://static.prod-images.emergentagent.com/jobs/b9fc55bd-0a80-4d15-9934-a7087e3445c8/images/9be68b2095230a13a9d52ed25ea5ba93da54c6f47b915d5cd89f4c7b8992a6d3.png')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
       display: 'flex',
       flexDirection: 'column'
     }}>
       {/* Header */}
       <div style={{
-        background: 'rgba(10, 10, 46, 0.95)',
-        borderBottom: '2px solid #1e40af',
+        background: theme.bg.panel,
+        backdropFilter: 'blur(16px)',
+        borderBottom: `1px solid ${theme.border}`,
         padding: '12px 24px',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        boxShadow: '0 0 30px rgba(74, 125, 255, 0.2)'
+        alignItems: 'center'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Button onClick={endCombat} className="btn-icon"><ArrowLeft size={20} /></Button>
+          <Button onClick={endCombat} style={{ background: 'rgba(139, 92, 246, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '8px 12px' }}><ArrowLeft size={20} /></Button>
           <div>
-            <h1 style={{ fontSize: '20px', color: '#fff', fontFamily: 'Montserrat', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Sword size={22} style={{ color: '#ef4444' }} />
+            <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Sword size={22} style={{ color: '#EF4444' }} />
               {scenarioData.name}
             </h1>
-            <p style={{ fontSize: '12px', color: '#67e8f9' }}>{campaignName}</p>
+            <p style={{ fontSize: '13px', color: theme.sunset.gold }}>{campaignName}</p>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ 
-            background: 'rgba(239, 68, 68, 0.2)', 
-            border: '2px solid #ef4444', 
+            background: 'rgba(239, 68, 68, 0.15)', 
+            border: '2px solid #EF4444', 
             borderRadius: '25px', 
-            padding: '8px 20px',
-            color: '#ef4444',
-            fontWeight: '800',
-            fontSize: '16px',
-            fontFamily: 'Montserrat'
+            padding: '10px 24px',
+            color: '#EF4444',
+            fontWeight: '700',
+            fontSize: '18px',
+            fontFamily: "'Cinzel', serif"
           }}>
             Round {round}
           </div>
-          <Button onClick={nextTurn} className="btn-primary" style={{ display: 'flex', gap: '8px', padding: '12px 24px' }}>
+          <Button onClick={nextTurn} style={{ display: 'flex', gap: '8px', padding: '12px 24px', background: theme.gradient, border: 'none', borderRadius: '10px', color: '#fff', fontWeight: '600' }}>
             <SkipForward size={18} /> Next Turn
           </Button>
-          <Button onClick={endCombat} className="btn-secondary" style={{ display: 'flex', gap: '8px' }}>
+          <Button onClick={endCombat} style={{ display: 'flex', gap: '8px', padding: '12px 20px', background: 'transparent', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary }}>
             <X size={18} /> End Combat
           </Button>
         </div>
       </div>
 
       {/* Main Content - Initiative Left, Map Right */}
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '400px 1fr', gap: '0' }}>
+      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '420px 1fr', gap: '0' }}>
         {/* LEFT - Initiative Order */}
         <div style={{ 
-          background: 'rgba(10, 10, 46, 0.7)',
-          borderRight: '2px solid #1e40af',
+          background: theme.bg.panel,
+          backdropFilter: 'blur(16px)',
+          borderRight: `1px solid ${theme.border}`,
           padding: '20px',
           overflowY: 'auto',
           maxHeight: 'calc(100vh - 70px)'
         }}>
-          <h2 style={{ fontSize: '18px', color: '#fff', fontFamily: 'Montserrat', fontWeight: '400', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Users size={20} style={{ color: '#4a7dff' }} />
+          <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '18px', color: theme.text.primary, fontWeight: '600', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Users size={20} style={{ color: theme.sunset.purple }} />
             Initiative Order
           </h2>
           
@@ -563,45 +576,45 @@ function CombatPage() {
                 <div
                   key={c.id}
                   style={{
-                    background: isCurrent ? 'rgba(34, 197, 94, 0.15)' : isDead ? 'rgba(30,30,30,0.5)' : isDown ? 'rgba(239, 68, 68, 0.1)' : 'rgba(10, 10, 40, 0.5)',
-                    border: `2px solid ${isCurrent ? '#22c55e' : isDead ? '#64748b' : isDown ? '#ef4444' : c.type === 'player' ? '#4a7dff' : '#ef4444'}`,
+                    background: isCurrent ? 'rgba(16, 185, 129, 0.15)' : isDead ? 'rgba(30,30,30,0.5)' : isDown ? 'rgba(239, 68, 68, 0.1)' : 'rgba(15, 10, 30, 0.6)',
+                    border: `2px solid ${isCurrent ? '#10B981' : isDead ? '#64748b' : isDown ? '#ef4444' : c.type === 'player' ? theme.sunset.purple : '#ef4444'}`,
                     borderRadius: '14px',
                     padding: '14px',
                     opacity: isDead ? 0.5 : 1,
-                    boxShadow: isCurrent ? '0 0 20px rgba(34, 197, 94, 0.4)' : 'none',
+                    boxShadow: isCurrent ? '0 0 20px rgba(16, 185, 129, 0.4)' : 'none',
                     transition: 'all 0.3s'
                   }}
                 >
                   {/* Header */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
                     <div style={{
-                      width: '40px', height: '40px', borderRadius: '50%',
-                      background: isCurrent ? '#22c55e' : c.type === 'player' ? '#4a7dff' : '#ef4444',
+                      width: '44px', height: '44px', borderRadius: '50%',
+                      background: isCurrent ? '#10B981' : c.type === 'player' ? theme.sunset.purple : '#ef4444',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontWeight: '800', fontSize: '16px', color: '#fff', fontFamily: 'Montserrat',
-                      boxShadow: isCurrent ? '0 0 15px rgba(34, 197, 94, 0.6)' : 'none'
+                      fontWeight: '700', fontSize: '18px', color: '#fff', fontFamily: "'Cinzel', serif",
+                      boxShadow: isCurrent ? '0 0 15px rgba(16, 185, 129, 0.6)' : 'none'
                     }}>
                       {c.initiative}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '16px', fontWeight: '400', color: isDead ? '#64748b' : '#fff', fontFamily: 'Montserrat', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ fontSize: '16px', fontWeight: '600', color: isDead ? '#64748b' : theme.text.primary, fontFamily: "'Cinzel', serif", display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {c.name}
                         {isDead && <Skull size={14} />}
-                        {isCurrent && !isDown && <span style={{ fontSize: '11px', color: '#22c55e', background: 'rgba(34,197,94,0.2)', padding: '2px 8px', borderRadius: '10px' }}>TURN</span>}
-                        {isDown && !isDead && !isStable && <span style={{ fontSize: '11px', color: '#ef4444', background: 'rgba(239,68,68,0.2)', padding: '2px 8px', borderRadius: '10px' }}>DYING</span>}
-                        {isStable && <span style={{ fontSize: '11px', color: '#eab308', background: 'rgba(234,179,8,0.2)', padding: '2px 8px', borderRadius: '10px' }}>STABLE</span>}
+                        {isCurrent && !isDown && <span style={{ fontSize: '11px', color: '#10B981', background: 'rgba(16,185,129,0.2)', padding: '3px 10px', borderRadius: '10px', fontWeight: '600' }}>TURN</span>}
+                        {isDown && !isDead && !isStable && <span style={{ fontSize: '11px', color: '#ef4444', background: 'rgba(239,68,68,0.2)', padding: '3px 10px', borderRadius: '10px', fontWeight: '600' }}>DYING</span>}
+                        {isStable && <span style={{ fontSize: '11px', color: '#eab308', background: 'rgba(234,179,8,0.2)', padding: '3px 10px', borderRadius: '10px', fontWeight: '600' }}>STABLE</span>}
                       </div>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>
+                      <div style={{ fontSize: '12px', color: theme.text.muted }}>
                         {c.type === 'player' ? 'Player' : 'Enemy'} • Rolled: {c.initiativeRoll}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(10,10,40,0.6)', padding: '6px 10px', borderRadius: '8px', border: '1px solid #1e40af' }}>
-                      <Shield size={14} style={{ color: '#67e8f9' }} />
-                      <span style={{ fontWeight: '400', fontSize: '14px', color: '#fff' }}>{c.ac}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(139, 92, 246, 0.1)', padding: '6px 12px', borderRadius: '8px', border: `1px solid ${theme.border}` }}>
+                      <Shield size={14} style={{ color: theme.sunset.gold }} />
+                      <span style={{ fontWeight: '600', fontSize: '15px', color: theme.text.primary }}>{c.ac}</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <button onClick={() => moveInOrder(c.id, 'up')} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', padding: '2px' }}><ChevronUp size={16} /></button>
-                      <button onClick={() => moveInOrder(c.id, 'down')} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', padding: '2px' }}><ChevronDown size={16} /></button>
+                      <button onClick={() => moveInOrder(c.id, 'up')} style={{ background: 'transparent', border: 'none', color: theme.text.muted, cursor: 'pointer', padding: '2px' }}><ChevronUp size={16} /></button>
+                      <button onClick={() => moveInOrder(c.id, 'down')} style={{ background: 'transparent', border: 'none', color: theme.text.muted, cursor: 'pointer', padding: '2px' }}><ChevronDown size={16} /></button>
                     </div>
                     <button onClick={() => removeCombatant(c.id)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}><Trash2 size={16} /></button>
                   </div>
@@ -610,8 +623,8 @@ function CombatPage() {
                   <div style={{ marginBottom: isDown && !isDead ? '12px' : '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Heart size={14} style={{ color: hpPct > 50 ? '#22c55e' : hpPct > 25 ? '#eab308' : '#ef4444' }} />
-                        <span style={{ fontSize: '14px', color: '#fff', fontWeight: '400' }}>{c.hp} / {c.maxHp}</span>
+                        <Heart size={14} style={{ color: hpPct > 50 ? '#10B981' : hpPct > 25 ? '#eab308' : '#ef4444' }} />
+                        <span style={{ fontSize: '15px', color: theme.text.primary, fontWeight: '600' }}>{c.hp} / {c.maxHp}</span>
                       </div>
                       <div style={{ display: 'flex', gap: '4px' }}>
                         {[-10, -5, -1, 1, 5, 10].map(n => (
@@ -619,13 +632,13 @@ function CombatPage() {
                             key={n}
                             onClick={() => updateHP(c.id, n)}
                             style={{
-                              background: n < 0 ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)',
-                              border: `1px solid ${n < 0 ? '#ef4444' : '#22c55e'}`,
+                              background: n < 0 ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)',
+                              border: `1px solid ${n < 0 ? '#ef4444' : '#10B981'}`,
                               borderRadius: '6px',
-                              color: n < 0 ? '#ef4444' : '#22c55e',
-                              padding: '3px 7px',
-                              fontSize: '12px',
-                              fontWeight: '400',
+                              color: n < 0 ? '#ef4444' : '#10B981',
+                              padding: '4px 8px',
+                              fontSize: '13px',
+                              fontWeight: '600',
                               cursor: 'pointer'
                             }}
                           >
@@ -634,8 +647,8 @@ function CombatPage() {
                         ))}
                       </div>
                     </div>
-                    <div style={{ height: '8px', background: 'rgba(10,10,40,0.8)', borderRadius: '4px', overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${hpPct}%`, background: hpPct > 50 ? '#22c55e' : hpPct > 25 ? '#eab308' : '#ef4444', transition: 'width 0.3s' }} />
+                    <div style={{ height: '10px', background: 'rgba(15,10,30,0.8)', borderRadius: '5px', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${hpPct}%`, background: hpPct > 50 ? '#10B981' : hpPct > 25 ? '#eab308' : '#ef4444', transition: 'width 0.3s' }} />
                     </div>
                   </div>
 
@@ -643,25 +656,25 @@ function CombatPage() {
                   {isDown && !isDead && (
                     <div style={{ background: 'rgba(239,68,68,0.1)', border: '2px solid #ef4444', borderRadius: '10px', padding: '12px', marginBottom: '10px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                        <span style={{ color: '#ef4444', fontWeight: '400', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}><Skull size={14} /> Death Saves</span>
-                        <Button onClick={() => rollDeathSave(c.id)} className="btn-secondary" style={{ padding: '6px 14px', fontSize: '12px' }} disabled={isStable}>
+                        <span style={{ color: '#ef4444', fontWeight: '600', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}><Skull size={14} /> Death Saves</span>
+                        <Button onClick={() => rollDeathSave(c.id)} style={{ padding: '6px 14px', fontSize: '13px', background: 'rgba(239,68,68,0.2)', border: '1px solid #ef4444', borderRadius: '8px', color: '#ef4444' }} disabled={isStable}>
                           <CircleDot size={14} style={{ marginRight: '4px' }} /> Roll
                         </Button>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                         <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: '11px', color: '#22c55e', marginBottom: '6px', fontWeight: '400' }}>Success</div>
+                          <div style={{ fontSize: '12px', color: '#10B981', marginBottom: '6px', fontWeight: '600' }}>Success</div>
                           <div style={{ display: 'flex', gap: '6px' }}>
                             {[0, 1, 2].map(i => (
-                              <div key={i} style={{ width: '18px', height: '18px', borderRadius: '50%', border: '2px solid #22c55e', background: i < c.deathSaves.successes ? '#22c55e' : 'transparent' }} />
+                              <div key={i} style={{ width: '20px', height: '20px', borderRadius: '50%', border: '2px solid #10B981', background: i < c.deathSaves.successes ? '#10B981' : 'transparent' }} />
                             ))}
                           </div>
                         </div>
                         <div style={{ textAlign: 'center' }}>
-                          <div style={{ fontSize: '11px', color: '#ef4444', marginBottom: '6px', fontWeight: '400' }}>Failure</div>
+                          <div style={{ fontSize: '12px', color: '#ef4444', marginBottom: '6px', fontWeight: '600' }}>Failure</div>
                           <div style={{ display: 'flex', gap: '6px' }}>
                             {[0, 1, 2].map(i => (
-                              <div key={i} style={{ width: '18px', height: '18px', borderRadius: '50%', border: '2px solid #ef4444', background: i < c.deathSaves.failures ? '#ef4444' : 'transparent' }} />
+                              <div key={i} style={{ width: '20px', height: '20px', borderRadius: '50%', border: '2px solid #ef4444', background: i < c.deathSaves.failures ? '#ef4444' : 'transparent' }} />
                             ))}
                           </div>
                         </div>
@@ -679,13 +692,13 @@ function CombatPage() {
                             onClick={() => toggleCondition(c.id, cond.id)}
                             style={{
                               background: active ? `${cond.color}30` : 'transparent',
-                              border: `1px solid ${active ? cond.color : '#1e40af'}`,
-                              borderRadius: '4px',
-                              padding: '2px 6px',
-                              fontSize: '10px',
-                              color: active ? cond.color : '#64748b',
+                              border: `1px solid ${active ? cond.color : theme.border}`,
+                              borderRadius: '6px',
+                              padding: '3px 8px',
+                              fontSize: '11px',
+                              color: active ? cond.color : theme.text.muted,
                               cursor: 'pointer',
-                              fontWeight: active ? '600' : '400'
+                              fontWeight: active ? '600' : '500'
                             }}
                           >
                             {cond.label}
