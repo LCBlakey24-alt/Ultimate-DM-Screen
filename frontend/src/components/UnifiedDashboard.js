@@ -13,24 +13,33 @@ import { RookGuide } from '@/components/RookGuide';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Fantasy Sunset Theme
+// Fantasy Sunset Theme - Matching Landing Page & Character Builder
 const theme = {
   bg: {
     primary: '#0F0A1E',
-    surface: '#1A112E',
-    surfaceHover: '#2E1F45'
+    surface: 'rgba(26, 17, 46, 0.85)',
+    surfaceHover: '#2E1F45',
+    card: 'rgba(26, 17, 46, 0.9)',
+    hover: 'rgba(139, 92, 246, 0.15)'
+  },
+  sunset: {
+    purple: '#8B5CF6',
+    pink: '#EC4899',
+    gold: '#F59E0B'
   },
   gm: {
     primary: '#F59E0B',
     secondary: '#D97706',
+    hover: '#FBBF24',
     glow: 'rgba(245, 158, 11, 0.4)',
-    subtle: 'rgba(245, 158, 11, 0.1)'
+    subtle: 'rgba(245, 158, 11, 0.15)',
+    border: 'rgba(245, 158, 11, 0.3)'
   },
   player: {
     primary: '#8B5CF6',
     secondary: '#7C3AED',
     glow: 'rgba(139, 92, 246, 0.4)',
-    subtle: 'rgba(139, 92, 246, 0.1)'
+    subtle: 'rgba(139, 92, 246, 0.15)'
   },
   accent: {
     pink: '#EC4899',
@@ -41,7 +50,7 @@ const theme = {
     secondary: '#94A3B8',
     muted: '#64748B'
   },
-  border: 'rgba(139, 92, 246, 0.2)',
+  border: 'rgba(139, 92, 246, 0.3)',
   gradient: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)'
 };
 
@@ -325,14 +334,12 @@ function UnifiedDashboard({ username, onLogout }) {
       flexDirection: 'column',
       position: 'relative'
     }}>
-      {/* Ember Background */}
-      <div className="ember-bg" />
-      <EmberParticles />
       
       {/* Header */}
       <header style={{
-        background: 'rgba(11, 15, 25, 0.95)',
-        backdropFilter: 'blur(10px)',
+        background: 'rgba(26, 17, 46, 0.95)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         borderBottom: `1px solid ${theme.border}`,
         padding: '16px 32px',
         display: 'flex',
@@ -348,14 +355,16 @@ function UnifiedDashboard({ username, onLogout }) {
             src="/images/logo-mini.png" 
             alt="ROOK" 
             className="icon-float"
-            style={{ height: '36px', width: 'auto', filter: 'drop-shadow(0 2px 6px rgba(245, 158, 11, 0.4))' }}
+            style={{ height: '40px', width: 'auto', filter: 'drop-shadow(0 0 12px rgba(139, 92, 246, 0.5))' }}
           />
           <h1 className="mobile-hide" style={{
-            fontWeight: '600',
-            fontSize: '20px',
-            color: theme.gm.primary,
+            fontWeight: '700',
+            fontSize: '22px',
+            background: theme.gradient,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
             margin: 0,
-            fontFamily: "'Montserrat', sans-serif",
+            fontFamily: "'Cinzel', serif",
             letterSpacing: '0.1em'
           }}>
             ROOKIE QUEST KEEPER
@@ -552,29 +561,32 @@ function UnifiedDashboard({ username, onLogout }) {
         flex: 1,
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        minHeight: 'calc(100vh - 70px)'
+        minHeight: 'calc(100vh - 70px)',
+        gap: '0'
       }}>
-        {/* LEFT: Characters - Tron Legacy BLUE */}
+        {/* LEFT: Characters - Player Section */}
         <div 
           id="player-section"
           className="animate-fade-in-left"
           style={{ 
-            background: theme.player.subtle,
-            borderRight: `1px solid ${theme.player.border}`,
-            padding: '24px',
+            background: 'rgba(26, 17, 46, 0.7)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            borderRight: `1px solid ${theme.border}`,
+            padding: '28px',
             position: 'relative',
             overflow: 'hidden',
             minHeight: '400px'
           }}
         >
-          {/* Glow effect */}
+          {/* Glow effect at top */}
           <div style={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
-            height: '200px',
-            background: theme.player.gradient,
+            height: '150px',
+            background: 'linear-gradient(180deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%)',
             pointerEvents: 'none'
           }} />
           
@@ -583,10 +595,10 @@ function UnifiedDashboard({ username, onLogout }) {
             position: 'absolute',
             top: 0,
             right: 0,
-            width: '2px',
+            width: '3px',
             height: '100%',
-            background: `linear-gradient(180deg, ${theme.player.primary}, transparent)`,
-            boxShadow: theme.player.glow
+            background: `linear-gradient(180deg, ${theme.player.primary}, ${theme.accent.pink}, transparent)`,
+            boxShadow: `0 0 20px ${theme.player.glow}`
           }} />
 
           <div style={{ position: 'relative', zIndex: 1 }}>
@@ -598,15 +610,16 @@ function UnifiedDashboard({ username, onLogout }) {
             }}>
               <div>
                 <h2 style={{
-                  fontWeight: '400',
-                  fontSize: '14px',
+                  fontWeight: '600',
+                  fontSize: '12px',
                   color: theme.player.primary,
                   margin: '0 0 8px',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
-                  fontFamily: "'Montserrat', sans-serif",
-                  letterSpacing: '0.1em'
+                  fontFamily: "'Cinzel', serif",
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase'
                 }}>
                   <User size={18} />
                   PLAYER SIDE
@@ -680,17 +693,18 @@ function UnifiedDashboard({ username, onLogout }) {
                     key={char.id}
                     onClick={() => navigate(`/characters/${char.id}`)}
                     data-testid={`character-${char.id}`}
-                    className="card-hover-player"
+                    className="card-hover"
                     style={{
-                      background: theme.bg.surface,
+                      background: 'rgba(26, 17, 46, 0.9)',
                       border: `1px solid ${theme.border}`,
                       borderLeft: `3px solid ${theme.player.primary}`,
-                      borderRadius: '8px',
+                      borderRadius: '12px',
                       padding: '20px 24px',
                       cursor: 'pointer',
                       display: 'flex',
                       justifyContent: 'space-between',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
                     }}
                   >
                     <div>
@@ -699,7 +713,7 @@ function UnifiedDashboard({ username, onLogout }) {
                         margin: '0 0 6px', 
                         fontSize: '18px',
                         fontWeight: '600',
-                        fontFamily: "'Montserrat', sans-serif"
+                        fontFamily: "'Cinzel', serif"
                       }}>
                         {char.name}
                       </h3>
@@ -747,26 +761,28 @@ function UnifiedDashboard({ username, onLogout }) {
           </div>
         </div>
 
-        {/* RIGHT: Campaigns - Tron Aries RED */}
+        {/* RIGHT: Campaigns - GM Section */}
         <div 
           id="gm-section"
           className="animate-fade-in-right"
           style={{ 
-            background: theme.gm.subtle,
-            padding: '24px',
+            background: 'rgba(26, 17, 46, 0.7)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            padding: '28px',
             position: 'relative',
             overflow: 'hidden',
             minHeight: '400px'
           }}
         >
-          {/* Glow effect */}
+          {/* Glow effect at top */}
           <div style={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
-            height: '200px',
-            background: theme.gm.gradient,
+            height: '150px',
+            background: 'linear-gradient(180deg, rgba(245, 158, 11, 0.15) 0%, transparent 100%)',
             pointerEvents: 'none'
           }} />
           
@@ -775,10 +791,10 @@ function UnifiedDashboard({ username, onLogout }) {
             position: 'absolute',
             top: 0,
             left: 0,
-            width: '2px',
+            width: '3px',
             height: '100%',
-            background: `linear-gradient(180deg, ${theme.gm.primary}, transparent)`,
-            boxShadow: theme.gm.glow
+            background: `linear-gradient(180deg, ${theme.gm.primary}, ${theme.accent.pink}, transparent)`,
+            boxShadow: `0 0 20px ${theme.gm.glow}`
           }} />
 
           <div style={{ position: 'relative', zIndex: 1 }}>
@@ -790,25 +806,26 @@ function UnifiedDashboard({ username, onLogout }) {
             }}>
               <div>
                 <h2 style={{
-                  fontWeight: '400',
-                  fontSize: '14px',
+                  fontWeight: '600',
+                  fontSize: '12px',
                   color: theme.gm.primary,
                   margin: '0 0 8px',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
-                  fontFamily: "'Montserrat', sans-serif",
-                  letterSpacing: '0.1em'
+                  fontFamily: "'Cinzel', serif",
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase'
                 }}>
                   <Sword size={18} />
                   GM SIDE
                 </h2>
                 <h3 style={{
-                  fontWeight: '500',
-                  fontSize: '24px',
+                  fontWeight: '700',
+                  fontSize: '26px',
                   color: theme.text.primary,
                   margin: 0,
-                  fontFamily: "'Montserrat', sans-serif",
+                  fontFamily: "'Cinzel', serif",
                   letterSpacing: '0.03em'
                 }}>
                   My Campaigns

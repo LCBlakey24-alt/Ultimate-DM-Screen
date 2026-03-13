@@ -787,42 +787,104 @@ export default function CharacterSheetFull() {
                         </div>
                       )}
                       
-                      {/* Cantrips */}
+                      {/* Cantrips - Clickable for damage rolls */}
                       {character.cantrips_known?.length > 0 && (
                         <div style={{ marginBottom: '16px' }}>
-                          <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500', marginBottom: '8px' }}>CANTRIPS</div>
+                          <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500', marginBottom: '8px' }}>CANTRIPS (Click to roll)</div>
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                            {character.cantrips_known.map((cantrip, i) => (
-                              <span key={i} style={{ 
-                                padding: '6px 12px', 
-                                background: 'rgba(139, 92, 246, 0.2)', 
-                                borderRadius: '16px',
-                                fontSize: '13px',
-                                color: theme.sunset.purple
-                              }}>
-                                {cantrip.name || cantrip}
-                              </span>
-                            ))}
+                            {character.cantrips_known.map((cantrip, i) => {
+                              const cantripName = cantrip.name || cantrip;
+                              // Common cantrip damage dice
+                              const cantripDice = {
+                                'Fire Bolt': '1d10',
+                                'Eldritch Blast': '1d10',
+                                'Sacred Flame': '1d8',
+                                'Toll the Dead': '1d8',
+                                'Chill Touch': '1d8',
+                                'Ray of Frost': '1d8',
+                                'Shocking Grasp': '1d8',
+                                'Acid Splash': '1d6',
+                                'Poison Spray': '1d12',
+                                'Vicious Mockery': '1d4'
+                              };
+                              const dice = cantripDice[cantripName] || '1d8';
+                              
+                              return (
+                                <button
+                                  key={i}
+                                  onClick={() => rollDice(dice, 0, `${cantripName} Damage`)}
+                                  className="tab-glow press-scale"
+                                  style={{ 
+                                    padding: '8px 14px', 
+                                    background: 'rgba(139, 92, 246, 0.2)', 
+                                    border: `1px solid ${theme.sunset.purple}`,
+                                    borderRadius: '16px',
+                                    fontSize: '13px',
+                                    color: theme.sunset.purple,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s'
+                                  }}
+                                >
+                                  {cantripName}
+                                </button>
+                              );
+                            })}
                           </div>
                         </div>
                       )}
                       
-                      {/* Known/Prepared Spells */}
+                      {/* Known/Prepared Spells - Clickable for damage rolls */}
                       {(character.spells_known?.length > 0 || character.spells_prepared?.length > 0 || character.spells?.length > 0) ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           <div style={{ fontSize: '12px', color: theme.text.muted, fontWeight: '500' }}>
-                            {classInfo.type === 'prepared' ? 'PREPARED SPELLS' : 'SPELLS KNOWN'}
+                            {classInfo.type === 'prepared' ? 'PREPARED SPELLS' : 'SPELLS KNOWN'} (Click to roll damage)
                           </div>
-                          {(character.spells_known || character.spells_prepared || character.spells || []).map((spell, i) => (
-                            <div key={i} style={{ padding: '14px', background: 'rgba(15, 10, 30, 0.5)', borderRadius: '8px' }}>
-                              <div style={{ fontWeight: '600', color: theme.text.primary, fontSize: '15px' }}>{spell.name || spell}</div>
-                              {spell.level !== undefined && (
-                                <div style={{ color: theme.text.muted, fontSize: '14px' }}>
-                                  Level {spell.level} {spell.school && `• ${spell.school}`}
+                          {(character.spells_known || character.spells_prepared || character.spells || []).map((spell, i) => {
+                            const spellName = spell.name || spell;
+                            // Common spell damage dice
+                            const spellDice = {
+                              'Magic Missile': '1d4+1',
+                              'Burning Hands': '3d6',
+                              'Chromatic Orb': '3d8',
+                              'Thunderwave': '2d8',
+                              'Ice Knife': '1d10',
+                              'Guiding Bolt': '4d6',
+                              'Inflict Wounds': '3d10',
+                              'Cure Wounds': '1d8',
+                              'Healing Word': '1d4',
+                              'Shield': '0',
+                              'Mage Armor': '0'
+                            };
+                            const dice = spellDice[spellName] || spell.damage || '2d6';
+                            const isUtility = dice === '0' || spellName.includes('Shield') || spellName.includes('Armor');
+                            
+                            return (
+                              <button
+                                key={i}
+                                onClick={() => !isUtility && rollDice(dice, 0, `${spellName}`)}
+                                className={isUtility ? '' : 'card-hover press-scale'}
+                                style={{ 
+                                  padding: '14px', 
+                                  background: 'rgba(15, 10, 30, 0.5)', 
+                                  border: `1px solid ${isUtility ? theme.border : theme.sunset.pink}`,
+                                  borderRadius: '10px',
+                                  textAlign: 'left',
+                                  cursor: isUtility ? 'default' : 'pointer',
+                                  transition: 'all 0.2s'
+                                }}
+                              >
+                                <div style={{ fontWeight: '600', color: theme.text.primary, fontSize: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  {spellName}
+                                  {!isUtility && <span style={{ fontSize: '12px', color: theme.sunset.pink, background: 'rgba(236, 72, 153, 0.2)', padding: '2px 8px', borderRadius: '4px' }}>{dice}</span>}
                                 </div>
-                              )}
-                            </div>
-                          ))}
+                                {spell.level !== undefined && (
+                                  <div style={{ color: theme.text.muted, fontSize: '14px', marginTop: '4px' }}>
+                                    Level {spell.level} {spell.school && `• ${spell.school}`}
+                                  </div>
+                                )}
+                              </button>
+                            );
+                          })}
                         </div>
                       ) : (
                         <div style={{ color: theme.text.muted, textAlign: 'center', padding: '24px', fontSize: '15px' }}>
