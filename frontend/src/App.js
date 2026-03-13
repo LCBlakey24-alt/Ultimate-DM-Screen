@@ -197,22 +197,6 @@ function App() {
               } 
             />
             <Route 
-              path="/player" 
-              element={
-                isAuthenticated ? 
-                  <PlayerDashboard username={username} onLogout={handleLogout} /> : 
-                  <Navigate to="/auth" replace />
-              } 
-            />
-            <Route 
-              path="/campaigns" 
-              element={
-                isAuthenticated ? 
-                  <CampaignList username={username} onLogout={handleLogout} /> :
-                  <Navigate to="/auth" replace />
-              }
-            />
-            <Route 
               path="/characters/new" 
               element={
                 isAuthenticated ? 

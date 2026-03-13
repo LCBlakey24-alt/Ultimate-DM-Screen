@@ -72,6 +72,12 @@ function UnifiedDashboard({ username, onLogout }) {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   
+  // Campaign creation modal state
+  const [showCreateCampaignModal, setShowCreateCampaignModal] = useState(false);
+  const [newCampaignName, setNewCampaignName] = useState('');
+  const [newCampaignDesc, setNewCampaignDesc] = useState('');
+  const [creatingCampaign, setCreatingCampaign] = useState(false);
+  
   // Ruleset upload state
   const [showRulesetPanel, setShowRulesetPanel] = useState(false);
   const [uploadingRuleset, setUploadingRuleset] = useState(false);
@@ -164,6 +170,39 @@ function UnifiedDashboard({ username, onLogout }) {
       setCampaigns(prev => prev.filter(c => c.id !== campaignId));
     } catch (error) {
       toast.error('Failed to delete campaign');
+    }
+  };
+
+  // Create campaign handler
+  const handleCreateCampaign = async (e) => {
+    e.preventDefault();
+    if (!newCampaignName.trim()) {
+      toast.error('Campaign name is required');
+      return;
+    }
+
+    setCreatingCampaign(true);
+    try {
+      const response = await axios.post(`${API}/campaigns`, {
+        name: newCampaignName.trim(),
+        description: newCampaignDesc.trim()
+      });
+      toast.success('Campaign created successfully!');
+      setCampaigns(prev => [...prev, response.data]);
+      setNewCampaignName('');
+      setNewCampaignDesc('');
+      setShowCreateCampaignModal(false);
+      // Navigate to the new campaign
+      navigate(`/campaign/${response.data.id}`);
+    } catch (error) {
+      const detail = error?.response?.data?.detail;
+      if (typeof detail === 'object' && detail?.error === 'campaign_limit_reached') {
+        toast.error(detail.message || 'Campaign limit reached. Please upgrade your subscription.');
+      } else {
+        toast.error(typeof detail === 'string' ? detail : 'Failed to create campaign');
+      }
+    } finally {
+      setCreatingCampaign(false);
     }
   };
 
@@ -748,7 +787,7 @@ function UnifiedDashboard({ username, onLogout }) {
                 </h3>
               </div>
               <Button
-                onClick={() => navigate('/campaigns?create=true')}
+                onClick={() => setShowCreateCampaignModal(true)}
                 data-testid="new-campaign-btn"
                 style={{
                   background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
@@ -787,7 +826,7 @@ function UnifiedDashboard({ username, onLogout }) {
                     Create your first campaign to start GMing
                   </p>
                   <Button
-                    onClick={() => navigate('/campaigns/new')}
+                    onClick={() => setShowCreateCampaignModal(true)}
                     style={{
                       background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
                       border: 'none',
@@ -1058,6 +1097,129 @@ function UnifiedDashboard({ username, onLogout }) {
               <Link2 size={18} />
               Copy Referral Link
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Create Campaign Modal */}
+      {showCreateCampaignModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            backdropFilter: 'blur(4px)'
+          }}
+          onClick={() => setShowCreateCampaignModal(false)}
+        >
+          <div
+            style={{
+              background: theme.bg.surface,
+              border: `1px solid ${theme.border}`,
+              borderRadius: '16px',
+              padding: '32px',
+              width: '100%',
+              maxWidth: '480px',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{ 
+              fontFamily: "'Cinzel', serif",
+              color: theme.gm.primary, 
+              margin: '0 0 8px',
+              fontSize: '24px',
+              fontWeight: '600'
+            }}>
+              Create New Campaign
+            </h2>
+            <p style={{ color: theme.text.muted, margin: '0 0 24px', fontSize: '15px' }}>
+              Start your new adventure
+            </p>
+
+            <form onSubmit={handleCreateCampaign} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', color: theme.text.secondary, fontSize: '14px', marginBottom: '8px' }}>
+                  Campaign Name *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter campaign name"
+                  value={newCampaignName}
+                  onChange={(e) => setNewCampaignName(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    borderRadius: '10px',
+                    border: `1px solid ${theme.border}`,
+                    background: 'rgba(15, 10, 30, 0.6)',
+                    color: theme.text.primary,
+                    fontSize: '15px'
+                  }}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', color: theme.text.secondary, fontSize: '14px', marginBottom: '8px' }}>
+                  Description (optional)
+                </label>
+                <textarea
+                  placeholder="Describe your campaign..."
+                  value={newCampaignDesc}
+                  onChange={(e) => setNewCampaignDesc(e.target.value)}
+                  rows={3}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    borderRadius: '10px',
+                    border: `1px solid ${theme.border}`,
+                    background: 'rgba(15, 10, 30, 0.6)',
+                    color: theme.text.primary,
+                    fontSize: '15px',
+                    resize: 'vertical'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                <Button
+                  type="submit"
+                  disabled={creatingCampaign}
+                  style={{
+                    flex: 1,
+                    background: theme.gradient,
+                    border: 'none',
+                    padding: '14px',
+                    borderRadius: '10px',
+                    color: theme.text.primary,
+                    fontWeight: '600',
+                    fontSize: '15px'
+                  }}
+                >
+                  {creatingCampaign ? 'Creating...' : 'Create Campaign'}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setShowCreateCampaignModal(false)}
+                  style={{
+                    flex: 1,
+                    background: 'transparent',
+                    border: `1px solid ${theme.border}`,
+                    padding: '14px',
+                    borderRadius: '10px',
+                    color: theme.text.secondary,
+                    fontWeight: '500',
+                    fontSize: '15px'
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       )}
