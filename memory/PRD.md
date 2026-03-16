@@ -6,15 +6,35 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 ## Visual Theme: Fantasy Sunset
 All pages now share a consistent visual theme:
 - **Background**: Dark purple gradient over scenic mountain/sunset image
-- **Glass Panels**: Frosted glass effect with backdrop blur
-- **Accent Colors**: Purple (#8B5CF6), Pink (#EC4899), Gold (#F59E0B)
+- **Glass Panels**: Frosted glass effect with backdrop blur (darker for better text visibility)
+- **Accent Colors**: Purple (#390292), Pink (#ee006b), Orange (#ff3600)
 - **Typography**: Cinzel for headers, Montserrat for body
 - **Animations**: Tab hover glow, card hover scale, floating logo
 
 ## Bug Fixes Completed (March 16, 2026)
+
+### P0/P1 Bugs (FIXED)
 - [x] **Level Up Flow Fixed** - API URL corrected in LevelUpWizard.js (was double /api prefix)
-- [x] **Edit Character Fixed** - Added missing route `/characters/:characterId/edit` in App.js
+- [x] **Edit Character Fixed** - Added missing route `/characters/:characterId/edit` in App.js, CharacterBuilder now supports editMode
 - [x] **HP Display Fixed** - Frontend now clamps HP to maxHp when loading character data
+
+### P2 Bugs (FIXED)
+- [x] **Combat tracker enemy list** - Removed slice(0,100) limit, now shows all 303 monsters
+- [x] **Monster Lookup on GM Screen** - Now uses local MONSTER_DATABASE instead of broken API endpoint
+- [x] **Landing page text visibility** - Made glass panels foggier (rgba(15,10,30,0.85)) with white text
+
+### UI Improvements (March 16, 2026)
+- [x] **Landing page pricing updated**: Player £3.99, Hero £3.99, Quest Master £3.99, Legendary £5.99
+- [x] **Glass panels** - Darker background with better contrast
+- [x] **Text color** - All text is white for visibility
+
+## Subscription Tiers
+| Tier | Price | Features |
+|------|-------|----------|
+| Player | £3.99/mo | Coming Soon - Join campaigns, 3 characters, Character sheet, Dice roller |
+| Hero | £3.99/mo | 10 characters, Join unlimited campaigns, Advanced sheets, Priority support |
+| Quest Master | £3.99/mo | Unlimited characters, 3 campaigns, GM tools, AI assistance |
+| Legendary | £5.99/mo | Everything unlimited, Custom rulesets, Priority AI, Early access |
 
 ## Implemented Features (as of March 2026)
 
@@ -23,7 +43,7 @@ All pages now share a consistent visual theme:
 - [x] **Gradient header** with Cinzel font "ROOKIE QUEST KEEPER"
 - [x] **Floating dragon logo** with glow effect
 - [x] **Purple/Gold accent lines** on panels
-- [x] Subscription tier badge
+- [x] Subscription tier badge (shows "Legendary · Unlimited" for admin)
 - [x] Mobile navigation toggle
 
 ### Character System
@@ -50,6 +70,12 @@ All pages now share a consistent visual theme:
 - [x] **"Sync to Players" button** for notes
 - [x] NPC Name Generator, Dice Roller
 - [x] Tab animations with glow effects
+- [x] **Monster Lookup** - Now uses local 303-monster database
+
+### Combat Creator
+- [x] **Monster Database** - Shows all 303 SRD monsters (no limit)
+- [x] CR filtering
+- [x] Encounter difficulty calculator
 
 ### GM-Player Sync
 - [x] Campaign Timeline API
@@ -68,14 +94,11 @@ All pages now share a consistent visual theme:
 - [x] Resend (email)
 - [x] Emergent LLM Key (ROOK AI)
 
-## Pending Issues (P2)
-1. Admin account shows "Free Plan" - need to verify subscription status in DB
-2. Combat tracker enemy list truncated (100/303) - backend pagination issue
-3. Monster lookup on GM Screen returns no results
-4. GM Screen dice roller should be side panel, not tab
+## Remaining P2 Issues (Lower Priority)
+1. GM Screen dice roller should be side panel, not tab (UI preference)
 
 ## Upcoming Tasks
-1. **Equipment & Inventory System** - SRD items database, equipment selection, inventory on character sheet
+1. **Equipment & Inventory System** - SRD items database, equipment selection in builder, inventory on character sheet
 2. **Character Sheet UI Overhaul** - Highlight proficient skills, condense layout, add temp HP
 3. **Real-time GM Loot System** - Drag-drop loot via WebSockets
 4. **Map Creator Enhancements** - Textured tools, pan/zoom
@@ -96,10 +119,13 @@ All pages now share a consistent visual theme:
 ├── CharacterSheetFull.js - 3D Dice, Clickable Spells, HP clamping
 ├── CampaignDashboard.js  - Fantasy Sunset theme
 ├── GMScreen.js           - Fantasy Sunset theme
-├── LandingPage.js        - Grand animated KEEPER
+├── LandingPage.js        - Foggy glass panels, white text, updated pricing
 ├── LevelUpWizard.js      - Multiclassing, Fixed API URLs
+├── MonsterLookup.js      - Uses local MONSTER_DATABASE (303 monsters)
 ├── PricingPage.js        - Yearly savings
-└── UnifiedDashboard.js   - Fantasy Sunset theme
+├── UnifiedDashboard.js   - Fantasy Sunset theme
+└── tabs/
+    └── CombatCreatorTab.js - Shows all 303 monsters (no limit)
 ```
 
 ## Test Credentials (Preview Only)
