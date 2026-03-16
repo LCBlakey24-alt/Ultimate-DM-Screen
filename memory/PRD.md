@@ -11,6 +11,11 @@ All pages now share a consistent visual theme:
 - **Typography**: Cinzel for headers, Montserrat for body
 - **Animations**: Tab hover glow, card hover scale, floating logo
 
+## Bug Fixes Completed (March 16, 2026)
+- [x] **Level Up Flow Fixed** - API URL corrected in LevelUpWizard.js (was double /api prefix)
+- [x] **Edit Character Fixed** - Added missing route `/characters/:characterId/edit` in App.js
+- [x] **HP Display Fixed** - Frontend now clamps HP to maxHp when loading character data
+
 ## Implemented Features (as of March 2026)
 
 ### Dashboard (Fantasy Sunset Themed)
@@ -25,6 +30,7 @@ All pages now share a consistent visual theme:
 - [x] Character sheet with Fantasy Sunset theme
 - [x] Edition selector (2014 vs 2024 rules)
 - [x] Subrace and subclass selection
+- [x] **Character Edit Mode** - Edit existing characters via CharacterBuilder
 - [x] **3D Dramatic Dice Roller** with animated bouncing dice
 - [x] **All clickable rolls** (saves, skills, attacks)
 - [x] **Clickable Cantrips** - Fire Bolt, Eldritch Blast, etc. roll damage
@@ -62,24 +68,38 @@ All pages now share a consistent visual theme:
 - [x] Resend (email)
 - [x] Emergent LLM Key (ROOK AI)
 
+## Pending Issues (P2)
+1. Admin account shows "Free Plan" - need to verify subscription status in DB
+2. Combat tracker enemy list truncated (100/303) - backend pagination issue
+3. Monster lookup on GM Screen returns no results
+4. GM Screen dice roller should be side panel, not tab
+
 ## Upcoming Tasks
-1. Build frontend player timeline display
-2. Real-time WebSocket sync
-3. Backend refactoring (split server.py)
-4. Test all class actions (Barbarian rage, etc.)
+1. **Equipment & Inventory System** - SRD items database, equipment selection, inventory on character sheet
+2. **Character Sheet UI Overhaul** - Highlight proficient skills, condense layout, add temp HP
+3. **Real-time GM Loot System** - Drag-drop loot via WebSockets
+4. **Map Creator Enhancements** - Textured tools, pan/zoom
+
+## Future/Backlog
+1. Player Timeline & Note Sync UI frontend
+2. Soundboard with ambient noises
+3. PDF export for character sheets
+4. Live audio transcription
+5. VTT with video/audio chat
+6. Backend refactoring (split server.py - 8000+ lines)
 
 ## Technical Architecture
 ```
 /app/frontend/src/components/
 ├── AuthPage.js           - Fantasy Sunset theme
-├── CharacterBuilder.js   - Fantasy Sunset theme
-├── CharacterSheetFull.js - 3D Dice, Clickable Spells
-├── CampaignDashboard.js  - Fantasy Sunset theme (UPDATED)
+├── CharacterBuilder.js   - Fantasy Sunset theme, Edit Mode support
+├── CharacterSheetFull.js - 3D Dice, Clickable Spells, HP clamping
+├── CampaignDashboard.js  - Fantasy Sunset theme
 ├── GMScreen.js           - Fantasy Sunset theme
 ├── LandingPage.js        - Grand animated KEEPER
-├── LevelUpWizard.js      - Multiclassing support
+├── LevelUpWizard.js      - Multiclassing, Fixed API URLs
 ├── PricingPage.js        - Yearly savings
-└── UnifiedDashboard.js   - Fantasy Sunset theme (UPDATED)
+└── UnifiedDashboard.js   - Fantasy Sunset theme
 ```
 
 ## Test Credentials (Preview Only)
