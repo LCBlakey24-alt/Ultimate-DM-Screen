@@ -129,28 +129,28 @@ export default function LandingPage() {
           borderRadius: '20px',
           padding: '30px 40px'
         }}>
-          {/* Logo */}
-          <img 
-            src="/images/logo-main.png" 
-            alt="Rookie Quest Keeper"
-            style={{
-              width: '200px',
-              maxWidth: '60%',
-              height: 'auto',
-              filter: `drop-shadow(0 0 30px ${colors.secondary})`,
-              marginBottom: '16px'
-            }}
-          />
+          {/* Logo - Centered */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+            <img 
+              src="/images/logo-main.png" 
+              alt="Rookie Quest Keeper"
+              style={{
+                width: '220px',
+                maxWidth: '70%',
+                height: 'auto',
+                filter: `drop-shadow(0 0 30px ${colors.secondary})`,
+              }}
+            />
+          </div>
           
           <h1 style={{
             fontFamily: "'Cinzel', serif",
-            fontSize: 'clamp(2rem, 5vw, 3rem)',
-            fontWeight: '700',
-            background: `linear-gradient(135deg, ${colors.main}, ${colors.secondary}, ${colors.tertiary})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            marginBottom: '12px',
-            letterSpacing: '0.15em'
+            fontSize: 'clamp(3rem, 8vw, 5rem)',
+            fontWeight: '900',
+            color: '#ffffff',
+            textShadow: `0 0 40px ${colors.secondary}, 0 0 80px ${colors.main}`,
+            marginBottom: '16px',
+            letterSpacing: '0.2em'
           }}>KEEPER</h1>
           
           <p style={{

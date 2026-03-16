@@ -7,6 +7,7 @@ import {
   Plus, Minus, Skull, Wind, Edit3, Dices, Target, Sparkles, ArrowUp
 } from 'lucide-react';
 import LevelUpWizard from './LevelUpWizard';
+import CharacterInventory from './CharacterInventory';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, SPELL_DATABASE } from '../data/spellDatabase';
 import { useDiceRoller } from './ui/DiceRoller3D';
 
@@ -223,6 +224,7 @@ export default function CharacterSheetFull() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('combat');
   const [currentHp, setCurrentHp] = useState(0);
+  const [tempHp, setTempHp] = useState(0);
   const [showLevelUpWizard, setShowLevelUpWizard] = useState(false);
   
   // Spell slot tracking - { 1: 0, 2: 0, ... } = used slots per level
@@ -287,6 +289,30 @@ export default function CharacterSheetFull() {
   }, [character]);
 
   const handleHpChange = async (delta) => {
+    // Handle damage (negative delta)
+    if (delta < 0) {
+      const damage = Math.abs(delta);
+      // Damage temp HP first
+      if (tempHp > 0) {
+        if (damage <= tempHp) {
+          setTempHp(tempHp - damage);
+          return; // All damage absorbed by temp HP
+        } else {
+          const remainingDamage = damage - tempHp;
+          setTempHp(0);
+          const newHp = Math.max(0, currentHp - remainingDamage);
+          setCurrentHp(newHp);
+          try {
+            await axios.patch(`${API}/characters/${characterId}`, { hp: newHp });
+          } catch (err) {
+            console.error('Failed to update HP');
+          }
+          return;
+        }
+      }
+    }
+    
+    // Healing or direct damage without temp HP
     const newHp = Math.max(0, Math.min(maxHp, currentHp + delta));
     setCurrentHp(newHp);
     try {
@@ -294,6 +320,11 @@ export default function CharacterSheetFull() {
     } catch (err) {
       console.error('Failed to update HP');
     }
+  };
+
+  const handleTempHpChange = (delta) => {
+    const newTempHp = Math.max(0, tempHp + delta);
+    setTempHp(newTempHp);
   };
 
   const handleRoll = (action, ability = null) => {
@@ -502,6 +533,7 @@ export default function CharacterSheetFull() {
                 <button
                   key={skill.name}
                   onClick={() => rollDice('1d20', bonus, skill.name)}
+                  data-testid={`skill-${skill.name.toLowerCase().replace(' ', '-')}`}
                   style={{
                     width: '100%',
                     display: 'flex',
@@ -509,20 +541,30 @@ export default function CharacterSheetFull() {
                     alignItems: 'center',
                     padding: '10px 12px',
                     marginBottom: '4px',
-                    background: isProficient ? 'rgba(245, 158, 11, 0.1)' : 'transparent',
-                    border: 'none',
+                    background: isProficient ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
+                    border: isProficient ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid transparent',
                     borderRadius: '6px',
-                    color: isProficient ? theme.sunset.gold : theme.text.secondary,
+                    color: isProficient ? '#a78bfa' : theme.text.secondary,
                     fontSize: '14px',
                     cursor: 'pointer',
                     textAlign: 'left',
-                    transition: 'background 0.2s'
+                    transition: 'all 0.2s',
+                    boxShadow: isProficient ? '0 0 10px rgba(139, 92, 246, 0.3)' : 'none'
                   }}
-                  onMouseEnter={(e) => e.target.style.background = 'rgba(139, 92, 246, 0.15)'}
-                  onMouseLeave={(e) => e.target.style.background = isProficient ? 'rgba(245, 158, 11, 0.1)' : 'transparent'}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(139, 92, 246, 0.25)';
+                    e.currentTarget.style.boxShadow = '0 0 15px rgba(139, 92, 246, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = isProficient ? 'rgba(139, 92, 246, 0.15)' : 'transparent';
+                    e.currentTarget.style.boxShadow = isProficient ? '0 0 10px rgba(139, 92, 246, 0.3)' : 'none';
+                  }}
                 >
-                  <span>{isProficient && '● '}{skill.name}</span>
-                  <span style={{ fontWeight: '600', color: theme.text.primary, fontSize: '15px' }}>{formatModifier(bonus)}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {isProficient && <span style={{ color: theme.sunset.purple, fontSize: '8px' }}>●</span>}
+                    {skill.name}
+                  </span>
+                  <span style={{ fontWeight: '600', color: isProficient ? '#a78bfa' : theme.text.primary, fontSize: '15px' }}>{formatModifier(bonus)}</span>
                 </button>
               );
             })}
@@ -538,9 +580,32 @@ export default function CharacterSheetFull() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: theme.text.muted, fontSize: '13px', marginBottom: '6px', fontWeight: '500' }}>
                 <Heart size={14} /> HP
               </div>
-              <div style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '10px' }}>
+              <div style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '4px' }}>
                 <span style={{ color: currentHp < maxHp / 2 ? '#EF4444' : theme.text.primary }}>{currentHp}</span>
                 <span style={{ color: theme.text.muted, fontSize: '18px' }}>/{maxHp}</span>
+              </div>
+              {/* Temp HP */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                gap: '4px', 
+                marginBottom: '8px',
+                padding: '4px 8px',
+                background: tempHp > 0 ? 'rgba(59, 130, 246, 0.2)' : 'rgba(0,0,0,0.2)',
+                borderRadius: '4px',
+                border: tempHp > 0 ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid transparent'
+              }}>
+                <span style={{ color: '#3b82f6', fontSize: '11px', fontWeight: '500' }}>TEMP</span>
+                <button 
+                  onClick={() => handleTempHpChange(-1)} 
+                  style={{ padding: '2px 6px', background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', fontSize: '12px' }}
+                >-</button>
+                <span style={{ color: tempHp > 0 ? '#3b82f6' : theme.text.muted, fontSize: '14px', fontWeight: '600', minWidth: '20px', textAlign: 'center' }}>{tempHp}</span>
+                <button 
+                  onClick={() => handleTempHpChange(1)} 
+                  style={{ padding: '2px 6px', background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', fontSize: '12px' }}
+                >+</button>
               </div>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                 <button onClick={() => handleHpChange(-1)} style={{ padding: '6px 14px', background: 'rgba(239, 68, 68, 0.2)', border: 'none', borderRadius: '6px', color: '#EF4444', cursor: 'pointer' }}><Minus size={16} /></button>
@@ -983,19 +1048,11 @@ export default function CharacterSheetFull() {
 
             {activeTab === 'inventory' && (
               <div style={{ ...scrollBoxStyle, flex: 1, padding: '4px' }}>
-                <h4 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.gold, marginBottom: '16px', fontSize: '1.1rem' }}>Inventory</h4>
-                {character.equipment?.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {character.equipment.map((item, i) => (
-                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '14px', background: 'rgba(15, 10, 30, 0.5)', borderRadius: '8px' }}>
-                        <span style={{ color: theme.text.primary, fontSize: '15px' }}>{item.name || item}</span>
-                        {item.quantity && <span style={{ color: theme.text.muted, fontSize: '15px' }}>x{item.quantity}</span>}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div style={{ color: theme.text.muted, textAlign: 'center', padding: '24px', fontSize: '15px' }}>No items</div>
-                )}
+                <CharacterInventory 
+                  characterId={characterId}
+                  character={character}
+                  onUpdate={fetchCharacter}
+                />
               </div>
             )}
 

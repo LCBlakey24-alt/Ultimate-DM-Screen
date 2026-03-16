@@ -758,7 +758,9 @@ class PlayerCharacter(BaseModel):
     # Equipment & Inventory
     equipment: List[Dict[str, Any]] = []  # [{"name": "Longsword", "equipped": true}]
     inventory: List[Dict[str, Any]] = []
+    equipped: Dict[str, Any] = {"armor": None, "shield": None, "mainHand": None, "offHand": None}
     currency: Dict[str, int] = {"copper": 0, "silver": 0, "electrum": 0, "gold": 0, "platinum": 0}
+    gold: int = 0  # Shorthand for currency.gold
     
     # Character Details
     alignment: str = "Neutral"
@@ -865,7 +867,9 @@ class PlayerCharacterUpdate(BaseModel):
     # Equipment
     equipment: Optional[List[Dict[str, Any]]] = None
     inventory: Optional[List[Dict[str, Any]]] = None
+    equipped: Optional[Dict[str, Any]] = None
     currency: Optional[Dict[str, int]] = None
+    gold: Optional[int] = None
     
     # Character Details
     alignment: Optional[str] = None
