@@ -240,7 +240,10 @@ export default function CharacterSheetFull() {
       setLoading(true);
       const response = await axios.get(`${API}/characters/${characterId}`);
       setCharacter(response.data);
-      setCurrentHp(response.data.hp || response.data.max_hp || 10);
+      // Clamp HP to ensure it never exceeds max_hp (fixes bug where HP displays higher than max)
+      const charMaxHp = response.data.max_hp || 10;
+      const charHp = response.data.hp || charMaxHp;
+      setCurrentHp(Math.min(charHp, charMaxHp));
     } catch (err) {
       setError('Failed to load character');
       toast.error('Failed to load character');

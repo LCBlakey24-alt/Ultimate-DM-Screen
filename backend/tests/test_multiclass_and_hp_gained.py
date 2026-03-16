@@ -10,7 +10,7 @@ import requests
 import uuid
 from datetime import datetime
 
-BASE_URL = "https://rook-rules.preview.emergentagent.com"
+BASE_URL = "https://keeper-preview-1.preview.emergentagent.com"
 
 # Test user credentials - from test_level_up.py
 TEST_USER_EMAIL = "leveltest@test.com"

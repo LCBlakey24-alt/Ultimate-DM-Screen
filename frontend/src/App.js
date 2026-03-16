@@ -209,6 +209,14 @@ function App() {
               } 
             />
             <Route 
+              path="/characters/:characterId/edit" 
+              element={
+                isAuthenticated ? 
+                  <CharacterBuilder editMode={true} /> : 
+                  <Navigate to="/auth" replace />
+              } 
+            />
+            <Route 
               path="/campaign/:campaignId" 
               element={
                 isAuthenticated ? 

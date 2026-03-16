@@ -62,20 +62,12 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
   const getCritColor = () => {
     if (isCrit) return '#22c55e'; // Green for nat 20
     if (isFumble) return '#ef4444'; // Red for nat 1
-    return '#F59E0B'; // Gold default
+    return '#ee006b'; // Pink default (new theme)
   };
 
+  // New purple/pink theme colors for dice
   const getDiceColor = (sides) => {
-    const colors = {
-      4: '#8B5CF6',   // Purple
-      6: '#EC4899',   // Pink
-      8: '#06b6d4',   // Cyan
-      10: '#22c55e',  // Green
-      12: '#F59E0B',  // Gold
-      20: '#ef4444',  // Red
-      100: '#8B5CF6'  // Purple
-    };
-    return colors[sides] || '#8B5CF6';
+    return '#390292'; // All dice use main purple
   };
 
   return createPortal(
@@ -87,7 +79,7 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'rgba(0, 0, 0, 0.85)',
+        background: 'linear-gradient(135deg, rgba(57, 2, 146, 0.95), rgba(238, 0, 107, 0.9))',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

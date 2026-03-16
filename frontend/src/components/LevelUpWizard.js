@@ -5,7 +5,8 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { MULTICLASS_REQUIREMENTS, MULTICLASS_PROFICIENCIES, canMulticlassInto, canMulticlassFrom, CLASSES } from '../data/characterRules5e';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 // Theme colors matching Fantasy Sunset
 const theme = {
@@ -215,8 +216,8 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
 
       // Use different endpoint for multiclassing
       const endpoint = isMulticlassing && multiclassClass 
-        ? `${API}/api/characters/${character.id}/multiclass`
-        : `${API}/api/characters/${character.id}/level-up`;
+        ? `${API}/characters/${character.id}/multiclass`
+        : `${API}/characters/${character.id}/level-up`;
         
       await axios.post(endpoint, requestData);
       

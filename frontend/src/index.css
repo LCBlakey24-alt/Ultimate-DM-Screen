@@ -5,57 +5,62 @@
 /* ===== FANTASY SUNSET THEME FONTS ===== */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
-/* ===== CSS VARIABLES - FANTASY SUNSET THEME ===== */
+/* ===== CSS VARIABLES - NEW SUNSET GRADIENT ===== */
 :root {
   /* Core Colors - Deep Purple Void */
   --background: #0F0A1E;
-  --surface: #1A112E;
-  --surface-highlight: #2E1F45;
-  --border: rgba(139, 92, 246, 0.2);
+  --surface: #1A0525;
+  --surface-highlight: #2E0A3D;
+  --border: rgba(57, 2, 146, 0.3);
   
   /* Text Colors */
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  --text-primary: #FFFFFF;
+  --text-secondary: #E0B0FF;
+  --text-muted: #9D7ABF;
   
-  /* Sunset Palette */
-  --sunset-purple: #8B5CF6;
-  --sunset-pink: #EC4899;
-  --sunset-gold: #F59E0B;
-  --sunset-orange: #F97316;
+  /* NEW Sunset Palette */
+  --sunset-purple: #390292;
+  --sunset-pink: #ee006b;
+  --sunset-orange: #ff3600;
+  --sunset-gold: #ff3600;
   
-  /* GM Accent (Gold/Orange) */
-  --gm-primary: #F59E0B;
-  --gm-secondary: #D97706;
-  --gm-glow: rgba(245, 158, 11, 0.4);
-  --gm-subtle: rgba(245, 158, 11, 0.1);
+  /* Main Theme Colors */
+  --main-color: #390292;
+  --secondary-color: #ee006b;
+  --tertiary-color: #ff3600;
+  
+  /* GM Accent (Orange-Red) */
+  --gm-primary: #ff3600;
+  --gm-secondary: #ee006b;
+  --gm-glow: rgba(255, 54, 0, 0.4);
+  --gm-subtle: rgba(255, 54, 0, 0.15);
   
   /* Player Accent (Purple) */
-  --player-primary: #8B5CF6;
-  --player-secondary: #7C3AED;
-  --player-glow: rgba(139, 92, 246, 0.4);
-  --player-subtle: rgba(139, 92, 246, 0.1);
+  --player-primary: #390292;
+  --player-secondary: #ee006b;
+  --player-glow: rgba(57, 2, 146, 0.4);
+  --player-subtle: rgba(57, 2, 146, 0.15);
   
   /* Status Colors */
   --success: #10B981;
   --danger: #EF4444;
-  --warning: #F59E0B;
-  --info: #8B5CF6;
+  --warning: #ff3600;
+  --info: #390292;
   
   /* Glass Panel */
-  --glass-bg: rgba(15, 10, 30, 0.7);
-  --glass-border: rgba(139, 92, 246, 0.3);
+  --glass-bg: rgba(57, 2, 146, 0.15);
+  --glass-border: rgba(238, 0, 107, 0.3);
   --glass-blur: 16px;
   
   /* Gradients */
-  --gradient-sunset: linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%);
-  --gradient-button: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  --gradient-sunset: linear-gradient(135deg, #390292 0%, #ee006b 50%, #ff3600 100%);
+  --gradient-button: linear-gradient(135deg, #390292 0%, #ee006b 100%);
   
   /* Radius & Shadows */
   --radius: 1rem;
   --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --glow-purple: 0 0 40px rgba(139, 92, 246, 0.3);
-  --glow-pink: 0 0 40px rgba(236, 72, 153, 0.3);
+  --glow-purple: 0 0 40px rgba(57, 2, 146, 0.4);
+  --glow-pink: 0 0 40px rgba(238, 0, 107, 0.4);
 }
 
 /* ===== BASE STYLES ===== */

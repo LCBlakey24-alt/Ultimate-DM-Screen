@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 import { User, Sword, Shield, Sparkles, Dices, ChevronLeft, Save, RotateCcw, BookOpen, Info } from "lucide-react";
@@ -67,10 +67,13 @@ const loadDraft = () => {
   }
 };
 
-export default function CharacterBuilder({ onCreateCharacter }) {
+export default function CharacterBuilder({ onCreateCharacter, editMode = false }) {
   const navigate = useNavigate();
+  const { characterId } = useParams();
   const initialState = useMemo(loadDraft, []);
   
+  const [isEditMode, setIsEditMode] = useState(editMode);
+  const [loadingCharacter, setLoadingCharacter] = useState(editMode);
   const [name, setName] = useState(initialState.name);
   const [race, setRace] = useState(initialState.race);
   const [subrace, setSubrace] = useState(initialState.subrace || "");
@@ -83,6 +86,44 @@ export default function CharacterBuilder({ onCreateCharacter }) {
   const [stats, setStats] = useState(initialState.stats);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load existing character data in edit mode
+  useEffect(() => {
+    if (editMode && characterId) {
+      loadCharacterForEdit();
+    }
+  }, [editMode, characterId]);
+  
+  const loadCharacterForEdit = async () => {
+    try {
+      setLoadingCharacter(true);
+      const response = await axios.get(`${API_BASE}/characters/${characterId}`);
+      const char = response.data;
+      
+      setName(char.name || "");
+      setRace(char.race || "");
+      setSubrace(char.subrace || "");
+      setClassName(char.character_class || "");
+      setSubclass(char.subclass || "");
+      setBackground(char.background || "");
+      setPortrait(char.portrait_url || "");
+      setEdition(char.edition || "2014");
+      setStats({
+        strength: char.strength || 10,
+        dexterity: char.dexterity || 10,
+        constitution: char.constitution || 10,
+        intelligence: char.intelligence || 10,
+        wisdom: char.wisdom || 10,
+        charisma: char.charisma || 10
+      });
+      setMethod("manual"); // Set to manual in edit mode since scores are already set
+    } catch (error) {
+      toast.error("Failed to load character for editing");
+      navigate("/home");
+    } finally {
+      setLoadingCharacter(false);
+    }
+  };
 
   // Get race data with subraces
   const raceData = RACES[race] || null;
@@ -215,8 +256,8 @@ export default function CharacterBuilder({ onCreateCharacter }) {
       return;
     }
 
-    // Use final stats with ASI bonuses
-    const finalStats = derivedStats.finalStats;
+    // Use final stats with ASI bonuses (only apply bonuses for new characters, not edits)
+    const finalStats = isEditMode ? stats : derivedStats.finalStats;
     
     const payload = {
       name: name.trim(), 
@@ -225,7 +266,6 @@ export default function CharacterBuilder({ onCreateCharacter }) {
       character_class: className, 
       subclass: subclass || null,
       background, 
-      level: 1,
       edition,
       strength: Number(finalStats.strength), 
       dexterity: Number(finalStats.dexterity),
@@ -233,21 +273,35 @@ export default function CharacterBuilder({ onCreateCharacter }) {
       intelligence: Number(finalStats.intelligence),
       wisdom: Number(finalStats.wisdom), 
       charisma: Number(finalStats.charisma),
-      max_hp: derivedStats.hp,
-      current_hp: derivedStats.hp,
       notes: `Edition: ${edition}, Method: ${method}`, 
       portrait_url: portrait || ""
     };
+    
+    // Only set level and HP for new characters
+    if (!isEditMode) {
+      payload.level = 1;
+      payload.max_hp = derivedStats.hp;
+      payload.current_hp = derivedStats.hp;
+    }
 
     try {
       setIsSubmitting(true);
-      const response = await axios.post(`${API_BASE}/characters`, payload);
-      onCreateCharacter?.(response.data?.character);
-      localStorage.removeItem(DRAFT_KEY);
-      toast.success("Character created!");
-      navigate(response.data?.character_id ? `/characters/${response.data.character_id}` : '/home');
+      
+      if (isEditMode && characterId) {
+        // Update existing character
+        await axios.patch(`${API_BASE}/characters/${characterId}`, payload);
+        toast.success("Character updated!");
+        navigate(`/characters/${characterId}`);
+      } else {
+        // Create new character
+        const response = await axios.post(`${API_BASE}/characters`, payload);
+        onCreateCharacter?.(response.data?.character);
+        localStorage.removeItem(DRAFT_KEY);
+        toast.success("Character created!");
+        navigate(response.data?.character_id ? `/characters/${response.data.character_id}` : '/home');
+      }
     } catch (error) {
-      toast.error(error?.response?.data?.detail || 'Failed to create character');
+      toast.error(error?.response?.data?.detail || `Failed to ${isEditMode ? 'update' : 'create'} character`);
     } finally {
       setIsSubmitting(false);
     }
@@ -353,10 +407,16 @@ export default function CharacterBuilder({ onCreateCharacter }) {
         </div>
 
         <div style={panelStyle}>
+          {loadingCharacter ? (
+            <div style={{ textAlign: 'center', padding: '60px' }}>
+              <div style={{ color: theme.text.muted }}>Loading character...</div>
+            </div>
+          ) : (
+            <>
           <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: '2rem', marginBottom: '8px', background: 'linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Create Character
+            {isEditMode ? 'Edit Character' : 'Create Character'}
           </h1>
-          <p style={{ color: theme.text.muted, marginBottom: '32px' }}>Build your hero for the adventure ahead</p>
+          <p style={{ color: theme.text.muted, marginBottom: '32px' }}>{isEditMode ? 'Modify your hero\'s details' : 'Build your hero for the adventure ahead'}</p>
 
           <form onSubmit={handleSubmit}>
             {/* Edition Selection */}
@@ -640,9 +700,11 @@ export default function CharacterBuilder({ onCreateCharacter }) {
                 boxShadow: '0 4px 24px rgba(236, 72, 153, 0.4)'
               }}
             >
-              <Save size={20} /> {isSubmitting ? 'Creating...' : 'Create Character'}
+              <Save size={20} /> {isSubmitting ? (isEditMode ? 'Saving...' : 'Creating...') : (isEditMode ? 'Save Changes' : 'Create Character')}
             </button>
           </form>
+            </>
+          )}
         </div>
       </div>
     </div>
