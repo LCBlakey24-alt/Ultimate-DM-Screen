@@ -2,13 +2,13 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: '/app/tests/e2e',
-  outputDir: '/root/.emergent/automation_output/20260317_111045/test-results',
+  outputDir: '/root/.emergent/automation_output/20260317_114808/test-results',
   timeout: 60000,
   retries: 0,
   workers: 1,
   reporter: [
     ['line'],
-    ['json', { outputFile: '/root/.emergent/automation_output/20260317_111045/results.json' }],
+    ['json', { outputFile: '/root/.emergent/automation_output/20260317_114808/results.json' }],
   ],
   use: {
     baseURL: 'https://rook-fantasy-sunset.preview.emergentagent.com',

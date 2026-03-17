@@ -305,7 +305,6 @@ export const MONSTER_DATABASE = [
   // CR 14+
   { name: "Adult Black Dragon", cr: "14", hp: 195, ac: 19, type: "dragon", size: "Huge", speed: "40 ft., fly 80 ft., swim 40 ft.", abilities: "Amphibious, Legendary Resistance, Acid Breath (DC 18), Frightful Presence" },
   { name: "Adult Copper Dragon", cr: "14", hp: 184, ac: 18, type: "dragon", size: "Huge", speed: "40 ft., climb 40 ft., fly 80 ft.", abilities: "Legendary Resistance, Breath Weapons (DC 18), Frightful Presence" },
-  { name: "Death Tyrant", cr: "14", hp: 187, ac: 19, type: "undead", size: "Large", speed: "0 ft., fly 20 ft.", abilities: "Negative Energy Cone, Eye Rays, Legendary Actions" },
   { name: "Ice Devil", cr: "14", hp: 180, ac: 18, type: "fiend", size: "Large", speed: "40 ft.", abilities: "Devil's Sight, Magic Resistance, Wall of Ice (DC 17)" },
   
   // CR 15+
