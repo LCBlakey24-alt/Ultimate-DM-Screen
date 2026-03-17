@@ -11,7 +11,7 @@ export default defineConfig({
     ['json', { outputFile: '/root/.emergent/automation_output/20260317_111045/results.json' }],
   ],
   use: {
-    baseURL: 'https://keeper-preview-1.preview.emergentagent.com',
+    baseURL: 'https://rook-fantasy-sunset.preview.emergentagent.com',
     screenshot: 'only-on-failure',
     trace: 'off',
     headless: true,

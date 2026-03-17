@@ -8,7 +8,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://keeper-preview-1.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://rook-fantasy-sunset.preview.emergentagent.com').rstrip('/')
 
 # Test credentials for admin/legendary user
 TEST_USER = {
