@@ -6,10 +6,10 @@ Build a TTRPG application called "Rookie Quest Keeper" (ROOK) with a "Fantasy Su
 ## Visual Theme: Fantasy Sunset
 All pages share a consistent visual theme:
 - **Background**: Dark purple gradient over scenic mountain/sunset image
-- **Glass Panels**: Frosted glass effect with backdrop blur (darker for better text visibility)
-- **Accent Colors**: Purple (#390292), Pink (#ee006b), Orange (#ff3600)
+- **Glass Panels**: Frosted glass effect with backdrop blur
+- **Accent Colors**: Purple (#8B5CF6), Pink (#EC4899), Gold (#F59E0B)
 - **Typography**: Cinzel for headers, Montserrat for body
-- **Animations**: Tab hover glow, card hover scale, floating logo
+- **NO GREEN**: Replaced all green (#22c55e) with gold (#F59E0B)
 
 ## Current Access Model (March 2026)
 - **Player Features**: LOCKED - "Coming Soon" overlay on home page
@@ -25,17 +25,26 @@ All pages share a consistent visual theme:
 
 *Player benefits included when Player tier launches
 
-## Bug Fixes Completed (March 2026)
+## Recent Updates (March 2026)
 
-### P0/P1 Bugs (FIXED)
-- [x] **Level Up Flow Fixed** - API URL corrected in LevelUpWizard.js
-- [x] **Edit Character Fixed** - Added missing route, CharacterBuilder supports editMode
-- [x] **HP Display Fixed** - Frontend clamps HP to maxHp when loading
+### GM Side Improvements
+- [x] **Campaign Settings Modal** - New "Settings" button in Campaign Dashboard header
+  - Upload Custom Rulesets (PDFs, JSON)
+  - Upload Custom Races & Classes
+  - Upload Custom Items & Spells
+  - Upload Custom Monsters & NPCs
+- [x] **Color Scheme Fixed** - Replaced all green colors with gold/purple across GM tools
+  - GM Screen Names tab: Gold accent colors
+  - GM Screen Tables tab: Shop Name uses gold
+  - GM Screen Party tab: Pink/purple colors
+  - Random Tables: Gold "Save to Notes" button
 
-### P2 Bugs (FIXED)
-- [x] **Combat tracker enemy list** - Shows all 303 monsters (no limit)
-- [x] **Monster Lookup** - Uses local MONSTER_DATABASE
-- [x] **Landing page text visibility** - Darker glass panels with white text
+### Previous Bug Fixes (Still Working)
+- [x] Level Up Flow - Fixed API URL
+- [x] Edit Character - Added missing route
+- [x] HP Display - Clamps HP to maxHp
+- [x] Combat tracker - Shows all 303 monsters
+- [x] Monster Lookup - Uses local database
 
 ## Implemented Features
 
@@ -43,38 +52,34 @@ All pages share a consistent visual theme:
 - [x] Centered logo with "KEEPER" in large white text with glow
 - [x] Foggy glass panels for readability
 - [x] 4-tier pricing: Free, Player (Coming Soon), GM (£3.99), Legendary (£5.99)
-- [x] Legendary tier shows "Player tier included*" with explanatory note
 
 ### Home Dashboard
 - [x] **Player Section**: LOCKED with "Coming Soon" overlay
-  - Explains "Character creation, inventory management, and player tools are currently under development"
-  - Suggests "Subscribe to Legendary tier to get early access when available!"
-- [x] **GM Section**: Fully functional
-  - Create/manage campaigns
-  - Campaign navigation
-  - All GM tools accessible
+- [x] **GM Section**: Fully functional with campaigns visible
 
-### Character System (Locked but Implemented)
-- [x] Character sheet with Fantasy Sunset theme
-- [x] **Character Edit Mode** - Edit via CharacterBuilder
-- [x] **3D Dramatic Dice Roller** - Animated bouncing dice
-- [x] **Clickable rolls** - Saves, skills, attacks, spells
-- [x] **Level Up Wizard with MULTICLASSING**
-- [x] **Equipment & Inventory System** - 3,059 items database
-- [x] **Temporary HP** - Blue field with +/- controls, absorbs damage first
-- [x] **Proficient Skills** - Purple glow highlighting
+### Campaign Dashboard
+- [x] **Settings button** in header (purple) - Opens upload modal
+- [x] **GM Screen button** (orange/red) - Opens GM tools
+- [x] **ROOK assistant** panel on right side
+- [x] **World Setting** with style selector (Fantasy, Sci-Fi, Dark Medieval, etc.)
+- [x] Sidebar navigation: World, Maps, Gods, Locations, NPCs, Chronicle, Combat, GM Tools
 
-### GM Features
-- [x] Campaign Dashboard with Fantasy Sunset theme
-- [x] GM Screen with combat tools
-- [x] Monster Lookup (303 SRD monsters)
-- [x] Combat tracker
-- [x] AI tools integration
+### GM Screen
+- [x] **12 tabs**: Combat, Location, NPCs, Dice, Monsters, Creatures, Names, Tables, Loot Gen, Inventory, Party, Notes
+- [x] **Fantasy Sunset colors** throughout
+- [x] **Gold accents** for GM-specific features
+- [x] NPC Name Generator with save functionality
+- [x] Random Tables (Tavern Name, Shop Name, NPC Quirk, Weather, Plot Hook, Mundane Loot)
+- [x] Monster Lookup (303 SRD creatures)
+- [x] Party Overview with stats
 
-### Integrations
-- [x] Stripe (subscription tiers)
-- [x] Resend (email)
-- [x] Emergent LLM Key (ROOK AI)
+### Character System (Locked but Ready)
+- [x] Character Builder with edit mode
+- [x] 3D Dice Roller
+- [x] Equipment & Inventory System (3,059 items)
+- [x] Temporary HP with damage absorption
+- [x] Proficient skills with purple glow
+- [x] Level Up Wizard with Multiclassing
 
 ## Remaining Tasks
 
@@ -85,31 +90,29 @@ All pages share a consistent visual theme:
 4. Enable real-time GM loot drops
 
 ### Upcoming Features
-1. **Real-time GM Loot System** - Drag-drop loot via WebSockets
-2. **Map Creator Enhancements** - Textured tools, pan/zoom
-3. **Player Timeline UI** - Display campaign events
+1. **Implement file uploads** - Connect Settings modal uploads to backend
+2. **Real-time GM Loot System** - WebSocket drag-drop
+3. **Map Creator Enhancements** - Textured tools, pan/zoom
 
 ### Future/Backlog
 1. Soundboard with ambient noises
 2. PDF export for character sheets
 3. Live audio transcription
 4. VTT with video/audio chat
-5. Backend refactoring (split server.py - 8000+ lines)
+5. Backend refactoring (split server.py)
 
 ## Technical Architecture
 ```
-/app/frontend/src/
-├── components/
-│   ├── LandingPage.js        - 4-tier pricing, centered logo
-│   ├── UnifiedDashboard.js   - Player section locked, GM functional
-│   ├── CharacterBuilder.js   - Edit mode support
-│   ├── CharacterSheetFull.js - Temp HP, inventory, proficient skills
-│   ├── CharacterInventory.js - Equipment slots, 3000+ items
-│   ├── LevelUpWizard.js      - Multiclassing support
-│   └── MonsterLookup.js      - Local 303-monster database
-└── data/
-    ├── itemsDatabase.js      - 3,059 SRD items
-    └── monsterDatabase.js    - 303 SRD monsters
+/app/frontend/src/components/
+├── LandingPage.js        - 4-tier pricing, centered logo
+├── UnifiedDashboard.js   - Player section locked, GM functional
+├── CampaignDashboard.js  - Settings modal, GM Screen button, ROOK helper
+├── GMScreen.js           - 12 tabs, gold accent colors
+├── RandomTables.js       - Gold "Save to Notes" button
+├── CharacterBuilder.js   - Edit mode support
+├── CharacterSheetFull.js - Temp HP, inventory, proficient skills
+├── CharacterInventory.js - Equipment slots, 3000+ items
+└── LevelUpWizard.js      - Multiclassing support
 ```
 
 ## Test Credentials (Preview Only)
