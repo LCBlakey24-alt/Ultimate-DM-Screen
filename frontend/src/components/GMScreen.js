@@ -265,13 +265,10 @@ function GMScreen({ username }) {
     { id: 'combat', icon: Swords, label: 'Combat' },
     { id: 'location', icon: Compass, label: 'Location' },
     { id: 'npcs', icon: UserCircle, label: 'NPCs' },
-    { id: 'dice', icon: Dices, label: 'Dice' },
     { id: 'monsters', icon: Skull, label: 'Monsters' },
-    { id: 'creatures', icon: PlusCircle, label: 'Creatures' },
-    { id: 'names', icon: UserPlus, label: 'Names' },
     { id: 'tables', icon: Wand2, label: 'Tables' },
-    { id: 'loot', icon: Coins, label: 'Loot Gen' },
-    { id: 'inventory', icon: Package, label: 'Inventory' },
+    { id: 'loot', icon: Coins, label: 'Loot' },
+    { id: 'dice', icon: Dices, label: 'Dice' },
     { id: 'party', icon: Users, label: 'Party' },
     { id: 'notes', icon: FileText, label: 'Notes' },
   ];
@@ -593,63 +590,26 @@ function GMScreen({ username }) {
           )}
 
           {/* NPCs TAB */}
+          {/* NPCS TAB - Combined with Name Generator */}
           {activeTab === 'npcs' && (
-            <NPCQuickReference campaignId={campaignId} />
-          )}
-
-          {/* DICE TAB */}
-          {activeTab === 'dice' && (
             <div>
               <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Dices size={24} style={{ color: theme.accent.primary }} /> Dice Roller
-              </h2>
-              <DiceRoller />
-            </div>
-          )}
-
-          {/* MONSTER LOOKUP TAB */}
-          {activeTab === 'monsters' && (
-            <div>
-              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Skull size={24} style={{ color: '#EF4444' }} /> Monster Lookup
-              </h2>
-              <MonsterLookup />
-            </div>
-          )}
-
-          {/* CUSTOM CREATURES TAB */}
-          {activeTab === 'creatures' && (
-            <div>
-              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <PlusCircle size={24} style={{ color: '#10b981' }} /> Custom Creatures
-              </h2>
-              <p style={{ color: theme.text.secondary, fontSize: '15px', marginBottom: '20px' }}>
-                Create your own homebrew monsters or import creatures from CSV files. Custom creatures can be used in any encounter.
-              </p>
-              <CustomCreatureManager 
-                campaignId={campaignId}
-                isOpen={true}
-                onClose={() => {}}
-                onSelectCreature={(creature) => {
-                  toast.success(`${creature.name} added! Go to Combat tab to use it in an encounter.`);
-                }}
-                embedded={true}
-              />
-            </div>
-          )}
-
-          {/* NAMES GENERATOR TAB */}
-          {activeTab === 'names' && (
-            <div>
-              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <UserPlus size={24} style={{ color: theme.accent.orange }} /> NPC Name Generator
+                <UserCircle size={24} style={{ color: theme.accent.orange }} /> NPCs & Name Generator
               </h2>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                {/* Generator Controls */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+                {/* Left: Saved NPCs */}
+                <div style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '12px', padding: '20px' }}>
+                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '16px' }}>
+                    Saved NPCs
+                  </h3>
+                  <NPCQuickReference campaignId={campaignId} />
+                </div>
+                
+                {/* Right: Name Generator */}
                 <div>
-                  <div style={{ background: theme.bg.card, border: `1px solid ${theme.accent.orange}`, borderRadius: '12px', padding: '24px' }}>
-                    <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.orange, fontWeight: '600', marginBottom: '20px' }}>Generate a Name</h3>
+                  <div style={{ background: theme.bg.card, border: `1px solid ${theme.accent.orange}`, borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
+                    <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.orange, fontWeight: '600', marginBottom: '20px' }}>Generate NPC Name</h3>
                     
                     {/* Race Selection */}
                     <div style={{ marginBottom: '16px' }}>
@@ -730,12 +690,12 @@ function GMScreen({ username }) {
                   {/* Generated Name Display */}
                   {generatedName && (
                     <div style={{ 
-                      marginTop: '20px',
                       background: 'rgba(139, 92, 246, 0.1)',
                       border: `1px solid ${theme.accent.primary}`,
                       borderRadius: '12px',
                       padding: '24px',
-                      textAlign: 'center'
+                      textAlign: 'center',
+                      marginBottom: '20px'
                     }}>
                       <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Generated Name</p>
                       <h3 style={{ 
@@ -788,49 +748,40 @@ function GMScreen({ username }) {
                       </div>
                     </div>
                   )}
-                </div>
-                
-                {/* Saved Names This Session */}
-                <div>
-                  <div style={{ background: theme.bg.card, border: `1px solid ${theme.accent.primary}`, borderRadius: '12px', padding: '24px' }}>
-                    <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <UserPlus size={18} />
-                      Saved This Session ({savedNames.length})
-                    </h3>
-                    
-                    {savedNames.length === 0 ? (
-                      <div style={{ textAlign: 'center', padding: '30px', color: theme.text.muted }}>
-                        <UserPlus size={40} style={{ margin: '0 auto 12px', opacity: 0.3 }} />
-                        <p style={{ fontSize: '15px' }}>Names you save will appear here</p>
-                        <p style={{ fontSize: '14px', marginTop: '4px' }}>They'll also be added to your campaign's NPC list</p>
-                      </div>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '350px', overflowY: 'auto' }}>
+                  
+                  {/* Saved Names This Session */}
+                  {savedNames.length > 0 && (
+                    <div style={{ background: theme.bg.card, border: `1px solid ${theme.accent.primary}`, borderRadius: '12px', padding: '20px' }}>
+                      <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '14px', color: theme.accent.gm, fontWeight: '600', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <UserPlus size={16} />
+                        Saved This Session ({savedNames.length})
+                      </h3>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
                         {savedNames.map((name, index) => (
                           <div
                             key={index}
                             style={{
-                              padding: '12px 16px',
+                              padding: '10px 14px',
                               background: theme.accent.gmSubtle,
                               border: `1px solid ${theme.accent.gm}`,
-                              borderRadius: '10px',
+                              borderRadius: '8px',
                               display: 'flex',
                               justifyContent: 'space-between',
                               alignItems: 'center'
                             }}
                           >
                             <div>
-                              <span style={{ color: theme.text.primary, fontWeight: '500', fontSize: '15px' }}>{name.fullName}</span>
-                              <span style={{ color: theme.text.secondary, fontSize: '13px', marginLeft: '10px' }}>
+                              <span style={{ color: theme.text.primary, fontWeight: '500', fontSize: '14px' }}>{name.fullName}</span>
+                              <span style={{ color: theme.text.secondary, fontSize: '12px', marginLeft: '8px' }}>
                                 {name.race.charAt(0).toUpperCase() + name.race.slice(1)}
                               </span>
                             </div>
                             <span style={{ 
                               background: theme.accent.gm, 
                               color: '#000', 
-                              padding: '4px 10px', 
-                              borderRadius: '6px', 
-                              fontSize: '11px', 
+                              padding: '3px 8px', 
+                              borderRadius: '4px', 
+                              fontSize: '10px', 
                               fontWeight: '600' 
                             }}>
                               SAVED
@@ -838,22 +789,56 @@ function GMScreen({ username }) {
                           </div>
                         ))}
                       </div>
-                    )}
-                  </div>
-                  
-                  {/* Quick Tips */}
-                  <div style={{ 
-                    marginTop: '16px',
-                    background: 'rgba(139, 92, 246, 0.1)',
-                    border: `1px solid ${theme.accent.primary}`,
-                    borderRadius: '12px',
-                    padding: '16px'
-                  }}>
-                    <p style={{ color: theme.accent.primary, fontSize: '13px', fontWeight: '600', marginBottom: '8px' }}>Quick Tip</p>
-                    <p style={{ color: theme.text.secondary, fontSize: '14px', lineHeight: '1.5' }}>
-                      Saved NPCs appear in your campaign's NPC tab where you can add more details like occupation, personality, and backstory!
-                    </p>
-                  </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* DICE TAB */}
+          {activeTab === 'dice' && (
+            <div>
+              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Dices size={24} style={{ color: theme.accent.primary }} /> Dice Roller
+              </h2>
+              <DiceRoller />
+            </div>
+          )}
+
+          {/* MONSTER LOOKUP TAB - Combined with Custom Creatures */}
+          {activeTab === 'monsters' && (
+            <div>
+              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Skull size={24} style={{ color: '#EF4444' }} /> Monsters & Custom Creatures
+              </h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+                {/* Left: Monster Lookup */}
+                <div style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '12px', padding: '20px' }}>
+                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: '#EF4444', fontWeight: '600', marginBottom: '16px' }}>
+                    SRD Monster Lookup
+                  </h3>
+                  <MonsterLookup />
+                </div>
+                
+                {/* Right: Custom Creatures */}
+                <div style={{ background: theme.bg.card, border: `1px solid ${theme.accent.gm}`, borderRadius: '12px', padding: '20px' }}>
+                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '12px' }}>
+                    Custom Creatures
+                  </h3>
+                  <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '16px' }}>
+                    Create homebrew monsters or import creatures from CSV files.
+                  </p>
+                  <CustomCreatureManager 
+                    campaignId={campaignId}
+                    isOpen={true}
+                    onClose={() => {}}
+                    onSelectCreature={(creature) => {
+                      toast.success(`${creature.name} added! Go to Combat tab to use it in an encounter.`);
+                    }}
+                    embedded={true}
+                  />
                 </div>
               </div>
             </div>
@@ -885,16 +870,6 @@ function GMScreen({ username }) {
                 <Coins size={24} style={{ color: theme.accent.gm }} /> Loot Generator
               </h2>
               <LootGenerator />
-            </div>
-          )}
-
-          {/* INVENTORY TAB */}
-          {activeTab === 'inventory' && (
-            <div>
-              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Package size={24} style={{ color: theme.accent.secondary }} /> Party Inventory
-              </h2>
-              <PartyInventory campaignId={campaignId} players={players} />
             </div>
           )}
 
