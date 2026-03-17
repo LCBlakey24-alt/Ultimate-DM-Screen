@@ -486,7 +486,7 @@ function GMScreen({ username }) {
                           <div style={{ fontWeight: '500', marginBottom: '4px', fontSize: '15px' }}>{s.name}</div>
                           <div style={{ fontSize: '13px', color: theme.text.secondary, display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                             <span>{s.combatants?.length || 0} combatants</span>
-                            {s.map_url && <span style={{ color: '#22c55e' }}>Has Map</span>}
+                            {s.map_url && <span style={{ color: theme.accent.gm }}>Has Map</span>}
                             {s.combatants?.some(c => c.loot?.length > 0) && <span style={{ color: '#F59E0B' }}>Has Loot</span>}
                           </div>
                         </button>
@@ -773,7 +773,7 @@ function GMScreen({ username }) {
                             borderRadius: '10px',
                             padding: '12px',
                             fontSize: '14px',
-                            background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+                            background: `linear-gradient(135deg, ${theme.accent.gm} 0%, #D97706 100%)`
                           }}
                         >
                           {savingNPC ? (
@@ -793,7 +793,7 @@ function GMScreen({ username }) {
                 {/* Saved Names This Session */}
                 <div>
                   <div style={{ background: theme.bg.card, border: `1px solid ${theme.accent.primary}`, borderRadius: '12px', padding: '24px' }}>
-                    <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: '#22c55e', fontWeight: '600', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <UserPlus size={18} />
                       Saved This Session ({savedNames.length})
                     </h3>
@@ -811,8 +811,8 @@ function GMScreen({ username }) {
                             key={index}
                             style={{
                               padding: '12px 16px',
-                              background: 'rgba(34, 197, 94, 0.1)',
-                              border: '1px solid #22c55e',
+                              background: theme.accent.gmSubtle,
+                              border: `1px solid ${theme.accent.gm}`,
                               borderRadius: '10px',
                               display: 'flex',
                               justifyContent: 'space-between',
@@ -826,7 +826,7 @@ function GMScreen({ username }) {
                               </span>
                             </div>
                             <span style={{ 
-                              background: '#22c55e', 
+                              background: theme.accent.gm, 
                               color: '#000', 
                               padding: '4px 10px', 
                               borderRadius: '6px', 
@@ -863,7 +863,7 @@ function GMScreen({ username }) {
           {activeTab === 'tables' && (
             <div>
               <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Wand2 size={24} style={{ color: '#22c55e' }} /> Random Tables
+                <Wand2 size={24} style={{ color: theme.accent.gm }} /> Random Tables
               </h2>
               <RandomTables onSaveAsNote={(text) => {
                 const newNote = {
@@ -936,16 +936,16 @@ function GMScreen({ username }) {
                       </div>
                       
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                        <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #ef4444', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: '#ef4444', fontWeight: '500' }}>HP</div>
+                        <div style={{ background: 'rgba(236, 72, 153, 0.15)', border: `1px solid ${theme.accent.secondary}`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '12px', color: theme.accent.secondary, fontWeight: '500' }}>HP</div>
                           <div style={{ fontSize: '18px', color: theme.text.primary, fontWeight: '600' }}>{player.hp || player.max_hp || '?'}/{player.max_hp || '?'}</div>
                         </div>
                         <div style={{ background: 'rgba(139, 92, 246, 0.15)', border: `1px solid ${theme.accent.primary}`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
                           <div style={{ fontSize: '12px', color: theme.accent.primary, fontWeight: '500' }}>AC</div>
                           <div style={{ fontSize: '18px', color: theme.text.primary, fontWeight: '600' }}>{player.ac || '?'}</div>
                         </div>
-                        <div style={{ background: 'rgba(34, 197, 94, 0.15)', border: '1px solid #22c55e', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: '#22c55e', fontWeight: '500' }}>INIT</div>
+                        <div style={{ background: theme.accent.gmSubtle, border: `1px solid ${theme.accent.gm}`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '12px', color: theme.accent.gm, fontWeight: '500' }}>INIT</div>
                           <div style={{ fontSize: '18px', color: theme.text.primary, fontWeight: '600' }}>
                             {player.stats?.dexterity ? (() => {
                               const mod = Math.floor((player.stats.dexterity - 10) / 2);
@@ -965,7 +965,7 @@ function GMScreen({ username }) {
                               <div key={stat} style={{ textAlign: 'center', background: 'rgba(15, 10, 30, 0.5)', borderRadius: '6px', padding: '6px' }}>
                                 <div style={{ fontSize: '11px', color: theme.text.muted }}>{stat}</div>
                                 <div style={{ fontSize: '14px', color: theme.text.primary, fontWeight: '500' }}>{val}</div>
-                                <div style={{ fontSize: '11px', color: mod >= 0 ? '#22c55e' : '#ef4444' }}>{mod >= 0 ? '+' : ''}{mod}</div>
+                                <div style={{ fontSize: '11px', color: mod >= 0 ? theme.accent.gm : theme.accent.secondary }}>{mod >= 0 ? '+' : ''}{mod}</div>
                               </div>
                             );
                           })}

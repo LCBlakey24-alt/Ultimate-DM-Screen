@@ -16,7 +16,7 @@ const RANDOM_TABLES = {
   shop_names: {
     label: 'Shop Name',
     icon: MapPin,
-    color: '#22c55e',
+    color: '#F59E0B',
     prefixes: ["Mercer's", "Thaddeus'", "Elara's", "Grimsby's", "Thornwick's", "Ironhand's", "Silvertongue's", "Blackwood's", "Goldleaf's", "Stormwind's"],
     types: ['Emporium', 'Goods & Supplies', 'Curios', 'Fine Wares', 'Trading Post', 'Market', 'Bazaar', 'Provisions', 'Sundries', 'Boutique'],
     generate: (data) => `${data.prefixes[Math.floor(Math.random() * data.prefixes.length)]} ${data.types[Math.floor(Math.random() * data.types.length)]}`
@@ -319,10 +319,10 @@ function RandomTables({ onSaveAsNote }) {
                         alignItems: 'center',
                         gap: '4px',
                         padding: '6px 10px',
-                        background: 'rgba(34, 197, 94, 0.2)',
+                        background: 'rgba(245, 158, 11, 0.2)',
                         border: 'none',
                         borderRadius: '6px',
-                        color: '#22c55e',
+                        color: '#F59E0B',
                         fontSize: '11px',
                         cursor: 'pointer'
                       }}
