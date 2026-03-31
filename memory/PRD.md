@@ -7,87 +7,69 @@ Build an immersive, context-aware TTRPG application with strict SRD 5.1 complian
 ```
 /app
 ├── backend/
-│   ├── server.py              # Thin orchestrator (~150 lines)
-│   ├── models/                # Pydantic models (~1900 lines)
+│   ├── server.py              # Thin orchestrator
+│   ├── models/                # Pydantic models (LevelUpRequest: fighting_style, subclass, maneuvers, rules_edition)
 │   ├── routes/                # 18 modular route files
 │   └── utils/                 
-└── frontend/src/components/
-    ├── ui/DiceRoller3D.js          # BG3-style sequential dice animation
-    ├── DiceRoller.js               # GM dice roller with advantage/disadvantage
-    ├── DiceRollHistory.js          # Dice roll history sidebar
-    ├── CharacterSheetFull.js       # Player page (top stat boxes removed)
-    ├── CharacterCombatTab.js       # Combat dashboard
-    ├── CharacterSpellbook.js       # Smart Spellbook
-    ├── CharacterInventory.js       # Quick-Action Inventory
-    ├── PlayerProgressionDashboard.js # Character progression timeline
-    ├── LevelUpWizard.js            # Full Fighter support (fighting style, subclass, maneuvers)
-    ├── SessionJournal.js           # Auto-tagging session log
-    ├── PartyInventory.js           # Loot/Economy with treasure gen
-    ├── CampaignDashboard.js        # Fixed sidebar navigation
-    ├── GMScreen.js                 # GM tools with 14 tabs (includes AI Planner)
-    └── gm/
-        ├── AICoGM.js               # AI Co-GM assistant
-        ├── AISessionPlanner.js     # AI Session Outline & Replay generator
-        ├── SmartSessionLog.js      # Auto-tagging session log
-        ├── StoryArcTracker.js      # Story arc tracking
-        ├── NPCRelationshipMap.js   # NPC network visualization
-        ├── Soundboard.js           # Ambient sound effects
-        └── LiveSessionMode.js      # Live session tools
+└── frontend/src/
+    ├── components/
+    │   ├── ui/DiceRoller3D.js          # BG3-style sequential dice animation
+    │   ├── DiceRoller.js               # GM dice roller (bright theme, adv/disadv buttons)
+    │   ├── DiceRollHistory.js          # Dice roll history sidebar
+    │   ├── CharacterSheetFull.js       # Player page (quick dice bar, rollDice → combat)
+    │   ├── CharacterCombatTab.js       # Combat dashboard (HP tracker, clickable attacks, death saves w/ skull, roll mode)
+    │   ├── CharacterSpellbook.js       # Smart Spellbook
+    │   ├── CharacterInventory.js       # Quick-Action Inventory
+    │   ├── PlayerProgressionDashboard.js # Overview stats
+    │   ├── LevelUpWizard.js            # Fighter support (fighting style, subclass, maneuvers)
+    │   ├── GMScreen.js                 # GM tools (14 tabs including AI Planner)
+    │   └── gm/AISessionPlanner.js      # AI Session Outline & Replay
+    └── data/
+        ├── classFeatures.js            # 2014 + 2024 rules (features_2024 per class)
+        ├── classResources.js           # Indomitable, superiority_dice
+        └── spellDatabase.js
 ```
 
 ## Implemented Features
 
-### Phase 1-4: Core Platform, Refactoring, Player Page (Complete)
-Full auth, character CRUD, GM tools, world map, AI, 3D dice, soundboard, NPC network, 18-file backend modularization, Combat Tab, Smart Spellbook, Quick-Action Inventory, Level Up Wizard with spellcasting.
+### Phases 1-5: Core → Dice & Progression (Complete)
+Full auth, character CRUD, 18-route backend, GM tools, world map, AI, 3D dice (BG3-style), soundboard, NPC network, Smart Spellbook, Quick-Action Inventory, Player Progression Dashboard.
 
-### Phase 5: Dice & Progression (Complete)
-- **3D Dice Roller (BG3-style)**: Sequential animation with blue/purple flames, red/green for nat 1/20
-- **Player Progression Dashboard**: Visual timeline, achievement badges, stat cards
+### Phase 6: AI Planner & Dice History (Complete)
+- Dice Roll History Sidebar (Share Roll)
+- AI Session Outline Auto-generator (GPT-5.2)
+- AI Session Replay Generator (4 styles)
 
-### Phase 6: AI Planner & History (Complete - March 31, 2026)
-- **Dice Roll History Sidebar**: Session-persistent roll log with timestamps, crit/fumble highlights, Share Roll
-- **AI Session Outline Auto-generator**: GM tool, configurable focus/tone, GPT-5.2
-- **AI Session Replay Generator**: 4 writing styles, stored per campaign
+### Phase 7: Fighter System & Advantage Fix (Complete)
+- Fighter 20-level progression, subclasses (Champion/Battle Master/Eldritch Knight)
+- Dice advantage bug fix (takes highest, not sum)
+- Removed duplicate top stat boxes
 
-### Phase 7: Fighter System & Bug Fixes (Complete - March 31, 2026)
-- **Fighter Level-Up System Overhaul**:
-  - Complete 20-level progression with all features (Second Wind, Action Surge, Extra Attack scaling, Indomitable)
-  - Fighting Style selection at level 1 (6 styles: Archery, Defense, Dueling, Great Weapon Fighting, Protection, Two-Weapon Fighting)
-  - Subclass selection at level 3: Champion, Battle Master, Eldritch Knight with features at levels 3, 7, 10, 15, 18
-  - Battle Master maneuvers (16 total) with superiority dice resource tracking
-  - Indomitable resource tracking (long rest, scaling at 9/13/17)
-  - Auto-scaling Extra Attack (1→2→3 at levels 5/11/20)
-  - Backend LevelUpRequest model accepts fighting_style, subclass, maneuvers
-
-- **Removed Duplicate Top Stat Boxes**: HP/AC/Init/Speed row removed from player page header. Stats accessible via Overview tab (PlayerProgressionDashboard) and Combat tab (StatPills).
-
-- **Dice Roller Advantage Bug Fix**: 
-  - rollDice now accepts `rollType` parameter ('normal'|'advantage'|'disadvantage')
-  - Advantage: rolls 2d20, takes highest (not sum)
-  - Disadvantage: rolls 2d20, takes lowest
-  - Added Advantage/Disadvantage buttons to GM DiceRoller (D20 only)
-  - Result display shows which roll was kept with dropped roll crossed out
-  - Reckless Attack action auto-rolls with advantage
+### Phase 8: Combat UX Overhaul & Rules Edition (Complete - March 31, 2026)
+- **Clickable Attacks**: To-hit (red, +mod) and damage (gold, dice notation) buttons on every weapon. Versatile 2H damage button (purple). All trigger 3D dice roller.
+- **HP Tracker**: Visual HP bar with DMG/HEAL input field + buttons. Temp HP controls. All in combat tab.
+- **Roll Mode Toggle**: Disadvantage / Normal / Advantage toggle in combat tab. Affects all attack rolls.
+- **Death Save Animation**: Red skull SVG with scale-and-fade keyframe animation on failed saves. "Roll Save" button auto-handles NAT 1 (2 failures), NAT 20 (regain 1 HP), success/fail. "CHARACTER DEAD" / "STABILIZED" text at 3 fails/successes.
+- **Initiative Click**: Init stat pill clickable to roll 1d20+DEX.
+- **Quick Dice Bar**: Fixed bottom bar with d4/d6/d8/d10/d12/d20/D% buttons.
+- **GM Dice Roller Visibility**: Brightened background (dark purple panel, purple border), improved text contrast.
+- **Rules Edition Support (2014/2024)**: Edition badge in combat tab stat pills. Fighter has separate `features_2024` with 2024 PHB features (Weapon Mastery, Tactical Mind, Tactical Shift, Tactical Master, Studied Attacks). Backend model accepts `rules_edition` field.
 
 ## Prioritized Backlog
 
 ### P2 - Future Tasks
 - Event System: Custom activities with configurable costs/risks
 - Mini-game Engine: Gambling/racing with dice outcomes
+- Expand 2024 rules to other classes (Wizard, Rogue, Cleric, etc.)
 
-### Known Issues
+### Known Issues (External)
 - Production Login/Password Reset: BLOCKED (External host config)
-- Production Deployment Risk: Root cause of blank site unknown (BLOCKED)
-
-## Key API Endpoints
-- `PATCH /api/characters/{id}` - Partial update (HP, conditions, spell slots, currency, etc.)
-- `POST /api/characters/{id}/level-up` - Level up with fighting_style, subclass, maneuvers, spells
-- `POST /api/ai/session-outline/{campaign_id}` - Generate AI session outline
-- `POST /api/ai/session-replay/{campaign_id}` - Generate AI session replay
+- Production Deployment Risk: BLOCKED (External)
 
 ## Test Iterations
-- 62-65: Core features 100% | 67-68: P1 features & Dice 100% | 69: Dice History & AI 100%
-- 70: Fighter System, Advantage Fix, Stats Cleanup — 100%
+- 62-65: Core features 100% | 67-68: P1 features & Dice 100%
+- 69: Dice History & AI 100% | 70: Fighter System 100%
+- 71: Combat UX, HP Tracker, Clickable Attacks, Death Saves, Quick Dice, Rules Edition — 100%
 
 ---
 *Last Updated: March 31, 2026*
