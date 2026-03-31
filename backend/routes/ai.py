@@ -1,0 +1,1405 @@
+"""AI routes: ROOK generation, chat, portraits, tokens, session recap, smart notes."""
+from fastapi import APIRouter, HTTPException, Depends, status
+from config import db, logger, ROOT_DIR
+from utils.auth import (
+    get_current_user, verify_campaign_ownership, verify_campaign_membership,
+    check_premium_feature, increment_ai_usage, is_admin,
+    get_campaign_rule_system
+)
+from utils.helpers import get_campaign_context
+from models import (
+    UnseenServantRequest, UnseenServantResponse, AIGenerationRequest, AIGenerationResponse,
+    RookChatRequest, SmartNoteParseRequest, SmartNoteParseResponse, EntityMention, TimeChange,
+    PortraitGenerateRequest, TokenGenerateRequest, SessionRecapRequest,
+    God, GodCreate, NPC, NPCCreate, NPCStats, Location, LocationCreate,
+    PlaceOfInterest, PlaceOfInterestCreate, CustomCreature, CustomCreatureCreate
+)
+from typing import Optional, Dict, Any, List
+import uuid
+import json
+import os
+import re
+import base64
+import asyncio
+from datetime import datetime, timezone, timedelta
+
+try:
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+    EMERGENT_KEY = os.environ.get('EMERGENT_LLM_KEY')
+except ImportError:
+    LlmChat = None
+    UserMessage = None
+    OpenAIImageGeneration = None
+    EMERGENT_KEY = None
+
+router = APIRouter()
+
+@router.post("/ai/generate-with-rules")
+async def ai_generate_with_rules(request: Dict[str, Any], username: str = Depends(get_current_user)):
+    """AI generation that respects the campaign's rule system"""
+    campaign_id = request.get('campaign_id')
+    prompt_type = request.get('type')
+    context = request.get('context', '')
+    
+    if not campaign_id:
+        raise HTTPException(status_code=400, detail="campaign_id is required")
+    
+    campaign = await db.campaigns.find_one({'id': campaign_id}, {'_id': 0})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    rule_system = await get_campaign_rule_system(campaign_id)
+    system_name = campaign.get('system', 'Fantasy d20')
+    
+    # Build context from uploaded content in the rule system
+    system_context = ""
+    if rule_system:
+        system_id = rule_system.get('id')
+        classes = await db.game_classes.find({'system_id': system_id}, {'_id': 0, 'name': 1}).to_list(10)
+        races = await db.game_races.find({'system_id': system_id}, {'_id': 0, 'name': 1}).to_list(10)
+        if classes or races:
+            system_context = "\n\nContent available in this campaign's rule system:\n"
+            if classes:
+                system_context += f"Classes: {', '.join(c['name'] for c in classes)}\n"
+            if races:
+                system_context += f"Races/Species: {', '.join(r['name'] for r in races)}\n"
+    
+    # Generic rule instructions based on campaign system setting
+    rule_instructions = f"You are a TTRPG assistant for a campaign using the {system_name} rules.\n\n"
+    rule_instructions += "Generate content that fits this campaign's setting and rule system. "
+    rule_instructions += "Use appropriate terminology and mechanics for the system being used.\n"
+    rule_instructions += system_context
+    
+    prompts = {
+        'npc': f"{rule_instructions}\n\nGenerate an NPC. Context: {context}\n\nProvide: name, race/species, class, background, personality, and a secret.",
+        'encounter': f"{rule_instructions}\n\nGenerate a combat encounter. Context: {context}\n\nProvide: enemies, quantity, tactics, and loot.",
+        'item': f"{rule_instructions}\n\nGenerate a magic item. Context: {context}\n\nProvide: name, rarity, effects using {system_name} rules.",
+        'location': f"{rule_instructions}\n\nGenerate a location. Context: {context}\n\nProvide: name, description, features, and secrets.",
+        'plot_hook': f"{rule_instructions}\n\nGenerate a plot hook. Context: {context}\n\nProvide: hook, complications, NPCs, and rewards.",
+    }
+    
+    prompt = prompts.get(prompt_type, f"{rule_instructions}\n\n{context}")
+    
+    try:
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+        
+        chat = LlmChat(
+            api_key=llm_key,
+            session_id=f"ai-gen-{username}-{uuid.uuid4().hex[:8]}",
+            system_message="You are a creative TTRPG game master assistant. Generate content that is engaging, balanced, and fits the specified rule system."
+        ).with_model("openai", "gpt-5.2")
+        
+        user_msg = UserMessage(text=prompt)
+        response = await chat.send_message(user_msg)
+        response_text = response.strip() if isinstance(response, str) else str(response)
+        
+        return {"result": response_text, "rule_system": system_name}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
+
+# ROOK AI endpoint (renamed from Unseen Servant)
+@router.post("/rook/generate", response_model=UnseenServantResponse)
+@router.post("/unseen-servant/generate", response_model=UnseenServantResponse)  # Backwards compatibility
+async def rook_generate(request: UnseenServantRequest, username: str = Depends(get_current_user)):
+    """ROOK AI: Generates and auto-saves fantasy TTRPG content"""
+    try:
+        # Check if user can use AI features
+        can_use_ai = await check_premium_feature(username, 'ai')
+        if not can_use_ai:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="You've reached your monthly AI generation limit. Upgrade to Adventurer for unlimited access!"
+            )
+        
+        # Verify campaign ownership
+        campaign = await db.campaigns.find_one({'id': request.campaign_id, 'dm_user_id': username})
+        if not campaign:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+        
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="AI key not configured")
+        
+        # Define JSON schema prompts for each entity type
+        entity_prompts = {
+            'god': '''Generate a fantasy deity. Respond ONLY with valid JSON in this exact format:
+{
+  "name": "deity name",
+  "domain": "primary domain (e.g., War, Knowledge, Nature)",
+  "description": "2-3 sentences describing the deity",
+  "symbol": "the deity's holy symbol",
+  "alignment": "alignment (e.g., Lawful Good, Chaotic Neutral)",
+  "notes": "additional lore or worship practices"
+}''',
+            'npc': '''Generate a fantasy NPC with full stat block. Respond ONLY with valid JSON in this exact format:
+{
+  "name": "NPC full name",
+  "race": "Race",
+  "class_name": "Class",
+  "level": 5,
+  "alignment": "Alignment",
+  "description": "physical appearance, personality, and background in 2-3 sentences",
+  "appearance": "physical appearance",
+  "personality": "personality traits",
+  "backstory": "brief backstory",
+  "role": "Role in world",
+  "hp": 32,
+  "max_hp": 32,
+  "ac": 14,
+  "speed": "30 ft.",
+  "proficiency_bonus": 3,
+  "stats": {"strength": 10, "dexterity": 14, "constitution": 12, "intelligence": 13, "wisdom": 10, "charisma": 16},
+  "saving_throws": ["wisdom", "charisma"],
+  "skills": ["arcana", "deception"],
+  "attacks": [{"name": "Dagger", "bonus": "+5", "damage": "1d4+2 piercing", "notes": "Finesse"}],
+  "abilities": [{"name": "Feature", "description": "Description"}],
+  "spells": null,
+  "location": "where they can be found",
+  "notes": "motivations, secrets, or plot hooks"
+}''',
+            'location': '''Generate a fantasy location. Respond ONLY with valid JSON in this exact format:
+{
+  "name": "location name",
+  "location_type": "type (City, Town, Village, Dungeon, Forest, etc.)",
+  "description": "2-3 sentences describing the location",
+  "notable_npcs": "key NPCs found here",
+  "notes": "secrets, hooks, or GM notes"
+}''',
+            'place_of_interest': '''Generate a place of interest (shop, tavern, temple, etc.). Respond ONLY with valid JSON in this exact format:
+{
+  "name": "establishment name",
+  "place_type": "type (shop, tavern, temple, blacksmith, guild, library, residence, other)",
+  "description": "2-3 sentences describing the place",
+  "owner": "name of proprietor/owner",
+  "services": "what services or items are offered",
+  "notes": "secrets, rumors, or plot hooks"
+}''',
+            'creature': '''Generate a custom creature/monster for a fantasy TTRPG. Respond ONLY with valid JSON in this exact format:
+{
+  "name": "creature name",
+  "cr": "challenge rating (0, 1/8, 1/4, 1/2, or 1-30)",
+  "hp": 45,
+  "ac": 14,
+  "type": "creature type (aberration, beast, celestial, construct, dragon, elemental, fey, fiend, giant, humanoid, monstrosity, ooze, plant, undead)",
+  "size": "size (Tiny, Small, Medium, Large, Huge, Gargantuan)",
+  "speed": "movement speeds (e.g., 30 ft., fly 60 ft.)",
+  "abilities": "key abilities, attacks, and special features (e.g., Multiattack, Bite 2d6+4, Fire Breath 8d6)",
+  "description": "2-3 sentences describing appearance, behavior, and lore"
+}'''
+        }
+        
+        # Add aliases for entity types
+        entity_prompts['world_place'] = entity_prompts['place_of_interest']
+        
+        if request.entity_type not in entity_prompts:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid entity type: {request.entity_type}")
+        
+        # Gather campaign context for smarter AI generation
+        campaign_context = await get_campaign_context(request.campaign_id)
+        
+        # Build the full prompt with campaign context
+        system_message = """You are ROOK, a magical AI assistant for tabletop RPG Game Masters. You generate content that fits seamlessly into the GM's existing world and campaign.
+
+IMPORTANT RULES:
+1. Generate content in strict JSON format only - no markdown, no explanations
+2. Make your creations fit naturally with the existing world context provided
+3. Reference existing NPCs, locations, or deities when appropriate
+4. Maintain consistency with the established setting and tone"""
+
+        # Build prompt with context
+        context_section = ""
+        if campaign_context:
+            context_section = f"\n\n=== CAMPAIGN CONTEXT ===\n{campaign_context}\n=== END CONTEXT ===\n\nUse this context to make your generation fit naturally into this world.\n\n"
+        
+        full_prompt = f"{entity_prompts[request.entity_type]}{context_section}\nUser request: {request.prompt}"
+        
+        # Initialize LLM
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"{username}-unseen-servant-{datetime.now(timezone.utc).timestamp()}",
+            system_message=system_message
+        )
+        chat.with_model('openai', 'gpt-4o')
+        
+        # Get AI response
+        response = await chat.send_message(UserMessage(text=full_prompt))
+        
+        # Parse JSON from response
+        json_match = re.search(r'\{[\s\S]*\}', response)
+        if not json_match:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to parse AI response as JSON")
+        
+        entity_data = json.loads(json_match.group())
+        
+        # Save entity based on type
+        entity_id = str(uuid.uuid4())
+        entity_name = entity_data.get('name', 'Unnamed')
+        
+        if request.entity_type == 'god':
+            new_god = God(
+                id=entity_id,
+                campaign_id=request.campaign_id,
+                name=entity_data.get('name', 'Unknown Deity'),
+                domain=entity_data.get('domain', ''),
+                description=entity_data.get('description', ''),
+                symbol=entity_data.get('symbol', ''),
+                alignment=entity_data.get('alignment', ''),
+                notes=entity_data.get('notes', '')
+            )
+            await db.gods.insert_one(new_god.model_dump())
+            
+        elif request.entity_type == 'npc':
+            stats_data = entity_data.get('stats', {})
+            spells_data = entity_data.get('spells')
+            npc_doc = {
+                'id': entity_id,
+                'campaign_id': request.campaign_id,
+                'name': entity_data.get('name', 'Unknown NPC'),
+                'race': entity_data.get('race', 'Human'),
+                'class_name': entity_data.get('class_name', 'Commoner'),
+                'level': entity_data.get('level', 1),
+                'alignment': entity_data.get('alignment', ''),
+                'description': entity_data.get('description', ''),
+                'appearance': entity_data.get('appearance', ''),
+                'personality': entity_data.get('personality', ''),
+                'backstory': entity_data.get('backstory', ''),
+                'role': entity_data.get('role', ''),
+                'hp': entity_data.get('hp', 10),
+                'max_hp': entity_data.get('max_hp', entity_data.get('hp', 10)),
+                'ac': entity_data.get('ac', 10),
+                'speed': entity_data.get('speed', '30 ft.'),
+                'proficiency_bonus': entity_data.get('proficiency_bonus', 2),
+                'stats': {
+                    'strength': stats_data.get('strength', 10),
+                    'dexterity': stats_data.get('dexterity', 10),
+                    'constitution': stats_data.get('constitution', 10),
+                    'intelligence': stats_data.get('intelligence', 10),
+                    'wisdom': stats_data.get('wisdom', 10),
+                    'charisma': stats_data.get('charisma', 10),
+                },
+                'saving_throws': entity_data.get('saving_throws', []),
+                'skills': entity_data.get('skills', []),
+                'attacks': entity_data.get('attacks', []),
+                'abilities': entity_data.get('abilities', []),
+                'spells': spells_data,
+                'location': entity_data.get('location', ''),
+                'notes': entity_data.get('notes', ''),
+                'color': '#8A2BE2',
+                'created_at': datetime.now(timezone.utc).isoformat()
+            }
+            await db.npcs.insert_one(npc_doc)
+            npc_doc.pop('_id', None)
+            
+        elif request.entity_type == 'location':
+            new_location = Location(
+                id=entity_id,
+                campaign_id=request.campaign_id,
+                name=entity_data.get('name', 'Unknown Location'),
+                location_type=entity_data.get('location_type', ''),
+                description=entity_data.get('description', ''),
+                notable_npcs=entity_data.get('notable_npcs', ''),
+                notes=entity_data.get('notes', ''),
+                places_of_interest=[]
+            )
+            await db.locations.insert_one(new_location.model_dump())
+            
+        elif request.entity_type == 'place_of_interest' or request.entity_type == 'world_place':
+            if not request.location_id:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="location_id required for place_of_interest")
+            
+            location = await db.locations.find_one({'id': request.location_id, 'campaign_id': request.campaign_id})
+            if not location:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Location not found")
+            
+            new_place = {
+                'id': entity_id,
+                'name': entity_data.get('name', 'Unknown Place'),
+                'place_type': entity_data.get('place_type', 'other'),
+                'description': entity_data.get('description', ''),
+                'owner': entity_data.get('owner', ''),
+                'services': entity_data.get('services', ''),
+                'notes': entity_data.get('notes', '')
+            }
+            
+            places = location.get('places_of_interest', [])
+            places.append(new_place)
+            
+            await db.locations.update_one(
+                {'id': request.location_id},
+                {'$set': {'places_of_interest': places}}
+            )
+        
+        elif request.entity_type == 'creature':
+            new_creature = CustomCreature(
+                id=entity_id,
+                campaign_id=request.campaign_id,
+                name=entity_data.get('name', 'Unknown Creature'),
+                cr=str(entity_data.get('cr', '1')),
+                hp=int(entity_data.get('hp', 10)),
+                ac=int(entity_data.get('ac', 10)),
+                type=entity_data.get('type', 'humanoid'),
+                size=entity_data.get('size', 'Medium'),
+                speed=entity_data.get('speed', '30 ft.'),
+                abilities=entity_data.get('abilities', ''),
+                description=entity_data.get('description', ''),
+                created_by=username
+            )
+            await db.custom_creatures.insert_one(new_creature.model_dump())
+        
+        # Increment AI usage for free tier users
+        await increment_ai_usage(username)
+        
+        return UnseenServantResponse(
+            success=True,
+            entity_type=request.entity_type,
+            entity_id=entity_id,
+            entity_name=entity_name,
+            message=f"Successfully created {request.entity_type}: {entity_name}"
+        )
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON parse error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to parse AI response")
+    except HTTPException:
+        raise  # Re-raise HTTP exceptions as-is
+    except Exception as e:
+        logger.error(f"Unseen Servant error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Generation failed: {str(e)}")
+
+@router.post("/ai/generate", response_model=AIGenerationResponse)
+async def generate_ai_content(request: AIGenerationRequest, username: str = Depends(get_current_user)):
+    try:
+        # Check if user can use AI features
+        can_use_ai = await check_premium_feature(username, 'ai')
+        if not can_use_ai:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="You've reached your monthly AI generation limit. Upgrade to Adventurer for unlimited access!"
+            )
+        
+        # Get API key from environment
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="AI key not configured")
+        
+        # Get campaign context if campaign_id provided
+        system_context = ""
+        world_context = ""
+        if hasattr(request, 'campaign_id') and request.campaign_id:
+            campaign = await db.campaigns.find_one({'id': request.campaign_id})
+            if campaign:
+                system_context = f" for {campaign.get('system', '5e Compatible')} system"
+                
+                # Build world setting context
+                world_setting = campaign.get('world_setting', 'custom')
+                world_notes = campaign.get('world_setting_notes', '')
+                
+                # Pre-defined world setting descriptions (generic, no trademarks)
+                world_settings_lore = {
+                    'high_fantasy': """This campaign is set in a classic high fantasy world. Use typical fantasy tropes: medieval kingdoms, ancient magic, dragons, elves, dwarves, and epic quests. Include diverse regions, powerful wizards, noble knights, and dark forces threatening the realm. Reference generic fantasy elements like guilds, temples, taverns, and dungeons.""",
+                    
+                    'magipunk_noir': """This campaign blends magic with industrial/noir elements. Include magical technology, airships, trains, and urban intrigue. Feature powerful corporations or houses, political conspiracies, and a world recovering from a great war. Magic is integrated into daily life and industry.""",
+                    
+                    'classic_fantasy': """This is a classic sword & sorcery setting with a gritty, old-school feel. Include powerful wizards, ancient ruins, warring nations, and morally grey characters. Magic is powerful but dangerous. Focus on exploration, treasure hunting, and political intrigue.""",
+                    
+                    'epic_fantasy': """This campaign features epic, sweeping narratives with clear good vs evil conflicts. Include dragon riders, fallen kingdoms, prophecies, and world-changing events. Heroes are destined for greatness and face dark lords threatening all civilization.""",
+                    
+                    'gothic_horror': """This campaign is set in a dark, gothic horror world. Create content with atmosphere of dread, tragedy, and moral ambiguity. Include cursed lands, tragic villains, monsters born of fear, and domains ruled by powerful evil. Maintain themes of horror, isolation, and the corruption of good.""",
+                    
+                    'fantasy_space': """This campaign involves fantasy space travel between worlds. Include magical ships that sail between crystal spheres, bizarre alien creatures, and adventures across multiple worlds. Blend fantasy magic with the wonder of space exploration.""",
+                    
+                    'planar_adventure': """This campaign deals with multiple planes of existence. Include extraplanar cities, philosophical factions, portals to other realms, and beings of pure elemental or conceptual nature. Explore themes of belief, reality, and the nature of existence.""",
+                    
+                    'custom': """This is a custom/homebrew setting. Generate original content that fits a fantasy TTRPG world. Use the additional context provided by the GM to inform your creations."""
+                }
+                
+                base_world_context = world_settings_lore.get(world_setting, world_settings_lore['custom'])
+                
+                # Add custom notes if provided
+                if world_notes:
+                    world_context = f"\n\nWORLD SETTING CONTEXT:\n{base_world_context}\n\nADDITIONAL CAMPAIGN NOTES:\n{world_notes}"
+                else:
+                    world_context = f"\n\nWORLD SETTING CONTEXT:\n{base_world_context}"
+                
+                # Add custom rules if available (limit context size)
+                custom_rules = []
+                async for rule in db.campaign_custom_rules.find({'campaign_id': request.campaign_id}, {'_id': 0, 'content': 1, 'name': 1}).limit(3):
+                    custom_rules.append(rule)
+                
+                if custom_rules:
+                    # Limit total rules context to ~50K chars to avoid overwhelming the AI
+                    rules_context = "\n\nCUSTOM RULES REFERENCE (use these rules when applicable):\n"
+                    total_chars = 0
+                    for rule in custom_rules:
+                        rule_content = rule.get('content', '')
+                        if total_chars + len(rule_content) < 50000:
+                            rules_context += f"\n--- {rule.get('name', 'Custom Rules')} ---\n{rule_content}\n"
+                            total_chars += len(rule_content)
+                        else:
+                            # Truncate if too long
+                            remaining = 50000 - total_chars
+                            if remaining > 1000:
+                                rules_context += f"\n--- {rule.get('name', 'Custom Rules')} (truncated) ---\n{rule_content[:remaining]}...\n"
+                            break
+                    world_context += rules_context
+        
+        # Create system message based on generation type
+        system_messages = {
+            'encounter': f'You are a TTRPG encounter designer{system_context}. Create detailed, balanced encounters with monsters, tactics, and environmental details following the rules and conventions of the system.{world_context}',
+            'trap': f'You are a TTRPG trap designer{system_context}. Create creative and dangerous traps with trigger mechanisms, effects, and disarm methods appropriate for the system.{world_context}',
+            'npc': f'You are a TTRPG NPC creator{system_context}. Create memorable NPCs with personality, backstory, stats, and plot hooks using the system\'s stat format. Make NPCs fit naturally into the campaign world.{world_context}',
+            'world': f'You are a TTRPG world-builder{system_context}. Create rich locations, lore, factions, and story hooks that fit seamlessly into the established setting.{world_context}',
+            'plot': f'You are a TTRPG story architect{system_context}. Create compelling plot hooks, story arcs, and adventure ideas that tie into the world\'s established lore and factions.{world_context}',
+            'location': f'You are a TTRPG location designer{system_context}. Create detailed locations with atmosphere, inhabitants, secrets, and adventure hooks appropriate for the setting.{world_context}'
+        }
+        
+        system_message = system_messages.get(request.generation_type, f'You are a helpful TTRPG assistant{system_context}.{world_context}')
+        
+        # Initialize LLM chat
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"{username}-{request.generation_type}-{datetime.now(timezone.utc).timestamp()}",
+            system_message=system_message
+        )
+        chat.with_model('openai', 'gpt-4o')
+        
+        # Create user message
+        user_message = UserMessage(text=request.prompt)
+        
+        # Get AI response
+        response = await chat.send_message(user_message)
+        
+        # Increment AI usage for free tier users
+        await increment_ai_usage(username)
+        
+        return AIGenerationResponse(
+            content=response,
+            generation_type=request.generation_type
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"AI generation error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"AI generation failed: {str(e)}")
+
+async def generate_ai_content(request: AIGenerationRequest, username: str = Depends(get_current_user)):
+    try:
+        # Check if user can use AI features
+        can_use_ai = await check_premium_feature(username, 'ai')
+        if not can_use_ai:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="You've reached your monthly AI generation limit. Upgrade to Adventurer for unlimited access!"
+            )
+        
+        # Get API key from environment
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="AI key not configured")
+        
+        # Get campaign context if campaign_id provided
+        system_context = ""
+        world_context = ""
+        if hasattr(request, 'campaign_id') and request.campaign_id:
+            campaign = await db.campaigns.find_one({'id': request.campaign_id})
+            if campaign:
+                system_context = f" for {campaign.get('system', '5e Compatible')} system"
+                
+                # Build world setting context
+                world_setting = campaign.get('world_setting', 'custom')
+                world_notes = campaign.get('world_setting_notes', '')
+                
+                # Pre-defined world setting descriptions (generic, no trademarks)
+                world_settings_lore = {
+                    'high_fantasy': """This campaign is set in a classic high fantasy world. Use typical fantasy tropes: medieval kingdoms, ancient magic, dragons, elves, dwarves, and epic quests. Include diverse regions, powerful wizards, noble knights, and dark forces threatening the realm. Reference generic fantasy elements like guilds, temples, taverns, and dungeons.""",
+                    
+                    'magipunk_noir': """This campaign blends magic with industrial/noir elements. Include magical technology, airships, trains, and urban intrigue. Feature powerful corporations or houses, political conspiracies, and a world recovering from a great war. Magic is integrated into daily life and industry.""",
+                    
+                    'classic_fantasy': """This is a classic sword & sorcery setting with a gritty, old-school feel. Include powerful wizards, ancient ruins, warring nations, and morally grey characters. Magic is powerful but dangerous. Focus on exploration, treasure hunting, and political intrigue.""",
+                    
+                    'epic_fantasy': """This campaign features epic, sweeping narratives with clear good vs evil conflicts. Include dragon riders, fallen kingdoms, prophecies, and world-changing events. Heroes are destined for greatness and face dark lords threatening all civilization.""",
+                    
+                    'gothic_horror': """This campaign is set in a dark, gothic horror world. Create content with atmosphere of dread, tragedy, and moral ambiguity. Include cursed lands, tragic villains, monsters born of fear, and domains ruled by powerful evil. Maintain themes of horror, isolation, and the corruption of good.""",
+                    
+                    'fantasy_space': """This campaign involves fantasy space travel between worlds. Include magical ships that sail between crystal spheres, bizarre alien creatures, and adventures across multiple worlds. Blend fantasy magic with the wonder of space exploration.""",
+                    
+                    'planar_adventure': """This campaign deals with multiple planes of existence. Include extraplanar cities, philosophical factions, portals to other realms, and beings of pure elemental or conceptual nature. Explore themes of belief, reality, and the nature of existence.""",
+                    
+                    'custom': """This is a custom/homebrew setting. Generate original content that fits a fantasy TTRPG world. Use the additional context provided by the GM to inform your creations."""
+                }
+                
+                base_world_context = world_settings_lore.get(world_setting, world_settings_lore['custom'])
+                
+                # Add custom notes if provided
+                if world_notes:
+                    world_context = f"\n\nWORLD SETTING CONTEXT:\n{base_world_context}\n\nADDITIONAL CAMPAIGN NOTES:\n{world_notes}"
+                else:
+                    world_context = f"\n\nWORLD SETTING CONTEXT:\n{base_world_context}"
+                
+                # Add custom rules if available (limit context size)
+                custom_rules = []
+                async for rule in db.campaign_custom_rules.find({'campaign_id': request.campaign_id}, {'_id': 0, 'content': 1, 'name': 1}).limit(3):
+                    custom_rules.append(rule)
+                
+                if custom_rules:
+                    # Limit total rules context to ~50K chars to avoid overwhelming the AI
+                    rules_context = "\n\nCUSTOM RULES REFERENCE (use these rules when applicable):\n"
+                    total_chars = 0
+                    for rule in custom_rules:
+                        rule_content = rule.get('content', '')
+                        if total_chars + len(rule_content) < 50000:
+                            rules_context += f"\n--- {rule.get('name', 'Custom Rules')} ---\n{rule_content}\n"
+                            total_chars += len(rule_content)
+                        else:
+                            # Truncate if too long
+                            remaining = 50000 - total_chars
+                            if remaining > 1000:
+                                rules_context += f"\n--- {rule.get('name', 'Custom Rules')} (truncated) ---\n{rule_content[:remaining]}...\n"
+                            break
+                    world_context += rules_context
+        
+        # Create system message based on generation type
+        system_messages = {
+            'encounter': f'You are a TTRPG encounter designer{system_context}. Create detailed, balanced encounters with monsters, tactics, and environmental details following the rules and conventions of the system.{world_context}',
+            'trap': f'You are a TTRPG trap designer{system_context}. Create creative and dangerous traps with trigger mechanisms, effects, and disarm methods appropriate for the system.{world_context}',
+            'npc': f'You are a TTRPG NPC creator{system_context}. Create memorable NPCs with personality, backstory, stats, and plot hooks using the system\'s stat format. Make NPCs fit naturally into the campaign world.{world_context}',
+            'world': f'You are a TTRPG world-builder{system_context}. Create rich locations, lore, factions, and story hooks that fit seamlessly into the established setting.{world_context}',
+            'plot': f'You are a TTRPG story architect{system_context}. Create compelling plot hooks, story arcs, and adventure ideas that tie into the world\'s established lore and factions.{world_context}',
+            'location': f'You are a TTRPG location designer{system_context}. Create detailed locations with atmosphere, inhabitants, secrets, and adventure hooks appropriate for the setting.{world_context}'
+        }
+        
+        system_message = system_messages.get(request.generation_type, f'You are a helpful TTRPG assistant{system_context}.{world_context}')
+        
+        # Initialize LLM chat
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"{username}-{request.generation_type}-{datetime.now(timezone.utc).timestamp()}",
+            system_message=system_message
+        )
+        chat.with_model('openai', 'gpt-4o')
+        
+        # Create user message
+        user_message = UserMessage(text=request.prompt)
+        
+        # Get AI response
+        response = await chat.send_message(user_message)
+        
+        # Increment AI usage for free tier users
+        await increment_ai_usage(username)
+        
+        return AIGenerationResponse(
+            content=response,
+            generation_type=request.generation_type
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"AI generation error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"AI generation failed: {str(e)}")
+
+
+@router.post("/rook/chat")
+async def rook_chat(request: RookChatRequest, username: str = Depends(get_current_user)):
+    """ROOK AI Co-GM: Context-aware chat assistant for the GM Screen."""
+    can_use_ai = await check_premium_feature(username, 'ai')
+    if not can_use_ai:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="AI generation limit reached. Upgrade for unlimited access!")
+    
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="AI key not configured")
+    
+    campaign_context = ""
+    if request.campaign_id:
+        campaign_context = await get_campaign_context(request.campaign_id)
+    
+    system_msg = request.context or "You are ROOK, an AI co-GM assistant for D&D 5e. Help the Game Master with encounters, NPCs, world building, and story development. Use only SRD/OGL content. Be creative, concise, and dramatic."
+    if campaign_context:
+        system_msg += f"\n\nCAMPAIGN CONTEXT:\n{campaign_context}"
+    
+    chat = LlmChat(
+        api_key=api_key,
+        session_id=f"{username}-cogm-{datetime.now(timezone.utc).timestamp()}",
+        system_message=system_msg
+    )
+    chat.with_model('openai', 'gpt-4o')
+    
+    response = await chat.send_message(UserMessage(text=request.message))
+    await increment_ai_usage(username)
+    
+    return {"response": response}
+
+@router.post("/campaigns/{campaign_id}/ingame-notes/{note_id}/process-ai")
+async def process_note_with_ai(campaign_id: str, note_id: str, username: str = Depends(get_current_user)):
+    try:
+        campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+        if not campaign:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+        
+        note = await db.ingame_notes.find_one({'id': note_id, 'campaign_id': campaign_id})
+        if not note:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+        
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="AI key not configured")
+        
+        # Get campaign context
+        players = await db.players.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        npcs = await db.npcs.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        locations = await db.locations.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        gods = await db.gods.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        
+        player_names = [p['name'] for p in players]
+        npc_names = [n['name'] for n in npcs]
+        location_names = [l['name'] for l in locations]
+        god_names = [g['name'] for g in gods]
+        
+        system_message = f"""You are an AI assistant helping organize tabletop RPG campaign notes.
+Given campaign notes from a session, extract structured information and suggest additions to existing entities or new entities to create.
+
+Campaign Context:
+- Players: {', '.join(player_names) if player_names else 'None yet'}
+- NPCs: {', '.join(npc_names) if npc_names else 'None yet'}
+- Locations: {', '.join(location_names) if location_names else 'None yet'}
+- Gods: {', '.join(god_names) if god_names else 'None yet'}
+
+Analyze the session notes and return a JSON response with this structure:
+{{
+  "new_npcs": [{{ "name": "NPC Name", "description": "Brief description", "notes": "Session context" }}],
+  "new_locations": [{{ "name": "Location Name", "type": "city/dungeon/etc", "description": "Brief description", "notes": "Session context" }}],
+  "new_gods": [{{ "name": "God Name", "domain": "Domain", "description": "Brief description" }}],
+  "npc_updates": [{{ "name": "Existing NPC Name", "additional_notes": "New information learned" }}],
+  "location_updates": [{{ "name": "Existing Location Name", "additional_notes": "New information learned" }}]
+}}
+
+Only include entities that are explicitly mentioned in the notes. Return ONLY valid JSON, no other text."""
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"process-note-{note_id}",
+            system_message=system_message
+        )
+        chat.with_model('openai', 'gpt-4o')
+        
+        user_message = UserMessage(text=f"Session Notes:\n\n{note['content']}")
+        response = await chat.send_message(user_message)
+        
+        # Parse the AI response
+        import json
+        try:
+            # Extract JSON from response
+            json_start = response.find('{')
+            json_end = response.rfind('}') + 1
+            if json_start >= 0 and json_end > json_start:
+                suggestions = json.loads(response[json_start:json_end])
+            else:
+                suggestions = {}
+        except:
+            suggestions = {}
+        
+        # Mark note as processed
+        await db.ingame_notes.update_one(
+            {'id': note_id},
+            {'$set': {'ai_processed': True}}
+        )
+        
+        return {
+            'suggestions': suggestions,
+            'message': 'AI processing complete'
+        }
+    except Exception as e:
+        logger.error(f"AI processing error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"AI processing failed: {str(e)}")
+
+async def process_note_with_ai(campaign_id: str, note_id: str, username: str = Depends(get_current_user)):
+    try:
+        campaign = await db.campaigns.find_one({'id': campaign_id, 'dm_user_id': username})
+        if not campaign:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+        
+        note = await db.ingame_notes.find_one({'id': note_id, 'campaign_id': campaign_id})
+        if not note:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+        
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="AI key not configured")
+        
+        # Get campaign context
+        players = await db.players.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        npcs = await db.npcs.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        locations = await db.locations.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        gods = await db.gods.find({'campaign_id': campaign_id}, {'_id': 0}).to_list(100)
+        
+        player_names = [p['name'] for p in players]
+        npc_names = [n['name'] for n in npcs]
+        location_names = [l['name'] for l in locations]
+        god_names = [g['name'] for g in gods]
+        
+        system_message = f"""You are an AI assistant helping organize tabletop RPG campaign notes.
+Given campaign notes from a session, extract structured information and suggest additions to existing entities or new entities to create.
+
+Campaign Context:
+- Players: {', '.join(player_names) if player_names else 'None yet'}
+- NPCs: {', '.join(npc_names) if npc_names else 'None yet'}
+- Locations: {', '.join(location_names) if location_names else 'None yet'}
+- Gods: {', '.join(god_names) if god_names else 'None yet'}
+
+Analyze the session notes and return a JSON response with this structure:
+{{
+  "new_npcs": [{{ "name": "NPC Name", "description": "Brief description", "notes": "Session context" }}],
+  "new_locations": [{{ "name": "Location Name", "type": "city/dungeon/etc", "description": "Brief description", "notes": "Session context" }}],
+  "new_gods": [{{ "name": "God Name", "domain": "Domain", "description": "Brief description" }}],
+  "npc_updates": [{{ "name": "Existing NPC Name", "additional_notes": "New information learned" }}],
+  "location_updates": [{{ "name": "Existing Location Name", "additional_notes": "New information learned" }}]
+}}
+
+Only include entities that are explicitly mentioned in the notes. Return ONLY valid JSON, no other text."""
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"process-note-{note_id}",
+            system_message=system_message
+        )
+        chat.with_model('openai', 'gpt-4o')
+        
+        user_message = UserMessage(text=f"Session Notes:\n\n{note['content']}")
+        response = await chat.send_message(user_message)
+        
+        # Parse the AI response
+        import json
+        try:
+            # Extract JSON from response
+            json_start = response.find('{')
+            json_end = response.rfind('}') + 1
+            if json_start >= 0 and json_end > json_start:
+                suggestions = json.loads(response[json_start:json_end])
+            else:
+                suggestions = {}
+        except:
+            suggestions = {}
+        
+        # Mark note as processed
+        await db.ingame_notes.update_one(
+            {'id': note_id},
+            {'$set': {'ai_processed': True}}
+        )
+        
+        return {
+            'suggestions': suggestions,
+            'message': 'AI processing complete'
+        }
+    except Exception as e:
+        logger.error(f"AI processing error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"AI processing failed: {str(e)}")
+
+# ==================== PARTY INVENTORY ROUTES ====================
+
+async def parse_session_notes(
+    campaign_id: str, 
+    request: SmartNoteParseRequest,
+    username: str = Depends(get_current_user)
+):
+    """
+    Smart Note Parsing: Extract entities, events, and time changes from session notes.
+    Uses AI to automatically suggest updates to NPCs, locations, calendar, etc.
+    """
+    await verify_campaign_ownership(campaign_id, username)
+    
+    note_text = request.note_text
+    
+    if not note_text or len(note_text.strip()) < 10:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Note text too short. Please provide at least 10 characters."
+        )
+    
+    # Fetch existing campaign entities to help AI match them
+    npcs = await db.npcs.find({'campaign_id': campaign_id}, {'_id': 0, 'id': 1, 'name': 1}).to_list(200)  # Limit for AI context
+    locations = await db.locations.find({'campaign_id': campaign_id}, {'_id': 0, 'id': 1, 'name': 1}).to_list(200)
+    
+    npc_names = [npc['name'] for npc in npcs]
+    location_names = [loc['name'] for loc in locations]
+    
+    # Build AI prompt
+    system_message = """You are a tabletop RPG Game Master assistant that extracts structured information from session notes.
+
+Your task: Analyze the session notes and extract:
+1. NPCs mentioned (with what happened to them)
+2. Locations visited or mentioned
+3. Time that has passed (long rests, short rests, days, hours)
+4. Important events
+
+IMPORTANT: Match entity names to existing entities when possible (case-insensitive).
+
+Respond in valid JSON format only. No markdown, no explanations."""
+
+    user_prompt = f"""Session Notes:
+{note_text}
+
+Known NPCs in this campaign: {', '.join(npc_names) if npc_names else 'None yet'}
+Known Locations in this campaign: {', '.join(location_names) if location_names else 'None yet'}
+
+Extract and return JSON in this EXACT format:
+{{
+  "entities": [
+    {{
+      "type": "npc" or "location",
+      "name": "Exact name from notes",
+      "existing_name": "Matching name from known entities (or null if new)",
+      "notes": "What happened involving this entity",
+      "location": "Where this entity is (optional)"
+    }}
+  ],
+  "time_changes": [
+    {{
+      "type": "long_rest" or "short_rest" or "hours" or "days",
+      "amount": 8 (for hours) or 1 (for days),
+      "description": "Human readable description"
+    }}
+  ]
+}}"""
+
+    try:
+        # Use emergentintegrations LLM
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AI service not configured"
+            )
+        
+        chat = LlmChat(api_key=llm_key, model="gpt-5.2")
+        response = chat.send_message(
+            system_prompt=system_message,
+            messages=[UserMessage(role="user", content=user_prompt)],
+            max_tokens=1500,
+            temperature=0.3  # Lower temperature for more consistent parsing
+        )
+        
+        # Parse the response
+        response_text = response.message.content.strip()
+        
+        # Remove markdown code blocks if present
+        if response_text.startswith('```'):
+            response_text = response_text.split('```')[1]
+            if response_text.startswith('json'):
+                response_text = response_text[4:]
+            response_text = response_text.strip()
+        
+        parsed_data = json.loads(response_text)
+        
+        # Map to response model
+        entities_mentioned = []
+        for entity in parsed_data.get('entities', []):
+            entity_type = entity.get('type', '').lower()
+            name = entity.get('name', '')
+            existing_name = entity.get('existing_name')
+            notes = entity.get('notes', '')
+            location = entity.get('location')
+            
+            # Find existing entity ID
+            existing_id = None
+            if existing_name:
+                if entity_type == 'npc':
+                    for npc in npcs:
+                        if npc['name'].lower() == existing_name.lower():
+                            existing_id = npc['id']
+                            name = npc['name']  # Use exact existing name
+                            break
+                elif entity_type == 'location':
+                    for loc in locations:
+                        if loc['name'].lower() == existing_name.lower():
+                            existing_id = loc['id']
+                            name = loc['name']
+                            break
+            
+            entities_mentioned.append(EntityMention(
+                entity_type=entity_type,
+                name=name,
+                existing_id=existing_id,
+                suggested_notes=notes,
+                suggested_location=location,
+                confidence="high" if existing_id else "medium"
+            ))
+        
+        # Process time changes
+        time_changes_list = []
+        total_hours = 0
+        
+        for time_change in parsed_data.get('time_changes', []):
+            tc_type = time_change.get('type', '').lower()
+            amount = time_change.get('amount', 0)
+            description = time_change.get('description', '')
+            
+            # Calculate hours
+            if tc_type == 'long_rest':
+                total_hours += 8
+                amount = 8
+            elif tc_type == 'short_rest':
+                total_hours += 1
+                amount = 1
+            elif tc_type == 'hours':
+                total_hours += amount
+            elif tc_type == 'days':
+                total_hours += (amount * 24)
+            
+            time_changes_list.append(TimeChange(
+                type=tc_type,
+                amount=amount,
+                description=description
+            ))
+        
+        # Calculate new calendar date if time passed
+        new_calendar_date = None
+        calendar_update_suggested = total_hours > 0
+        
+        if calendar_update_suggested:
+            # Fetch current calendar
+            calendar = await db.calendar.find_one({'campaign_id': campaign_id}, {'_id': 0})
+            if calendar:
+                current_date_str = calendar.get('current_date', '')
+                if current_date_str:
+                    try:
+                        from datetime import datetime as dt
+                        current_date = dt.fromisoformat(current_date_str.replace('Z', '+00:00'))
+                        new_date = current_date + timedelta(hours=total_hours)
+                        new_calendar_date = new_date.isoformat()
+                    except:
+                        pass
+        
+        return SmartNoteParseResponse(
+            success=True,
+            entities_mentioned=entities_mentioned,
+            time_changes=time_changes_list,
+            calendar_update_suggested=calendar_update_suggested,
+            new_calendar_date=new_calendar_date
+        )
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse AI response as JSON: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="AI returned invalid format. Please try again."
+        )
+    except Exception as e:
+        logger.error(f"Smart note parsing failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to parse notes: {str(e)}"
+        )
+
+# ==================== USER RULESET ROUTES ====================
+
+async def ai_generate_portrait(
+    request: PortraitGenerateRequest,
+    username: str = Depends(get_current_user)
+):
+    """
+    AI Portrait Generator: Create a character portrait image.
+    Returns base64 encoded image data.
+    """
+    # Check AI usage limits
+    can_use_ai = await check_premium_feature(username, 'ai')
+    if not can_use_ai:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail={
+                "error": "ai_limit_reached",
+                "message": "You've reached your monthly AI generation limit. Upgrade for more AI calls!",
+                "upgrade_tier": "player"
+            }
+        )
+    
+    # Build portrait prompt
+    appearance_desc = request.appearance if request.appearance else "fantasy adventurer"
+    
+    portrait_prompt = f"""Fantasy character portrait, RPG style digital art:
+A {request.gender} {request.race} {request.character_class} named {request.name}.
+{appearance_desc}
+High quality fantasy illustration, detailed face, dramatic lighting, 
+medieval fantasy style, painterly, heroic pose, portrait framing.
+No text, no watermarks, professional fantasy art."""
+
+    try:
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AI service not configured"
+            )
+        
+        image_gen = OpenAIImageGeneration(api_key=llm_key)
+        images = await image_gen.generate_images(
+            prompt=portrait_prompt,
+            model="gpt-image-1",
+            number_of_images=1
+        )
+        
+        if images and len(images) > 0:
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            # Increment AI usage counter on success
+            await increment_ai_usage(username)
+            return {
+                "success": True,
+                "image_base64": image_base64,
+                "message": f"Portrait of {request.name} created!"
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="No image was generated"
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Portrait generation failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate portrait: {str(e)}"
+        )
+
+# ==================== COMBAT TOKEN GENERATION ====================
+
+async def ai_generate_token(
+    request: TokenGenerateRequest,
+    username: str = Depends(get_current_user)
+):
+    """
+    AI Token Generator: Create a circular battle map token for a creature.
+    Stores the token in DB and returns URL.
+    """
+    # Build token prompt
+    token_prompt = request.prompt or f"""Circular fantasy RPG battle map token portrait of {request.entity_name}, 
+    {request.entity_type} creature, dramatic lighting, detailed, dark fantasy style, 
+    facing forward, head and shoulders only, suitable for tabletop RPG battle map token,
+    circular frame, high contrast, no background, professional fantasy game art."""
+
+    try:
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AI service not configured"
+            )
+        
+        image_gen = OpenAIImageGeneration(api_key=llm_key)
+        images = await image_gen.generate_images(
+            prompt=token_prompt,
+            model="gpt-image-1",
+            number_of_images=1
+        )
+        
+        if images and len(images) > 0:
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            
+            # Store token in database
+            token_doc = {
+                'id': str(uuid.uuid4()),
+                'entity_id': request.entity_id,
+                'entity_name': request.entity_name,
+                'entity_type': request.entity_type,
+                'campaign_id': request.campaign_id,
+                'image_base64': image_base64,
+                'created_at': datetime.now(timezone.utc).isoformat(),
+                'created_by': username
+            }
+            
+            # Upsert - update if exists, insert if not
+            await db.combat_tokens.update_one(
+                {'entity_id': request.entity_id, 'campaign_id': request.campaign_id},
+                {'$set': token_doc},
+                upsert=True
+            )
+            
+            return {
+                "success": True,
+                "image_url": f"data:image/png;base64,{image_base64}",
+                "entity_id": request.entity_id,
+                "message": f"Token created for {request.entity_name}!"
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="No image was generated"
+            )
+            
+    except Exception as e:
+        logger.error(f"Token generation failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate token: {str(e)}"
+        )
+
+@router.get("/campaigns/{campaign_id}/tokens")
+async def get_campaign_tokens(
+    campaign_id: str,
+    username: str = Depends(get_current_user)
+):
+    """Get all combat tokens for a campaign"""
+    tokens = await db.combat_tokens.find(
+        {'campaign_id': campaign_id},
+        {'_id': 0, 'image_base64': 0}  # Don't return full base64 in list
+    ).to_list(200)
+    
+    # Return tokens with image URLs
+    result = []
+    for token in tokens:
+        token_data = await db.combat_tokens.find_one(
+            {'id': token['id']},
+            {'_id': 0}
+        )
+        if token_data and token_data.get('image_base64'):
+            token['image_url'] = f"data:image/png;base64,{token_data['image_base64']}"
+        result.append(token)
+    
+    return result
+
+async def get_campaign_tokens(
+    campaign_id: str,
+    username: str = Depends(get_current_user)
+):
+    """Get all combat tokens for a campaign"""
+    tokens = await db.combat_tokens.find(
+        {'campaign_id': campaign_id},
+        {'_id': 0, 'image_base64': 0}  # Don't return full base64 in list
+    ).to_list(200)
+    
+    # Return tokens with image URLs
+    result = []
+    for token in tokens:
+        token_data = await db.combat_tokens.find_one(
+            {'id': token['id']},
+            {'_id': 0}
+        )
+        if token_data and token_data.get('image_base64'):
+            token['image_url'] = f"data:image/png;base64,{token_data['image_base64']}"
+        result.append(token)
+    
+    return result
+
+@router.get("/campaigns/{campaign_id}/tokens/{entity_id}")
+async def get_entity_token(
+    campaign_id: str,
+    entity_id: str,
+    username: str = Depends(get_current_user)
+):
+    """Get a specific combat token"""
+    token = await db.combat_tokens.find_one(
+        {'entity_id': entity_id, 'campaign_id': campaign_id},
+        {'_id': 0}
+    )
+    
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Token not found"
+        )
+    
+    if token.get('image_base64'):
+        token['image_url'] = f"data:image/png;base64,{token['image_base64']}"
+        del token['image_base64']  # Don't expose raw base64
+    
+    return token
+
+async def get_entity_token(
+    campaign_id: str,
+    entity_id: str,
+    username: str = Depends(get_current_user)
+):
+    """Get a specific combat token"""
+    token = await db.combat_tokens.find_one(
+        {'entity_id': entity_id, 'campaign_id': campaign_id},
+        {'_id': 0}
+    )
+    
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Token not found"
+        )
+    
+    if token.get('image_base64'):
+        token['image_url'] = f"data:image/png;base64,{token['image_base64']}"
+        del token['image_base64']  # Don't expose raw base64
+    
+    return token
+
+# ==================== SRD DATA API ====================
+
+# Load SRD data at startup
+SRD_DATA_PATH = ROOT_DIR / 'data' / 'srd'
+
+def load_srd_file(filename):
+    """Load a JSON file from the SRD data directory"""
+    try:
+        filepath = SRD_DATA_PATH / filename
+        if filepath.exists():
+            with open(filepath, 'r') as f:
+                return json.load(f)
+    except Exception as e:
+        logger.error(f"Failed to load SRD file {filename}: {e}")
+    return None
+
+async def generate_session_recap(request: SessionRecapRequest, username: str = Depends(get_current_user)):
+    """Generate an AI-powered session recap from notes"""
+    
+    # Build prompt based on style and sections
+    sections_text = ", ".join(request.sections)
+    
+    style_instructions = {
+        "narrative": "Write in a flowing narrative style, like a story being told by a bard.",
+        "bullet": "Use concise bullet points for each key element.",
+        "detailed": "Provide a detailed, comprehensive log with timestamps and full descriptions."
+    }
+    
+    prompt = f"""You are a Game Master's assistant. Generate a session recap from the following notes.
+
+Style: {style_instructions.get(request.style, style_instructions['narrative'])}
+
+Include these sections (if relevant content exists): {sections_text}
+
+Session Notes:
+{request.notes}
+
+Generate a well-formatted recap that captures the key events, NPCs, locations, combat highlights, and any plot developments. Make it useful for both the GM to reference later and to share with players as a "previously on" summary.
+
+Format the output in Markdown."""
+
+    try:
+        # Try to use ROOK AI
+        from emergentintegrations.llm.chat import chat, UserMessage
+        
+        emergent_api_key = os.environ.get('EMERGENT_API_KEY')
+        if not emergent_api_key:
+            raise Exception("No API key")
+        
+        response = await asyncio.to_thread(
+            chat,
+            api_key=emergent_api_key,
+            messages=[UserMessage(content=prompt)],
+            model="gpt-4o-mini"
+        )
+        
+        content = response.content
+        
+    except Exception as e:
+        logging.warning(f"AI recap generation failed: {e}")
+        # Fallback to simple extraction
+        lines = request.notes.split('\n')
+        content = "# Session Recap\n\n"
+        content += "*Auto-generated summary*\n\n"
+        content += "## Key Events\n"
+        for line in lines[:10]:
+            if line.strip():
+                content += f"- {line.strip()}\n"
+        content += "\n## Next Session\n- Continue from current situation\n"
+    
+    recap = {
+        "content": content,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "style": request.style,
+        "word_count": len(content.split())
+    }
+    
+    # Optionally save to database
+    recap['campaign_id'] = request.campaign_id
+    recap['generated_by'] = username
+    recap['id'] = str(uuid.uuid4())
+    await db.session_recaps.insert_one(recap)
+    
+    return recap
+
+@router.get("/ai/session-recaps/{campaign_id}")
+async def get_session_recaps(campaign_id: str, username: str = Depends(get_current_user)):
+    """Get all session recaps for a campaign"""
+    recaps = await db.session_recaps.find(
+        {'campaign_id': campaign_id},
+        {'_id': 0}
+    ).sort('generated_at', -1).to_list(50)
+    return {"recaps": recaps}
+
+async def get_session_recaps(campaign_id: str, username: str = Depends(get_current_user)):
+    """Get all session recaps for a campaign"""
+    recaps = await db.session_recaps.find(
+        {'campaign_id': campaign_id},
+        {'_id': 0}
+    ).sort('generated_at', -1).to_list(50)
+    return {"recaps": recaps}
+
+
+# ==================== NPC RELATIONSHIP WEB ROUTES ====================
+
+async def ai_generate_with_rules(request: Dict[str, Any], username: str = Depends(get_current_user)):
+    """AI generation that respects the campaign's rule system"""
+    campaign_id = request.get('campaign_id')
+    prompt_type = request.get('type')
+    context = request.get('context', '')
+    
+    if not campaign_id:
+        raise HTTPException(status_code=400, detail="campaign_id is required")
+    
+    campaign = await db.campaigns.find_one({'id': campaign_id}, {'_id': 0})
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    rule_system = await get_campaign_rule_system(campaign_id)
+    system_name = campaign.get('system', 'Fantasy d20')
+    
+    # Build context from uploaded content in the rule system
+    system_context = ""
+    if rule_system:
+        system_id = rule_system.get('id')
+        classes = await db.game_classes.find({'system_id': system_id}, {'_id': 0, 'name': 1}).to_list(10)
+        races = await db.game_races.find({'system_id': system_id}, {'_id': 0, 'name': 1}).to_list(10)
+        if classes or races:
+            system_context = "\n\nContent available in this campaign's rule system:\n"
+            if classes:
+                system_context += f"Classes: {', '.join(c['name'] for c in classes)}\n"
+            if races:
+                system_context += f"Races/Species: {', '.join(r['name'] for r in races)}\n"
+    
+    # Generic rule instructions based on campaign system setting
+    rule_instructions = f"You are a TTRPG assistant for a campaign using the {system_name} rules.\n\n"
+    rule_instructions += "Generate content that fits this campaign's setting and rule system. "
+    rule_instructions += "Use appropriate terminology and mechanics for the system being used.\n"
+    rule_instructions += system_context
+    
+    prompts = {
+        'npc': f"{rule_instructions}\n\nGenerate an NPC. Context: {context}\n\nProvide: name, race/species, class, background, personality, and a secret.",
+        'encounter': f"{rule_instructions}\n\nGenerate a combat encounter. Context: {context}\n\nProvide: enemies, quantity, tactics, and loot.",
+        'item': f"{rule_instructions}\n\nGenerate a magic item. Context: {context}\n\nProvide: name, rarity, effects using {system_name} rules.",
+        'location': f"{rule_instructions}\n\nGenerate a location. Context: {context}\n\nProvide: name, description, features, and secrets.",
+        'plot_hook': f"{rule_instructions}\n\nGenerate a plot hook. Context: {context}\n\nProvide: hook, complications, NPCs, and rewards.",
+    }
+    
+    prompt = prompts.get(prompt_type, f"{rule_instructions}\n\n{context}")
+    
+    try:
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+        
+        chat = LlmChat(
+            api_key=llm_key,
+            session_id=f"ai-gen-{username}-{uuid.uuid4().hex[:8]}",
+            system_message="You are a creative TTRPG game master assistant. Generate content that is engaging, balanced, and fits the specified rule system."
+        ).with_model("openai", "gpt-5.2")
+        
+        user_msg = UserMessage(text=prompt)
+        response = await chat.send_message(user_msg)
+        response_text = response.strip() if isinstance(response, str) else str(response)
+        
+        return {"result": response_text, "rule_system": system_name}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
+
+
+# ==================== CHARACTER MULTICLASS SUPPORT ====================
+
+

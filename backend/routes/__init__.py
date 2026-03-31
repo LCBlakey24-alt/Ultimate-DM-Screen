@@ -1,0 +1,40 @@
+"""Route module - import all routers for inclusion in the main app."""
+from routes.auth import router as auth_router
+from routes.subscriptions import router as subscriptions_router
+from routes.admin import router as admin_router
+from routes.campaigns import router as campaigns_router
+from routes.campaign_content import router as campaign_content_router
+from routes.world import router as world_router
+from routes.notes import router as notes_router
+from routes.npcs import router as npcs_router
+from routes.combat import router as combat_router
+from routes.players import router as players_router
+from routes.maps import router as maps_router
+from routes.ai import router as ai_router
+from routes.inventory import router as inventory_router
+from routes.user_content import router as user_content_router
+from routes.characters import router as characters_router
+from routes.srd import router as srd_router
+from routes.progression import router as progression_router
+from routes.rule_systems import router as rule_systems_router
+
+all_routers = [
+    auth_router,
+    subscriptions_router,
+    admin_router,
+    campaigns_router,
+    campaign_content_router,
+    world_router,
+    notes_router,
+    npcs_router,
+    combat_router,
+    players_router,
+    maps_router,
+    ai_router,
+    inventory_router,
+    user_content_router,
+    characters_router,
+    srd_router,
+    progression_router,
+    rule_systems_router,
+]
