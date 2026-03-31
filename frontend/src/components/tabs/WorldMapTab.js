@@ -211,6 +211,7 @@ function WorldMapTab({ campaignId }) {
   const [travelMode, setTravelMode] = useState('walking');
   const [travelResult, setTravelResult] = useState(null);
   const [nearbyLocations, setNearbyLocations] = useState([]);
+  const [hoveredPin, setHoveredPin] = useState(null);
   
   // Travel animation
   const [travelAnim, setTravelAnim] = useState(null); // { from, to, dayProgress, totalDays, pathPoints }
@@ -783,11 +784,13 @@ function WorldMapTab({ campaignId }) {
                 <div key={pin.id}
                   onClick={(e) => handlePinClick(pin, e)}
                   onMouseDown={(e) => handlePinDragStart(pin, e)}
+                  onMouseEnter={() => setHoveredPin(pin)}
+                  onMouseLeave={() => setHoveredPin(null)}
                   data-testid={`map-pin-${pin.id}`}
                   style={{
                     position: 'absolute', left: `${pin.x}%`, top: `${pin.y}%`, transform: 'translate(-50%, -100%)',
                     cursor: mode === 'movePin' ? (isDrag ? 'grabbing' : 'grab') : 'pointer',
-                    zIndex: isSelected || isPathSrc || isDrag ? 10 : 1,
+                    zIndex: isSelected || isPathSrc || isDrag || hoveredPin?.id === pin.id ? 10 : 1,
                     transition: isDrag ? 'none' : 'all 0.15s ease'
                   }}
                 >
@@ -808,6 +811,48 @@ function WorldMapTab({ campaignId }) {
                   }}>
                     {isPathSrc ? `FROM: ${pin.name}` : pin.name}
                   </div>
+
+                  {/* Hover Preview Card */}
+                  {hoveredPin?.id === pin.id && !isDrag && !isSelected && (
+                    <div
+                      data-testid={`pin-preview-${pin.id}`}
+                      style={{
+                        position: 'absolute',
+                        bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+                        marginBottom: '12px',
+                        width: '220px',
+                        background: 'rgba(10, 5, 25, 0.95)',
+                        border: `1px solid ${pinColor}40`,
+                        borderRadius: '10px',
+                        padding: '10px 12px',
+                        boxShadow: `0 4px 20px rgba(0,0,0,0.6), 0 0 8px ${pinColor}30`,
+                        backdropFilter: 'blur(12px)',
+                        zIndex: 100,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                        <PinIcon size={14} color={pinColor} />
+                        <span style={{ color: '#fff', fontSize: '13px', fontWeight: 600 }}>{pin.name}</span>
+                      </div>
+                      <div style={{ fontSize: '10px', color: pinColor, textTransform: 'uppercase', fontWeight: 600, marginBottom: '4px' }}>
+                        {PIN_TYPES.find(t => t.id === pin.pin_type)?.label || pin.pin_type}
+                      </div>
+                      {pin.description && (
+                        <p style={{ color: '#9EB0D0', fontSize: '11px', lineHeight: '1.4', margin: 0, maxHeight: '60px', overflow: 'hidden' }}>
+                          {pin.description.length > 120 ? pin.description.substring(0, 120) + '...' : pin.description}
+                        </p>
+                      )}
+                      {pin.linked_location_id && (
+                        <div style={{ marginTop: '4px', fontSize: '10px', color: theme.cyan, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Link2 size={10} /> Linked location
+                        </div>
+                      )}
+                      {!pin.description && (
+                        <p style={{ color: '#6B7B9B', fontSize: '11px', fontStyle: 'italic' }}>Click to view details</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}

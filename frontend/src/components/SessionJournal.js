@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
   BookOpen, Plus, Calendar, ChevronDown, ChevronRight, Edit, Trash2,
-  Save, X, Search, Clock, User, Swords, Star, MapPin
+  Save, X, Search, Clock, User, Swords, Star, MapPin, Tag, Sparkles
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -35,6 +35,40 @@ const ENTRY_TYPES = [
   { id: 'note', label: 'Note', icon: BookOpen, color: '#6B7280' }
 ];
 
+// Auto-tag detection patterns
+const TAG_PATTERNS = {
+  combat: [/fight|fought|battle|attacked|killed|slain|defeated|ambush|initiative|damage|critical hit|hit points/i],
+  loot: [/found|looted|treasure|gold|reward|potion|scroll|magic item|enchanted|discovered|chest/i],
+  quest: [/quest|mission|task|objective|hired|asked us|promised|reward for|seek out|fetch|deliver/i],
+  travel: [/traveled|journey|rode|sailed|walked|arrived|departed|camp|rest|road|path|bridge/i],
+  social: [/talked|spoke|persuaded|intimidated|deceived|negotiated|bargained|charmed|befriended/i],
+  danger: [/trap|poison|curse|disease|undead|demon|dragon|ambush|betrayed|warned/i],
+  magic: [/spell|magic|ritual|arcane|divine|enchant|summon|portal|ward|rune/i],
+  death: [/died|death|unconscious|down|killed|fallen|resurrection|revive/i],
+  mystery: [/mysterious|clue|investigate|hidden|secret|riddle|puzzle|cryptic|ancient/i],
+};
+
+const TAG_COLORS = {
+  combat: '#EF4444', loot: '#A855F7', quest: '#3B82F6', travel: '#22C55E',
+  social: '#EC4899', danger: '#F59E0B', magic: '#6366F1', death: '#6B7280',
+  mystery: '#8B5CF6',
+};
+
+// Auto-detect tags from content
+function autoDetectTags(content, title) {
+  if (!content && !title) return [];
+  const text = `${title || ''} ${content || ''}`.toLowerCase();
+  const detected = [];
+  
+  for (const [tag, patterns] of Object.entries(TAG_PATTERNS)) {
+    if (patterns.some(p => p.test(text))) {
+      detected.push(tag);
+    }
+  }
+  
+  return detected;
+}
+
 function SessionJournal({ characterId, campaignId }) {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,6 +85,21 @@ function SessionJournal({ characterId, campaignId }) {
     session_number: '',
     tags: []
   });
+  const [filterTag, setFilterTag] = useState('all');
+
+  // Auto-detect tags when content changes
+  const updateEntryWithAutoTags = useCallback((field, value) => {
+    setNewEntry(prev => {
+      const updated = { ...prev, [field]: value };
+      if (field === 'content' || field === 'title') {
+        const detected = autoDetectTags(updated.content, updated.title);
+        // Merge detected with manually added tags (preserve manual ones)
+        const manualTags = prev.tags.filter(t => !Object.keys(TAG_PATTERNS).includes(t));
+        updated.tags = [...new Set([...detected, ...manualTags])];
+      }
+      return updated;
+    });
+  }, []);
 
   useEffect(() => {
     fetchEntries();
@@ -124,10 +173,19 @@ function SessionJournal({ characterId, campaignId }) {
 
   const filteredEntries = entries.filter(entry => {
     const matchesSearch = entry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          entry.content?.toLowerCase().includes(searchTerm.toLowerCase());
+                          entry.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (entry.tags || []).some(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesType = filterType === 'all' || entry.type === filterType;
-    return matchesSearch && matchesType;
+    const matchesTag = filterTag === 'all' || (entry.tags || []).includes(filterTag);
+    return matchesSearch && matchesType && matchesTag;
   });
+
+  // Collect all unique tags across entries
+  const allTags = useMemo(() => {
+    const tagSet = new Set();
+    entries.forEach(e => (e.tags || []).forEach(t => tagSet.add(t)));
+    return Array.from(tagSet).sort();
+  }, [entries]);
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
@@ -243,6 +301,42 @@ function SessionJournal({ characterId, campaignId }) {
         </select>
       </div>
 
+      {/* Tag Filter Chips */}
+      {allTags.length > 0 && (
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setFilterTag('all')}
+            data-testid="tag-filter-all"
+            style={{
+              padding: '4px 12px', borderRadius: '12px', fontSize: '11px',
+              background: filterTag === 'all' ? theme.primary : 'transparent',
+              border: `1px solid ${filterTag === 'all' ? theme.primary : theme.border}`,
+              color: filterTag === 'all' ? theme.text : theme.muted,
+              cursor: 'pointer', fontWeight: 600,
+            }}
+          >
+            All Tags
+          </button>
+          {allTags.map(tag => (
+            <button
+              key={tag}
+              onClick={() => setFilterTag(filterTag === tag ? 'all' : tag)}
+              data-testid={`tag-filter-${tag}`}
+              style={{
+                padding: '4px 12px', borderRadius: '12px', fontSize: '11px',
+                background: filterTag === tag ? (TAG_COLORS[tag] || theme.primary) : `${TAG_COLORS[tag] || theme.primary}15`,
+                border: `1px solid ${TAG_COLORS[tag] || theme.primary}`,
+                color: filterTag === tag ? '#fff' : (TAG_COLORS[tag] || theme.primary),
+                cursor: 'pointer', fontWeight: 500,
+              }}
+            >
+              <Tag size={10} style={{ display: 'inline', marginRight: 4 }} />
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* New Entry Form */}
       {showNewEntry && (
         <Card style={{ background: theme.panel, border: `2px solid ${theme.primary}` }}>
@@ -278,7 +372,7 @@ function SessionJournal({ characterId, campaignId }) {
                 <Input
                   placeholder="Entry title..."
                   value={newEntry.title}
-                  onChange={(e) => setNewEntry({ ...newEntry, title: e.target.value })}
+                  onChange={(e) => updateEntryWithAutoTags('title', e.target.value)}
                   data-testid="journal-title-input"
                   style={{ flex: 1 }}
                 />
@@ -294,7 +388,7 @@ function SessionJournal({ characterId, campaignId }) {
               <textarea
                 placeholder="Write your entry... What happened? Who did you meet? What did you learn?"
                 value={newEntry.content}
-                onChange={(e) => setNewEntry({ ...newEntry, content: e.target.value })}
+                onChange={(e) => updateEntryWithAutoTags('content', e.target.value)}
                 data-testid="journal-content-input"
                 style={{
                   minHeight: '150px',
@@ -306,6 +400,33 @@ function SessionJournal({ characterId, campaignId }) {
                   resize: 'vertical'
                 }}
               />
+
+              {/* Auto-detected tags */}
+              {newEntry.tags.length > 0 && (
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                    <Sparkles size={12} color={theme.primary} />
+                    <span style={{ fontSize: '11px', color: theme.muted, fontWeight: 600 }}>AUTO-DETECTED TAGS</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {newEntry.tags.map(tag => (
+                      <span key={tag} style={{
+                        padding: '3px 10px', borderRadius: '10px', fontSize: '11px',
+                        background: `${TAG_COLORS[tag] || theme.primary}20`,
+                        border: `1px solid ${TAG_COLORS[tag] || theme.primary}`,
+                        color: TAG_COLORS[tag] || theme.primary, fontWeight: 500,
+                        display: 'flex', alignItems: 'center', gap: 4,
+                      }}>
+                        <Tag size={10} /> {tag}
+                        <button onClick={() => setNewEntry(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }))}
+                          style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, fontSize: 12 }}>
+                          x
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
               
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                 <Button
@@ -438,6 +559,22 @@ function SessionJournal({ characterId, campaignId }) {
                         {typeConfig.label}
                       </span>
                     </div>
+                    
+                    {/* Tags */}
+                    {entry.tags && entry.tags.length > 0 && (
+                      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '4px' }}>
+                        {entry.tags.map(tag => (
+                          <span key={tag} onClick={(e) => { e.stopPropagation(); setFilterTag(tag); }}
+                            style={{
+                              padding: '1px 8px', borderRadius: '8px', fontSize: '10px', cursor: 'pointer',
+                              background: `${TAG_COLORS[tag] || theme.primary}15`,
+                              color: TAG_COLORS[tag] || theme.primary, fontWeight: 500,
+                            }}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     
                     {/* Expanded Content */}
                     {isExpanded && (

@@ -510,6 +510,52 @@ function CombatCreatorTab({ campaignId }) {
           </div>
         </div>
 
+        {/* Quick-Add NPC Bar */}
+        {npcs.length > 0 && (
+          <div data-testid="quick-npc-bar" style={{
+            marginBottom: '16px', padding: '12px 16px',
+            background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)',
+            borderRadius: '10px',
+          }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, color: '#ef4444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: '8px' }}>
+              Quick Add NPCs ({npcs.length})
+            </div>
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              {npcs.map(npc => {
+                const count = combatants.filter(c => c.entityId === npc.id).length;
+                return (
+                  <button
+                    key={npc.id}
+                    onClick={() => addToCombat(npc, 'npc')}
+                    data-testid={`quick-add-npc-${npc.id}`}
+                    style={{
+                      padding: '5px 12px', borderRadius: '6px', fontSize: '12px',
+                      background: count > 0 ? 'rgba(239,68,68,0.2)' : 'rgba(10,10,40,0.6)',
+                      border: `1px solid ${count > 0 ? '#ef4444' : '#1e40af'}`,
+                      color: '#fff', cursor: 'pointer', fontWeight: 500,
+                      display: 'flex', alignItems: 'center', gap: '6px',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    <Skull size={12} color={count > 0 ? '#ef4444' : '#64748b'} />
+                    {npc.name}
+                    <span style={{ fontSize: '10px', color: '#67e8f9' }}>HP:{npc.hp} AC:{npc.ac}</span>
+                    {count > 0 && (
+                      <span style={{
+                        background: '#ef4444', color: '#fff', fontSize: '10px', fontWeight: 700,
+                        width: 18, height: 18, borderRadius: '50%', display: 'flex',
+                        alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Battle Map Section */}
         <div className="glow-panel" style={{ marginBottom: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>

@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
   Package, Plus, Trash2, Edit2, Save, X, Coins, Sparkles, 
-  Sword, Shield, FlaskConical, ScrollText, Gem, Search, Users, GripVertical, ArrowRight
+  Sword, Shield, FlaskConical, ScrollText, Gem, Search, Users, GripVertical, ArrowRight,
+  Dice5, Split, Wand2
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -17,8 +18,102 @@ const ITEM_TYPES = [
   { id: 'potion', label: 'Potion', icon: FlaskConical, color: '#F59E0B' },
   { id: 'scroll', label: 'Scroll', icon: ScrollText, color: '#a855f7' },
   { id: 'magic_item', label: 'Magic Item', icon: Sparkles, color: '#eab308' },
+  { id: 'gem', label: 'Gem/Art', icon: Gem, color: '#22c55e' },
   { id: 'misc', label: 'Misc', icon: Package, color: '#64748b' },
 ];
+
+// SRD Treasure Tables
+const TREASURE_TABLES = {
+  individual: {
+    '0-4': { cp: [5, 6, 30], sp: [4, 6, 0], gp: [0, 0, 10] },
+    '5-10': { cp: [4, 6, 100], sp: [6, 6, 20], gp: [2, 6, 10] },
+    '11-16': { sp: [4, 6, 100], gp: [1, 6, 100], pp: [0, 0, 0] },
+    '17+': { gp: [12, 6, 100], pp: [2, 6, 100] },
+  },
+  hoard_items: {
+    '0-4': [
+      { name: 'Potion of Healing', type: 'potion', rarity: 'Common', value: '50 gp' },
+      { name: 'Spell Scroll (1st level)', type: 'scroll', rarity: 'Common', value: '25 gp' },
+      { name: 'Bag of Holding', type: 'magic_item', rarity: 'Uncommon', value: '500 gp' },
+    ],
+    '5-10': [
+      { name: 'Potion of Greater Healing', type: 'potion', rarity: 'Uncommon', value: '150 gp' },
+      { name: '+1 Weapon', type: 'weapon', rarity: 'Uncommon', value: '500 gp', is_magical: true },
+      { name: '+1 Shield', type: 'armor', rarity: 'Uncommon', value: '500 gp', is_magical: true },
+      { name: 'Cloak of Protection', type: 'magic_item', rarity: 'Uncommon', value: '500 gp', is_magical: true, attunement_required: true },
+      { name: 'Spell Scroll (3rd level)', type: 'scroll', rarity: 'Uncommon', value: '200 gp' },
+    ],
+    '11-16': [
+      { name: 'Potion of Superior Healing', type: 'potion', rarity: 'Rare', value: '500 gp' },
+      { name: '+2 Weapon', type: 'weapon', rarity: 'Rare', value: '4000 gp', is_magical: true },
+      { name: 'Ring of Protection', type: 'magic_item', rarity: 'Rare', value: '3500 gp', is_magical: true, attunement_required: true },
+      { name: 'Staff of the Woodlands', type: 'weapon', rarity: 'Rare', value: '8000 gp', is_magical: true, attunement_required: true },
+    ],
+    '17+': [
+      { name: 'Potion of Supreme Healing', type: 'potion', rarity: 'Very Rare', value: '2500 gp' },
+      { name: '+3 Weapon', type: 'weapon', rarity: 'Very Rare', value: '25000 gp', is_magical: true },
+      { name: 'Robe of the Archmagi', type: 'magic_item', rarity: 'Legendary', value: '50000 gp', is_magical: true, attunement_required: true },
+    ],
+  },
+  gems: {
+    '0-4': [
+      { name: 'Azurite', value: 10 }, { name: 'Blue Quartz', value: 10 },
+      { name: 'Tiger Eye', value: 10 }, { name: 'Turquoise', value: 10 },
+    ],
+    '5-10': [
+      { name: 'Bloodstone', value: 50 }, { name: 'Jasper', value: 50 },
+      { name: 'Moonstone', value: 50 }, { name: 'Onyx', value: 50 },
+      { name: 'Zircon', value: 50 }, { name: 'Star Rose Quartz', value: 50 },
+    ],
+    '11-16': [
+      { name: 'Alexandrite', value: 500 }, { name: 'Aquamarine', value: 500 },
+      { name: 'Black Pearl', value: 500 }, { name: 'Topaz', value: 500 },
+    ],
+    '17+': [
+      { name: 'Black Opal', value: 1000 }, { name: 'Blue Sapphire', value: 1000 },
+      { name: 'Emerald', value: 1000 }, { name: 'Ruby', value: 5000 },
+      { name: 'Diamond', value: 5000 },
+    ],
+  },
+};
+
+// Roll dice (NdS format)
+function rollDice(n, s) {
+  let total = 0;
+  for (let i = 0; i < n; i++) total += Math.floor(Math.random() * s) + 1;
+  return total;
+}
+
+// Generate treasure based on tier
+function generateTreasure(tier, isHoard) {
+  const loot = { gold: 0, items: [], gems: [] };
+  const table = TREASURE_TABLES.individual[tier];
+  
+  if (table) {
+    if (table.cp) loot.gold += Math.round(rollDice(table.cp[0], table.cp[1]) * table.cp[2] / 100);
+    if (table.sp) loot.gold += Math.round(rollDice(table.sp[0], table.sp[1]) * table.sp[2] / 10);
+    if (table.gp) loot.gold += rollDice(table.gp[0] || 1, table.gp[1] || 1) * (table.gp[2] || 1);
+    if (table.pp) loot.gold += rollDice(table.pp[0], table.pp[1]) * (table.pp[2] || 1) * 10;
+  }
+  
+  if (isHoard) {
+    loot.gold *= 3;
+    // Add gems
+    const gemTable = TREASURE_TABLES.gems[tier] || [];
+    const gemCount = rollDice(1, 4);
+    for (let i = 0; i < gemCount; i++) {
+      const gem = gemTable[Math.floor(Math.random() * gemTable.length)];
+      if (gem) loot.gems.push({ ...gem });
+    }
+    // Chance for magic items
+    const itemTable = TREASURE_TABLES.hoard_items[tier] || [];
+    if (Math.random() < 0.4 && itemTable.length > 0) {
+      loot.items.push({ ...itemTable[Math.floor(Math.random() * itemTable.length)] });
+    }
+  }
+  
+  return loot;
+}
 
 function PartyInventory({ campaignId, players = [] }) {
   const [items, setItems] = useState([]);
@@ -31,6 +126,10 @@ function PartyInventory({ campaignId, players = [] }) {
   const [draggedItem, setDraggedItem] = useState(null);
   const [dragOverPlayer, setDragOverPlayer] = useState(null);
   const [showPlayerPanel, setShowPlayerPanel] = useState(true);
+  const [showTreasureGen, setShowTreasureGen] = useState(false);
+  const [treasureTier, setTreasureTier] = useState('0-4');
+  const [isHoard, setIsHoard] = useState(false);
+  const [generatedLoot, setGeneratedLoot] = useState(null);
   
   const [newItem, setNewItem] = useState({
     name: '',
@@ -119,6 +218,65 @@ function PartyInventory({ campaignId, players = [] }) {
   const adjustCurrency = async (type, amount) => {
     const newValue = Math.max(0, (currency[type] || 0) + amount);
     handleCurrencyChange(type, newValue);
+  };
+
+  // Generate and add loot
+  const handleGenerateTreasure = () => {
+    const loot = generateTreasure(treasureTier, isHoard);
+    setGeneratedLoot(loot);
+  };
+
+  const addGeneratedLoot = async () => {
+    if (!generatedLoot) return;
+    try {
+      // Add gold
+      if (generatedLoot.gold > 0) {
+        await adjustCurrency('gold', generatedLoot.gold);
+      }
+      // Add gems
+      for (const gem of generatedLoot.gems) {
+        const res = await axios.post(`${API}/campaigns/${campaignId}/inventory`, {
+          name: gem.name, quantity: 1, item_type: 'gem', value: `${gem.value} gp`,
+          description: `A ${gem.name} worth ${gem.value} gp`, weight: 0,
+        });
+        setItems(prev => [res.data, ...prev]);
+      }
+      // Add items
+      for (const item of generatedLoot.items) {
+        const res = await axios.post(`${API}/campaigns/${campaignId}/inventory`, {
+          name: item.name, quantity: 1, item_type: item.type, value: item.value,
+          description: `${item.rarity} ${item.type}`, is_magical: item.is_magical || false,
+          attunement_required: item.attunement_required || false, weight: 0,
+        });
+        setItems(prev => [res.data, ...prev]);
+      }
+      toast.success(`Added ${generatedLoot.gold} GP, ${generatedLoot.gems.length} gems, ${generatedLoot.items.length} items`);
+      setGeneratedLoot(null);
+      setShowTreasureGen(false);
+    } catch (error) {
+      toast.error('Failed to add loot');
+    }
+  };
+
+  // Auto-split gold among players
+  const splitGold = async () => {
+    if (players.length === 0) { toast.error('No players to split with'); return; }
+    const goldPerPlayer = Math.floor(currency.gold / players.length);
+    const remainder = currency.gold % players.length;
+    if (goldPerPlayer === 0) { toast.error('Not enough gold to split'); return; }
+    try {
+      for (const player of players) {
+        if (player.character_id) {
+          await axios.patch(`${API}/characters/${player.character_id}`, {
+            gold: (player.gold || 0) + goldPerPlayer
+          });
+        }
+      }
+      await handleCurrencyChange('gold', remainder);
+      toast.success(`Split ${currency.gold - remainder} GP (${goldPerPlayer} each) among ${players.length} players. ${remainder} GP remaining.`);
+    } catch (error) {
+      toast.error('Failed to split gold');
+    }
   };
 
   // Drag and Drop handlers
@@ -220,6 +378,98 @@ function PartyInventory({ campaignId, players = [] }) {
             </div>
           ))}
         </div>
+        <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+          <Button
+            onClick={splitGold}
+            data-testid="split-gold-btn"
+            className="btn-outline"
+            style={{ flex: 1, display: 'flex', gap: '6px', fontSize: '11px', padding: '6px 10px' }}
+          >
+            <Split size={14} /> Split Gold ({players.length} players)
+          </Button>
+          <Button
+            onClick={() => setShowTreasureGen(!showTreasureGen)}
+            data-testid="treasure-gen-btn"
+            className={showTreasureGen ? 'btn-primary' : 'btn-outline'}
+            style={{ flex: 1, display: 'flex', gap: '6px', fontSize: '11px', padding: '6px 10px' }}
+          >
+            <Dice5 size={14} /> Generate Treasure
+          </Button>
+        </div>
+
+        {/* Treasure Generator Panel */}
+        {showTreasureGen && (
+          <div style={{
+            marginTop: '12px', padding: '14px',
+            background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.2)',
+            borderRadius: '10px',
+          }}>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+              <div>
+                <label style={{ fontSize: '10px', color: '#F59E0B', fontWeight: 600 }}>CR TIER</label>
+                <select
+                  value={treasureTier}
+                  onChange={(e) => setTreasureTier(e.target.value)}
+                  data-testid="treasure-tier-select"
+                  className="input-glow"
+                  style={{ padding: '6px 10px', fontSize: '12px', marginLeft: '6px' }}
+                >
+                  <option value="0-4">CR 0-4</option>
+                  <option value="5-10">CR 5-10</option>
+                  <option value="11-16">CR 11-16</option>
+                  <option value="17+">CR 17+</option>
+                </select>
+              </div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px', color: '#fff' }}>
+                <input type="checkbox" checked={isHoard} onChange={(e) => setIsHoard(e.target.checked)} />
+                <Wand2 size={14} color="#F59E0B" /> Treasure Hoard
+              </label>
+              <Button
+                onClick={handleGenerateTreasure}
+                data-testid="roll-treasure-btn"
+                className="btn-primary"
+                style={{ padding: '6px 14px', fontSize: '12px', display: 'flex', gap: '4px' }}
+              >
+                <Dice5 size={14} /> Roll!
+              </Button>
+            </div>
+
+            {generatedLoot && (
+              <div style={{
+                padding: '12px', background: 'rgba(10,10,40,0.6)',
+                border: '1px solid #F59E0B', borderRadius: '8px',
+              }}>
+                <div style={{ fontSize: '12px', color: '#F59E0B', fontWeight: 700, marginBottom: '8px' }}>
+                  Generated Loot ({isHoard ? 'Hoard' : 'Individual'})
+                </div>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '18px', fontWeight: 700, color: '#eab308' }}>{generatedLoot.gold} GP</span>
+                  {generatedLoot.gems.length > 0 && (
+                    <span style={{ fontSize: '12px', color: '#22c55e' }}>
+                      <Gem size={12} style={{ display: 'inline', marginRight: 4 }} />
+                      {generatedLoot.gems.length} gem{generatedLoot.gems.length > 1 ? 's' : ''}:
+                      {generatedLoot.gems.map(g => ` ${g.name} (${g.value}gp)`).join(',')}
+                    </span>
+                  )}
+                  {generatedLoot.items.length > 0 && (
+                    <span style={{ fontSize: '12px', color: '#a855f7' }}>
+                      <Sparkles size={12} style={{ display: 'inline', marginRight: 4 }} />
+                      {generatedLoot.items.map(i => i.name).join(', ')}
+                    </span>
+                  )}
+                </div>
+                <Button
+                  onClick={addGeneratedLoot}
+                  data-testid="add-generated-loot-btn"
+                  className="btn-primary"
+                  style={{ fontSize: '12px', padding: '6px 16px' }}
+                >
+                  Add to Party Loot
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Main Content - Two Column Layout */}

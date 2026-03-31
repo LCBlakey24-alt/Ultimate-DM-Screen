@@ -233,7 +233,17 @@ function CampaignDashboard({ username, onLogout }) {
     return (
       <button
         key={`group-${group.id}`}
-        onClick={() => toggleGroup(group.id)}
+        onClick={() => {
+          const hasActiveInGroup = group.tabs.some(t => t.id === activeTab);
+          if (hasActiveInGroup) {
+            // Active tab is in this group - just toggle collapse
+            toggleGroup(group.id);
+          } else {
+            // Navigate to first tab in group and ensure expanded
+            setCollapsedGroups(prev => ({ ...prev, [group.id]: false }));
+            setActiveTab(group.tabs[0].id);
+          }
+        }}
         data-testid={`group-${group.id}`}
         style={{
           padding: '10px 16px',

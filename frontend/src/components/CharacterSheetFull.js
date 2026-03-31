@@ -10,6 +10,7 @@ import LevelUpWizard from './LevelUpWizard';
 import CharacterInventory from './CharacterInventory';
 import CharacterCombatTab from './CharacterCombatTab';
 import CharacterSpellbook from './CharacterSpellbook';
+import SessionJournal from './SessionJournal';
 import { CLASS_FEATURES } from '../data/classFeatures';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, SPELL_DATABASE } from '../data/spellDatabase';
 import DiceRoller3D from './ui/DiceRoller3D';
@@ -767,7 +768,7 @@ export default function CharacterSheetFull() {
 
           {/* Tabs */}
           <div style={{ display: 'flex', gap: '8px', flexShrink: 0, flexWrap: 'wrap' }}>
-            {['combat', 'spells', 'inventory', 'notes'].map(tab => (
+            {['combat', 'spells', 'inventory', 'journal', 'notes'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -825,6 +826,12 @@ export default function CharacterSheetFull() {
                   character={character}
                   onUpdate={fetchCharacter}
                 />
+              </div>
+            )}
+
+            {activeTab === 'journal' && (
+              <div style={{ ...scrollBoxStyle, flex: 1, padding: '4px' }}>
+                <SessionJournal characterId={characterId} campaignId={character?.campaign_id} />
               </div>
             )}
 
