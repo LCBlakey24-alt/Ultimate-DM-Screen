@@ -26,7 +26,6 @@ import Soundboard from '@/components/gm/Soundboard';
 import LiveSessionMode from '@/components/gm/LiveSessionMode';
 import SmartSessionLog from '@/components/gm/SmartSessionLog';
 import StoryArcTracker from '@/components/gm/StoryArcTracker';
-import UploadTab from '@/components/gm/UploadTab';
 import NPCRelationshipMap from '@/components/gm/NPCRelationshipMap';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -1164,11 +1163,6 @@ function GMScreen({ username }) {
           {/* SOUNDBOARD TAB */}
           {activeTab === 'sound' && (
             <Soundboard theme={theme} campaignId={campaignId} />
-          )}
-
-          {/* UPLOADS TAB */}
-          {activeTab === 'uploads' && (
-            <UploadTab theme={theme} campaignId={campaignId} />
           )}
 
           {/* NPC NETWORK TAB */}
