@@ -30,7 +30,7 @@ security = HTTPBearer()
 # Email
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'noreply@rookiequestkeeper.com')
-APP_URL = 'https://rookiequestkeeper.com'
+APP_URL = os.environ.get('APP_URL', 'https://rookiequestkeeper.com')
 
 # Stripe
 STRIPE_ENABLED = True
