@@ -428,7 +428,7 @@ async def level_up_character(
                 existing_cantrips.append(cantrip)
         update_data['cantrips_known'] = existing_cantrips
 
-    # Handle Fighter-specific level-up fields
+    # Handle class-specific level-up fields
     if hasattr(level_up, 'fighting_style') and level_up.fighting_style:
         update_data['fighting_style'] = level_up.fighting_style
     if hasattr(level_up, 'subclass') and level_up.subclass:

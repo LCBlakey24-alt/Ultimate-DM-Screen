@@ -194,7 +194,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
   const existingSpellNames = (character?.spells_known || []).map(s => (s.name || s));
   const existingCantripNames = (character?.cantrips_known || []).map(s => (s.name || s));
   
-  // ─── Fighter-specific detection ───────────────────────────────
+  // ─── Class-specific detection ───────────────────────────────
   const classKey = characterClass?.toLowerCase();
   const classData = CLASS_FEATURES[classKey];
   const hasFightingStyleChoice = classData?.fighting_style_level === newClassLevel && classData?.fighting_styles;
@@ -874,7 +874,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
               {hasSubclassChoice && (
                 <div style={{ marginBottom: '20px' }}>
                   <p style={{ color: theme.text.secondary, fontSize: '14px', marginBottom: '12px' }}>
-                    Choose your martial archetype. This defines your specialization path and grants features at levels 3, 7, 10, 15, and 18.
+                    Choose your {classData?.subclass_label || 'subclass'}. This defines your specialization path and grants unique features as you level up.
                   </p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {Object.entries(classData?.subclasses || {}).map(([key, sc]) => (

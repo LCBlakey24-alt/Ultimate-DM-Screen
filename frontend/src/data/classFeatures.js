@@ -6,6 +6,28 @@ export const CLASS_FEATURES = {
     spellcasting: null,
     subclass_level: 3,
     subclass_label: 'Primal Path',
+    subclasses: {
+      berserker: {
+        name: 'Path of the Berserker',
+        description: 'Channel unbridled fury in battle, entering a devastating frenzy at the cost of exhaustion.',
+        features: [
+          { level: 3, name: 'Frenzy', description: 'While raging, you can make a single melee weapon attack as a bonus action each turn. Gain 1 exhaustion when rage ends.' },
+          { level: 6, name: 'Mindless Rage', description: 'While raging, you can\'t be charmed or frightened. If charmed/frightened when you rage, the effect is suspended.' },
+          { level: 10, name: 'Intimidating Presence', description: 'Frighten a creature within 30 ft. WIS save or frightened until end of your next turn.' },
+          { level: 14, name: 'Retaliation', description: 'When you take damage from a creature within 5 ft, you can use your reaction to make a melee weapon attack against it.' },
+        ],
+      },
+      totem_warrior: {
+        name: 'Path of the Totem Warrior',
+        description: 'Draw spiritual power from nature, gaining totemic animal aspects that enhance your abilities.',
+        features: [
+          { level: 3, name: 'Totem Spirit', description: 'Choose Bear (resistance to all damage except psychic while raging), Eagle (disadvantage on OAs against you, Dash as bonus action while raging), or Wolf (allies have advantage on melee attacks vs enemies within 5 ft of you while raging).' },
+          { level: 6, name: 'Aspect of the Beast', description: 'Choose Bear (carrying capacity doubled, advantage on STR checks for pushing/pulling), Eagle (see up to 1 mile clearly), or Wolf (track at fast pace, move stealthily at normal pace).' },
+          { level: 10, name: 'Spirit Walker', description: 'Cast Commune with Nature as a ritual. The spirit is the totem animal.' },
+          { level: 14, name: 'Totemic Attunement', description: 'Choose Bear (hostile creatures within 5 ft have disadvantage on attacks vs allies), Eagle (fly speed equal to walking speed while raging), or Wolf (bonus action to knock Large or smaller creature prone when you hit with melee).' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Rage', type: 'bonus_action', description: 'Enter a rage. +2 damage, resistance to physical damage, advantage on STR checks. Lasts 1 minute.', uses: '2/long rest' },
       { level: 1, name: 'Unarmored Defense', type: 'passive', description: 'AC = 10 + DEX + CON when not wearing armor' },
@@ -46,6 +68,30 @@ export const CLASS_FEATURES = {
   bard: {
     hit_die: 8,
     spellcasting: 'charisma',
+    subclass_level: 3,
+    subclass_label: 'Bard College',
+    subclasses: {
+      college_of_lore: {
+        name: 'College of Lore',
+        description: 'Pursue knowledge and collect bits of lore from every source. Cutting Words lets you diminish foes\' abilities.',
+        features: [
+          { level: 3, name: 'Bonus Proficiencies', description: 'Gain proficiency in three skills of your choice.' },
+          { level: 3, name: 'Cutting Words', description: 'Use Bardic Inspiration reaction to subtract the die from an enemy\'s attack, ability check, or damage roll.' },
+          { level: 6, name: 'Additional Magical Secrets', description: 'Learn two spells from any class. They count as bard spells for you.' },
+          { level: 14, name: 'Peerless Skill', description: 'Expend one Bardic Inspiration use to add the die to your own ability check.' },
+        ],
+      },
+      college_of_valor: {
+        name: 'College of Valor',
+        description: 'Inspire allies in battle. Gain martial training and embolden others with your Bardic Inspiration.',
+        features: [
+          { level: 3, name: 'Combat Inspiration', description: 'Allies can add Bardic Inspiration die to weapon damage roll or to AC as a reaction.' },
+          { level: 3, name: 'Bonus Proficiencies', description: 'Gain proficiency with medium armor, shields, and martial weapons.' },
+          { level: 6, name: 'Extra Attack', description: 'Attack twice when you take the Attack action.' },
+          { level: 14, name: 'Battle Magic', description: 'When you cast a bard spell as an action, make one weapon attack as a bonus action.' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Bardic Inspiration', type: 'bonus_action', description: 'Give ally a d6 inspiration die to add to one ability check, attack roll, or saving throw within 10 minutes', uses: 'CHA mod/long rest' },
       { level: 2, name: 'Jack of All Trades', type: 'passive', description: 'Add half proficiency bonus to any ability check you\'re not proficient in' },
@@ -81,6 +127,34 @@ export const CLASS_FEATURES = {
   cleric: {
     hit_die: 8,
     spellcasting: 'wisdom',
+    subclass_level: 1,
+    subclass_label: 'Divine Domain',
+    subclasses: {
+      life_domain: {
+        name: 'Life Domain',
+        description: 'Focus on the vibrant positive energy that sustains all life. Superior healing magic and heavy armor.',
+        features: [
+          { level: 1, name: 'Bonus Proficiency', description: 'Gain proficiency with heavy armor.' },
+          { level: 1, name: 'Disciple of Life', description: 'Whenever you use a spell of 1st level or higher to restore HP, the creature regains additional HP equal to 2 + spell level.' },
+          { level: 2, name: 'Preserve Life', description: 'Channel Divinity: Restore HP equal to 5x cleric level, split among creatures within 30 ft.' },
+          { level: 6, name: 'Blessed Healer', description: 'When you cast a healing spell on another, you regain HP equal to 2 + spell level.' },
+          { level: 8, name: 'Divine Strike', description: 'Once per turn, deal an extra 1d8 radiant damage with a weapon attack (2d8 at 14th level).' },
+          { level: 17, name: 'Supreme Healing', description: 'When you roll to restore HP with a healing spell, use the maximum possible value instead of rolling.' },
+        ],
+      },
+      light_domain: {
+        name: 'Light Domain',
+        description: 'Wield the power of light and fire, burning away darkness and punishing foes with radiant flame.',
+        features: [
+          { level: 1, name: 'Bonus Cantrip', description: 'Gain the Light cantrip if you don\'t already have it.' },
+          { level: 1, name: 'Warding Flare', description: 'Impose disadvantage on an attack roll against you. Uses: WIS modifier per long rest.' },
+          { level: 2, name: 'Radiance of the Dawn', description: 'Channel Divinity: Dispel magical darkness in 30 ft. Hostile creatures make CON save or take 2d10+cleric level radiant damage.' },
+          { level: 6, name: 'Improved Flare', description: 'Use Warding Flare when a creature you can see attacks a creature other than you within 30 ft.' },
+          { level: 8, name: 'Potent Spellcasting', description: 'Add WIS modifier to damage of cleric cantrips.' },
+          { level: 17, name: 'Corona of Light', description: 'Emanate bright light 60 ft. Enemies in the light have disadvantage on saving throws vs fire and radiant spells.' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Divine Domain', type: 'passive', description: 'Choose a divine domain that grants bonus spells and abilities' },
       { level: 2, name: 'Channel Divinity (1/rest)', type: 'action', description: 'Use divine energy to fuel magical effects. Turn Undead: Undead must flee for 1 minute on failed WIS save', uses: '1/short rest' },
@@ -113,6 +187,33 @@ export const CLASS_FEATURES = {
   druid: {
     hit_die: 8,
     spellcasting: 'wisdom',
+    subclass_level: 2,
+    subclass_label: 'Druid Circle',
+    subclasses: {
+      circle_of_the_land: {
+        name: 'Circle of the Land',
+        description: 'Mystical connection to the land empowers your spellcasting. Recover spell slots and gain terrain-specific spells.',
+        features: [
+          { level: 2, name: 'Bonus Cantrip', description: 'Learn one additional druid cantrip of your choice.' },
+          { level: 2, name: 'Natural Recovery', description: 'During a short rest, recover spent spell slots with combined level up to half your druid level (rounded up). Once per long rest.' },
+          { level: 3, name: 'Circle Spells', description: 'Gain access to circle spells based on the land type where you became a druid. These are always prepared.' },
+          { level: 6, name: 'Land\'s Stride', description: 'Moving through nonmagical difficult terrain costs no extra movement. Pass through plants without slowing or taking damage.' },
+          { level: 10, name: 'Nature\'s Ward', description: 'You can\'t be charmed or frightened by elementals or fey, and are immune to poison and disease.' },
+          { level: 14, name: 'Nature\'s Sanctuary', description: 'Beasts and plant creatures that attack you must make a WIS save. On fail, they must choose a different target.' },
+        ],
+      },
+      circle_of_the_moon: {
+        name: 'Circle of the Moon',
+        description: 'Powerful Wild Shape transformations. Take on more dangerous beast forms and gain combat abilities while shapeshifted.',
+        features: [
+          { level: 2, name: 'Combat Wild Shape', description: 'Wild Shape as a bonus action. While in beast form, expend a spell slot to regain 1d8 HP per slot level.' },
+          { level: 2, name: 'Circle Forms', description: 'Wild Shape into beasts with CR up to 1 (scales with level: CR 2 at 6th, CR 3 at 9th, etc.).' },
+          { level: 6, name: 'Primal Strike', description: 'Attacks in beast form count as magical for overcoming resistance and immunity.' },
+          { level: 10, name: 'Elemental Wild Shape', description: 'Expend two Wild Shape uses to transform into an air, earth, fire, or water elemental.' },
+          { level: 14, name: 'Thousand Forms', description: 'Cast Alter Self at will.' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Druidic', type: 'passive', description: 'Know the secret Druidic language' },
       { level: 2, name: 'Wild Shape', type: 'action', description: 'Transform into a beast you\'ve seen (max CR 1/4, no flying/swimming). Lasts hours = druid level / 2', uses: '2/short rest' },
@@ -245,6 +346,30 @@ export const CLASS_FEATURES = {
   monk: {
     hit_die: 8,
     spellcasting: null,
+    subclass_level: 3,
+    subclass_label: 'Monastic Tradition',
+    subclasses: {
+      way_of_the_open_hand: {
+        name: 'Way of the Open Hand',
+        description: 'Master the art of unarmed combat. Manipulate enemy movement and deliver devastating finishing blows.',
+        features: [
+          { level: 3, name: 'Open Hand Technique', description: 'When you hit with a Flurry of Blows attack, impose one effect: knocked prone (DEX save), pushed 15 ft (STR save), or can\'t take reactions until end of your next turn.' },
+          { level: 6, name: 'Wholeness of Body', description: 'As an action, regain HP equal to 3x your monk level. Once per long rest.' },
+          { level: 11, name: 'Tranquility', description: 'At the end of a long rest, gain the effect of a Sanctuary spell (WIS save) until the start of your next long rest.' },
+          { level: 17, name: 'Quivering Palm', description: 'Spend 3 ki points when you hit with an unarmed strike. Within 14 days, reduce creature to 0 HP (CON save) or deal 10d10 necrotic damage.' },
+        ],
+      },
+      way_of_shadow: {
+        name: 'Way of Shadow',
+        description: 'Follow the tradition of stealth and subterfuge. Use ki to duplicate shadow-based spells and teleport through darkness.',
+        features: [
+          { level: 3, name: 'Shadow Arts', description: 'Spend 2 ki to cast Darkness, Darkvision, Pass without Trace, or Silence. Also gain Minor Illusion cantrip.' },
+          { level: 6, name: 'Shadow Step', description: 'When in dim light/darkness, teleport 60 ft to another dim/dark spot as a bonus action. Gain advantage on first melee attack after teleporting.' },
+          { level: 11, name: 'Cloak of Shadows', description: 'Become invisible in dim light/darkness until you attack or cast a spell.' },
+          { level: 17, name: 'Opportunist', description: 'When a creature within 5 ft is hit by another creature\'s attack, you can make a melee attack as a reaction.' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Unarmored Defense', type: 'passive', description: 'AC = 10 + DEX + WIS when not wearing armor' },
       { level: 1, name: 'Martial Arts', type: 'bonus_action', description: 'Make one unarmed strike as bonus action after Attack action. Martial arts die: d4' },
@@ -294,6 +419,39 @@ export const CLASS_FEATURES = {
     hit_die: 10,
     spellcasting: 'charisma',
     spellcasting_start: 2,
+    subclass_level: 3,
+    subclass_label: 'Sacred Oath',
+    fighting_style_level: 2,
+    fighting_styles: [
+      { name: 'Defense', description: '+1 AC while wearing armor' },
+      { name: 'Dueling', description: '+2 damage when wielding a one-handed melee weapon and no other weapons' },
+      { name: 'Great Weapon Fighting', description: 'Reroll 1s and 2s on damage dice for two-handed melee weapons' },
+      { name: 'Protection', description: 'Use shield reaction to impose disadvantage on an attack against an adjacent ally' },
+    ],
+    subclasses: {
+      oath_of_devotion: {
+        name: 'Oath of Devotion',
+        description: 'The archetypal paladin — honesty, courage, compassion, honor, and duty. Sacred Weapon and Turn the Unholy.',
+        features: [
+          { level: 3, name: 'Sacred Weapon', description: 'Channel Divinity: Add CHA modifier to attack rolls for 1 minute. Weapon emits bright light 20 ft.' },
+          { level: 3, name: 'Turn the Unholy', description: 'Channel Divinity: Each fiend and undead within 30 ft must make WIS save or be turned for 1 minute.' },
+          { level: 7, name: 'Aura of Devotion', description: 'You and friendly creatures within 10 ft can\'t be charmed while you\'re conscious.' },
+          { level: 15, name: 'Purity of Spirit', description: 'You are always under the effects of Protection from Evil and Good.' },
+          { level: 20, name: 'Holy Nimbus', description: 'Action: emanate bright light 30 ft for 1 minute. Enemies starting turn in light take 10 radiant damage.' },
+        ],
+      },
+      oath_of_the_ancients: {
+        name: 'Oath of the Ancients',
+        description: 'Protect the light against darkness. Gain nature-based abilities and resistance to spell damage.',
+        features: [
+          { level: 3, name: 'Nature\'s Wrath', description: 'Channel Divinity: Spectral vines restrain a creature within 10 ft (STR/DEX save).' },
+          { level: 3, name: 'Turn the Faithless', description: 'Channel Divinity: Turn fey and fiends within 30 ft (WIS save).' },
+          { level: 7, name: 'Aura of Warding', description: 'You and allies within 10 ft have resistance to damage from spells.' },
+          { level: 15, name: 'Undying Sentinel', description: 'When reduced to 0 HP, drop to 1 HP instead (once per long rest). Also don\'t suffer drawbacks of old age.' },
+          { level: 20, name: 'Elder Champion', description: 'Transform for 1 minute: regain 10 HP/round, cast paladin spells as bonus action, enemies within 10 ft have disadvantage on saves.' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Divine Sense', type: 'action', description: 'Detect celestials, fiends, and undead within 60 ft', uses: '1 + CHA mod/long rest' },
       { level: 1, name: 'Lay on Hands', type: 'action', description: 'Heal HP from a pool equal to paladin level x 5, or cure disease/poison for 5 points', uses: 'Level x 5/long rest' },
@@ -332,6 +490,37 @@ export const CLASS_FEATURES = {
     hit_die: 10,
     spellcasting: 'wisdom',
     spellcasting_start: 2,
+    subclass_level: 3,
+    subclass_label: 'Ranger Archetype',
+    fighting_style_level: 2,
+    fighting_styles: [
+      { name: 'Archery', description: '+2 bonus to attack rolls with ranged weapons' },
+      { name: 'Defense', description: '+1 AC while wearing armor' },
+      { name: 'Dueling', description: '+2 damage when wielding a one-handed melee weapon and no other weapons' },
+      { name: 'Two-Weapon Fighting', description: 'Add ability modifier to damage of the second off-hand attack' },
+    ],
+    subclasses: {
+      hunter: {
+        name: 'Hunter',
+        description: 'Accept the challenge of guarding civilization from predators and hordes. Specialize in slaying specific types of threats.',
+        features: [
+          { level: 3, name: 'Hunter\'s Prey', description: 'Choose: Colossus Slayer (+1d8 damage to wounded enemies), Giant Killer (reaction attack when Large+ creature misses), or Horde Breaker (attack a second creature within 5 ft of original target).' },
+          { level: 7, name: 'Defensive Tactics', description: 'Choose: Escape the Horde (OAs have disadvantage), Multiattack Defense (+4 AC after being hit), or Steel Will (advantage on saves vs being frightened).' },
+          { level: 11, name: 'Multiattack', description: 'Choose: Volley (ranged attack vs all creatures within 10 ft of a point in range) or Whirlwind Attack (melee attack vs all creatures within 5 ft).' },
+          { level: 15, name: 'Superior Hunter\'s Defense', description: 'Choose: Evasion (no damage on DEX save success), Stand Against the Tide (redirect missed melee to another creature), or Uncanny Dodge (halve damage as reaction).' },
+        ],
+      },
+      beast_master: {
+        name: 'Beast Master',
+        description: 'Bond with an animal companion that fights alongside you. Your beast acts on your initiative and follows your commands.',
+        features: [
+          { level: 3, name: 'Ranger\'s Companion', description: 'Gain a beast companion (CR 1/4 or lower). It obeys your commands, adds your proficiency bonus to AC, attack rolls, damage, and saves.' },
+          { level: 7, name: 'Exceptional Training', description: 'Your beast can Dash, Disengage, Dodge, or Help as a bonus action. Its attacks count as magical.' },
+          { level: 11, name: 'Bestial Fury', description: 'Your beast can make two attacks when you command it to Attack.' },
+          { level: 15, name: 'Share Spells', description: 'When you cast a spell targeting yourself, it also affects your beast companion if within 30 ft.' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Favored Enemy', type: 'passive', description: 'Advantage on Survival checks to track and INT checks to recall info about chosen enemy type' },
       { level: 1, name: 'Natural Explorer', type: 'passive', description: 'Double proficiency on INT/WIS checks in favored terrain, difficult terrain doesn\'t slow group' },
@@ -366,6 +555,32 @@ export const CLASS_FEATURES = {
   rogue: {
     hit_die: 8,
     spellcasting: null,
+    subclass_level: 3,
+    subclass_label: 'Roguish Archetype',
+    subclasses: {
+      thief: {
+        name: 'Thief',
+        description: 'Hone your skills in larceny. Superior speed, stealth, and the ability to use magical items beyond normal limits.',
+        features: [
+          { level: 3, name: 'Fast Hands', description: 'Use Cunning Action to make a Sleight of Hand check, use thieves\' tools to disarm a trap or open a lock, or take the Use an Object action.' },
+          { level: 3, name: 'Second-Story Work', description: 'Climbing costs no extra movement. Running jump distance increases by DEX modifier in feet.' },
+          { level: 9, name: 'Supreme Stealth', description: 'You have advantage on Stealth checks if you move no more than half your speed on the same turn.' },
+          { level: 13, name: 'Use Magic Device', description: 'Ignore all class, race, and level requirements on the use of magic items.' },
+          { level: 17, name: 'Thief\'s Reflexes', description: 'Take two turns during the first round of combat. Second turn is at initiative minus 10.' },
+        ],
+      },
+      assassin: {
+        name: 'Assassin',
+        description: 'Deadly focus on eliminating targets with ruthless efficiency. Master of poison and disguise.',
+        features: [
+          { level: 3, name: 'Bonus Proficiencies', description: 'Gain proficiency with disguise kit and poisoner\'s kit.' },
+          { level: 3, name: 'Assassinate', description: 'Advantage on attacks against creatures that haven\'t acted yet. Any hit against a surprised creature is a critical hit.' },
+          { level: 9, name: 'Infiltration Expertise', description: 'Spend 7 days and 25 gp to create a false identity with documentation, established acquaintances, and disguises.' },
+          { level: 13, name: 'Impostor', description: 'Unerringly mimic another person\'s speech, writing, and behavior after studying them for 3 hours.' },
+          { level: 17, name: 'Death Strike', description: 'When you hit a surprised creature, it must make a CON save or take double damage.' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Expertise', type: 'passive', description: 'Double proficiency bonus on two skills' },
       { level: 1, name: 'Sneak Attack', type: 'action_modifier', description: 'Once per turn, deal extra 1d6 damage when you have advantage or ally is within 5ft of target' },
@@ -411,6 +626,32 @@ export const CLASS_FEATURES = {
   sorcerer: {
     hit_die: 6,
     spellcasting: 'charisma',
+    subclass_level: 1,
+    subclass_label: 'Sorcerous Origin',
+    subclasses: {
+      draconic_bloodline: {
+        name: 'Draconic Bloodline',
+        description: 'Your innate magic comes from draconic ancestry. Gain dragon-like resilience, elemental affinity, and eventually wings.',
+        features: [
+          { level: 1, name: 'Dragon Ancestor', description: 'Choose a dragon type. Double proficiency bonus on CHA checks to interact with dragons.' },
+          { level: 1, name: 'Draconic Resilience', description: 'HP max increases by 1 per sorcerer level. Without armor, AC = 13 + DEX.' },
+          { level: 6, name: 'Elemental Affinity', description: 'When you cast a spell dealing damage of your dragon type, add CHA modifier to one damage roll. Spend 1 sorcery point for resistance to that type for 1 hour.' },
+          { level: 14, name: 'Dragon Wings', description: 'As a bonus action, sprout dragon wings gaining flying speed equal to your walking speed.' },
+          { level: 18, name: 'Draconic Presence', description: 'Spend 5 sorcery points to exude an aura of awe or fear (60 ft). Creatures must make WIS save or be charmed/frightened for 1 minute.' },
+        ],
+      },
+      wild_magic: {
+        name: 'Wild Magic',
+        description: 'Your spellcasting draws on wild magical forces that can produce unpredictable but powerful effects.',
+        features: [
+          { level: 1, name: 'Wild Magic Surge', description: 'After casting a sorcerer spell of 1st level or higher, DM can have you roll a d20. On a 1, roll on the Wild Magic Surge table.' },
+          { level: 1, name: 'Tides of Chaos', description: 'Gain advantage on one attack, ability check, or save. Once per long rest (or DM triggers Wild Magic Surge to regain).' },
+          { level: 6, name: 'Bend Luck', description: 'Spend 2 sorcery points as a reaction to roll 1d4 and add/subtract from a creature\'s attack, ability check, or save.' },
+          { level: 14, name: 'Controlled Chaos', description: 'When you roll on Wild Magic Surge table, roll twice and choose which result to use.' },
+          { level: 18, name: 'Spell Bombardment', description: 'When you roll damage, if any die shows the maximum value, choose one and reroll it, adding the result as extra damage.' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Sorcerous Origin', type: 'passive', description: 'Choose a sorcerous origin that grants additional abilities' },
       { level: 2, name: 'Font of Magic', type: 'resource', description: 'Sorcery points = sorcerer level. Convert spell slots to points or points to slots', uses: 'Level/long rest' },
@@ -439,6 +680,30 @@ export const CLASS_FEATURES = {
     hit_die: 8,
     spellcasting: 'charisma',
     pact_magic: true,
+    subclass_level: 1,
+    subclass_label: 'Otherworldly Patron',
+    subclasses: {
+      the_fiend: {
+        name: 'The Fiend',
+        description: 'Your patron is a fiend from the lower planes. Gain fire-themed abilities and dark fortune.',
+        features: [
+          { level: 1, name: 'Dark One\'s Blessing', description: 'When you reduce a hostile creature to 0 HP, gain temporary HP equal to CHA modifier + warlock level.' },
+          { level: 6, name: 'Dark One\'s Own Luck', description: 'When you make an ability check or saving throw, add a d10 to the roll. Once per short or long rest.' },
+          { level: 10, name: 'Fiendish Resilience', description: 'After a short or long rest, choose a damage type (not force). You have resistance to it until you choose a different type.' },
+          { level: 14, name: 'Hurl Through Hell', description: 'When you hit a creature with an attack, you can send it through the lower planes. It takes 10d10 psychic damage. Once per long rest.' },
+        ],
+      },
+      the_archfey: {
+        name: 'The Archfey',
+        description: 'Your patron is an archfey from the Feywild. Gain charms, illusions, and fey-themed abilities.',
+        features: [
+          { level: 1, name: 'Fey Presence', description: 'As an action, charm or frighten creatures in a 10-ft cube (WIS save). Once per short or long rest.' },
+          { level: 6, name: 'Misty Escape', description: 'When you take damage, use reaction to turn invisible and teleport 60 ft. Until start of next turn.' },
+          { level: 10, name: 'Beguiling Defenses', description: 'Immune to being charmed. When a creature tries, use reaction to charm them (WIS save) for 1 minute.' },
+          { level: 14, name: 'Dark Delirium', description: 'As an action, charm or frighten a creature for 1 minute (WIS save). Once per short or long rest.' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Otherworldly Patron', type: 'passive', description: 'Choose a patron that grants additional abilities and expanded spells' },
       { level: 1, name: 'Pact Magic', type: 'passive', description: 'Cast warlock spells using Pact Magic slots (all same level, regain on short rest)' },
@@ -480,6 +745,32 @@ export const CLASS_FEATURES = {
   wizard: {
     hit_die: 6,
     spellcasting: 'intelligence',
+    subclass_level: 2,
+    subclass_label: 'Arcane Tradition',
+    subclasses: {
+      school_of_evocation: {
+        name: 'School of Evocation',
+        description: 'Focus on spells that create powerful elemental effects. Your offensive spells are enhanced and can protect allies.',
+        features: [
+          { level: 2, name: 'Evocation Savant', description: 'Halve the gold and time to copy evocation spells into your spellbook.' },
+          { level: 2, name: 'Sculpt Spells', description: 'When you cast an evocation spell that affects others, choose a number of creatures equal to 1 + spell level to automatically succeed on their save and take no damage.' },
+          { level: 6, name: 'Potent Cantrip', description: 'When a creature succeeds on a save against your cantrip, it still takes half damage but suffers no additional effects.' },
+          { level: 10, name: 'Empowered Evocation', description: 'Add INT modifier to one damage roll of any evocation spell you cast.' },
+          { level: 14, name: 'Overchannel', description: 'When you cast a 5th-level or lower spell that deals damage, deal maximum damage. After the first use, take 2d12 necrotic damage per spell level (increases each use).' },
+        ],
+      },
+      school_of_abjuration: {
+        name: 'School of Abjuration',
+        description: 'Specialize in protective magic. Create magical wards that absorb damage and banish threats.',
+        features: [
+          { level: 2, name: 'Abjuration Savant', description: 'Halve the gold and time to copy abjuration spells into your spellbook.' },
+          { level: 2, name: 'Arcane Ward', description: 'When you cast an abjuration spell of 1st level or higher, create a ward with HP equal to twice wizard level + INT modifier.' },
+          { level: 6, name: 'Projected Ward', description: 'When an ally within 30 ft takes damage, use reaction to have your Arcane Ward absorb the damage instead.' },
+          { level: 10, name: 'Improved Abjuration', description: 'Add proficiency bonus to ability checks for abjuration spells (like Counterspell or Dispel Magic).' },
+          { level: 14, name: 'Spell Resistance', description: 'Advantage on saving throws against spells. Resistance against spell damage.' },
+        ],
+      },
+    },
     features: [
       { level: 1, name: 'Arcane Recovery', type: 'special', description: 'Once per day during short rest, recover spell slots totaling up to half wizard level (rounded up)', uses: '1/long rest' },
       { level: 1, name: 'Spellcasting', type: 'passive', description: 'Learn spells from wizard spell list. INT is spellcasting ability' },
