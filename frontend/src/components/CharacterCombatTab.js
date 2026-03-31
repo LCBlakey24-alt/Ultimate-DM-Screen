@@ -3,6 +3,7 @@ import { CLASS_RESOURCES, getResourceMax, getRestoreType, FEATURE_COSTS, FEATURE
 import { CLASS_FEATURES } from '../data/classFeatures';
 import { ALL_WEAPONS, ARMOR } from '../data/equipmentDatabase';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS } from '../data/spellDatabase';
+import { getConditionRollEffect, getConditionIndicator, CONDITION_EFFECTS } from '../data/conditionEffects';
 
 // 5e SRD conditions
 const CONDITIONS = [
@@ -244,14 +245,14 @@ export default function CharacterCombatTab({
   const accent = isGMMode ? '#8A2BE2' : '#4DD0E1';
   const rulesEdition = character?.rules_edition || '2014';
 
-  // Attack roll handler
+  // Attack roll handler - applies condition effects automatically
   const handleAttackRoll = (atk, type) => {
     if (!rollDice) return;
+    const condEffect = getConditionRollEffect(activeConditions, 'attack', rollMode);
     if (type === 'hit') {
       const mod = parseInt(atk.toHit) || 0;
-      rollDice('1d20', mod, `${atk.name} (Attack)`, rollMode);
+      rollDice('1d20', mod, `${atk.name} (Attack)`, condEffect.mode);
     } else {
-      // Parse damage notation: "1d8+3" -> notation="1d8", modifier=3
       const dmgMatch = atk.damage.match(/^(\d+d\d+)([+-]\d+)?$/i);
       if (dmgMatch) {
         rollDice(dmgMatch[1], parseInt(dmgMatch[2] || 0), `${atk.name} (${atk.damageType})`, 'normal');
@@ -502,19 +503,61 @@ export default function CharacterCombatTab({
         </div>
         {showConditions && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8, padding: 8, background: 'rgba(0,0,0,0.2)', borderRadius: 6 }}>
-            {CONDITIONS.map(c => (
-              <button key={c.key} onClick={() => toggleCondition(c.key)} title={c.desc} style={{
-                fontSize: 10, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
-                background: activeConditions.includes(c.key) ? (c.key === 'concentrating' ? 'rgba(59,130,246,0.25)' : 'rgba(239,68,68,0.2)') : 'rgba(255,255,255,0.04)',
-                color: activeConditions.includes(c.key) ? (c.key === 'concentrating' ? '#3B82F6' : '#EF4444') : '#9CA3AF',
-                border: `1px solid ${activeConditions.includes(c.key) ? (c.key === 'concentrating' ? 'rgba(59,130,246,0.4)' : 'rgba(239,68,68,0.3)') : 'rgba(255,255,255,0.06)'}`,
-                fontWeight: activeConditions.includes(c.key) ? 600 : 400,
-              }}>
-                {c.label}
-              </button>
-            ))}
+            {CONDITIONS.map(c => {
+              const isActive = activeConditions.includes(c.key);
+              const effectData = CONDITION_EFFECTS[c.key];
+              const effectCount = effectData ? Object.keys(effectData.effects).length : 0;
+              return (
+                <button key={c.key} onClick={() => toggleCondition(c.key)} title={`${c.desc}${effectData?.notes ? '\n\nEffect: ' + effectData.notes : ''}`} style={{
+                  fontSize: 10, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
+                  background: isActive ? (c.key === 'concentrating' ? 'rgba(59,130,246,0.25)' : 'rgba(239,68,68,0.2)') : 'rgba(255,255,255,0.04)',
+                  color: isActive ? (c.key === 'concentrating' ? '#3B82F6' : '#EF4444') : '#9CA3AF',
+                  border: `1px solid ${isActive ? (c.key === 'concentrating' ? 'rgba(59,130,246,0.4)' : 'rgba(239,68,68,0.3)') : 'rgba(255,255,255,0.06)'}`,
+                  fontWeight: isActive ? 600 : 400,
+                  position: 'relative',
+                }}>
+                  {c.label}
+                  {effectCount > 0 && !isActive && <span style={{ fontSize: 8, color: '#F59E0B', marginLeft: 2 }}>*</span>}
+                </button>
+              );
+            })}
           </div>
         )}
+
+        {/* Active Condition Effects Summary */}
+        {activeConditions.length > 0 && (() => {
+          const attackEffect = getConditionRollEffect(activeConditions, 'attack');
+          const checkEffect = getConditionRollEffect(activeConditions, 'ability_check');
+          const strSave = getConditionRollEffect(activeConditions, 'str_save');
+          const dexSave = getConditionRollEffect(activeConditions, 'dex_save');
+          const effects = [];
+          if (attackEffect.mode !== 'normal') effects.push({ label: 'Attacks', ...attackEffect });
+          if (attackEffect.autoFail) effects.push({ label: 'Attacks', mode: 'auto_fail', reason: attackEffect.reason });
+          if (checkEffect.mode !== 'normal') effects.push({ label: 'Ability Checks', ...checkEffect });
+          if (strSave.autoFail) effects.push({ label: 'STR Saves', mode: 'auto_fail', reason: strSave.reason });
+          if (dexSave.autoFail) effects.push({ label: 'DEX Saves', mode: 'auto_fail', reason: dexSave.reason });
+          if (strSave.mode !== 'normal' && !strSave.autoFail) effects.push({ label: 'STR Saves', ...strSave });
+          if (dexSave.mode !== 'normal' && !dexSave.autoFail) effects.push({ label: 'DEX Saves', ...dexSave });
+          if (effects.length === 0) return null;
+          return (
+            <div data-testid="condition-effects-summary" style={{
+              padding: '8px 10px', borderRadius: 6, marginBottom: 8,
+              background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)',
+              display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
+            }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#F59E0B', letterSpacing: 1 }}>EFFECTS:</span>
+              {effects.map((e, i) => (
+                <span key={i} title={e.reason} style={{
+                  fontSize: 10, padding: '2px 6px', borderRadius: 4, fontWeight: 600,
+                  background: e.mode === 'auto_fail' ? 'rgba(239,68,68,0.2)' : e.mode === 'disadvantage' ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.15)',
+                  color: e.mode === 'auto_fail' ? '#EF4444' : e.mode === 'disadvantage' ? '#EF4444' : '#22C55E',
+                }}>
+                  {e.label}: {e.mode === 'auto_fail' ? 'AUTO-FAIL' : e.mode === 'advantage' ? 'ADV' : 'DISADV'}
+                </span>
+              ))}
+            </div>
+          );
+        })()}
         {/* Concentration spell name */}
         {activeConditions.includes('concentrating') && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, padding: '4px 8px', background: 'rgba(59,130,246,0.08)', borderRadius: 6 }}>
@@ -532,7 +575,24 @@ export default function CharacterCombatTab({
 
       {/* ── Weapon Attacks ── */}
       <Section title="Attacks" accent={accent}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {(() => {
+          const attackEffect = getConditionRollEffect(activeConditions, 'attack', rollMode);
+          const attackIndicator = attackEffect.mode !== 'normal' ? { mode: attackEffect.mode, reason: attackEffect.reason } : null;
+          return (
+            <>
+              {attackIndicator && (
+                <div style={{
+                  fontSize: 10, padding: '3px 8px', borderRadius: 4, marginBottom: 6, textAlign: 'center',
+                  fontWeight: 600, 
+                  background: attackIndicator.mode === 'advantage' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                  color: attackIndicator.mode === 'advantage' ? '#22C55E' : '#EF4444',
+                  border: `1px solid ${attackIndicator.mode === 'advantage' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                }}>
+                  {attackIndicator.mode === 'advantage' ? '▲ ADVANTAGE' : '▼ DISADVANTAGE'} on attacks
+                  {attackIndicator.reason && <span style={{ opacity: 0.7, marginLeft: 4 }}>({attackIndicator.reason})</span>}
+                </div>
+              )}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {weaponAttacks.map((atk, i) => (
             <div key={i} data-testid={`attack-${atk.slot}`} style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px', borderRadius: 8,
@@ -581,6 +641,9 @@ export default function CharacterCombatTab({
             </div>
           ))}
         </div>
+            </>
+          );
+        })()}
       </Section>
 
       {/* ── Hit Dice + Class Resources ── */}

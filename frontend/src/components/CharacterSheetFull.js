@@ -16,6 +16,7 @@ import { CLASS_FEATURES } from '../data/classFeatures';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, SPELL_DATABASE } from '../data/spellDatabase';
 import DiceRoller3D from './ui/DiceRoller3D';
 import DiceRollHistory from './DiceRollHistory';
+import { getConditionRollEffect, getConditionIndicator } from '../data/conditionEffects';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -642,6 +643,9 @@ export default function CharacterSheetFull() {
               const mod = getModifier(score);
               const saveMod = mod + (character.saving_throw_proficiencies?.includes(ability) ? profBonus : 0);
               const isProficient = character.saving_throw_proficiencies?.includes(ability);
+              const saveContext = `${ABILITY_SHORT[ability].toLowerCase()}_save`;
+              const condIndicator = getConditionIndicator(character?.conditions || [], saveContext);
+              const condEffect = getConditionRollEffect(character?.conditions || [], saveContext);
               
               return (
                 <div key={ability} style={{ marginBottom: '12px', background: 'rgba(15, 10, 30, 0.5)', borderRadius: '10px', padding: '12px' }}>
@@ -651,7 +655,13 @@ export default function CharacterSheetFull() {
                     <span style={{ fontSize: '16px', fontWeight: '600', color: theme.accent.highlight }}>{formatModifier(mod)}</span>
                   </div>
                   <button
-                    onClick={() => rollDice('1d20', saveMod, `${ABILITY_SHORT[ability]} Save`)}
+                    onClick={() => {
+                      if (condEffect.autoFail) {
+                        toast.error(`${ABILITY_SHORT[ability]} Save: AUTO-FAIL (${condEffect.reason})`);
+                        return;
+                      }
+                      rollDice('1d20', saveMod, `${ABILITY_SHORT[ability]} Save`, condEffect.mode);
+                    }}
                     style={{
                       width: '100%',
                       padding: '8px',
@@ -663,11 +673,20 @@ export default function CharacterSheetFull() {
                       cursor: 'pointer',
                       display: 'flex',
                       justifyContent: 'space-between',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      position: 'relative',
                     }}
                   >
                     <span>{isProficient && '● '}Save</span>
-                    <span style={{ fontWeight: '600' }}>{formatModifier(saveMod)}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      {condIndicator && (
+                        <span title={condIndicator.tooltip} style={{
+                          fontSize: '11px', fontWeight: 800, color: condIndicator.color,
+                          animation: condEffect.autoFail ? 'pulse 1s infinite' : 'none',
+                        }}>{condIndicator.symbol}</span>
+                      )}
+                      <span style={{ fontWeight: '600' }}>{formatModifier(saveMod)}</span>
+                    </div>
                   </button>
                 </div>
               );
@@ -690,11 +709,14 @@ export default function CharacterSheetFull() {
               const mod = getModifier(abilities[skill.ability]);
               const isProficient = character.skill_proficiencies?.includes(skill.name);
               const bonus = mod + (isProficient ? profBonus : 0);
+              const skillContext = `${skill.ability.substring(0, 3).toLowerCase()}_check`;
+              const condIndicator = getConditionIndicator(character?.conditions || [], skillContext);
+              const condEffect = getConditionRollEffect(character?.conditions || [], skillContext);
               
               return (
                 <button
                   key={skill.name}
-                  onClick={() => rollDice('1d20', bonus, skill.name)}
+                  onClick={() => rollDice('1d20', bonus, skill.name, condEffect.mode)}
                   data-testid={`skill-${skill.name.toLowerCase().replace(' ', '-')}`}
                   style={{
                     width: '100%',
@@ -703,8 +725,8 @@ export default function CharacterSheetFull() {
                     alignItems: 'center',
                     padding: '10px 12px',
                     marginBottom: '4px',
-                    background: isProficient ? 'rgba(138, 43, 226, 0.15)' : 'transparent',
-                    border: isProficient ? '1px solid rgba(138, 43, 226, 0.4)' : '1px solid transparent',
+                    background: isProficient ? 'rgba(138, 43, 226, 0.15)' : condIndicator ? `${condIndicator.color}08` : 'transparent',
+                    border: isProficient ? '1px solid rgba(138, 43, 226, 0.4)' : condIndicator ? `1px solid ${condIndicator.color}30` : '1px solid transparent',
                     borderRadius: '6px',
                     color: isProficient ? '#a78bfa' : theme.text.secondary,
                     fontSize: '14px',
@@ -718,13 +740,16 @@ export default function CharacterSheetFull() {
                     e.currentTarget.style.boxShadow = '0 0 15px rgba(138, 43, 226, 0.4)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = isProficient ? 'rgba(138, 43, 226, 0.15)' : 'transparent';
+                    e.currentTarget.style.background = isProficient ? 'rgba(138, 43, 226, 0.15)' : condIndicator ? `${condIndicator.color}08` : 'transparent';
                     e.currentTarget.style.boxShadow = isProficient ? '0 0 10px rgba(138, 43, 226, 0.3)' : 'none';
                   }}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     {isProficient && <span style={{ color: theme.accent.primary, fontSize: '8px' }}>●</span>}
                     {skill.name}
+                    {condIndicator && (
+                      <span title={condIndicator.tooltip} style={{ fontSize: '10px', fontWeight: 800, color: condIndicator.color, marginLeft: '2px' }}>{condIndicator.symbol}</span>
+                    )}
                   </span>
                   <span style={{ fontWeight: '600', color: isProficient ? '#a78bfa' : theme.text.primary, fontSize: '15px' }}>{formatModifier(bonus)}</span>
                 </button>
