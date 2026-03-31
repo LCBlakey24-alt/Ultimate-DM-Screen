@@ -25,7 +25,7 @@ const CONDITIONS = [
 ];
 
 export default function CharacterCombatTab({
-  character, onUpdateCharacter, onUpdateResources, onRest, isGMMode
+  character, onUpdateCharacter, onUpdateResources, onRest, isGMMode, rollDice
 }) {
   const [expandedFeature, setExpandedFeature] = useState(null);
   const [restLoading, setRestLoading] = useState(false);
@@ -33,6 +33,9 @@ export default function CharacterCombatTab({
   const [activeConditions, setActiveConditions] = useState(character?.conditions || []);
   const [concentratingOn, setConcentratingOn] = useState(character?.concentrating_on || '');
   const [inspiration, setInspiration] = useState(character?.inspiration || false);
+  const [hpInput, setHpInput] = useState('');
+  const [rollMode, setRollMode] = useState('normal'); // 'normal', 'advantage', 'disadvantage'
+  const [deathSkullAnim, setDeathSkullAnim] = useState(null);
 
   const charClass = character?.character_class || '';
   const level = character?.level || 1;
@@ -144,7 +147,14 @@ export default function CharacterCombatTab({
 
   // ─── Features ─────────────────────────────────────────────────
   const classData = CLASS_FEATURES[charClass.toLowerCase()];
-  const features = (classData?.features || []).filter(f => f.level <= level);
+  const edition = character?.rules_edition || character?.edition || '2014';
+  const editionFeatures = edition === '2024' && classData?.features_2024 ? classData.features_2024 : (classData?.features || []);
+  // Also include subclass features if character has a subclass
+  const subclassKey = character?.subclass;
+  const subclassFeatures = subclassKey && classData?.subclasses?.[subclassKey]
+    ? classData.subclasses[subclassKey].features.filter(f => f.level <= level)
+    : [];
+  const features = [...editionFeatures.filter(f => f.level <= level && !f.isChoice), ...subclassFeatures];
 
   function useFeature(feature) {
     const costInfo = FEATURE_COSTS[feature.name];
@@ -232,6 +242,38 @@ export default function CharacterCombatTab({
   const weaponAttacks = getWeaponAttacks();
   const ac = computeAC();
   const accent = isGMMode ? '#8A2BE2' : '#4DD0E1';
+  const rulesEdition = character?.rules_edition || '2014';
+
+  // Attack roll handler
+  const handleAttackRoll = (atk, type) => {
+    if (!rollDice) return;
+    if (type === 'hit') {
+      const mod = parseInt(atk.toHit) || 0;
+      rollDice('1d20', mod, `${atk.name} (Attack)`, rollMode);
+    } else {
+      // Parse damage notation: "1d8+3" -> notation="1d8", modifier=3
+      const dmgMatch = atk.damage.match(/^(\d+d\d+)([+-]\d+)?$/i);
+      if (dmgMatch) {
+        rollDice(dmgMatch[1], parseInt(dmgMatch[2] || 0), `${atk.name} (${atk.damageType})`, 'normal');
+      }
+    }
+  };
+
+  // HP management
+  const handleHpChange = (delta) => {
+    const newHp = Math.max(0, Math.min(character?.max_hit_points || 1, (character?.current_hit_points || 0) + delta));
+    onUpdateCharacter?.({ current_hit_points: newHp });
+  };
+  const handleHpInput = (type) => {
+    const val = parseInt(hpInput) || 0;
+    if (val <= 0) return;
+    handleHpChange(type === 'heal' ? val : -val);
+    setHpInput('');
+  };
+  const handleTempHp = (delta) => {
+    const newTemp = Math.max(0, (character?.temp_hit_points || 0) + delta);
+    onUpdateCharacter?.({ temp_hit_points: newTemp });
+  };
 
   return (
     <div data-testid="combat-tab" style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 13 }}>
@@ -241,8 +283,12 @@ export default function CharacterCombatTab({
         <StatPill label="AC" value={ac} color={accent} />
         <StatPill label="HP" value={`${currentHp}/${maxHp}`} color={currentHp < maxHp / 2 ? '#EF4444' : '#22C55E'} />
         <StatPill label="Prof" value={`+${profBonus}`} color="#F59E0B" />
-        <StatPill label="Init" value={`${dexMod >= 0 ? '+' : ''}${dexMod}`} color="#8B5CF6" />
+        <button data-testid="roll-initiative" onClick={() => rollDice?.('1d20', dexMod, 'Initiative', rollMode)} style={{ background: 'none', border: 'none', padding: 0, cursor: rollDice ? 'pointer' : 'default' }}>
+          <StatPill label="Init" value={`${dexMod >= 0 ? '+' : ''}${dexMod}`} color="#8B5CF6" />
+        </button>
         <StatPill label="Speed" value={character?.speed || 30} color="#6B7280" />
+        {rulesEdition === '2024' && <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(236,72,153,0.15)', color: '#EC4899', fontWeight: 700 }}>2024</span>}
+        {rulesEdition === '2014' && <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(107,114,128,0.15)', color: '#9CA3AF', fontWeight: 700 }}>2014</span>}
         {/* Inspiration */}
         <button
           data-testid="inspiration-toggle"
@@ -259,35 +305,173 @@ export default function CharacterCombatTab({
         </button>
       </div>
 
+      {/* ── HP Tracker ── */}
+      <div data-testid="hp-tracker" style={{
+        display: 'flex', flexDirection: 'column', gap: 8,
+        padding: '12px', borderRadius: 10,
+        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+      }}>
+        {/* HP Bar */}
+        <div style={{ position: 'relative', height: 24, borderRadius: 6, background: 'rgba(0,0,0,0.4)', overflow: 'hidden' }}>
+          <div style={{
+            height: '100%', borderRadius: 6, transition: 'width 0.3s',
+            width: `${Math.min(100, (currentHp / maxHp) * 100)}%`,
+            background: currentHp < maxHp * 0.25 ? 'linear-gradient(90deg, #991B1B, #EF4444)' : currentHp < maxHp * 0.5 ? 'linear-gradient(90deg, #D97706, #F59E0B)' : 'linear-gradient(90deg, #059669, #22C55E)',
+          }} />
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
+            {currentHp} / {maxHp}
+          </div>
+        </div>
+        {/* Damage/Heal Row */}
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <button data-testid="hp-damage-btn" onClick={() => handleHpInput('damage')} disabled={!hpInput} style={{
+            padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: hpInput ? 'pointer' : 'not-allowed',
+            background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.4)', color: '#EF4444',
+            opacity: hpInput ? 1 : 0.4, transition: 'all 0.15s',
+          }}>DMG</button>
+          <input
+            data-testid="hp-input"
+            type="number" min="0" value={hpInput} onChange={e => setHpInput(e.target.value)}
+            placeholder="Amount"
+            onKeyDown={e => { if (e.key === 'Enter') handleHpInput(e.shiftKey ? 'heal' : 'damage'); }}
+            style={{
+              flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 6, padding: '6px 10px', color: '#E5E7EB', fontSize: 13, textAlign: 'center', outline: 'none',
+            }}
+          />
+          <button data-testid="hp-heal-btn" onClick={() => handleHpInput('heal')} disabled={!hpInput} style={{
+            padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: hpInput ? 'pointer' : 'not-allowed',
+            background: 'rgba(34,197,94,0.2)', border: '1px solid rgba(34,197,94,0.4)', color: '#22C55E',
+            opacity: hpInput ? 1 : 0.4, transition: 'all 0.15s',
+          }}>HEAL</button>
+        </div>
+        {/* Temp HP */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '4px', background: 'rgba(59,130,246,0.06)', borderRadius: 6 }}>
+          <span style={{ fontSize: 10, color: '#3B82F6', fontWeight: 600 }}>TEMP HP</span>
+          <button onClick={() => handleTempHp(-1)} style={{ padding: '1px 6px', background: 'none', border: 'none', color: '#3B82F6', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}>-</button>
+          <span style={{ fontSize: 14, fontWeight: 700, color: (character?.temp_hit_points || 0) > 0 ? '#3B82F6' : '#6B7280', minWidth: 20, textAlign: 'center' }}>{character?.temp_hit_points || 0}</span>
+          <button onClick={() => handleTempHp(1)} style={{ padding: '1px 6px', background: 'none', border: 'none', color: '#3B82F6', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}>+</button>
+        </div>
+      </div>
+
+      {/* ── Roll Mode Toggle (Advantage / Normal / Disadvantage) ── */}
+      <div data-testid="roll-mode-toggle" style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
+        {[
+          { key: 'disadvantage', label: 'Disadv', color: '#EF4444' },
+          { key: 'normal', label: 'Normal', color: '#9CA3AF' },
+          { key: 'advantage', label: 'Adv', color: '#22C55E' },
+        ].map(m => (
+          <button key={m.key} data-testid={`roll-mode-${m.key}`}
+            onClick={() => setRollMode(m.key)}
+            style={{
+              padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+              background: rollMode === m.key ? `${m.color}20` : 'rgba(255,255,255,0.02)',
+              border: `1px solid ${rollMode === m.key ? `${m.color}60` : 'rgba(255,255,255,0.06)'}`,
+              color: rollMode === m.key ? m.color : '#6B7280', transition: 'all 0.15s',
+            }}
+          >{m.label}</button>
+        ))}
+      </div>
+
       {/* ── Death Saves (only when HP ≤ 0) ── */}
       {isDown && (
         <div data-testid="death-saves" style={{
-          padding: '10px 14px', borderRadius: 8,
+          padding: '14px', borderRadius: 10, position: 'relative', overflow: 'hidden',
           background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
-          display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'center',
         }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#EF4444', letterSpacing: 1 }}>DEATH SAVES</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 10, color: '#22C55E', fontWeight: 600 }}>Pass</span>
-            {[0,1,2].map(i => (
-              <button key={i} onClick={() => toggleDeathSave('success', i)} style={{
-                width: 22, height: 22, borderRadius: '50%', cursor: 'pointer',
-                border: `2px solid #22C55E`, background: i < deathSuccesses ? '#22C55E' : 'transparent',
-                transition: 'all 0.15s',
-              }} />
-            ))}
+          {/* Red skull animation overlay */}
+          {deathSkullAnim && (
+            <div style={{
+              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              zIndex: 5, pointerEvents: 'none',
+              animation: 'deathSkullFade 1.2s ease-out forwards',
+            }}>
+              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" style={{ filter: 'drop-shadow(0 0 20px #EF4444) drop-shadow(0 0 40px #991B1B)' }}>
+                <path d="M12 2C7.5 2 4 5.5 4 9.5c0 2.5 1.2 4.7 3 6.1V18c0 .6.4 1 1 1h1v2c0 .6.4 1 1 1h.5c.3 0 .5-.2.5-.5v-2.5h2v2.5c0 .3.2.5.5.5h.5c.6 0 1-.4 1-1v-2h1c.6 0 1-.4 1-1v-2.4c1.8-1.4 3-3.6 3-6.1C20 5.5 16.5 2 12 2z" fill="#EF4444" opacity="0.9"/>
+                <circle cx="9" cy="9.5" r="2" fill="#0a0a0a"/>
+                <circle cx="15" cy="9.5" r="2" fill="#0a0a0a"/>
+                <path d="M9.5 14.5l1-1 1 1 1-1 1 1" stroke="#0a0a0a" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+              </svg>
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center', position: 'relative', zIndex: 2 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#EF4444', letterSpacing: 1 }}>DEATH SAVES</span>
+            {/* Roll Death Save button */}
+            {rollDice && (
+              <button data-testid="roll-death-save"
+                onClick={() => {
+                  const result = Math.floor(Math.random() * 20) + 1;
+                  const isSuccess = result >= 10;
+                  if (result === 20) {
+                    // Nat 20: regain 1 HP
+                    onUpdateCharacter?.({ current_hit_points: 1, death_saves_successes: 0, death_saves_failures: 0 });
+                    setDeathSuccesses(0); setDeathFailures(0);
+                    rollDice('1d20', 0, 'Death Save (NAT 20!)', 'normal');
+                  } else if (result === 1) {
+                    // Nat 1: 2 failures
+                    const newFail = Math.min(3, deathFailures + 2);
+                    setDeathFailures(newFail);
+                    onUpdateCharacter?.({ death_saves_failures: newFail });
+                    setDeathSkullAnim(Date.now());
+                    setTimeout(() => setDeathSkullAnim(null), 1200);
+                    rollDice('1d20', 0, 'Death Save (NAT 1!)', 'normal');
+                  } else if (isSuccess) {
+                    const newSucc = Math.min(3, deathSuccesses + 1);
+                    setDeathSuccesses(newSucc);
+                    onUpdateCharacter?.({ death_saves_successes: newSucc });
+                    rollDice('1d20', 0, 'Death Save (Pass)', 'normal');
+                  } else {
+                    const newFail = Math.min(3, deathFailures + 1);
+                    setDeathFailures(newFail);
+                    onUpdateCharacter?.({ death_saves_failures: newFail });
+                    setDeathSkullAnim(Date.now());
+                    setTimeout(() => setDeathSkullAnim(null), 1200);
+                    rollDice('1d20', 0, 'Death Save (Fail)', 'normal');
+                  }
+                }}
+                style={{
+                  padding: '4px 10px', borderRadius: 6, fontSize: 10, fontWeight: 700,
+                  background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.5)',
+                  color: '#EF4444', cursor: 'pointer',
+                }}
+              >Roll Save</button>
+            )}
           </div>
-          <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.1)' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 10, color: '#EF4444', fontWeight: 600 }}>Fail</span>
-            {[0,1,2].map(i => (
-              <button key={i} onClick={() => toggleDeathSave('failure', i)} style={{
-                width: 22, height: 22, borderRadius: '50%', cursor: 'pointer',
-                border: `2px solid #EF4444`, background: i < deathFailures ? '#EF4444' : 'transparent',
-                transition: 'all 0.15s',
-              }} />
-            ))}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'center', marginTop: 8, position: 'relative', zIndex: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 10, color: '#22C55E', fontWeight: 600 }}>Pass</span>
+              {[0,1,2].map(i => (
+                <button key={i} onClick={() => toggleDeathSave('success', i)} style={{
+                  width: 24, height: 24, borderRadius: '50%', cursor: 'pointer',
+                  border: `2px solid #22C55E`, background: i < deathSuccesses ? '#22C55E' : 'transparent',
+                  transition: 'all 0.2s', transform: i < deathSuccesses ? 'scale(1.1)' : 'scale(1)',
+                }} />
+              ))}
+            </div>
+            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: 10, color: '#EF4444', fontWeight: 600 }}>Fail</span>
+              {[0,1,2].map(i => (
+                <button key={i} onClick={() => toggleDeathSave('failure', i)} data-testid={`death-fail-${i}`} style={{
+                  width: 24, height: 24, borderRadius: '50%', cursor: 'pointer',
+                  border: `2px solid #EF4444`, background: i < deathFailures ? '#EF4444' : 'transparent',
+                  transition: 'all 0.2s', transform: i < deathFailures ? 'scale(1.1)' : 'scale(1)',
+                }} />
+              ))}
+            </div>
           </div>
+          {deathFailures >= 3 && <div style={{ textAlign: 'center', marginTop: 8, fontSize: 13, fontWeight: 800, color: '#EF4444', letterSpacing: 2, textTransform: 'uppercase', animation: 'pulse 1s ease-in-out infinite' }}>CHARACTER DEAD</div>}
+          {deathSuccesses >= 3 && <div style={{ textAlign: 'center', marginTop: 8, fontSize: 13, fontWeight: 800, color: '#22C55E', letterSpacing: 2, textTransform: 'uppercase' }}>STABILIZED</div>}
+          <style>{`
+            @keyframes deathSkullFade {
+              0% { opacity: 0; transform: scale(0.3); }
+              20% { opacity: 1; transform: scale(1.2); }
+              40% { transform: scale(0.95); }
+              60% { opacity: 0.9; transform: scale(1.05); }
+              100% { opacity: 0; transform: scale(1.5); }
+            }
+            @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+          `}</style>
         </div>
       )}
 
@@ -351,15 +535,49 @@ export default function CharacterCombatTab({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {weaponAttacks.map((atk, i) => (
             <div key={i} data-testid={`attack-${atk.slot}`} style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderRadius: 6,
+              display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px', borderRadius: 8,
               background: atk.isUnarmed ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(255,255,255,0.06)', opacity: atk.isUnarmed ? 0.7 : 1,
             }}>
               <span style={{ fontSize: 13, fontWeight: 600, flex: 1, color: '#E5E7EB' }}>{atk.name}</span>
-              <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, background: 'rgba(239,68,68,0.15)', color: '#EF4444' }}>{atk.toHit}</span>
-              <span style={{ padding: '1px 6px', borderRadius: 4, fontSize: 11, fontWeight: 600, background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}>{atk.damage} {atk.damageType}</span>
+              <button
+                data-testid={`attack-hit-${atk.slot}`}
+                onClick={() => handleAttackRoll(atk, 'hit')}
+                title="Roll to hit"
+                style={{
+                  padding: '3px 8px', borderRadius: 5, fontSize: 12, fontWeight: 700,
+                  background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
+                  color: '#EF4444', cursor: rollDice ? 'pointer' : 'default',
+                  transition: 'all 0.15s',
+                }}
+              >{atk.toHit}</button>
+              <button
+                data-testid={`attack-dmg-${atk.slot}`}
+                onClick={() => handleAttackRoll(atk, 'damage')}
+                title="Roll damage"
+                style={{
+                  padding: '3px 8px', borderRadius: 5, fontSize: 12, fontWeight: 600,
+                  background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)',
+                  color: '#F59E0B', cursor: rollDice ? 'pointer' : 'default',
+                  transition: 'all 0.15s',
+                }}
+              >{atk.damage} {atk.damageType}</button>
               {atk.range && <span style={{ fontSize: 10, color: '#6B7280' }}>{atk.range}</span>}
-              {atk.versatileDamage && <span style={{ fontSize: 10, color: '#9CA3AF' }}>(2H: {atk.versatileDamage})</span>}
+              {atk.versatileDamage && (
+                <button
+                  onClick={() => {
+                    if (!rollDice) return;
+                    const vMatch = atk.versatileDamage.match(/^(\d+d\d+)([+-]\d+)?$/i);
+                    if (vMatch) rollDice(vMatch[1], parseInt(vMatch[2] || 0), `${atk.name} 2H (${atk.damageType})`, 'normal');
+                  }}
+                  title="Roll versatile (two-handed) damage"
+                  style={{
+                    padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+                    background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.3)',
+                    color: '#A855F7', cursor: rollDice ? 'pointer' : 'default',
+                  }}
+                >2H: {atk.versatileDamage}</button>
+              )}
             </div>
           ))}
         </div>

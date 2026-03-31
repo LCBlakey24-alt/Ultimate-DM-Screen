@@ -86,7 +86,7 @@ function DiceRoller() {
   };
 
   return (
-    <div className="glow-panel" style={{ padding: '20px' }}>
+    <div style={{ padding: '20px', background: 'rgba(20, 15, 40, 0.9)', borderRadius: '12px', border: '1px solid rgba(138, 43, 226, 0.3)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <h3 style={{ 
           fontSize: '18px', 
@@ -124,9 +124,9 @@ function DiceRoller() {
             style={{
               padding: '8px 12px',
               borderRadius: '8px',
-              border: selectedDice.sides === dice.sides ? `2px solid ${dice.color}` : '2px solid #1e40af',
-              background: selectedDice.sides === dice.sides ? `${dice.color}20` : 'transparent',
-              color: selectedDice.sides === dice.sides ? dice.color : '#94a3b8',
+              border: selectedDice.sides === dice.sides ? `2px solid ${dice.color}` : '2px solid rgba(138, 43, 226, 0.3)',
+              background: selectedDice.sides === dice.sides ? `${dice.color}25` : 'rgba(30, 20, 50, 0.6)',
+              color: selectedDice.sides === dice.sides ? dice.color : '#c4b5fd',
               fontWeight: '400',
               fontSize: '13px',
               fontFamily: "'Montserrat', sans-serif",

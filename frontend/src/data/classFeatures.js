@@ -154,6 +154,26 @@ export const CLASS_FEATURES = {
         ],
       },
     },
+    // 2024 PHB rules variant
+    features_2024: [
+      { level: 1, name: 'Fighting Style', type: 'passive', description: 'Choose a Fighting Style feat', isChoice: true },
+      { level: 1, name: 'Second Wind', type: 'bonus_action', description: 'Regain 1d10 + fighter level HP. Uses equal to proficiency bonus per long rest.', uses: 'PB/long rest' },
+      { level: 1, name: 'Weapon Mastery', type: 'passive', description: 'Choose weapon mastery properties for proficient weapons (number = 3)' },
+      { level: 2, name: 'Action Surge', type: 'special', description: 'Take one additional action on your turn (1 use per short/long rest)', uses: '1/short rest' },
+      { level: 2, name: 'Tactical Mind', type: 'special', description: 'When you fail an ability check, expend a Second Wind use to add 1d10 to the roll' },
+      { level: 3, name: 'Martial Archetype', type: 'passive', description: 'Choose your fighter subclass', isChoice: true },
+      { level: 4, name: 'Weapon Mastery (4)', type: 'passive', description: 'Master 4 weapons. Can change mastery on long rest.' },
+      { level: 5, name: 'Extra Attack', type: 'passive', description: 'Attack twice when you take the Attack action' },
+      { level: 5, name: 'Tactical Shift', type: 'passive', description: 'When you use Second Wind, move up to half speed without opportunity attacks' },
+      { level: 9, name: 'Indomitable', type: 'reaction', description: 'Reroll failed saving throw with +PB bonus (1 use per long rest)', uses: '1/long rest' },
+      { level: 9, name: 'Tactical Master', type: 'passive', description: 'When you attack, you can replace one weapon mastery property with Push, Sap, or Slow' },
+      { level: 11, name: 'Extra Attack (2)', type: 'passive', description: 'Attack three times when you take the Attack action', replaces: 'Extra Attack' },
+      { level: 13, name: 'Indomitable (2 uses)', type: 'reaction', description: 'Reroll failed saving throw with +PB bonus (2 uses)', uses: '2/long rest', replaces: 'Indomitable' },
+      { level: 13, name: 'Studied Attacks', type: 'passive', description: 'If you miss a creature, you have advantage on your next attack against it before end of next turn' },
+      { level: 17, name: 'Action Surge (2 uses)', type: 'special', description: 'Use Action Surge twice between rests (not same turn)', uses: '2/short rest', replaces: 'Action Surge' },
+      { level: 17, name: 'Indomitable (3 uses)', type: 'reaction', description: 'Reroll failed saving throw (3 uses)', uses: '3/long rest', replaces: 'Indomitable (2 uses)' },
+      { level: 20, name: 'Extra Attack (3)', type: 'passive', description: 'Attack four times when you take the Attack action', replaces: 'Extra Attack (2)' },
+    ],
   },
 
   monk: {

@@ -779,6 +779,7 @@ export default function CharacterSheetFull() {
                   onUpdateResources={handleUpdateResources}
                   onRest={handleRest}
                   isGMMode={false}
+                  rollDice={rollDice}
                 />
               </div>
             )}
@@ -885,6 +886,34 @@ export default function CharacterSheetFull() {
             )}
           </div>
         </div>
+      </div>
+      
+      {/* Quick Dice Bar */}
+      <div data-testid="quick-dice-bar" style={{
+        position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+        display: 'flex', gap: '4px', padding: '6px 16px',
+        background: 'rgba(10, 8, 25, 0.95)', backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(77, 208, 225, 0.2)', borderBottom: 'none',
+        borderRadius: '12px 12px 0 0', zIndex: 100,
+      }}>
+        {[
+          { sides: 4, color: '#22C55E' }, { sides: 6, color: '#3B82F6' },
+          { sides: 8, color: '#8B5CF6' }, { sides: 10, color: '#F59E0B' },
+          { sides: 12, color: '#EC4899' }, { sides: 20, color: '#EF4444' },
+          { sides: 100, color: '#6B7280', label: 'D%' },
+        ].map(d => (
+          <button
+            key={d.sides}
+            data-testid={`quick-d${d.sides}`}
+            onClick={() => rollDice(`1d${d.sides}`, 0, d.label || `D${d.sides}`)}
+            style={{
+              padding: '6px 10px', borderRadius: 8, cursor: 'pointer',
+              background: `${d.color}15`, border: `1px solid ${d.color}40`,
+              color: d.color, fontSize: 12, fontWeight: 700, transition: 'all 0.15s',
+              minWidth: 36, textAlign: 'center',
+            }}
+          >{d.label || `d${d.sides}`}</button>
+        ))}
       </div>
       
       {/* 3D Dice Roller Overlay */}

@@ -679,6 +679,8 @@ class PlayerCharacterUpdate(BaseModel):
     background: Optional[str] = None
     level: Optional[int] = None
     experience_points: Optional[int] = None
+    edition: Optional[str] = None  # "2014" or "2024"
+    rules_edition: Optional[str] = None  # Alias for edition
     
     # Ability Scores
     strength: Optional[int] = None
