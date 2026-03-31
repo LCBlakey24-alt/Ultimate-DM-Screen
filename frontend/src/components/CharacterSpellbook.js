@@ -1,0 +1,536 @@
+import React, { useState, useMemo } from 'react';
+import { BookOpen, Zap, Shield, Search, ChevronDown, ChevronUp, Star } from 'lucide-react';
+import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, getMaxSpellLevel } from '../data/spellDatabase';
+
+const CANTRIP_DAMAGE = {
+  'Fire Bolt': '1d10', 'Eldritch Blast': '1d10', 'Sacred Flame': '1d8',
+  'Toll the Dead': '1d8', 'Chill Touch': '1d8', 'Ray of Frost': '1d8',
+  'Shocking Grasp': '1d8', 'Acid Splash': '1d6', 'Poison Spray': '1d12',
+  'Vicious Mockery': '1d4', 'Produce Flame': '1d8', 'Thorn Whip': '1d6',
+  'Word of Radiance': '1d6', 'Frostbite': '1d6',
+};
+
+const theme = {
+  panel: 'rgba(15, 10, 30, 0.85)',
+  border: 'rgba(77, 208, 225, 0.3)',
+  accent: { primary: '#4DD0E1', secondary: '#EC4899', highlight: '#F59E0B' },
+  text: { primary: '#ffffff', secondary: '#cbd5e1', muted: '#64748b' },
+};
+
+const SCHOOL_COLORS = {
+  Abjuration: '#3B82F6', Conjuration: '#F59E0B', Divination: '#8B5CF6',
+  Enchantment: '#EC4899', Evocation: '#EF4444', Illusion: '#6366F1',
+  Necromancy: '#6B7280', Transmutation: '#22C55E',
+};
+
+// Upcast damage scaling for common spells
+const UPCAST_SCALING = {
+  'Burning Hands': { base: '3d6', perLevel: '1d6', type: 'fire' },
+  'Chromatic Orb': { base: '3d8', perLevel: '1d8', type: 'varies' },
+  'Cure Wounds': { base: '1d8', perLevel: '1d8', type: 'healing' },
+  'Guiding Bolt': { base: '4d6', perLevel: '1d6', type: 'radiant' },
+  'Healing Word': { base: '1d4', perLevel: '1d4', type: 'healing' },
+  'Inflict Wounds': { base: '3d10', perLevel: '1d10', type: 'necrotic' },
+  'Ice Knife': { base: '1d10', perLevel: '0', type: 'piercing' },
+  'Magic Missile': { base: '3x(1d4+1)', perLevel: '+1 dart', type: 'force' },
+  'Thunderwave': { base: '2d8', perLevel: '1d8', type: 'thunder' },
+  'Shield of Faith': { base: '+2 AC', perLevel: '0', type: 'buff' },
+  'Spiritual Weapon': { base: '1d8', perLevel: '1d8/2lvl', type: 'force' },
+  'Scorching Ray': { base: '3x2d6', perLevel: '+1 ray', type: 'fire' },
+  'Fireball': { base: '8d6', perLevel: '1d6', type: 'fire' },
+  'Lightning Bolt': { base: '8d6', perLevel: '1d6', type: 'lightning' },
+};
+
+export default function CharacterSpellbook({
+  character, usedSlots, setUsedSlots, rollDice, onUpdateCharacter
+}) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [expandedSpell, setExpandedSpell] = useState(null);
+  const [castingSpell, setCastingSpell] = useState(null);
+  const [collapsedLevels, setCollapsedLevels] = useState({});
+
+  const classInfo = SPELLCASTING_CLASSES[character?.character_class];
+  if (!classInfo) {
+    return (
+      <div style={{ color: theme.text.muted, textAlign: 'center', padding: '40px' }}>
+        {character?.character_class} is not a spellcasting class
+      </div>
+    );
+  }
+
+  const level = character?.level || 1;
+  const abilities = {
+    strength: character?.strength || 10, dexterity: character?.dexterity || 10,
+    constitution: character?.constitution || 10, intelligence: character?.intelligence || 10,
+    wisdom: character?.wisdom || 10, charisma: character?.charisma || 10,
+  };
+  const getMod = (score) => Math.floor((score - 10) / 2);
+  const profBonus = Math.ceil(level / 4) + 1;
+  const spellAbilityMod = getMod(abilities[classInfo.ability] || 10);
+  const spellDC = 8 + profBonus + spellAbilityMod;
+  const spellAttackBonus = profBonus + spellAbilityMod;
+
+  // Spell slots
+  const slots = classInfo.pactMagic
+    ? PACT_MAGIC_SLOTS[level]
+    : classInfo.halfCaster
+      ? SPELL_SLOTS[Math.floor(level / 2)] || {}
+      : SPELL_SLOTS[level] || {};
+
+  const maxSpellLevel = getMaxSpellLevel(character.character_class, level);
+
+  // Prepared spell limit for prepared casters
+  const maxPrepared = classInfo.type === 'prepared'
+    ? Math.max(1, spellAbilityMod + level) : Infinity;
+
+  // All spells: combine known + prepared
+  const allSpells = useMemo(() => {
+    const spells = character?.spells_known || character?.spells_prepared || character?.spells || [];
+    return spells.map(s => typeof s === 'string' ? { name: s } : s);
+  }, [character]);
+
+  const cantrips = useMemo(() => {
+    const c = character?.cantrips_known || [];
+    return c.map(s => typeof s === 'string' ? { name: s } : s);
+  }, [character]);
+
+  // Prepared state (for prepared casters)
+  const [preparedSpells, setPreparedSpells] = useState(() => {
+    return new Set((character?.prepared_spell_names || allSpells.map(s => s.name)));
+  });
+
+  const preparedCount = preparedSpells.size;
+
+  // Group spells by level
+  const spellsByLevel = useMemo(() => {
+    const groups = {};
+    allSpells.forEach(spell => {
+      const lvl = spell.level || 1;
+      if (!groups[lvl]) groups[lvl] = [];
+      groups[lvl].push(spell);
+    });
+    return groups;
+  }, [allSpells]);
+
+  // Filter
+  const matchesSearch = (spell) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (spell.name || '').toLowerCase().includes(term) ||
+      (spell.school || '').toLowerCase().includes(term);
+  };
+
+  const toggleLevel = (lvl) => {
+    setCollapsedLevels(prev => ({ ...prev, [lvl]: !prev[lvl] }));
+  };
+
+  const togglePrepared = (spellName) => {
+    setPreparedSpells(prev => {
+      const next = new Set(prev);
+      if (next.has(spellName)) {
+        next.delete(spellName);
+      } else if (next.size < maxPrepared) {
+        next.add(spellName);
+      }
+      return next;
+    });
+  };
+
+  // Cast spell: use a slot and optionally roll damage
+  const castSpell = (spell, atLevel) => {
+    const slotKey = classInfo.pactMagic ? 'pact' : String(atLevel);
+    const maxSlots = classInfo.pactMagic ? slots.slots : (slots[atLevel] || 0);
+    const used = usedSlots[slotKey] || 0;
+
+    if (used >= maxSlots) {
+      return; // No slots available
+    }
+
+    // Use the slot
+    setUsedSlots(prev => ({ ...prev, [slotKey]: (prev[slotKey] || 0) + 1 }));
+
+    // Roll damage if applicable
+    const scaling = UPCAST_SCALING[spell.name];
+    if (scaling && scaling.base !== '0' && !scaling.base.includes('AC') && rollDice) {
+      const baseDice = spell.damage || scaling.base;
+      const upcastLevels = atLevel - (spell.level || 1);
+      if (upcastLevels > 0 && scaling.perLevel && scaling.perLevel !== '0') {
+        const match = scaling.perLevel.match(/(\d+)d(\d+)/);
+        if (match) {
+          const extraDice = parseInt(match[1]) * upcastLevels;
+          rollDice(`${baseDice}+${extraDice}d${match[2]}`, 0, `${spell.name} (Lvl ${atLevel})`);
+        } else {
+          rollDice(baseDice, 0, `${spell.name} (Lvl ${atLevel})`);
+        }
+      } else {
+        rollDice(baseDice, 0, spell.name);
+      }
+    }
+
+    setCastingSpell(null);
+  };
+
+  // Get available cast levels for a spell
+  const getAvailableCastLevels = (spell) => {
+    const baseLevel = spell.level || 1;
+    const levels = [];
+    if (classInfo.pactMagic) {
+      if ((usedSlots.pact || 0) < (slots.slots || 0)) {
+        levels.push(slots.level);
+      }
+    } else {
+      for (let i = baseLevel; i <= maxSpellLevel; i++) {
+        const available = (slots[i] || 0) - (usedSlots[i] || 0);
+        if (available > 0) levels.push(i);
+      }
+    }
+    return levels;
+  };
+
+  const cardStyle = {
+    background: 'rgba(15, 10, 30, 0.5)',
+    border: `1px solid ${theme.border}`,
+    borderRadius: 10,
+    padding: 12,
+  };
+
+  return (
+    <div data-testid="spellbook" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* Stats Bar */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+        <div style={{ ...cardStyle, textAlign: 'center' }}>
+          <div style={{ fontSize: 10, color: theme.text.muted, fontWeight: 600 }}>SPELL DC</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: theme.accent.primary }}>{spellDC}</div>
+        </div>
+        <div style={{ ...cardStyle, textAlign: 'center', cursor: 'pointer' }}
+          onClick={() => rollDice?.('1d20', spellAttackBonus, 'Spell Attack')}>
+          <div style={{ fontSize: 10, color: theme.text.muted, fontWeight: 600 }}>SPELL ATK</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: theme.accent.secondary }}>+{spellAttackBonus}</div>
+        </div>
+        <div style={{ ...cardStyle, textAlign: 'center' }}>
+          <div style={{ fontSize: 10, color: theme.text.muted, fontWeight: 600 }}>ABILITY</div>
+          <div style={{ fontSize: 18, fontWeight: 600, color: theme.accent.highlight }}>
+            {classInfo.ability.substring(0, 3).toUpperCase()}
+          </div>
+        </div>
+      </div>
+
+      {/* Spell Slots */}
+      {Object.keys(slots).length > 0 && (
+        <div style={cardStyle}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: theme.text.muted, textTransform: 'uppercase' }}>
+              {classInfo.pactMagic ? 'Pact Magic' : 'Spell Slots'}
+            </span>
+            <button
+              data-testid="reset-spell-slots"
+              onClick={() => setUsedSlots({})}
+              style={{
+                background: 'rgba(77,208,225,0.15)', border: '1px solid rgba(77,208,225,0.3)',
+                borderRadius: 4, padding: '3px 8px', fontSize: 9, color: theme.accent.primary,
+                cursor: 'pointer', fontWeight: 600,
+              }}
+            >
+              Reset All
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {classInfo.pactMagic ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {Array.from({ length: slots.slots }).map((_, i) => {
+                  const isUsed = (usedSlots.pact || 0) > i;
+                  return (
+                    <button key={i} onClick={() => setUsedSlots(prev => ({
+                      ...prev, pact: isUsed ? (prev.pact || 0) - 1 : (prev.pact || 0) + 1
+                    }))} style={{
+                      width: 30, height: 30, borderRadius: 6,
+                      border: `2px solid ${theme.accent.secondary}`,
+                      background: isUsed ? 'rgba(100,100,100,0.3)' : 'rgba(236,72,153,0.3)',
+                      cursor: 'pointer', fontSize: 14,
+                      color: isUsed ? theme.text.muted : theme.accent.secondary,
+                    }}>
+                      {isUsed ? '○' : '●'}
+                    </button>
+                  );
+                })}
+                <span style={{ fontSize: 11, color: theme.text.muted, marginLeft: 6 }}>Lvl {slots.level}</span>
+              </div>
+            ) : (
+              Object.entries(slots).map(([lvl, count]) => {
+                const used = usedSlots[lvl] || 0;
+                return (
+                  <div key={lvl} style={{
+                    padding: 8, background: 'rgba(236,72,153,0.08)', borderRadius: 8, minWidth: 60,
+                  }}>
+                    <div style={{ fontSize: 9, color: theme.text.muted, textAlign: 'center', marginBottom: 4 }}>Lvl {lvl}</div>
+                    <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
+                      {Array.from({ length: count }).map((_, i) => (
+                        <button key={i} onClick={() => setUsedSlots(prev => ({
+                          ...prev, [lvl]: used > i ? used - 1 : used + 1
+                        }))} style={{
+                          width: 20, height: 20, borderRadius: '50%',
+                          border: `2px solid ${theme.accent.secondary}`,
+                          background: used > i ? 'rgba(100,100,100,0.3)' : 'rgba(236,72,153,0.4)',
+                          cursor: 'pointer', padding: 0,
+                        }} />
+                      ))}
+                    </div>
+                    <div style={{ fontSize: 9, color: theme.text.muted, textAlign: 'center', marginTop: 3 }}>
+                      {count - used}/{count}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Prepared count for prepared casters */}
+      {classInfo.type === 'prepared' && (
+        <div style={{
+          padding: '8px 12px', borderRadius: 8,
+          background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        }}>
+          <span style={{ fontSize: 12, color: '#3B82F6', fontWeight: 600 }}>
+            Prepared: {preparedCount}/{maxPrepared}
+          </span>
+          <span style={{ fontSize: 10, color: theme.text.muted }}>
+            Toggle spells to prepare/unprepare
+          </span>
+        </div>
+      )}
+
+      {/* Search */}
+      <div style={{ position: 'relative' }}>
+        <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: theme.text.muted }} />
+        <input
+          data-testid="spell-search"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          placeholder="Search spells..."
+          style={{
+            width: '100%', padding: '8px 12px 8px 32px',
+            background: 'rgba(0,0,0,0.3)', border: `1px solid ${theme.border}`,
+            borderRadius: 8, color: theme.text.primary, fontSize: 12, outline: 'none',
+          }}
+        />
+      </div>
+
+      {/* Cantrips */}
+      {cantrips.length > 0 && (
+        <div>
+          <div
+            onClick={() => toggleLevel(0)}
+            style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              padding: '6px 0', cursor: 'pointer',
+            }}
+          >
+            <span style={{ fontSize: 11, fontWeight: 700, color: theme.accent.primary, textTransform: 'uppercase' }}>
+              Cantrips ({cantrips.filter(matchesSearch).length})
+            </span>
+            {collapsedLevels[0] ? <ChevronDown size={14} color={theme.text.muted} /> : <ChevronUp size={14} color={theme.text.muted} />}
+          </div>
+          {!collapsedLevels[0] && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+              {cantrips.filter(matchesSearch).map((cantrip, i) => {
+                const name = cantrip.name || cantrip;
+                const dice = cantrip.damage || CANTRIP_DAMAGE[name] || '1d8';
+                return (
+                  <button key={i} onClick={() => rollDice?.(dice, 0, `${name}`)}
+                    data-testid={`cantrip-${name.replace(/\s/g, '-').toLowerCase()}`}
+                    style={{
+                      padding: '6px 12px', borderRadius: 14,
+                      background: 'rgba(77,208,225,0.15)', border: `1px solid ${theme.accent.primary}`,
+                      fontSize: 12, color: theme.accent.primary, cursor: 'pointer',
+                      fontWeight: 500, transition: 'all 0.15s',
+                    }}
+                  >
+                    {name}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Spells by Level */}
+      {Object.entries(spellsByLevel).sort(([a], [b]) => a - b).map(([lvl, spells]) => {
+        const filteredSpells = spells.filter(matchesSearch);
+        if (filteredSpells.length === 0) return null;
+        const slotAvailable = classInfo.pactMagic
+          ? (usedSlots.pact || 0) < (slots.slots || 0)
+          : ((slots[lvl] || 0) - (usedSlots[lvl] || 0)) > 0;
+
+        return (
+          <div key={lvl}>
+            <div
+              onClick={() => toggleLevel(lvl)}
+              style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '6px 0', cursor: 'pointer', borderBottom: `1px solid ${theme.border}`,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: theme.accent.secondary, textTransform: 'uppercase' }}>
+                  Level {lvl}
+                </span>
+                <span style={{ fontSize: 10, color: theme.text.muted }}>({filteredSpells.length} spells)</span>
+                {!slotAvailable && (
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 4, background: 'rgba(239,68,68,0.2)', color: '#F87171' }}>
+                    No Slots
+                  </span>
+                )}
+              </div>
+              {collapsedLevels[lvl] ? <ChevronDown size={14} color={theme.text.muted} /> : <ChevronUp size={14} color={theme.text.muted} />}
+            </div>
+
+            {!collapsedLevels[lvl] && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingTop: 4 }}>
+                {filteredSpells.map((spell, i) => {
+                  const name = spell.name || '';
+                  const isPrepared = preparedSpells.has(name);
+                  const isExpanded = expandedSpell === `${lvl}-${i}`;
+                  const isCasting = castingSpell === `${lvl}-${i}`;
+                  const scaling = UPCAST_SCALING[name];
+                  const school = spell.school || '';
+                  const availableLevels = getAvailableCastLevels(spell);
+                  const dimmed = classInfo.type === 'prepared' && !isPrepared;
+
+                  return (
+                    <div key={i} data-testid={`spell-${name.replace(/\s/g, '-').toLowerCase()}`}
+                      style={{
+                        padding: '8px 12px', borderRadius: 8,
+                        background: dimmed ? 'rgba(0,0,0,0.1)' : 'rgba(15,10,30,0.5)',
+                        border: `1px solid ${dimmed ? '#1f2937' : theme.border}`,
+                        opacity: dimmed ? 0.5 : 1, transition: 'all 0.15s',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, cursor: 'pointer' }}
+                          onClick={() => setExpandedSpell(isExpanded ? null : `${lvl}-${i}`)}>
+                          {/* Prepared toggle */}
+                          {classInfo.type === 'prepared' && (
+                            <button onClick={(e) => { e.stopPropagation(); togglePrepared(name); }}
+                              data-testid={`prepare-${name.replace(/\s/g, '-').toLowerCase()}`}
+                              style={{
+                                width: 18, height: 18, borderRadius: 4, cursor: 'pointer',
+                                background: isPrepared ? 'rgba(59,130,246,0.3)' : 'transparent',
+                                border: `2px solid ${isPrepared ? '#3B82F6' : '#4B5563'}`,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 10, color: '#3B82F6',
+                              }}>
+                              {isPrepared && '✓'}
+                            </button>
+                          )}
+                          <span style={{ color: theme.text.primary, fontSize: 13, fontWeight: 500 }}>{name}</span>
+                          {school && (
+                            <span style={{
+                              fontSize: 9, padding: '1px 6px', borderRadius: 4,
+                              background: `${SCHOOL_COLORS[school] || '#6B7280'}20`,
+                              color: SCHOOL_COLORS[school] || '#6B7280',
+                            }}>
+                              {school}
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          {spell.damage && (
+                            <span style={{ fontSize: 10, color: theme.accent.secondary, padding: '2px 6px', borderRadius: 4, background: 'rgba(236,72,153,0.15)' }}>
+                              {spell.damage}
+                            </span>
+                          )}
+                          {/* Cast button */}
+                          {availableLevels.length > 0 && (!dimmed || classInfo.type !== 'prepared') && (
+                            <button
+                              data-testid={`cast-${name.replace(/\s/g, '-').toLowerCase()}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (availableLevels.length === 1 && !scaling) {
+                                  castSpell(spell, availableLevels[0]);
+                                } else {
+                                  setCastingSpell(isCasting ? null : `${lvl}-${i}`);
+                                }
+                              }}
+                              style={{
+                                padding: '3px 10px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
+                                background: 'rgba(236,72,153,0.2)', border: '1px solid rgba(236,72,153,0.4)',
+                                color: theme.accent.secondary, fontWeight: 600,
+                              }}
+                            >
+                              <Zap size={10} style={{ display: 'inline', marginRight: 2 }} /> Cast
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Upcast level selector */}
+                      {isCasting && (
+                        <div style={{
+                          marginTop: 6, padding: 8, background: 'rgba(236,72,153,0.06)',
+                          borderRadius: 6, border: '1px solid rgba(236,72,153,0.15)',
+                        }}>
+                          <div style={{ fontSize: 10, color: theme.text.muted, marginBottom: 4 }}>Cast at level:</div>
+                          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            {availableLevels.map(castLvl => {
+                              const upcastExtra = scaling && castLvl > (spell.level || 1) ? ` (+${castLvl - (spell.level || 1)} lvl)` : '';
+                              return (
+                                <button key={castLvl} onClick={() => castSpell(spell, castLvl)}
+                                  data-testid={`cast-at-${castLvl}`}
+                                  style={{
+                                    padding: '4px 12px', borderRadius: 4, fontSize: 11, cursor: 'pointer',
+                                    background: castLvl === (spell.level || 1) ? 'rgba(236,72,153,0.2)' : 'rgba(245,158,11,0.15)',
+                                    border: `1px solid ${castLvl === (spell.level || 1) ? 'rgba(236,72,153,0.4)' : 'rgba(245,158,11,0.3)'}`,
+                                    color: castLvl === (spell.level || 1) ? theme.accent.secondary : theme.accent.highlight,
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  Lvl {castLvl}{upcastExtra}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          {scaling && (
+                            <div style={{ fontSize: 10, color: theme.text.muted, marginTop: 4 }}>
+                              Base: {scaling.base} ({scaling.type}) | Per level: {scaling.perLevel}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Expanded details */}
+                      {isExpanded && (
+                        <div style={{ marginTop: 6, fontSize: 11, color: theme.text.secondary }}>
+                          {spell.description && <p style={{ marginBottom: 4 }}>{spell.description}</p>}
+                          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', color: theme.text.muted, fontSize: 10 }}>
+                            {spell.casting_time && <span>Casting: {spell.casting_time}</span>}
+                            {spell.range && <span>Range: {spell.range}</span>}
+                            {spell.duration && <span>Duration: {spell.duration}</span>}
+                            {spell.concentration && <span style={{ color: '#F59E0B' }}>Concentration</span>}
+                            {spell.ritual && <span style={{ color: '#22C55E' }}>Ritual</span>}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {/* Empty state */}
+      {allSpells.length === 0 && cantrips.length === 0 && (
+        <div style={{ textAlign: 'center', padding: 30, color: theme.text.muted }}>
+          <BookOpen size={28} style={{ opacity: 0.3, margin: '0 auto 8px' }} />
+          <p>No spells {classInfo.type === 'prepared' ? 'prepared' : 'known'} yet</p>
+          <p style={{ fontSize: 11, marginTop: 4 }}>Add spells during level up or from the spell database.</p>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Package, Shield, Sword, Search, Plus, X, Coins, Weight, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Package, Shield, Sword, Search, Plus, X, Coins, Weight, Sparkles, ChevronDown, ChevronUp, Zap, ArrowRightLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ITEMS_DATABASE, ITEM_TYPES, RARITY_OPTIONS } from '@/data/itemsDatabase';
@@ -30,15 +30,18 @@ const rarityColors = {
   'Artifact': '#ef4444'
 };
 
+// Currency conversion rates (to CP)
+const CURRENCY_RATES = { cp: 1, sp: 10, ep: 50, gp: 100, pp: 1000 };
+const CURRENCY_LABELS = { cp: 'Copper', sp: 'Silver', ep: 'Electrum', gp: 'Gold', pp: 'Platinum' };
+const CURRENCY_COLORS = { cp: '#CD7F32', sp: '#C0C0C0', ep: '#6366F1', gp: '#F59E0B', pp: '#E2E8F0' };
+
 export default function CharacterInventory({ characterId, character, onUpdate }) {
   const [inventory, setInventory] = useState(character?.inventory || []);
   const [equippedItems, setEquippedItems] = useState(character?.equipped || {
-    armor: null,
-    shield: null,
-    mainHand: null,
-    offHand: null
+    armor: null, shield: null, mainHand: null, offHand: null
   });
-  const [gold, setGold] = useState(character?.gold || 0);
+  const [currency, setCurrency] = useState(character?.currency || { cp: 0, sp: 0, ep: 0, gp: character?.gold || 0, pp: 0 });
+  const [attunedItems, setAttunedItems] = useState(character?.attuned_items || []);
   const [showItemBrowser, setShowItemBrowser] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
@@ -46,6 +49,7 @@ export default function CharacterInventory({ characterId, character, onUpdate })
   const [expandedItem, setExpandedItem] = useState(null);
   const [saving, setSaving] = useState(false);
   const [showCustomAdd, setShowCustomAdd] = useState(false);
+  const [showConverter, setShowConverter] = useState(false);
   const [customItem, setCustomItem] = useState({ name: '', type: 'Weapon', damage: '', description: '' });
 
   // Filter items
@@ -138,6 +142,66 @@ export default function CharacterInventory({ characterId, character, onUpdate })
     return null;
   };
 
+  // Check if item is equipped in any slot
+  const isItemEquipped = (itemId) => {
+    return Object.values(equippedItems).some(eq => eq?.id === itemId);
+  };
+
+  // Quick toggle equip/unequip
+  const toggleEquip = (item) => {
+    const slot = getSlotForItem(item);
+    if (!slot) return;
+    
+    if (isItemEquipped(item.id)) {
+      // Unequip from all slots where this item is
+      const newEquipped = { ...equippedItems };
+      Object.keys(newEquipped).forEach(s => {
+        if (newEquipped[s]?.id === item.id) newEquipped[s] = null;
+      });
+      setEquippedItems(newEquipped);
+      toast.info(`Unequipped ${item.name}`);
+      autoSave(inventory, newEquipped, currency);
+    } else {
+      equipItem(item, slot);
+    }
+  };
+
+  // Toggle attunement
+  const toggleAttune = (item) => {
+    if (attunedItems.includes(item.id)) {
+      setAttunedItems(prev => prev.filter(id => id !== item.id));
+      toast.info(`Ended attunement with ${item.name}`);
+    } else if (attunedItems.length >= 3) {
+      toast.error('Cannot attune to more than 3 items');
+      return;
+    } else {
+      setAttunedItems(prev => [...prev, item.id]);
+      toast.success(`Attuned to ${item.name}`);
+    }
+  };
+
+  // Currency functions
+  const totalGoldValue = useMemo(() => {
+    return Object.entries(currency).reduce((sum, [type, amount]) => {
+      return sum + (amount * CURRENCY_RATES[type]) / 100;
+    }, 0);
+  }, [currency]);
+
+  const convertCurrency = (from, to) => {
+    const fromAmount = currency[from] || 0;
+    if (fromAmount <= 0) return;
+    const cpValue = fromAmount * CURRENCY_RATES[from];
+    const toAmount = Math.floor(cpValue / CURRENCY_RATES[to]);
+    const remainCp = cpValue % CURRENCY_RATES[to];
+    setCurrency(prev => ({
+      ...prev,
+      [from]: 0,
+      [to]: (prev[to] || 0) + toAmount,
+      cp: from === 'cp' ? remainCp : (prev.cp || 0) + (from !== 'cp' ? remainCp / CURRENCY_RATES.cp : 0)
+    }));
+    toast.success(`Converted ${fromAmount} ${from.toUpperCase()} → ${toAmount} ${to.toUpperCase()}`);
+  };
+
   // Calculate AC from equipped items
   const calculateEquippedAC = () => {
     let ac = 10;
@@ -170,10 +234,9 @@ export default function CharacterInventory({ characterId, character, onUpdate })
   };
 
   // Auto-save inventory and propagate stats to character
-  const autoSave = async (inv, eq, gp) => {
+  const autoSave = async (inv, eq, cur) => {
     try {
       setSaving(true);
-      // Calculate AC from equipped gear
       let ac = 10;
       const dexMod = Math.floor(((character?.dexterity || 10) - 10) / 2);
       if (eq.armor) {
@@ -188,7 +251,8 @@ export default function CharacterInventory({ characterId, character, onUpdate })
       if (eq.shield) ac += 2;
 
       await axios.patch(`${API}/characters/${characterId}`, {
-        inventory: inv, equipped: eq, gold: gp, armor_class: ac
+        inventory: inv, equipped: eq, currency: cur, gold: cur.gp || 0, 
+        armor_class: ac, attuned_items: attunedItems
       });
       onUpdate?.();
     } catch (error) {
@@ -198,7 +262,7 @@ export default function CharacterInventory({ characterId, character, onUpdate })
 
   // Save inventory to backend
   const saveInventory = async () => {
-    await autoSave(inventory, equippedItems, gold);
+    await autoSave(inventory, equippedItems, currency);
     toast.success('Inventory saved!');
   };
 
@@ -363,31 +427,109 @@ export default function CharacterInventory({ characterId, character, onUpdate })
           </Button>
         </div>
 
-        {/* Weight & Gold */}
-        <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Weight size={14} color={theme.muted} />
-            <span style={{ color: theme.muted, fontSize: '12px' }}>{totalWeight.toFixed(1)} lbs</span>
+        {/* Currency & Weight */}
+        <div style={{ marginBottom: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Weight size={14} color={theme.muted} />
+              <span style={{ color: theme.muted, fontSize: '12px' }}>{totalWeight.toFixed(1)} lbs</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Coins size={14} color={theme.gold} />
+              <span style={{ color: theme.gold, fontSize: 12, fontWeight: 600 }}>{totalGoldValue.toFixed(1)} GP total</span>
+              <button
+                onClick={() => setShowConverter(!showConverter)}
+                style={{ 
+                  background: showConverter ? 'rgba(77,208,225,0.2)' : 'none', 
+                  border: `1px solid ${showConverter ? theme.accent : 'transparent'}`,
+                  borderRadius: 4, padding: '2px 6px', cursor: 'pointer',
+                  color: theme.accent, fontSize: 10,
+                }}
+                data-testid="currency-converter-toggle"
+              >
+                <ArrowRightLeft size={12} />
+              </button>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Coins size={14} color={theme.gold} />
-            <input
-              type="number"
-              value={gold}
-              onChange={(e) => setGold(parseInt(e.target.value) || 0)}
-              style={{
-                width: '80px',
-                background: 'rgba(0,0,0,0.3)',
-                border: '1px solid #374151',
-                borderRadius: '4px',
-                padding: '4px 8px',
-                color: theme.gold,
-                fontSize: '12px'
-              }}
-            />
-            <span style={{ color: theme.gold, fontSize: '12px' }}>GP</span>
+          
+          {/* Multi-currency display */}
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+            {Object.entries(CURRENCY_LABELS).map(([key, label]) => (
+              <div key={key} style={{ 
+                display: 'flex', alignItems: 'center', gap: 4,
+                background: 'rgba(0,0,0,0.3)', borderRadius: 6, padding: '4px 8px',
+                border: `1px solid ${currency[key] > 0 ? CURRENCY_COLORS[key] + '40' : '#1f2937'}`,
+              }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: CURRENCY_COLORS[key] }} />
+                <input
+                  type="number"
+                  min="0"
+                  value={currency[key] || 0}
+                  onChange={(e) => setCurrency(prev => ({ ...prev, [key]: Math.max(0, parseInt(e.target.value) || 0) }))}
+                  style={{
+                    width: 48, background: 'transparent', border: 'none',
+                    color: CURRENCY_COLORS[key], fontSize: 12, fontWeight: 600,
+                    textAlign: 'center', outline: 'none',
+                  }}
+                  data-testid={`currency-${key}-input`}
+                />
+                <span style={{ color: theme.muted, fontSize: 10, textTransform: 'uppercase' }}>{key}</span>
+              </div>
+            ))}
           </div>
+
+          {/* Currency converter */}
+          {showConverter && (
+            <div style={{ 
+              marginTop: 8, padding: 10, background: 'rgba(0,0,0,0.3)', 
+              borderRadius: 8, border: `1px solid ${theme.border}`,
+            }}>
+              <div style={{ fontSize: 10, color: theme.accent, fontWeight: 600, marginBottom: 6 }}>QUICK CONVERT</div>
+              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                {[['cp', 'sp', 10], ['sp', 'gp', 10], ['ep', 'gp', 2], ['gp', 'pp', 10]].map(([from, to, rate]) => (
+                  <button key={`${from}-${to}`} onClick={() => convertCurrency(from, to)}
+                    style={{
+                      padding: '4px 8px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
+                      background: 'rgba(77,208,225,0.1)', border: '1px solid rgba(77,208,225,0.2)',
+                      color: theme.text, transition: 'all 0.15s',
+                    }}
+                    data-testid={`convert-${from}-to-${to}`}
+                  >
+                    {currency[from] || 0} {from.toUpperCase()} → {to.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Attunement Slots */}
+        {inventory.some(i => i.is_magic && i.requires_attunement) && (
+          <div style={{ 
+            marginBottom: 12, padding: '8px 12px',
+            background: 'rgba(139,92,246,0.08)', borderRadius: 8,
+            border: '1px solid rgba(139,92,246,0.2)',
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#8B5CF6', marginBottom: 4 }}>
+              ATTUNEMENT ({attunedItems.length}/3)
+            </div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {[0, 1, 2].map(i => {
+                const item = attunedItems[i] ? inventory.find(inv => inv.id === attunedItems[i]) : null;
+                return (
+                  <div key={i} style={{
+                    flex: 1, padding: '4px 8px', borderRadius: 6, textAlign: 'center',
+                    background: item ? 'rgba(139,92,246,0.2)' : 'rgba(0,0,0,0.2)',
+                    border: `1px dashed ${item ? '#8B5CF6' : '#374151'}`,
+                    fontSize: 10, color: item ? '#8B5CF6' : theme.muted,
+                  }}>
+                    {item?.name || 'Empty'}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Item Browser */}
         {showItemBrowser && (
@@ -555,20 +697,28 @@ export default function CharacterInventory({ characterId, character, onUpdate })
               <p>Inventory is empty</p>
             </div>
           ) : (
-            inventory.map((item) => (
+            inventory.map((item) => {
+              const equipped = isItemEquipped(item.id);
+              const attuned = attunedItems.includes(item.id);
+              const slot = getSlotForItem(item);
+              return (
               <div
                 key={item.id}
+                data-testid={`inventory-item-${item.id}`}
                 style={{
-                  padding: '10px 12px',
+                  padding: '8px 12px',
                   borderBottom: '1px solid #1f2937',
-                  background: expandedItem === item.id ? 'rgba(138, 43, 226, 0.1)' : 'transparent'
+                  background: equipped ? 'rgba(0,102,255,0.08)' : expandedItem === item.id ? 'rgba(138, 43, 226, 0.1)' : 'transparent',
+                  borderLeft: equipped ? '3px solid #0066FF' : '3px solid transparent',
                 }}
               >
                 <div 
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-                  onClick={() => setExpandedItem(expandedItem === item.id ? null : item.id)}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div 
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, cursor: 'pointer' }}
+                    onClick={() => setExpandedItem(expandedItem === item.id ? null : item.id)}
+                  >
                     {item.is_magic && <Sparkles size={12} color={theme.gold} />}
                     <span style={{ color: item.rarity ? rarityColors[item.rarity] : theme.text, fontSize: '13px', fontWeight: '500' }}>
                       {item.name}
@@ -576,23 +726,57 @@ export default function CharacterInventory({ characterId, character, onUpdate })
                     {item.quantity > 1 && (
                       <span style={{ color: theme.muted, fontSize: '11px' }}>x{item.quantity}</span>
                     )}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {/* Equip button */}
-                    {getSlotForItem(item) && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          equipItem(item, getSlotForItem(item));
-                        }}
-                        style={{ padding: '4px 8px', fontSize: '10px' }}
-                      >
-                        Equip
-                      </Button>
+                    {equipped && (
+                      <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 8, background: 'rgba(0,102,255,0.3)', color: '#60A5FA', fontWeight: 600 }}>
+                        EQUIPPED
+                      </span>
                     )}
-                    {expandedItem === item.id ? <ChevronUp size={14} color={theme.muted} /> : <ChevronDown size={14} color={theme.muted} />}
+                    {attuned && (
+                      <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 8, background: 'rgba(139,92,246,0.3)', color: '#A78BFA', fontWeight: 600 }}>
+                        ATTUNED
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    {/* Quick equip toggle */}
+                    {slot && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleEquip(item); }}
+                        data-testid={`quick-equip-${item.id}`}
+                        style={{ 
+                          padding: '4px 8px', borderRadius: 4, fontSize: 10, cursor: 'pointer',
+                          background: equipped ? 'rgba(239,68,68,0.15)' : 'rgba(0,102,255,0.15)',
+                          border: `1px solid ${equipped ? 'rgba(239,68,68,0.3)' : 'rgba(0,102,255,0.3)'}`,
+                          color: equipped ? '#F87171' : '#60A5FA',
+                          fontWeight: 600, transition: 'all 0.15s',
+                        }}
+                      >
+                        {equipped ? 'Unequip' : 'Equip'}
+                      </button>
+                    )}
+                    {/* Attune toggle for magic items */}
+                    {item.is_magic && item.requires_attunement && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleAttune(item); }}
+                        data-testid={`attune-${item.id}`}
+                        style={{
+                          padding: '4px', borderRadius: 4, cursor: 'pointer',
+                          background: attuned ? 'rgba(139,92,246,0.2)' : 'transparent',
+                          border: `1px solid ${attuned ? '#8B5CF6' : 'transparent'}`,
+                          color: attuned ? '#8B5CF6' : theme.muted,
+                          transition: 'all 0.15s',
+                        }}
+                        title={attuned ? 'End Attunement' : 'Attune'}
+                      >
+                        <Zap size={12} />
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => setExpandedItem(expandedItem === item.id ? null : item.id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
+                    >
+                      {expandedItem === item.id ? <ChevronUp size={14} color={theme.muted} /> : <ChevronDown size={14} color={theme.muted} />}
+                    </button>
                   </div>
                 </div>
                 
@@ -628,7 +812,8 @@ export default function CharacterInventory({ characterId, character, onUpdate })
                   </div>
                 )}
               </div>
-            ))
+            );
+            })
           )}
         </div>
 
