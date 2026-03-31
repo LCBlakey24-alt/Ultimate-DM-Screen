@@ -1,149 +1,196 @@
 {
-  "design_system": {
-    "identity": {
-      "name": "ROOK (Rookie Quest Keeper)",
-      "tone": "Mystical, High-Function, Immersive",
-      "persona": "The Arcane Architect",
-      "core_values": [
-        "Clarity in Chaos (Complex data made simple)",
-        "Atmosphere First (UI sets the mood)",
-        "Sunset Magic (Warmth in the void)"
-      ]
+  "theme": {
+    "name": "Rook Cyber-Fantasy Dual Theme",
+    "mode": "dark-only",
+    "description": "A dual-theme system replacing the old 'Fantasy Sunset'. GM pages use 'Midnight Neon' (deep darks with indigo/violet glow). Player pages use 'Electric Tundra' (deep blues with soft cyan glow). The Landing page merges both.",
+    "fonts": {
+      "heading": "Outfit",
+      "body": "Manrope",
+      "logo": "Cinzel"
+    }
+  },
+  "colors": {
+    "gm_mode": {
+      "background": "#0B0B0D",
+      "foreground": "#F8F8FF",
+      "card": "#131317",
+      "card_foreground": "#F8F8FF",
+      "primary": "#8A2BE2",
+      "primary_foreground": "#FFFFFF",
+      "secondary": "#4B0082",
+      "secondary_foreground": "#FFFFFF",
+      "muted": "#1C1C24",
+      "muted_foreground": "#A0A0B0",
+      "accent": "#2A004D",
+      "accent_foreground": "#F8F8FF",
+      "border": "#262630",
+      "ring": "#8A2BE2",
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "destructive": "#EF4444"
     },
-    "typography": {
-      "font_family": {
-        "headings": "Cinzel, serif",
-        "body": "Montserrat, sans-serif",
-        "mono": "JetBrains Mono, monospace"
-      },
-      "imports": [
-        "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      ],
-      "scale": {
-        "h1": "text-4xl md:text-6xl font-black tracking-tight",
-        "h2": "text-3xl md:text-4xl font-bold tracking-tight",
-        "h3": "text-2xl font-bold",
-        "body_lg": "text-lg leading-relaxed",
-        "body_base": "text-base leading-relaxed",
-        "caption": "text-sm text-muted-foreground uppercase tracking-widest"
-      }
+    "player_mode": {
+      "background": "#050A30",
+      "foreground": "#F0F8FF",
+      "card": "#0A1140",
+      "card_foreground": "#F0F8FF",
+      "primary": "#4DD0E1",
+      "primary_foreground": "#000000",
+      "secondary": "#0000FF",
+      "secondary_foreground": "#FFFFFF",
+      "muted": "#0C1650",
+      "muted_foreground": "#9EB0D0",
+      "accent": "#081050",
+      "accent_foreground": "#F0F8FF",
+      "border": "#1A2360",
+      "ring": "#4DD0E1",
+      "success": "#10B981",
+      "warning": "#F59E0B",
+      "destructive": "#EF4444"
     },
-    "colors": {
-      "palette": {
-        "void": {
-          "950": "#05030A",
-          "900": "#0F0A1E",
-          "800": "#1A112E",
-          "700": "#2E1F45"
-        },
-        "sunset_gold": {
-          "DEFAULT": "#F59E0B",
-          "glow": "rgba(245, 158, 11, 0.5)",
-          "dim": "#B45309"
-        },
-        "mystic_pink": {
-          "DEFAULT": "#EC4899",
-          "glow": "rgba(236, 72, 153, 0.5)",
-          "dim": "#BE185D"
-        },
-        "ethereal_purple": {
-          "DEFAULT": "#8B5CF6",
-          "glow": "rgba(139, 92, 246, 0.5)",
-          "dim": "#6D28D9"
-        },
-        "text": {
-          "primary": "#F8FAFC",
-          "secondary": "#94A3B8",
-          "muted": "#64748B"
-        }
-      },
-      "gradients": {
-        "sunset_beam": "linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)",
-        "void_surface": "linear-gradient(180deg, rgba(15, 10, 30, 0.9) 0%, rgba(5, 3, 10, 0.95) 100%)",
-        "glass_surface": "rgba(26, 17, 46, 0.6)"
-      }
+    "landing_page": {
+      "background": "#080A1A",
+      "foreground": "#FFFFFF",
+      "primary": "#4DD0E1",
+      "secondary": "#8A2BE2",
+      "border": "#1A1A2E"
+    }
+  },
+  "typography": {
+    "font_imports": [
+      "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Manrope:wght@300;400;500;600;700&family=Cinzel:wght@600;700;800&display=swap');"
+    ],
+    "headings": {
+      "fontFamily": "Outfit, sans-serif",
+      "weight": "600-800",
+      "letterSpacing": "tracking-tight",
+      "usage": "Use for all page titles, section headers, card titles, and numeric stats."
     },
-    "layout": {
-      "grid_system": {
-        "bento_dashboard": "grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4",
-        "character_sheet": "grid grid-cols-12 gap-2 md:gap-4"
-      },
-      "spacing": {
-        "container_padding": "p-4 md:p-8",
-        "section_gap": "gap-8 md:gap-12"
-      }
+    "body": {
+      "fontFamily": "Manrope, sans-serif",
+      "weight": "400-500",
+      "lineHeight": "leading-relaxed",
+      "usage": "Use for all descriptive text, form inputs, character sheet details, and lore text."
     },
-    "concepts": [
+    "logo": {
+      "fontFamily": "Cinzel, serif",
+      "weight": "700",
+      "usage": "Use STRICTLY for the 'ROOK' app logo and primary brand wordmark. Do NOT use for standard headers."
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": {
+      "style": "Crystal Variant",
+      "background": "bg-white/5 or bg-black/40",
+      "blur": "backdrop-blur-xl or backdrop-blur-2xl",
+      "border": "border border-white/10",
+      "shadow": "shadow-[0_8px_32px_rgba(0,0,0,0.3)]",
+      "usage": "Modals, sticky headers, quick reference popovers, dropdowns."
+    },
+    "shadows": {
+      "glow_gm": "shadow-[0_0_15px_rgba(138,43,226,0.3)]",
+      "glow_player": "shadow-[0_0_15px_rgba(77,208,225,0.3)]",
+      "ambient": "shadow-2xl shadow-black/60"
+    },
+    "textures": {
+      "noise": "Apply a subtle 2-4% opacity noise overlay on backgrounds to prevent flat digital looks."
+    }
+  },
+  "layouts": {
+    "landing_page": {
+      "type": "Asymmetric Bento Grid",
+      "spacing": "p-12 to p-24",
+      "container": "max-w-7xl mx-auto",
+      "features": "Use overlapping elements, large typography, and glowing gradients behind crystal glass cards."
+    },
+    "gm_dashboard": {
+      "type": "High Density Grid",
+      "spacing": "p-4 to p-6",
+      "gap": "gap-4 or gap-6",
+      "sidebar": "Fixed left sidebar, width 280px, heavily utilizing the 'Midnight Neon' theme.",
+      "content": "Use cardless or subtle 1px border cards. Every pixel matters for GM tools."
+    },
+    "character_sheet": {
+      "type": "Modular Grid",
+      "spacing": "p-4 to p-8",
+      "gap": "gap-6",
+      "sections": "Separate stats, inventory, and spells into distinct visual blocks with Electric Tundra glow on active elements."
+    }
+  },
+  "component_rules": {
+    "buttons": {
+      "primary": "Pill-shaped or slightly rounded (rounded-md), vibrant background, high contrast text.",
+      "hover": "Translate-y-[-2px], intensify glow (shadow-lg), slightly lighter background.",
+      "disabled": "Opacity 50%, no pointer events."
+    },
+    "cards": {
+      "base": "1px solid border with 10% opacity white, flat dark background.",
+      "hover": "Subtle scale or border glow depending on the theme (Violet for GM, Cyan for Player)."
+    },
+    "forms": {
+      "inputs": "bg-black/20 or bg-white/5, focus:ring-2 focus:ring-primary, border-white/10.",
+      "labels": "Uppercase, tracking-[0.2em], text-xs, text-muted-foreground."
+    },
+    "navigation": {
+      "tabs": "Shadcn Tabs customized. Active tab gets a glowing bottom border (GM: Indigo, Player: Cyan) instead of standard muted background."
+    }
+  },
+  "motion": {
+    "hover": "transition-all duration-200 ease-out",
+    "entrance": "Staggered fade-up (opacity 0 to 1, translate-y 10px to 0) for lists and cards.",
+    "modals": "Scale in from 0.95 to 1, fade in."
+  },
+  "accessibility": {
+    "contrast": "Ensure all text against dark backgrounds meets APCA standards. Use pure white or off-white for primary text.",
+    "focus": "All interactive elements must have visible focus rings.",
+    "testing": "All interactive and key informational elements MUST include a 'data-testid' attribute (e.g., data-testid='login-button', data-testid='character-hp')."
+  },
+  "media": {
+    "images": [
       {
-        "name": "Option A: Minimalist Eclipse",
-        "description": "High contrast, sharp edges, void black backgrounds with striking gold accents. Best for data density.",
-        "key_features": [
-          "Pure black (#05030A) backgrounds",
-          "1px solid gold borders on active elements",
-          "No gradients on surfaces, only on text/buttons",
-          "Monospace fonts for stats"
-        ]
+        "url": "https://images.pexels.com/photos/36605021/pexels-photo-36605021.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Close-up of a d20 die with glowing numbers against a dark background",
+        "category": "landing_hero_bg"
       },
       {
-        "name": "Option B: Ethereal Dusk",
-        "description": "Glassmorphism, soft gradients, glowing elements. Best for immersion and roleplay.",
-        "key_features": [
-          "Backdrop blur (12px) on all panels",
-          "Gradient borders (Purple -> Pink)",
-          "Floating cards with glow shadows",
-          "Rounded corners (xl)"
-        ]
+        "url": "https://images.unsplash.com/photo-1762278804729-13d330fad71a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwyfHxjeWJlcnB1bmslMjBuZW9uJTIwYWJzdHJhY3QlMjBkYXJrfGVufDB8fHx8MTc3NDkzNTM1M3ww&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract streaks of purple and pink lights on black background",
+        "category": "gm_dashboard_header_bg"
       },
       {
-        "name": "Option C: Arcane Tactile",
-        "description": "Paper textures, serif headers, physical feeling. Best for the 'classic D&D' vibe.",
-        "key_features": [
-          "Noise texture overlay (opacity 5%)",
-          "Sepia/Gold tinted greys",
-          "Cinzel font for all headers",
-          "Skeuomorphic touches (parchment vibes)"
-        ]
+        "url": "https://images.unsplash.com/photo-1579567761406-4684ee0c75b6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwxfHxjeWJlcnB1bmslMjBuZW9uJTIwYWJzdHJhY3QlMjBkYXJrfGVufDB8fHx8MTc3NDkzNTM1M3ww&ixlib=rb-4.1.0&q=85",
+        "description": "Blue and white abstract neon art",
+        "category": "player_dashboard_header_bg"
+      },
+      {
+        "url": "https://images.pexels.com/photos/4129849/pexels-photo-4129849.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Dark forest with warm/glowing light filtering through",
+        "category": "campaign_cover_fallback"
       }
     ],
-    "components": {
-      "buttons": {
-        "primary": "bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-500 text-white font-bold hover:opacity-90 transition-all hover:scale-[1.02] shadow-[0_0_20px_rgba(236,72,153,0.3)]",
-        "secondary": "bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-purple-500/50 transition-all",
-        "ghost": "text-gray-400 hover:text-white hover:bg-white/5"
-      },
-      "cards": {
-        "base": "bg-void-900/50 backdrop-blur-md border border-white/5 rounded-xl overflow-hidden",
-        "interactive": "hover:border-purple-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.1)] transition-all duration-300 group"
-      },
-      "inputs": {
-        "base": "bg-black/20 border border-white/10 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 rounded-md text-white placeholder:text-gray-600"
-      }
-    },
-    "visual_assets": {
-      "images": {
-        "hero_bg": "https://images.unsplash.com/photo-1665077713402-ad959854d778?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwzfHxkdW5nZW9ucyUyMGFuZCUyMGRyYWdvbnMlMjBkaWNlJTIwb24lMjBhbmNpZW50JTIwbWFwJTIwY2FuZGxlJTIwbGlnaHQlMjBtb29keXxlbnwwfHx8fDE3NzMzODczODJ8MA&ixlib=rb-4.1.0&q=85",
-        "dragon_statue": "https://images.unsplash.com/photo-1736149989239-3ab905470e93?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwzfHxmYW50YXN5JTIwdGFibGV0b3AlMjBycGclMjBkaWNlJTIwZHJhZ29uJTIwbWFwJTIwZGFyayUyMGFlc3RoZXRpY3xlbnwwfHx8fDE3NzMzODczNzB8MA&ixlib=rb-4.1.0&q=85",
-        "dice_macro": "https://images.unsplash.com/photo-1740213223401-f64e812a7cb6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwxfHxmYW50YXN5JTIwdGFibGV0b3AlMjBycGclMjBkaWNlJTIwZHJhZ29uJTIwbWFwJTIwZGFyayUyMGFlc3RoZXRpY3xlbnwwfHx8fDE3NzMzODczNzB8MA&ixlib=rb-4.1.0&q=85"
-      },
-      "icons_library": "lucide-react"
-    },
-    "accessibility": {
-      "contrast_check": "Ensure gold/yellow text is only used on very dark backgrounds (Void 900+). Use lighter gold (#FCD34D) for small text.",
-      "reduced_motion": "Disable glow pulses and parallax on prefers-reduced-motion"
-    },
-    "instructions_to_main_agent": [
-      "1. Update tailwind.config.js to include the new 'Sunset' color palette alongside the existing 'Arcane' one (or replace it if needed).",
-      "2. Create a 'ThemeSelector' or simply default to 'Option B: Ethereal Dusk' as it balances modern SaaS with TTRPG fantasy best.",
-      "3. Use the provided image URLs for the landing page hero section.",
-      "4. Ensure the Character Sheet layout uses the 'Bento' grid system to handle dense stats without scrolling fatigue.",
-      "5. Apply 'Cinzel' font to all H1-H3 headings to immediately establish the fantasy genre.",
-      "6. Use 'data-testid' on all interactive elements (buttons, inputs, cards) for testing."
-    ]
+    "icons": {
+      "library": "lucide-react",
+      "usage": "Use consistently sized icons (w-4 h-4 or w-5 h-5). Stroke width 1.5 for elegance."
+    }
   },
-  "universal_guidelines": [
-    "Do not use gradients for body text, only for short headings or emphasis.",
-    "Avoid pure black (#000000) - use the Void palette.",
-    "All interactive elements must have a hover state brightness adjustment.",
-    "Use 'sonner' for toast notifications."
-  ]
+  "instructions_to_main_agent": [
+    "CRITICAL: Do NOT center-align the main app container. Always keep reading flow natural.",
+    "Implement the Theme toggler/context provider to switch CSS variables between 'gm_mode' and 'player_mode' seamlessly. This is a core functionality.",
+    "Use 'Outfit' for all headings and 'Manrope' for body text. Remove all usage of Montserrat. Limit 'Cinzel' strictly to the ROOK logo.",
+    "Ensure glassmorphism is implemented correctly: backgrounds must not be fully transparent without a blur. Use backdrop-blur-xl with a slight tint.",
+    "For the Landing page, merge the violet and cyan colors in subtle background gradients (e.g., radial gradients in corners).",
+    "Replace generic button styles with the defined pill-shaped/rounded buttons possessing hover glow effects.",
+    "Do not use generic gray backgrounds for cards; use the specific elevated background colors defined (GM: #131317, Player: #0A1140).",
+    "Add 'sonner' for toast notifications, using the dark theme.",
+    "Add data-testid attributes to EVERY button, input, tab, and clickable card.",
+    "Ensure 'transition-all' is avoided for transforms to prevent breaking framer-motion or interactive hover states. Specify 'transition-colors', 'transition-transform' etc.",
+    "Use the exact color hex codes provided in this guideline for the respective themes."
+  ],
+  "universal_guidelines": {
+    "anti_slop": "Avoid generic uniform styling. Create depth through layered design elements (z-index) and glassmorphism.",
+    "spacing": "Use 2-3x more spacing than feels comfortable. Avoid cramped designs.",
+    "alignment": "Left-align paragraphs, labels, and inputs. Center-align only when visually necessary for hierarchy.",
+    "animations": "Every interaction needs micro-animations (hover, focus, transitions).",
+    "testing": "All interactive and key informational elements MUST include a 'data-testid' attribute in kebab-case."
+  }
 }
