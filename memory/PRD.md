@@ -13,17 +13,18 @@ Build an immersive, context-aware TTRPG application with strict SRD 5.1 complian
 │   └── utils/                 
 └── frontend/src/components/
     ├── ui/DiceRoller3D.js          # BG3-style sequential dice animation
+    ├── DiceRoller.js               # GM dice roller with advantage/disadvantage
     ├── DiceRollHistory.js          # Dice roll history sidebar
-    ├── CharacterSheetFull.js       # 6 tabs: overview, combat, spells, inventory, journal, notes
+    ├── CharacterSheetFull.js       # Player page (top stat boxes removed)
     ├── CharacterCombatTab.js       # Combat dashboard
     ├── CharacterSpellbook.js       # Smart Spellbook
     ├── CharacterInventory.js       # Quick-Action Inventory
     ├── PlayerProgressionDashboard.js # Character progression timeline
-    ├── LevelUpWizard.js            # Spellcasting-aware Level Up
+    ├── LevelUpWizard.js            # Full Fighter support (fighting style, subclass, maneuvers)
     ├── SessionJournal.js           # Auto-tagging session log
     ├── PartyInventory.js           # Loot/Economy with treasure gen
     ├── CampaignDashboard.js        # Fixed sidebar navigation
-    ├── GMScreen.js                 # GM tools with 13 tabs
+    ├── GMScreen.js                 # GM tools with 14 tabs (includes AI Planner)
     └── gm/
         ├── AICoGM.js               # AI Co-GM assistant
         ├── AISessionPlanner.js     # AI Session Outline & Replay generator
@@ -36,33 +37,37 @@ Build an immersive, context-aware TTRPG application with strict SRD 5.1 complian
 
 ## Implemented Features
 
-### Phase 1: Core Platform (Complete)
-Full auth, character CRUD, GM tools, world map, AI, 3D dice, soundboard, NPC network
+### Phase 1-4: Core Platform, Refactoring, Player Page (Complete)
+Full auth, character CRUD, GM tools, world map, AI, 3D dice, soundboard, NPC network, 18-file backend modularization, Combat Tab, Smart Spellbook, Quick-Action Inventory, Level Up Wizard with spellcasting.
 
-### Phase 2: Backend Refactoring (Complete)
-9700-line monolith split into 18 route files
-
-### Phase 3: Player Page (Complete)
-- **Batch A**: Combat Tab (spell slots, death saves, conditions, inspiration, rest)
-- **Batch B**: Quick-Action Inventory (multi-currency, quick equip, attunement)
-- **Batch C**: Smart Spellbook (prepared toggle, upcasting, Cast button)
-- **Level Up Wizard**: Spellcasting step (slot progression, spell/cantrip selection)
-
-### Phase 4: P1 Features (Complete)
-- **Smart Session Log**: Auto-tagging (combat, loot, quest, travel, magic keywords), tag filtering
-- **Location Detail Cards**: Hover preview on World Map pins
-- **NPC Encounter Builder**: Quick NPC Bar in Combat Creator
-- **Loot & Economy**: SRD Treasure Generator, gem/magic item gen, auto-split gold
-- **Campaign Sidebar Fix**: Group headers auto-navigate on click
-
-### Phase 5: Dice & Progression (Complete - March 31, 2026)
-- **3D Dice Roller (BG3-style)**: Sequential animation with blue flames (Player), purple flames (GM), red/green for nat 1/20
+### Phase 5: Dice & Progression (Complete)
+- **3D Dice Roller (BG3-style)**: Sequential animation with blue/purple flames, red/green for nat 1/20
 - **Player Progression Dashboard**: Visual timeline, achievement badges, stat cards
 
 ### Phase 6: AI Planner & History (Complete - March 31, 2026)
-- **Dice Roll History Sidebar**: Session-persistent roll log with timestamps, crit/fumble highlights, stats footer (NAT 20s, NAT 1s, AVG, TOTAL), Share Roll button for epic rolls. Integrated into both Player (CharacterSheetFull) and GM (GMScreen) pages with dual-theme styling.
-- **AI Session Outline Auto-generator**: GM tool that auto-generates structured session outlines from campaign context (notes, NPCs, locations, journal). Configurable focus (balanced, combat-heavy, roleplay-heavy, exploration, mystery, political) and tone (classic fantasy, dark & gritty, lighthearted, horror, epic). Uses GPT-5.2 via Emergent LLM Key.
-- **AI Session Replay Generator**: Generates narrative-style recaps from session data. Supports 4 writing styles (Epic Narrative, Historical Chronicle, Comedic Retelling, Dark Fantasy). Stored and retrievable per campaign.
+- **Dice Roll History Sidebar**: Session-persistent roll log with timestamps, crit/fumble highlights, Share Roll
+- **AI Session Outline Auto-generator**: GM tool, configurable focus/tone, GPT-5.2
+- **AI Session Replay Generator**: 4 writing styles, stored per campaign
+
+### Phase 7: Fighter System & Bug Fixes (Complete - March 31, 2026)
+- **Fighter Level-Up System Overhaul**:
+  - Complete 20-level progression with all features (Second Wind, Action Surge, Extra Attack scaling, Indomitable)
+  - Fighting Style selection at level 1 (6 styles: Archery, Defense, Dueling, Great Weapon Fighting, Protection, Two-Weapon Fighting)
+  - Subclass selection at level 3: Champion, Battle Master, Eldritch Knight with features at levels 3, 7, 10, 15, 18
+  - Battle Master maneuvers (16 total) with superiority dice resource tracking
+  - Indomitable resource tracking (long rest, scaling at 9/13/17)
+  - Auto-scaling Extra Attack (1→2→3 at levels 5/11/20)
+  - Backend LevelUpRequest model accepts fighting_style, subclass, maneuvers
+
+- **Removed Duplicate Top Stat Boxes**: HP/AC/Init/Speed row removed from player page header. Stats accessible via Overview tab (PlayerProgressionDashboard) and Combat tab (StatPills).
+
+- **Dice Roller Advantage Bug Fix**: 
+  - rollDice now accepts `rollType` parameter ('normal'|'advantage'|'disadvantage')
+  - Advantage: rolls 2d20, takes highest (not sum)
+  - Disadvantage: rolls 2d20, takes lowest
+  - Added Advantage/Disadvantage buttons to GM DiceRoller (D20 only)
+  - Result display shows which roll was kept with dropped roll crossed out
+  - Reckless Attack action auto-rolls with advantage
 
 ## Prioritized Backlog
 
@@ -76,17 +81,13 @@ Full auth, character CRUD, GM tools, world map, AI, 3D dice, soundboard, NPC net
 
 ## Key API Endpoints
 - `PATCH /api/characters/{id}` - Partial update (HP, conditions, spell slots, currency, etc.)
-- `PUT /api/characters/{id}/resources` - Sync class resources
-- `POST /api/characters/{id}/rest` - Short/Long rest
-- `POST /api/characters/{id}/level-up` - Level up with spell selections
+- `POST /api/characters/{id}/level-up` - Level up with fighting_style, subclass, maneuvers, spells
 - `POST /api/ai/session-outline/{campaign_id}` - Generate AI session outline
-- `GET /api/ai/session-outlines/{campaign_id}` - List generated outlines
 - `POST /api/ai/session-replay/{campaign_id}` - Generate AI session replay
-- `GET /api/ai/session-replays/{campaign_id}` - List generated replays
 
 ## Test Iterations
-- 62: Backend refactor 100% | 63: Player features 100% | 64: Batch A 100% | 65: Batch B/C 100%
-- 67: P1 features 100% | 68: Dice & Progression 100% | 69: Dice History & AI Planner 100%
+- 62-65: Core features 100% | 67-68: P1 features & Dice 100% | 69: Dice History & AI 100%
+- 70: Fighter System, Advantage Fix, Stats Cleanup — 100%
 
 ---
 *Last Updated: March 31, 2026*
