@@ -11,6 +11,7 @@ import CharacterInventory from './CharacterInventory';
 import CharacterCombatTab from './CharacterCombatTab';
 import CharacterSpellbook from './CharacterSpellbook';
 import SessionJournal from './SessionJournal';
+import PlayerProgressionDashboard from './PlayerProgressionDashboard';
 import { CLASS_FEATURES } from '../data/classFeatures';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, SPELL_DATABASE } from '../data/spellDatabase';
 import DiceRoller3D from './ui/DiceRoller3D';
@@ -227,7 +228,7 @@ export default function CharacterSheetFull() {
   const [character, setCharacter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('combat');
+  const [activeTab, setActiveTab] = useState('overview');
   const [currentHp, setCurrentHp] = useState(0);
   const [tempHp, setTempHp] = useState(0);
   const [showLevelUpWizard, setShowLevelUpWizard] = useState(false);
@@ -244,31 +245,44 @@ export default function CharacterSheetFull() {
   const [diceCrit, setDiceCrit] = useState(false);
   const [diceFumble, setDiceFumble] = useState(false);
 
-  // 3D Dice Roll Function
-  const rollDice = (notation, label = '', modifier = 0) => {
-    const match = notation.match(/(\d+)?d(\d+)/i);
-    if (!match) return;
+  // 3D Dice Roll Function - supports compound notation like "2d6+1d4" or "1d20+1d4"
+  const rollDice = (notation, modifier = 0, label = '') => {
+    // Parse compound dice: "2d6+1d4+3" or simple "1d20"
+    const diceGroups = notation.match(/(\d+)?d(\d+)/gi) || [];
+    if (diceGroups.length === 0) return;
     
-    const count = parseInt(match[1]) || 1;
-    const sides = parseInt(match[2]);
+    const numMod = typeof modifier === 'number' ? modifier : (parseInt(modifier) || 0);
+    const strLabel = typeof label === 'string' ? label : String(label || notation);
     
     const rolls = [];
     let total = 0;
     
-    for (let i = 0; i < count; i++) {
-      const result = Math.floor(Math.random() * sides) + 1;
-      rolls.push({ sides, result });
-      total += result;
+    for (const group of diceGroups) {
+      const match = group.match(/(\d+)?d(\d+)/i);
+      if (!match) continue;
+      const count = parseInt(match[1]) || 1;
+      const sides = parseInt(match[2]);
+      for (let i = 0; i < count; i++) {
+        const result = Math.floor(Math.random() * sides) + 1;
+        rolls.push({ sides, result });
+        total += result;
+      }
     }
     
-    total += modifier;
+    // Check for inline modifiers like "+5" in notation
+    const inlineMod = notation.replace(/(\d+)?d(\d+)/gi, '').match(/([+-]\d+)/g);
+    let totalMod = numMod;
+    if (inlineMod) {
+      inlineMod.forEach(m => { totalMod += parseInt(m); });
+    }
+    total += totalMod;
     
-    const isCrit = count === 1 && sides === 20 && rolls[0].result === 20;
-    const isFumble = count === 1 && sides === 20 && rolls[0].result === 1;
+    const isCrit = rolls.length >= 1 && rolls[0].sides === 20 && rolls[0].result === 20;
+    const isFumble = rolls.length >= 1 && rolls[0].sides === 20 && rolls[0].result === 1;
     
     setDiceRolls(rolls);
-    setDiceLabel(label || notation);
-    setDiceModifier(modifier);
+    setDiceLabel(strLabel || notation);
+    setDiceModifier(totalMod);
     setDiceTotal(total);
     setDiceCrit(isCrit);
     setDiceFumble(isFumble);
@@ -768,7 +782,7 @@ export default function CharacterSheetFull() {
 
           {/* Tabs */}
           <div style={{ display: 'flex', gap: '8px', flexShrink: 0, flexWrap: 'wrap' }}>
-            {['combat', 'spells', 'inventory', 'journal', 'notes'].map(tab => (
+            {['overview', 'combat', 'spells', 'inventory', 'journal', 'notes'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -795,6 +809,12 @@ export default function CharacterSheetFull() {
 
           {/* Tab Content - Scrollable */}
           <div style={{ ...panelStyle, flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            {activeTab === 'overview' && (
+              <div style={{ ...scrollBoxStyle, flex: 1, padding: '4px' }}>
+                <PlayerProgressionDashboard character={character} characterId={characterId} />
+              </div>
+            )}
+
             {activeTab === 'combat' && (
               <div style={{ ...scrollBoxStyle, flex: 1, padding: '4px' }}>
                 <CharacterCombatTab

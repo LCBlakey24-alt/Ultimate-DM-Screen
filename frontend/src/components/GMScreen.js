@@ -105,29 +105,34 @@ function GMScreen({ username }) {
     }
   };
 
-  // 3D Dice Roll Function
+  // 3D Dice Roll Function - supports compound notation like "2d6+1d4+5"
   const roll3DDice = (notation, label = '') => {
-    // Parse dice notation like "2d6", "1d20+5"
-    const match = notation.match(/(\d+)?d(\d+)([+-]\d+)?/i);
-    if (!match) return;
-    
-    const count = parseInt(match[1]) || 1;
-    const sides = parseInt(match[2]);
-    const modifier = parseInt(match[3]) || 0;
+    const diceGroups = notation.match(/(\d+)?d(\d+)/gi) || [];
+    if (diceGroups.length === 0) return;
     
     const rolls = [];
     let total = 0;
     
-    for (let i = 0; i < count; i++) {
-      const result = Math.floor(Math.random() * sides) + 1;
-      rolls.push({ sides, result });
-      total += result;
+    for (const group of diceGroups) {
+      const match = group.match(/(\d+)?d(\d+)/i);
+      if (!match) continue;
+      const count = parseInt(match[1]) || 1;
+      const sides = parseInt(match[2]);
+      for (let i = 0; i < count; i++) {
+        const result = Math.floor(Math.random() * sides) + 1;
+        rolls.push({ sides, result });
+        total += result;
+      }
     }
     
+    // Extract inline modifiers
+    const inlineMod = notation.replace(/(\d+)?d(\d+)/gi, '').match(/([+-]\d+)/g);
+    let modifier = 0;
+    if (inlineMod) inlineMod.forEach(m => { modifier += parseInt(m); });
     total += modifier;
     
-    const isCrit = count === 1 && sides === 20 && rolls[0].result === 20;
-    const isFumble = count === 1 && sides === 20 && rolls[0].result === 1;
+    const isCrit = rolls.length >= 1 && rolls[0].sides === 20 && rolls[0].result === 20;
+    const isFumble = rolls.length >= 1 && rolls[0].sides === 20 && rolls[0].result === 1;
     
     setDiceRolls(rolls);
     setDiceLabel(label || notation);
