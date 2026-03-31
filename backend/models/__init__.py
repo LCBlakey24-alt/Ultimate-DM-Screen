@@ -626,6 +626,12 @@ class PlayerCharacter(BaseModel):
     resources: Dict[str, int] = {}
     # Max resources are computed on the frontend from class data
     
+    # Combat State (tracked by Combat Tab)
+    conditions: List[str] = []  # ["blinded", "poisoned"]
+    inspiration: bool = False
+    concentrating_on: str = ""
+    used_spell_slots: Dict[str, int] = {}  # {"1": 2, "pact": 1} = used slots per level
+    
     # Meta
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -727,6 +733,14 @@ class PlayerCharacterUpdate(BaseModel):
     
     # Resources
     resources: Optional[Dict[str, int]] = None
+    
+    # Combat State
+    death_saves_successes: Optional[int] = None
+    death_saves_failures: Optional[int] = None
+    conditions: Optional[List[str]] = None
+    inspiration: Optional[bool] = None
+    concentrating_on: Optional[str] = None
+    used_spell_slots: Optional[Dict[str, int]] = None
     
     # Character Details
     alignment: Optional[str] = None
@@ -1584,13 +1598,16 @@ class SmartNoteParseResponse(BaseModel):
 
 class LevelUpRequest(BaseModel):
     new_level: int
-    choice_type: str  # "asi" or "feat"
+    choice_type: str = "standard"  # "asi", "feat", or "standard"
     # For ASI: {"ability1": "strength", "ability2": "dexterity"} or {"ability1": "strength", "ability2": "strength"} for +2 to one
     asi_choices: Optional[Dict[str, str]] = None
     # For Feat: {"name": "Alert", "description": "..."}
     feat_choice: Optional[Dict[str, str]] = None
     # Optional HP roll result (if not using average)
     hp_roll: Optional[int] = None
+    # Spellcasting: new spells learned at this level
+    new_spells: Optional[List[Dict[str, Any]]] = None
+    new_cantrips: Optional[List[Dict[str, Any]]] = None
 
 
 class JournalEntry(BaseModel):

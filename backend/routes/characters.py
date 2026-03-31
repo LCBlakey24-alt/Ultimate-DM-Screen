@@ -413,6 +413,21 @@ async def level_up_character(
                 # Reset used slots on level up (restore all)
                 update_data[f'spell_slots_{spell_level}_used'] = 0
 
+    # Persist new spells/cantrips from level-up selections
+    if level_up.new_spells:
+        existing_spells = existing.get('spells_known', [])
+        for spell in level_up.new_spells:
+            if not any(s.get('name') == spell.get('name') for s in existing_spells):
+                existing_spells.append(spell)
+        update_data['spells_known'] = existing_spells
+
+    if level_up.new_cantrips:
+        existing_cantrips = existing.get('cantrips_known', [])
+        for cantrip in level_up.new_cantrips:
+            if not any(c.get('name') == cantrip.get('name') for c in existing_cantrips):
+                existing_cantrips.append(cantrip)
+        update_data['cantrips_known'] = existing_cantrips
+
     # Update character
     await db.player_characters.update_one(
         {'id': character_id, 'user_id': username},
@@ -449,6 +464,44 @@ async def delete_character(
         )
     
     return {"message": "Character deleted successfully"}
+
+
+@router.patch("/characters/{character_id}")
+async def patch_character(
+    character_id: str,
+    updates: Dict[str, Any],
+    username: str = Depends(get_current_user)
+):
+    """Partial update for character fields (HP, combat state, etc.)"""
+    existing = await db.player_characters.find_one({'id': character_id, 'user_id': username})
+    if not existing:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
+    
+    # Whitelist of fields allowed via PATCH
+    allowed = {
+        'hp', 'current_hit_points', 'max_hit_points', 'temporary_hit_points',
+        'hit_dice_remaining', 'death_saves_successes', 'death_saves_failures',
+        'conditions', 'inspiration', 'concentrating_on', 'used_spell_slots',
+        'resources', 'notes', 'equipped', 'equipment', 'inventory',
+        'armor_class', 'speed',
+    }
+    filtered = {k: v for k, v in updates.items() if k in allowed}
+    if not filtered:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No valid fields to update")
+    
+    # Map 'hp' shorthand to 'current_hit_points'
+    if 'hp' in filtered:
+        filtered['current_hit_points'] = filtered.pop('hp')
+    
+    filtered['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.player_characters.update_one(
+        {'id': character_id, 'user_id': username},
+        {'$set': filtered}
+    )
+    
+    updated = await db.player_characters.find_one({'id': character_id}, {'_id': 0})
+    return updated
 
 
 @router.put("/characters/{character_id}/resources")

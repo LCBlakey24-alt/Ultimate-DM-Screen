@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test';
  * based on character class and level from classFeatures.js
  */
 
-const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'https://midnight-campaign.preview.emergentagent.com';
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'https://neon-quest-keeper.preview.emergentagent.com';
 const TEST_USER = {
   email: 'lcblakey24@outlook.com',
   password: 'Trigger24?!'

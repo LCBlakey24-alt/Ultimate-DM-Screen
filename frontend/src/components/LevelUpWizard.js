@@ -6,6 +6,7 @@ import axios from 'axios';
 import { MULTICLASS_REQUIREMENTS, MULTICLASS_PROFICIENCIES, canMulticlassInto, canMulticlassFrom, CLASSES } from '../data/characterRules5e';
 import { CLASS_FEATURES } from '../data/classFeatures';
 import { FEATURE_TYPE_CONFIG } from '../data/classResources';
+import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, CANTRIPS_KNOWN, SPELLS_KNOWN, getSpellsForClass, getMaxSpellLevel } from '../data/spellDatabase';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -95,6 +96,10 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
   // Multiclass state
   const [isMulticlassing, setIsMulticlassing] = useState(false);
   const [multiclassClass, setMulticlassClass] = useState(null);
+  
+  // Spell selection state
+  const [selectedNewSpells, setSelectedNewSpells] = useState([]);
+  const [selectedNewCantrips, setSelectedNewCantrips] = useState([]);
 
   const currentLevel = character?.level || 1;
   const newLevel = currentLevel + 1;
@@ -126,6 +131,69 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
   const newClassLevel = classLevel + (isMulticlassing ? 0 : 1);
   const isAsiLevel = !isMulticlassing && classAsiLevels.includes(newClassLevel);
   
+  // ─── Spellcasting progression ──────────────────────────────────
+  const classInfo = SPELLCASTING_CLASSES[characterClass];
+  const isSpellcaster = !!classInfo && !classInfo.subclassOnly;
+  
+  // Spell slots: old vs new
+  const getSlots = (lvl) => {
+    if (!classInfo) return {};
+    if (classInfo.pactMagic) return PACT_MAGIC_SLOTS[lvl] || {};
+    if (classInfo.halfCaster) {
+      const startLvl = classInfo.halfCaster ? 2 : 1;
+      if (lvl < startLvl) return {};
+      return SPELL_SLOTS[Math.floor(lvl / 2)] || {};
+    }
+    return SPELL_SLOTS[lvl] || {};
+  };
+  const oldSlots = getSlots(currentLevel);
+  const newSlots = getSlots(newLevel);
+  
+  // New cantrips to learn
+  const cantripsTable = CANTRIPS_KNOWN[characterClass] || {};
+  const getCantripCount = (lvl) => {
+    let count = 0;
+    for (const [l, c] of Object.entries(cantripsTable)) {
+      if (Number(l) <= lvl) count = c;
+    }
+    return count;
+  };
+  const oldCantripCount = getCantripCount(currentLevel);
+  const newCantripCount = getCantripCount(newLevel);
+  const cantripGain = newCantripCount - oldCantripCount;
+  
+  // New spells to learn (for "known" casters)
+  const spellsKnownTable = SPELLS_KNOWN[characterClass] || {};
+  const getSpellsKnownCount = (lvl) => {
+    let count = 0;
+    for (const [l, c] of Object.entries(spellsKnownTable)) {
+      if (Number(l) <= lvl) count = c;
+    }
+    return count;
+  };
+  const oldSpellsKnown = getSpellsKnownCount(currentLevel);
+  const newSpellsKnown = getSpellsKnownCount(newLevel);
+  const spellGain = newSpellsKnown - oldSpellsKnown;
+  
+  // Wizard special: gains 2 spells to spellbook each level
+  const isWizard = characterClass === 'Wizard';
+  const wizardSpellbookGain = isWizard ? 2 : 0;
+  
+  // Max spell level accessible at new level
+  const maxSpellLevelOld = getMaxSpellLevel(characterClass, currentLevel);
+  const maxSpellLevelNew = getMaxSpellLevel(characterClass, newLevel);
+  const unlockedNewSpellLevel = maxSpellLevelNew > maxSpellLevelOld;
+  
+  // Available spells for selection
+  const availableSpells = isSpellcaster ? getSpellsForClass(characterClass) : {};
+  const existingSpellNames = (character?.spells_known || []).map(s => (s.name || s));
+  const existingCantripNames = (character?.cantrips_known || []).map(s => (s.name || s));
+  
+  // Determine step positions dynamically
+  const spellcastingStep = isSpellcaster ? 3 : -1;
+  const asiStepPos = isAsiLevel ? (isSpellcaster ? 4 : 3) : -1;
+  const confirmStepPos = 3 + (isSpellcaster ? 1 : 0) + (isAsiLevel ? 1 : 0);
+  
   // Calculate HP values
   const averageHp = Math.floor(hitDie / 2) + 1 + conMod;
   const rolledHp = hpRoll ? Math.max(1, hpRoll + conMod) : null;
@@ -147,6 +215,8 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
       setSelectedFeat(null);
       setIsMulticlassing(false);
       setMulticlassClass(null);
+      setSelectedNewSpells([]);
+      setSelectedNewCantrips([]);
     }
   }, [isOpen]);
 
@@ -166,30 +236,27 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
   };
 
   const canProceed = () => {
-    if (step === 0) return !isMulticlassing || multiclassClass; // Multiclass choice
-    if (step === 1) return true; // HP method selection always valid
+    if (step === 0) return !isMulticlassing || multiclassClass;
+    if (step === 1) return true;
     if (step === 2 && hpMethod === 'roll') return hasRolled;
     if (step === 2 && hpMethod === 'average') return true;
-    if (step === 3 && isAsiLevel) {
-      if (choiceType === 'asi') {
-        return asiChoices.ability1 && asiChoices.ability2;
-      }
-      if (choiceType === 'feat') {
-        return selectedFeat !== null;
-      }
+    if (step === spellcastingStep) {
+      // Known casters must select enough spells
+      const neededSpells = classInfo?.type === 'known' ? spellGain : (isWizard ? wizardSpellbookGain : 0);
+      const neededCantrips = cantripGain;
+      if (neededSpells > 0 && selectedNewSpells.length < neededSpells) return false;
+      if (neededCantrips > 0 && selectedNewCantrips.length < neededCantrips) return false;
+      return true;
+    }
+    if (step === asiStepPos) {
+      if (choiceType === 'asi') return asiChoices.ability1 && asiChoices.ability2;
+      if (choiceType === 'feat') return selectedFeat !== null;
       return false;
     }
     return true;
   };
 
-  const getTotalSteps = () => {
-    // Step 0: Class choice (continue or multiclass)
-    // Step 1: HP method
-    // Step 2: HP result
-    // Step 3: ASI/Feat (if applicable)
-    // Step 4: Confirm
-    return isAsiLevel ? 5 : 4;
-  };
+  const getTotalSteps = () => confirmStepPos + 1;
 
   const handleLevelUp = async () => {
     setLoading(true);
@@ -214,6 +281,18 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
           requestData.choice_type = 'feat';
           requestData.feat_name = selectedFeat?.name;
         }
+      }
+
+      // Add spell selections
+      if (selectedNewSpells.length > 0) {
+        requestData.new_spells = selectedNewSpells.map(s => ({
+          name: s.name, level: s.level || 1, school: s.school || ''
+        }));
+      }
+      if (selectedNewCantrips.length > 0) {
+        requestData.new_cantrips = selectedNewCantrips.map(s => ({
+          name: s.name, level: 0, school: s.school || ''
+        }));
       }
 
       // Use different endpoint for multiclassing
@@ -705,8 +784,210 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
             </div>
           )}
 
+          {/* Spellcasting Progression Step */}
+          {step === spellcastingStep && isSpellcaster && (
+            <div>
+              <h3 style={{ fontFamily: "'Cinzel', serif", color: '#EC4899', fontSize: '18px', marginBottom: '8px' }}>
+                Spellcasting Progression
+              </h3>
+              <p style={{ color: theme.text.secondary, marginBottom: '16px', fontSize: '14px' }}>
+                {characterClass} spellcasting changes at level {newLevel}.
+              </p>
+
+              {/* Spell Slot Changes */}
+              {!classInfo.pactMagic ? (
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: theme.text.muted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+                    Spell Slots
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {Object.entries(newSlots).map(([lvl, count]) => {
+                      const oldCount = oldSlots[lvl] || 0;
+                      const isNew = count > oldCount;
+                      return (
+                        <div key={lvl} style={{
+                          padding: '8px 12px', borderRadius: 8, minWidth: 60, textAlign: 'center',
+                          background: isNew ? 'rgba(236,72,153,0.12)' : 'rgba(255,255,255,0.03)',
+                          border: `1px solid ${isNew ? 'rgba(236,72,153,0.4)' : 'rgba(255,255,255,0.06)'}`,
+                        }}>
+                          <div style={{ fontSize: 10, color: theme.text.muted }}>Lvl {lvl}</div>
+                          <div style={{ fontSize: 16, fontWeight: 700, color: isNew ? '#EC4899' : theme.text.primary }}>
+                            {count} {isNew && <span style={{ fontSize: 10, color: '#22C55E' }}>+{count - oldCount}</span>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ marginBottom: '20px', padding: 12, background: 'rgba(236,72,153,0.08)', borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: theme.text.muted, marginBottom: 6 }}>PACT MAGIC</div>
+                  <div style={{ color: theme.text.primary, fontSize: 14 }}>
+                    {newSlots.slots} slot{newSlots.slots > 1 ? 's' : ''} at spell level {newSlots.level}
+                    {(newSlots.slots !== oldSlots.slots || newSlots.level !== oldSlots.level) && (
+                      <span style={{ color: '#22C55E', marginLeft: 8, fontSize: 12 }}>
+                        {newSlots.slots !== oldSlots.slots && `+${newSlots.slots - (oldSlots.slots || 0)} slot `}
+                        {newSlots.level !== oldSlots.level && `(now lvl ${newSlots.level})`}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* New Spell Level Unlocked */}
+              {unlockedNewSpellLevel && (
+                <div style={{
+                  marginBottom: '16px', padding: '12px 16px', borderRadius: 10,
+                  background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.3)',
+                  display: 'flex', alignItems: 'center', gap: 10,
+                }}>
+                  <Sparkles size={20} style={{ color: theme.sunset.gold }} />
+                  <div>
+                    <div style={{ color: theme.sunset.gold, fontWeight: 600, fontSize: 14 }}>
+                      Level {maxSpellLevelNew} Spells Unlocked!
+                    </div>
+                    <div style={{ color: theme.text.muted, fontSize: 12 }}>
+                      You can now learn and cast level {maxSpellLevelNew} spells.
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Cantrip Selection */}
+              {cantripGain > 0 && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: '#4DD0E1', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+                    Choose {cantripGain} New Cantrip{cantripGain > 1 ? 's' : ''} ({selectedNewCantrips.length}/{cantripGain})
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxHeight: 140, overflowY: 'auto', padding: 4 }}>
+                    {(availableSpells.cantrips || []).filter(s => !existingCantripNames.includes(s.name)).map(cantrip => {
+                      const isSelected = selectedNewCantrips.some(s => s.name === cantrip.name);
+                      return (
+                        <button key={cantrip.name} onClick={() => {
+                          setSelectedNewCantrips(prev =>
+                            isSelected ? prev.filter(s => s.name !== cantrip.name)
+                              : prev.length < cantripGain ? [...prev, cantrip] : prev
+                          );
+                        }} style={{
+                          padding: '6px 12px', borderRadius: 16, fontSize: 12, cursor: 'pointer',
+                          background: isSelected ? 'rgba(77,208,225,0.25)' : 'rgba(255,255,255,0.04)',
+                          border: `1px solid ${isSelected ? '#4DD0E1' : 'rgba(255,255,255,0.08)'}`,
+                          color: isSelected ? '#4DD0E1' : theme.text.secondary,
+                          fontWeight: isSelected ? 600 : 400, transition: 'all 0.15s',
+                        }} title={cantrip.description}>
+                          {cantrip.name} {cantrip.damage && <span style={{ fontSize: 10, opacity: 0.7 }}>({cantrip.damage})</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Spell Selection for "known" casters */}
+              {classInfo.type === 'known' && spellGain > 0 && (
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: '#EC4899', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+                    Choose {spellGain} New Spell{spellGain > 1 ? 's' : ''} ({selectedNewSpells.length}/{spellGain})
+                  </div>
+                  <div style={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4, padding: 4 }}>
+                    {Array.from({ length: maxSpellLevelNew }, (_, i) => i + 1).map(lvl => {
+                      const spells = (availableSpells[lvl] || []).filter(s => !existingSpellNames.includes(s.name));
+                      if (spells.length === 0) return null;
+                      return (
+                        <div key={lvl}>
+                          <div style={{ fontSize: 10, color: theme.text.muted, fontWeight: 600, padding: '4px 0' }}>Level {lvl}</div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                            {spells.map(spell => {
+                              const isSelected = selectedNewSpells.some(s => s.name === spell.name);
+                              return (
+                                <button key={spell.name} onClick={() => {
+                                  setSelectedNewSpells(prev =>
+                                    isSelected ? prev.filter(s => s.name !== spell.name)
+                                      : prev.length < spellGain ? [...prev, { ...spell, level: lvl }] : prev
+                                  );
+                                }} title={spell.description} style={{
+                                  padding: '5px 10px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
+                                  background: isSelected ? 'rgba(236,72,153,0.2)' : 'rgba(255,255,255,0.03)',
+                                  border: `1px solid ${isSelected ? '#EC4899' : 'rgba(255,255,255,0.06)'}`,
+                                  color: isSelected ? '#EC4899' : theme.text.secondary,
+                                  fontWeight: isSelected ? 600 : 400, transition: 'all 0.15s',
+                                }}>
+                                  {spell.name}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Wizard spellbook */}
+              {isWizard && (
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+                    Add {wizardSpellbookGain} Spells to Spellbook ({selectedNewSpells.length}/{wizardSpellbookGain})
+                  </div>
+                  <p style={{ color: theme.text.muted, fontSize: 12, marginBottom: 8 }}>
+                    Your study has revealed new arcane secrets. Add {wizardSpellbookGain} wizard spells of a level you can cast.
+                  </p>
+                  <div style={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4, padding: 4 }}>
+                    {Array.from({ length: maxSpellLevelNew }, (_, i) => i + 1).map(lvl => {
+                      const spells = (availableSpells[lvl] || []).filter(s => !existingSpellNames.includes(s.name));
+                      if (spells.length === 0) return null;
+                      return (
+                        <div key={lvl}>
+                          <div style={{ fontSize: 10, color: theme.text.muted, fontWeight: 600, padding: '4px 0' }}>Level {lvl}</div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                            {spells.map(spell => {
+                              const isSelected = selectedNewSpells.some(s => s.name === spell.name);
+                              return (
+                                <button key={spell.name} onClick={() => {
+                                  setSelectedNewSpells(prev =>
+                                    isSelected ? prev.filter(s => s.name !== spell.name)
+                                      : prev.length < wizardSpellbookGain ? [...prev, { ...spell, level: lvl }] : prev
+                                  );
+                                }} title={spell.description} style={{
+                                  padding: '5px 10px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
+                                  background: isSelected ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.03)',
+                                  border: `1px solid ${isSelected ? '#8B5CF6' : 'rgba(255,255,255,0.06)'}`,
+                                  color: isSelected ? '#8B5CF6' : theme.text.secondary,
+                                  fontWeight: isSelected ? 600 : 400, transition: 'all 0.15s',
+                                }}>
+                                  {spell.name}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Prepared casters info */}
+              {classInfo.type === 'prepared' && !isWizard && (
+                <div style={{
+                  padding: 12, borderRadius: 8,
+                  background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)',
+                }}>
+                  <div style={{ color: '#3B82F6', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
+                    Prepared Spells
+                  </div>
+                  <div style={{ color: theme.text.muted, fontSize: 12 }}>
+                    As a {characterClass}, you can change your prepared spells after a long rest.
+                    You can prepare {Math.max(1, Math.floor(((character?.[classInfo.ability] || 10) - 10) / 2) + newLevel)} spells from the {characterClass} spell list.
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Step 3: ASI or Feat (if applicable) */}
-          {step === 3 && isAsiLevel && (
+          {step === asiStepPos && isAsiLevel && (
             <div>
               <h3 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.gold, fontSize: '18px', marginBottom: '8px' }}>
                 Ability Score Improvement
@@ -864,7 +1145,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
           )}
 
           {/* Final Step: Confirmation */}
-          {((step === 3 && !isAsiLevel) || (step === 4 && isAsiLevel)) && (
+          {step === confirmStepPos && (
             <div>
               <h3 style={{ fontFamily: "'Cinzel', serif", color: theme.sunset.gold, fontSize: '18px', marginBottom: '16px' }}>
                 Confirm Level Up
@@ -915,6 +1196,25 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', background: 'rgba(236, 72, 153, 0.1)', borderRadius: '8px' }}>
                       <span style={{ color: theme.text.secondary }}>New Feat</span>
                       <span style={{ color: theme.sunset.pink, fontWeight: '600' }}>{selectedFeat.name}</span>
+                    </div>
+                  )}
+                  
+                  {/* Spell selections summary */}
+                  {selectedNewCantrips.length > 0 && (
+                    <div style={{ padding: '10px', background: 'rgba(77,208,225,0.1)', borderRadius: '8px' }}>
+                      <span style={{ color: theme.text.secondary, fontSize: 13 }}>New Cantrips: </span>
+                      <span style={{ color: '#4DD0E1', fontWeight: '600', fontSize: 13 }}>
+                        {selectedNewCantrips.map(s => s.name).join(', ')}
+                      </span>
+                    </div>
+                  )}
+                  {selectedNewSpells.length > 0 && (
+                    <div style={{ padding: '10px', background: 'rgba(236,72,153,0.1)', borderRadius: '8px' }}>
+                      <span style={{ color: theme.text.secondary, fontSize: 13 }}>
+                        {isWizard ? 'Spellbook Additions' : 'New Spells'}: </span>
+                      <span style={{ color: '#EC4899', fontWeight: '600', fontSize: 13 }}>
+                        {selectedNewSpells.map(s => s.name).join(', ')}
+                      </span>
                     </div>
                   )}
                   
@@ -1005,7 +1305,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
             </Button>
           )}
           
-          {((step === 3 && !isAsiLevel) || (step === 4 && isAsiLevel)) ? (
+          {step === confirmStepPos ? (
             <Button
               onClick={handleLevelUp}
               disabled={loading}

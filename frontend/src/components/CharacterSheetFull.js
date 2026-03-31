@@ -384,6 +384,15 @@ export default function CharacterSheetFull() {
   };
 
   // Resource & Rest handlers
+  const handleUpdateCharacter = async (updates) => {
+    setCharacter(prev => prev ? { ...prev, ...updates } : prev);
+    try {
+      await axios.patch(`${API}/characters/${characterId}`, updates);
+    } catch (err) {
+      console.error('Failed to persist character update:', err);
+    }
+  };
+
   const handleUpdateResources = async (resources) => {
     try {
       await axios.put(`${API}/characters/${characterId}/resources`, resources);
@@ -395,10 +404,10 @@ export default function CharacterSheetFull() {
 
   const handleRest = async (type) => {
     try {
-      const response = await axios.post(
-        `${API}/characters/${characterId}/${type}-rest`,
-        type === 'short' ? { hit_dice_to_spend: 1 } : undefined
-      );
+      const url = type === 'short'
+        ? `${API}/characters/${characterId}/short-rest?hit_dice_to_spend=1`
+        : `${API}/characters/${characterId}/long-rest`;
+      const response = await axios.post(url);
       setCharacter(response.data);
       setCurrentHp(response.data.current_hit_points || response.data.hp || currentHp);
       toast.success(`${type === 'short' ? 'Short' : 'Long'} rest complete`);
@@ -788,7 +797,7 @@ export default function CharacterSheetFull() {
               <div style={{ ...scrollBoxStyle, flex: 1, padding: '4px' }}>
                 <CharacterCombatTab
                   character={character}
-                  onUpdateCharacter={(updates) => setCharacter(prev => prev ? { ...prev, ...updates } : prev)}
+                  onUpdateCharacter={handleUpdateCharacter}
                   onUpdateResources={handleUpdateResources}
                   onRest={handleRest}
                   isGMMode={false}

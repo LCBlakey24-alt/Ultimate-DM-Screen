@@ -7,7 +7,7 @@ import requests
 import uuid
 from datetime import datetime
 
-BASE_URL = "https://midnight-campaign.preview.emergentagent.com"
+BASE_URL = "https://neon-quest-keeper.preview.emergentagent.com"
 
 # Test user credentials
 TEST_USER_EMAIL = "leveltest@test.com"

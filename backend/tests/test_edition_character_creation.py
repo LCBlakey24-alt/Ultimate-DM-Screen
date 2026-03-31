@@ -12,7 +12,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://midnight-campaign.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://neon-quest-keeper.preview.emergentagent.com').rstrip('/')
 
 # Test user credentials (admin user with legendary tier)
 TEST_USER_EMAIL = 'lcblakey24@outlook.com'

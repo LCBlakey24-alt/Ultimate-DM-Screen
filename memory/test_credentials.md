@@ -7,7 +7,7 @@
 - Has 3 campaigns, 4 characters
 
 ## API Base URL
-- Preview: https://midnight-campaign.preview.emergentagent.com
+- Preview: https://neon-quest-keeper.preview.emergentagent.com
 - All API endpoints prefixed with /api/
 
 ## Campaign IDs (for API testing)
