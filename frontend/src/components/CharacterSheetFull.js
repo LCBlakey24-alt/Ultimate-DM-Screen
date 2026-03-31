@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import {
   Heart, Shield, Zap, Swords, BookOpen, Backpack, ChevronLeft,
-  Plus, Minus, Skull, Wind, Edit3, Dices, Target, Sparkles, ArrowUp
+  Plus, Minus, Skull, Wind, Edit3, Dices, Target, Sparkles, ArrowUp, User
 } from 'lucide-react';
 import LevelUpWizard from './LevelUpWizard';
 import CharacterInventory from './CharacterInventory';
@@ -12,6 +12,7 @@ import CharacterCombatTab from './CharacterCombatTab';
 import CharacterSpellbook from './CharacterSpellbook';
 import SessionJournal from './SessionJournal';
 import PlayerProgressionDashboard from './PlayerProgressionDashboard';
+import RestPanel from './RestPanel';
 import { CLASS_FEATURES } from '../data/classFeatures';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, SPELL_DATABASE } from '../data/spellDatabase';
 import DiceRoller3D from './ui/DiceRoller3D';
@@ -734,7 +735,7 @@ export default function CharacterSheetFull() {
 
           {/* Tabs */}
           <div style={{ display: 'flex', gap: '6px', flexShrink: 0, flexWrap: 'wrap' }}>
-            {['overview', 'combat', 'spells', 'inventory', 'journal', 'notes'].map(tab => (
+            {['overview', 'combat', 'spells', 'inventory', 'backstory', 'journal', 'notes'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -777,6 +778,9 @@ export default function CharacterSheetFull() {
                   isGMMode={false}
                   rollDice={rollDice}
                 />
+                <div style={{ marginTop: '8px' }}>
+                  <RestPanel character={character} theme={theme} onRest={handleRest} onUpdateCharacter={handleUpdateCharacter} />
+                </div>
               </div>
             )}
 
@@ -800,6 +804,10 @@ export default function CharacterSheetFull() {
                   onUpdate={fetchCharacter}
                 />
               </div>
+            )}
+
+            {activeTab === 'backstory' && (
+              <BackstoryTab character={character} characterId={characterId} theme={theme} onUpdateCharacter={handleUpdateCharacter} />
             )}
 
             {activeTab === 'journal' && (
@@ -932,6 +940,83 @@ export default function CharacterSheetFull() {
           navigator.clipboard.writeText(text).then(() => toast.success('Roll copied to clipboard!'));
         }}
       />
+    </div>
+  );
+}
+
+
+function BackstoryTab({ character, characterId, theme, onUpdateCharacter }) {
+  const [editing, setEditing] = useState(null);
+  const [editVal, setEditVal] = useState('');
+  const backstory = character?.backstory || {};
+  const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+  const fields = [
+    { key: 'personality_traits', label: 'Personality Traits', placeholder: 'I always have a plan. I am slow to trust but fiercely loyal.' },
+    { key: 'ideals', label: 'Ideals', placeholder: 'Greater Good. Our lot is to lay down our lives in defense of others.' },
+    { key: 'bonds', label: 'Bonds', placeholder: 'I have a family, but I have no idea where they are. I hope to see them again.' },
+    { key: 'flaws', label: 'Flaws', placeholder: 'I have a weakness for the vices of the city, especially hard drink.' },
+    { key: 'backstory_text', label: 'Backstory', placeholder: 'Born in a small village on the edge of the Sword Coast...', multiline: true },
+    { key: 'allies_organizations', label: 'Allies & Organizations', placeholder: 'Member of the Harpers. Close friend of the innkeeper at the Yawning Portal.' },
+    { key: 'appearance', label: 'Appearance', placeholder: 'Tall and weathered, with a prominent scar across the left cheek...' },
+  ];
+
+  const saveField = async (key) => {
+    const newBackstory = { ...backstory, [key]: editVal };
+    onUpdateCharacter({ backstory: newBackstory });
+    try {
+      await axios.patch(`${API}/characters/${characterId}`, { backstory: newBackstory });
+      toast.success('Saved!');
+    } catch {
+      toast.error('Failed to save');
+    }
+    setEditing(null);
+  };
+
+  const panelStyle = { background: theme.bg.surface, border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '12px' };
+
+  return (
+    <div data-testid="backstory-tab" style={{ ...panelStyle, flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', padding: '12px' }}>
+      <h4 style={{ fontFamily: "'Cinzel', serif", color: theme.text.primary, margin: 0, fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <User size={16} color={theme.accent.primary} /> Character Backstory
+      </h4>
+      {fields.map(f => (
+        <div key={f.key}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+            <span style={{ fontSize: '10px', fontWeight: 700, color: theme.text.muted, letterSpacing: '0.5px', textTransform: 'uppercase' }}>{f.label}</span>
+            {editing !== f.key && (
+              <button data-testid={`edit-${f.key}`} onClick={() => { setEditing(f.key); setEditVal(backstory[f.key] || ''); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.accent.primary, fontSize: '11px', fontWeight: 600 }}>
+                Edit
+              </button>
+            )}
+          </div>
+          {editing === f.key ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <textarea value={editVal} onChange={e => setEditVal(e.target.value)} rows={f.multiline ? 4 : 2}
+                placeholder={f.placeholder}
+                style={{
+                  width: '100%', background: theme.bg.elevated, border: `1px solid ${theme.accent.primary}`,
+                  borderRadius: '6px', color: theme.text.primary, padding: '8px', fontSize: '13px',
+                  fontFamily: 'inherit', resize: 'vertical', outline: 'none',
+                }} />
+              <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                <button onClick={() => setEditing(null)} style={{ padding: '4px 10px', borderRadius: '5px', fontSize: '11px', cursor: 'pointer', background: 'rgba(239,68,68,0.1)', color: '#F87171', border: '1px solid rgba(239,68,68,0.2)' }}>Cancel</button>
+                <button data-testid={`save-${f.key}`} onClick={() => saveField(f.key)} style={{ padding: '4px 10px', borderRadius: '5px', fontSize: '11px', cursor: 'pointer', background: 'rgba(16,185,129,0.15)', color: '#34D399', border: '1px solid rgba(16,185,129,0.3)', fontWeight: 600 }}>Save</button>
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              fontSize: '13px', color: backstory[f.key] ? theme.text.secondary : theme.text.muted,
+              lineHeight: 1.6, whiteSpace: 'pre-wrap', fontStyle: backstory[f.key] ? 'normal' : 'italic',
+              padding: '6px 8px', borderRadius: '6px', background: 'rgba(255,255,255,0.02)',
+              minHeight: '28px', cursor: 'pointer',
+            }} onClick={() => { setEditing(f.key); setEditVal(backstory[f.key] || ''); }}>
+              {backstory[f.key] || f.placeholder}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

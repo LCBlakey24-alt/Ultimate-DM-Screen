@@ -30,6 +30,9 @@ import StoryArcTracker from '@/components/gm/StoryArcTracker';
 import NPCRelationshipMap from '@/components/gm/NPCRelationshipMap';
 import AICoGM from '@/components/gm/AICoGM';
 import AISessionPlanner from '@/components/gm/AISessionPlanner';
+import InitiativeTracker from '@/components/gm/InitiativeTracker';
+import SessionTimer from '@/components/gm/SessionTimer';
+import QuickNpcGenerator from '@/components/gm/QuickNpcGenerator';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -457,7 +460,8 @@ function GMScreen({ username }) {
               )}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <SessionTimer theme={theme} />
             <Button onClick={() => setShowQuickRef(true)} style={{ display: 'flex', gap: '6px', padding: '10px 16px', fontSize: '14px', background: 'rgba(138, 43, 226, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary }}>
               <BookOpen size={16} /> Reference
             </Button>
@@ -717,6 +721,11 @@ function GMScreen({ username }) {
                   )}
                 </div>
               </div>
+
+              {/* Initiative Tracker */}
+              <div style={{ marginTop: '24px', background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '12px', padding: '16px' }}>
+                <InitiativeTracker theme={theme} campaignId={campaignId} combatants={selectedScenario?.combatants || []} />
+              </div>
             </div>
           )}
 
@@ -928,6 +937,14 @@ function GMScreen({ username }) {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Quick NPC Generator */}
+              <div style={{ marginTop: '20px', background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '12px', padding: '20px' }}>
+                <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '16px' }}>
+                  Quick NPC Generator
+                </h3>
+                <QuickNpcGenerator theme={theme} />
               </div>
             </div>
           )}
