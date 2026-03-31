@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 // Logo import removed for minimalist design
 import { 
   Sword, Users, BookOpen, Send, 
-  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap, Compass, UserCircle
+  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap, Compass, UserCircle, Upload, Music, Target, Volume2
 } from 'lucide-react';
 import DiceRoller from '@/components/DiceRoller';
+import DiceRoller3D from '@/components/ui/DiceRoller3D';
 import LootGenerator from '@/components/LootGenerator';
 import PartyInventory from '@/components/PartyInventory';
 import { QuickReferenceModal } from '@/components/QuickReference';
@@ -20,6 +21,12 @@ import QuickCombatModal from '@/components/QuickCombatModal';
 import PartyLocationTracker from '@/components/PartyLocationTracker';
 import NPCQuickReference from '@/components/NPCQuickReference';
 import TronBackground from '@/components/TronBackground';
+// New GM Tools
+import Soundboard from '@/components/gm/Soundboard';
+import LiveSessionMode from '@/components/gm/LiveSessionMode';
+import SmartSessionLog from '@/components/gm/SmartSessionLog';
+import StoryArcTracker from '@/components/gm/StoryArcTracker';
+import UploadTab from '@/components/gm/UploadTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -54,6 +61,18 @@ function GMScreen({ username }) {
   // Tab state - single tab for everything
   const [activeTab, setActiveTab] = useState('combat');
   const [showDicePanel, setShowDicePanel] = useState(true);
+  
+  // 3D Dice Roller state
+  const [show3DDice, setShow3DDice] = useState(false);
+  const [diceRolls, setDiceRolls] = useState([]);
+  const [diceLabel, setDiceLabel] = useState('');
+  const [diceModifier, setDiceModifier] = useState(0);
+  const [diceTotal, setDiceTotal] = useState(0);
+  const [diceCrit, setDiceCrit] = useState(false);
+  const [diceFumble, setDiceFumble] = useState(false);
+  
+  // Live Session Mode state
+  const [showLiveSession, setShowLiveSession] = useState(false);
 
   useEffect(() => {
     fetchAllData();
@@ -83,6 +102,39 @@ function GMScreen({ username }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  // 3D Dice Roll Function
+  const roll3DDice = (notation, label = '') => {
+    // Parse dice notation like "2d6", "1d20+5"
+    const match = notation.match(/(\d+)?d(\d+)([+-]\d+)?/i);
+    if (!match) return;
+    
+    const count = parseInt(match[1]) || 1;
+    const sides = parseInt(match[2]);
+    const modifier = parseInt(match[3]) || 0;
+    
+    const rolls = [];
+    let total = 0;
+    
+    for (let i = 0; i < count; i++) {
+      const result = Math.floor(Math.random() * sides) + 1;
+      rolls.push({ sides, result });
+      total += result;
+    }
+    
+    total += modifier;
+    
+    const isCrit = count === 1 && sides === 20 && rolls[0].result === 20;
+    const isFumble = count === 1 && sides === 20 && rolls[0].result === 1;
+    
+    setDiceRolls(rolls);
+    setDiceLabel(label || notation);
+    setDiceModifier(modifier);
+    setDiceTotal(total);
+    setDiceCrit(isCrit);
+    setDiceFumble(isFumble);
+    setShow3DDice(true);
   };
 
   // Navigate to Combat Page with scenario data
@@ -272,6 +324,9 @@ function GMScreen({ username }) {
     { id: 'dice', icon: Dices, label: 'Dice' },
     { id: 'party', icon: Users, label: 'Party' },
     { id: 'notes', icon: FileText, label: 'Notes' },
+    { id: 'story', icon: Target, label: 'Story Arcs' },
+    { id: 'sound', icon: Volume2, label: 'Soundboard' },
+    { id: 'uploads', icon: Upload, label: 'Uploads' },
   ];
 
   // GM Theme - Midnight Neon (Dark Purple/Violet)
@@ -1070,6 +1125,21 @@ function GMScreen({ username }) {
               </div>
             </div>
           )}
+
+          {/* STORY ARCS TAB */}
+          {activeTab === 'story' && (
+            <StoryArcTracker theme={theme} campaignId={campaignId} />
+          )}
+
+          {/* SOUNDBOARD TAB */}
+          {activeTab === 'sound' && (
+            <Soundboard theme={theme} campaignId={campaignId} />
+          )}
+
+          {/* UPLOADS TAB */}
+          {activeTab === 'uploads' && (
+            <UploadTab theme={theme} campaignId={campaignId} />
+          )}
           </div>
           
           {/* PERSISTENT DICE ROLLER PANEL */}
@@ -1120,18 +1190,15 @@ function GMScreen({ username }) {
               }}>
                 {/* Quick Roll Buttons */}
                 <div style={{ marginBottom: '16px' }}>
-                  <p style={{ color: theme.text.muted, fontSize: '11px', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>Quick Roll</p>
+                  <p style={{ color: theme.text.muted, fontSize: '11px', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>Quick Roll (3D)</p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
                     {['d4', 'd6', 'd8', 'd10', 'd12', 'd20'].map(die => (
                       <button
                         key={die}
-                        onClick={() => {
-                          const roll = Math.floor(Math.random() * parseInt(die.substring(1))) + 1;
-                          toast.success(`${die}: ${roll}`, { duration: 3000 });
-                        }}
+                        onClick={() => roll3DDice(`1${die}`, die.toUpperCase())}
                         style={{
                           padding: '10px 8px',
-                          background: 'rgba(139, 92, 246, 0.2)',
+                          background: 'rgba(138, 43, 226, 0.2)',
                           border: `1px solid ${theme.accent.primary}`,
                           borderRadius: '8px',
                           color: theme.accent.primary,
@@ -1141,11 +1208,11 @@ function GMScreen({ username }) {
                           transition: 'all 0.2s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(139, 92, 246, 0.4)';
+                          e.currentTarget.style.background = 'rgba(138, 43, 226, 0.4)';
                           e.currentTarget.style.transform = 'scale(1.05)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(139, 92, 246, 0.2)';
+                          e.currentTarget.style.background = 'rgba(138, 43, 226, 0.2)';
                           e.currentTarget.style.transform = 'scale(1)';
                         }}
                       >
@@ -1157,37 +1224,21 @@ function GMScreen({ username }) {
                 
                 {/* Common Rolls */}
                 <div style={{ marginBottom: '16px' }}>
-                  <p style={{ color: theme.text.muted, fontSize: '11px', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>Common Rolls</p>
+                  <p style={{ color: theme.text.muted, fontSize: '11px', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>Common Rolls (3D)</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {[
                       { label: 'Attack (d20)', dice: '1d20' },
-                      { label: 'Advantage (2d20 high)', dice: '2d20kh1' },
-                      { label: 'Disadvantage (2d20 low)', dice: '2d20kl1' },
+                      { label: 'Advantage', dice: '2d20' },
                       { label: 'Damage (2d6)', dice: '2d6' },
                       { label: 'Fireball (8d6)', dice: '8d6' },
                     ].map(({ label, dice }) => (
                       <button
                         key={dice}
-                        onClick={() => {
-                          // Simple dice roller
-                          const match = dice.match(/(\d+)d(\d+)/);
-                          if (match) {
-                            const numDice = parseInt(match[1]);
-                            const dieSize = parseInt(match[2]);
-                            let rolls = [];
-                            for (let i = 0; i < numDice; i++) {
-                              rolls.push(Math.floor(Math.random() * dieSize) + 1);
-                            }
-                            let result = rolls.reduce((a, b) => a + b, 0);
-                            if (dice.includes('kh1')) result = Math.max(...rolls);
-                            if (dice.includes('kl1')) result = Math.min(...rolls);
-                            toast.success(`${label}: ${result} (${rolls.join(', ')})`, { duration: 4000 });
-                          }
-                        }}
+                        onClick={() => roll3DDice(dice, label)}
                         style={{
                           padding: '10px 12px',
-                          background: 'rgba(245, 158, 11, 0.15)',
-                          border: `1px solid ${theme.accent.gm}`,
+                          background: 'rgba(138, 43, 226, 0.15)',
+                          border: `1px solid ${theme.accent.primary}`,
                           borderRadius: '8px',
                           color: theme.text.primary,
                           fontSize: '12px',
@@ -1197,10 +1248,10 @@ function GMScreen({ username }) {
                           transition: 'all 0.2s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(245, 158, 11, 0.3)';
+                          e.currentTarget.style.background = 'rgba(138, 43, 226, 0.3)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(245, 158, 11, 0.15)';
+                          e.currentTarget.style.background = 'rgba(138, 43, 226, 0.15)';
                         }}
                       >
                         {label}
@@ -1213,27 +1264,24 @@ function GMScreen({ username }) {
                 <div>
                   <p style={{ color: theme.text.muted, fontSize: '11px', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '1px' }}>Percentile</p>
                   <button
-                    onClick={() => {
-                      const roll = Math.floor(Math.random() * 100) + 1;
-                      toast.success(`d100: ${roll}%`, { duration: 3000 });
-                    }}
+                    onClick={() => roll3DDice('1d100', 'Percentile')}
                     style={{
                       width: '100%',
                       padding: '12px',
-                      background: 'rgba(236, 72, 153, 0.2)',
-                      border: `1px solid ${theme.accent.secondary}`,
+                      background: 'rgba(138, 43, 226, 0.2)',
+                      border: `1px solid ${theme.accent.primary}`,
                       borderRadius: '8px',
-                      color: theme.accent.secondary,
+                      color: theme.accent.primary,
                       fontSize: '14px',
                       fontWeight: '600',
                       cursor: 'pointer',
                       transition: 'all 0.2s'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(236, 72, 153, 0.4)';
+                      e.currentTarget.style.background = 'rgba(138, 43, 226, 0.4)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(236, 72, 153, 0.2)';
+                      e.currentTarget.style.background = 'rgba(138, 43, 226, 0.2)';
                     }}
                   >
                     Roll d100
@@ -1255,6 +1303,31 @@ function GMScreen({ username }) {
         players={players}
         customCreatures={customCreatures}
         onStartCombat={handleQuickCombatStart}
+      />
+      
+      {/* 3D Dice Roller */}
+      <DiceRoller3D
+        isOpen={show3DDice}
+        onClose={() => setShow3DDice(false)}
+        rolls={diceRolls}
+        label={diceLabel}
+        modifier={diceModifier}
+        total={diceTotal}
+        isCrit={diceCrit}
+        isFumble={diceFumble}
+      />
+      
+      {/* Live Session Mode Panel */}
+      <LiveSessionMode
+        theme={theme}
+        campaign={campaign}
+        players={players}
+        calendar={calendar}
+        onRollDice={roll3DDice}
+        onQuickCombat={() => setShowQuickCombat(true)}
+        onOpenTab={setActiveTab}
+        isActive={showLiveSession}
+        onToggle={() => setShowLiveSession(!showLiveSession)}
       />
     </div>
   );

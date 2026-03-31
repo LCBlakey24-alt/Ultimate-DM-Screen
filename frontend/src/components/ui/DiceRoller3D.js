@@ -60,14 +60,14 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
   if (!isOpen) return null;
 
   const getCritColor = () => {
-    if (isCrit) return '#F59E0B'; // Green for nat 20
+    if (isCrit) return '#F59E0B'; // Gold for nat 20
     if (isFumble) return '#ef4444'; // Red for nat 1
-    return '#ee006b'; // Pink default (new theme)
+    return '#4DD0E1'; // Cyan default (new theme)
   };
 
-  // New purple/pink theme colors for dice
+  // Theme-aware dice colors
   const getDiceColor = (sides) => {
-    return '#390292'; // All dice use main purple
+    return '#8A2BE2'; // Purple for GM theme
   };
 
   return createPortal(
@@ -79,7 +79,7 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'linear-gradient(135deg, rgba(57, 2, 146, 0.95), rgba(238, 0, 107, 0.9))',
+        background: 'linear-gradient(135deg, rgba(75, 0, 130, 0.95), rgba(138, 43, 226, 0.95))',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -90,7 +90,7 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
     >
       {/* Label */}
       <div style={{
-        fontFamily: "'Cinzel', serif",
+        fontFamily: "'Outfit', sans-serif",
         fontSize: '24px',
         color: '#94A3B8',
         marginBottom: '20px',
@@ -135,7 +135,7 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
             }}
           >
             <span style={{
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "'Outfit', sans-serif",
               fontSize: die.display >= 10 ? '42px' : '52px',
               fontWeight: '700',
               color: die.result === die.sides ? '#F59E0B' : die.result === 1 ? '#ef4444' : '#F8FAFC',
@@ -160,7 +160,7 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
             style={{
               width: '120px',
               textAlign: 'center',
-              fontFamily: "'Montserrat', sans-serif",
+              fontFamily: "'Manrope', sans-serif",
               fontSize: '14px',
               color: getDiceColor(die.sides),
               fontWeight: '600',
@@ -182,7 +182,7 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
         }}>
           {modifier !== 0 && (
             <div style={{
-              fontFamily: "'Montserrat', sans-serif",
+              fontFamily: "'Manrope', sans-serif",
               fontSize: '18px',
               color: '#94A3B8',
               marginBottom: '8px'
@@ -191,7 +191,7 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
             </div>
           )}
           <div style={{
-            fontFamily: "'Cinzel', serif",
+            fontFamily: "'Outfit', sans-serif",
             fontSize: '72px',
             fontWeight: '700',
             color: getCritColor(),
@@ -202,7 +202,7 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
           </div>
           {isCrit && (
             <div style={{
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "'Outfit', sans-serif",
               fontSize: '24px',
               color: '#F59E0B',
               textTransform: 'uppercase',
@@ -215,7 +215,7 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
           )}
           {isFumble && (
             <div style={{
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "'Outfit', sans-serif",
               fontSize: '24px',
               color: '#ef4444',
               textTransform: 'uppercase',
@@ -233,7 +233,7 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
       <div style={{
         position: 'absolute',
         bottom: '40px',
-        fontFamily: "'Montserrat', sans-serif",
+        fontFamily: "'Manrope', sans-serif",
         fontSize: '12px',
         color: '#64748b',
         letterSpacing: '0.1em'
