@@ -12,9 +12,9 @@ const API = `${BACKEND_URL}/api`;
 const theme = {
   bg: { primary: '#0F0A1E', surface: '#1A112E', panel: 'rgba(26, 17, 46, 0.95)' },
   text: { primary: '#F8FAFC', secondary: '#94A3B8', muted: '#64748B' },
-  border: 'rgba(139, 92, 246, 0.3)',
-  sunset: { purple: '#8B5CF6', pink: '#EC4899', gold: '#F59E0B' },
-  gradient: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)'
+  border: 'rgba(138, 43, 226, 0.3)',
+  sunset: { purple: '#8A2BE2', pink: '#4DD0E1', gold: '#F59E0B' },
+  gradient: 'linear-gradient(135deg, #8A2BE2 0%, #4DD0E1 50%, #F59E0B 100%)'
 };
 
 // Hit dice by class
@@ -269,7 +269,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
           maxWidth: '600px',
           maxHeight: '90vh',
           overflow: 'hidden',
-          boxShadow: '0 25px 80px rgba(139, 92, 246, 0.3)'
+          boxShadow: '0 25px 80px rgba(138, 43, 226, 0.3)'
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -352,7 +352,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
                   onClick={() => { setIsMulticlassing(false); setMulticlassClass(null); }}
                   style={{
                     padding: '20px',
-                    background: !isMulticlassing ? 'rgba(139, 92, 246, 0.2)' : 'rgba(15, 10, 30, 0.5)',
+                    background: !isMulticlassing ? 'rgba(138, 43, 226, 0.2)' : 'rgba(15, 10, 30, 0.5)',
                     border: `2px solid ${!isMulticlassing ? theme.sunset.purple : theme.border}`,
                     borderRadius: '12px',
                     cursor: 'pointer',
@@ -484,7 +484,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
                   onClick={() => setHpMethod('average')}
                   style={{
                     padding: '20px',
-                    background: hpMethod === 'average' ? 'rgba(139, 92, 246, 0.2)' : 'rgba(15, 10, 30, 0.5)',
+                    background: hpMethod === 'average' ? 'rgba(138, 43, 226, 0.2)' : 'rgba(15, 10, 30, 0.5)',
                     border: `2px solid ${hpMethod === 'average' ? theme.sunset.purple : theme.border}`,
                     borderRadius: '12px',
                     cursor: 'pointer',
@@ -562,7 +562,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
                           alignItems: 'center',
                           justifyContent: 'center',
                           margin: '0 auto',
-                          boxShadow: '0 10px 40px rgba(139, 92, 246, 0.4)',
+                          boxShadow: '0 10px 40px rgba(138, 43, 226, 0.4)',
                           transition: 'transform 0.2s'
                         }}
                         onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
@@ -580,7 +580,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
                         width: '120px',
                         height: '120px',
                         borderRadius: '16px',
-                        background: 'rgba(139, 92, 246, 0.2)',
+                        background: 'rgba(138, 43, 226, 0.2)',
                         border: `3px solid ${theme.sunset.purple}`,
                         display: 'flex',
                         alignItems: 'center',
@@ -697,7 +697,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
                   style={{
                     flex: 1,
                     padding: '16px',
-                    background: choiceType === 'asi' ? 'rgba(139, 92, 246, 0.2)' : 'rgba(15, 10, 30, 0.5)',
+                    background: choiceType === 'asi' ? 'rgba(138, 43, 226, 0.2)' : 'rgba(15, 10, 30, 0.5)',
                     border: `2px solid ${choiceType === 'asi' ? theme.sunset.purple : theme.border}`,
                     borderRadius: '10px',
                     cursor: 'pointer',
@@ -766,7 +766,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
                               style={{
                                 flex: 1,
                                 padding: '8px',
-                                background: isSelected1 ? theme.sunset.purple : 'rgba(139, 92, 246, 0.1)',
+                                background: isSelected1 ? theme.sunset.purple : 'rgba(138, 43, 226, 0.1)',
                                 border: 'none',
                                 borderRadius: '6px',
                                 color: isSelected1 ? '#fff' : theme.text.secondary,
@@ -878,7 +878,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
                   )}
                   
                   {isAsiLevel && choiceType === 'asi' && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', background: 'rgba(138, 43, 226, 0.1)', borderRadius: '8px' }}>
                       <span style={{ color: theme.text.secondary }}>Ability Increase</span>
                       <span style={{ color: theme.sunset.purple, fontWeight: '600' }}>
                         {ABILITY_SHORT[asiChoices.ability1]} +1, {ABILITY_SHORT[asiChoices.ability2]} +1

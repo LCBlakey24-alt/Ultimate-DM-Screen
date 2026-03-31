@@ -36,7 +36,7 @@ const PIN_TYPES = [
   { id: 'city', label: 'City', icon: Building, color: '#3B82F6' },
   { id: 'town', label: 'Town', icon: Home, color: '#22C55E' },
   { id: 'village', label: 'Village', icon: Home, color: '#84CC16' },
-  { id: 'landmark', label: 'Landmark', icon: Mountain, color: '#8B5CF6' },
+  { id: 'landmark', label: 'Landmark', icon: Mountain, color: '#8A2BE2' },
   { id: 'dungeon', label: 'Dungeon', icon: Mountain, color: '#EF4444' },
   { id: 'port', label: 'Port', icon: Waves, color: '#06B6D4' },
   { id: 'forest', label: 'Forest', icon: Trees, color: '#16A34A' },

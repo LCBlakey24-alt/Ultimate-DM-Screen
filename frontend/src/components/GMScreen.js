@@ -359,16 +359,45 @@ function GMScreen({ username }) {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: '#0B0B0D'
+      background: '#0B0B0D',
+      position: 'relative'
     }}>
-      {/* Gradient background overlay */}
+      {/* Gradient background - black at top, purple glow at bottom */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'radial-gradient(ellipse at 0% 0%, rgba(75, 0, 130, 0.2) 0%, transparent 50%), radial-gradient(ellipse at 100% 100%, rgba(138, 43, 226, 0.1) 0%, transparent 50%)',
+        background: `
+          linear-gradient(180deg, 
+            rgba(11, 11, 13, 1) 0%, 
+            rgba(11, 11, 13, 0.95) 40%, 
+            rgba(75, 0, 130, 0.2) 70%,
+            rgba(138, 43, 226, 0.15) 100%
+          )
+        `,
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
+      {/* Subtle corner glows */}
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        width: '50%',
+        height: '50%',
+        background: 'radial-gradient(ellipse at 0% 100%, rgba(138, 43, 226, 0.1) 0%, transparent 60%)',
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        right: 0,
+        width: '50%',
+        height: '50%',
+        background: 'radial-gradient(ellipse at 100% 100%, rgba(75, 0, 130, 0.1) 0%, transparent 60%)',
         pointerEvents: 'none',
         zIndex: 0
       }} />
@@ -397,7 +426,7 @@ function GMScreen({ username }) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <Button onClick={() => setShowQuickRef(true)} style={{ display: 'flex', gap: '6px', padding: '10px 16px', fontSize: '14px', background: 'rgba(139, 92, 246, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary }}>
+            <Button onClick={() => setShowQuickRef(true)} style={{ display: 'flex', gap: '6px', padding: '10px 16px', fontSize: '14px', background: 'rgba(138, 43, 226, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary }}>
               <BookOpen size={16} /> Reference
             </Button>
             <Button onClick={handleEndSession} style={{ display: 'flex', gap: '6px', padding: '10px 16px', fontSize: '14px', background: theme.gradient, border: 'none', borderRadius: '10px', color: theme.text.primary }}>
@@ -523,7 +552,7 @@ function GMScreen({ username }) {
             {activeTab === 'combat' && (
               <div>
                 <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Swords size={24} style={{ color: '#EF4444' }} /> Combat Control
+                  <Swords size={24} style={{ color: theme.accent.primary }} /> Combat Control
                 </h2>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
@@ -597,7 +626,7 @@ function GMScreen({ username }) {
                       onClick={quickStartCombat} 
                       data-testid="quick-combat-btn"
                       disabled={players.length === 0}
-                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: 'rgba(139, 92, 246, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary, fontSize: '15px' }}
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: 'rgba(138, 43, 226, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary, fontSize: '15px' }}
                     >
                       <Users size={16} /> Quick Start with Players ({players.length})
                     </Button>
@@ -635,7 +664,7 @@ function GMScreen({ username }) {
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                         {selectedScenario.combatants?.slice(0, 6).map(c => (
                           <div key={c.id} style={{ 
-                            background: c.type === 'player' ? 'rgba(139, 92, 246, 0.2)' : 'rgba(239, 68, 68, 0.2)', 
+                            background: c.type === 'player' ? 'rgba(138, 43, 226, 0.2)' : 'rgba(239, 68, 68, 0.2)', 
                             border: `1px solid ${c.type === 'player' ? theme.accent.primary : '#EF4444'}`,
                             padding: '6px 10px',
                             borderRadius: '6px',
@@ -765,7 +794,7 @@ function GMScreen({ username }) {
                   {/* Generated Name Display */}
                   {generatedName && (
                     <div style={{ 
-                      background: 'rgba(139, 92, 246, 0.1)',
+                      background: 'rgba(138, 43, 226, 0.1)',
                       border: `1px solid ${theme.accent.primary}`,
                       borderRadius: '12px',
                       padding: '24px',
@@ -885,13 +914,13 @@ function GMScreen({ username }) {
           {activeTab === 'monsters' && (
             <div>
               <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Skull size={24} style={{ color: '#EF4444' }} /> Monsters & Custom Creatures
+                <Skull size={24} style={{ color: theme.accent.primary }} /> Monsters & Custom Creatures
               </h2>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
                 {/* Left: Monster Lookup */}
                 <div style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '12px', padding: '20px' }}>
-                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: '#EF4444', fontWeight: '600', marginBottom: '16px' }}>
+                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.primary, fontWeight: '600', marginBottom: '16px' }}>
                     SRD Monster Lookup
                   </h3>
                   <MonsterLookup />
@@ -990,7 +1019,7 @@ function GMScreen({ username }) {
                           <div style={{ fontSize: '12px', color: theme.accent.secondary, fontWeight: '500' }}>HP</div>
                           <div style={{ fontSize: '18px', color: theme.text.primary, fontWeight: '600' }}>{player.hp || player.max_hp || '?'}/{player.max_hp || '?'}</div>
                         </div>
-                        <div style={{ background: 'rgba(139, 92, 246, 0.15)', border: `1px solid ${theme.accent.primary}`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
+                        <div style={{ background: 'rgba(138, 43, 226, 0.15)', border: `1px solid ${theme.accent.primary}`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
                           <div style={{ fontSize: '12px', color: theme.accent.primary, fontWeight: '500' }}>AC</div>
                           <div style={{ fontSize: '18px', color: theme.text.primary, fontWeight: '600' }}>{player.ac || '?'}</div>
                         </div>
@@ -1087,7 +1116,7 @@ function GMScreen({ username }) {
                         display: 'flex', 
                         gap: '8px', 
                         justifyContent: 'center', 
-                        background: 'rgba(139, 92, 246, 0.2)', 
+                        background: 'rgba(138, 43, 226, 0.2)', 
                         color: theme.accent.secondary, 
                         border: `1px solid ${theme.accent.secondary}`, 
                         borderRadius: '10px', 
@@ -1315,19 +1344,7 @@ function GMScreen({ username }) {
         total={diceTotal}
         isCrit={diceCrit}
         isFumble={diceFumble}
-      />
-      
-      {/* Live Session Mode Panel */}
-      <LiveSessionMode
-        theme={theme}
-        campaign={campaign}
-        players={players}
-        calendar={calendar}
-        onRollDice={roll3DDice}
-        onQuickCombat={() => setShowQuickCombat(true)}
-        onOpenTab={setActiveTab}
-        isActive={showLiveSession}
-        onToggle={() => setShowLiveSession(!showLiveSession)}
+        theme="gm"
       />
     </div>
   );

@@ -189,7 +189,7 @@ function CampaignDashboard({ username, onLogout }) {
           position: 'relative',
           padding: isNested ? '10px 16px 10px 32px' : '12px 16px',
           border: 'none',
-          background: isActive ? theme.gradient : (isHovered ? 'rgba(139, 92, 246, 0.15)' : 'transparent'),
+          background: isActive ? theme.gradient : (isHovered ? 'rgba(138, 43, 226, 0.15)' : 'transparent'),
           color: isActive ? theme.text.white : (isHovered ? theme.text.white : theme.text.secondary),
           fontWeight: '500',
           fontSize: isNested ? '13px' : '14px',
@@ -354,7 +354,7 @@ function CampaignDashboard({ username, onLogout }) {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '8px',
-                background: 'rgba(139, 92, 246, 0.2)',
+                background: 'rgba(138, 43, 226, 0.2)',
                 border: `1px solid ${theme.accent.primary}`,
                 color: theme.accent.primary,
                 fontSize: '13px',
@@ -606,7 +606,7 @@ function CampaignDashboard({ username, onLogout }) {
             <div style={{ display: 'grid', gap: '20px' }}>
               {/* Custom Ruleset Upload */}
               <div style={{ 
-                background: 'rgba(139, 92, 246, 0.1)', 
+                background: 'rgba(138, 43, 226, 0.1)', 
                 border: `1px solid ${theme.accent.primary}`,
                 borderRadius: '12px',
                 padding: '20px'

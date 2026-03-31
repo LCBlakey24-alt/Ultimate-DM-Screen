@@ -491,9 +491,9 @@ function CombatPage() {
   const theme = {
     bg: { primary: '#0F0A1E', surface: '#1A112E', panel: 'rgba(26, 17, 46, 0.95)' },
     text: { primary: '#F8FAFC', secondary: '#94A3B8', muted: '#64748B' },
-    border: 'rgba(139, 92, 246, 0.3)',
-    sunset: { purple: '#8B5CF6', pink: '#EC4899', gold: '#F59E0B' },
-    gradient: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)'
+    border: 'rgba(138, 43, 226, 0.3)',
+    sunset: { purple: '#8A2BE2', pink: '#4DD0E1', gold: '#F59E0B' },
+    gradient: 'linear-gradient(135deg, #8A2BE2 0%, #4DD0E1 50%, #F59E0B 100%)'
   };
 
   return (
@@ -517,7 +517,7 @@ function CombatPage() {
         alignItems: 'center'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Button onClick={endCombat} style={{ background: 'rgba(139, 92, 246, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '8px 12px' }}><ArrowLeft size={20} /></Button>
+          <Button onClick={endCombat} style={{ background: 'rgba(138, 43, 226, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '8px 12px' }}><ArrowLeft size={20} /></Button>
           <div>
             <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Sword size={22} style={{ color: '#EF4444' }} />
@@ -608,7 +608,7 @@ function CombatPage() {
                         {c.type === 'player' ? 'Player' : 'Enemy'} • Rolled: {c.initiativeRoll}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(139, 92, 246, 0.1)', padding: '6px 12px', borderRadius: '8px', border: `1px solid ${theme.border}` }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(138, 43, 226, 0.1)', padding: '6px 12px', borderRadius: '8px', border: `1px solid ${theme.border}` }}>
                       <Shield size={14} style={{ color: theme.sunset.gold }} />
                       <span style={{ fontWeight: '600', fontSize: '15px', color: theme.text.primary }}>{c.ac}</span>
                     </div>

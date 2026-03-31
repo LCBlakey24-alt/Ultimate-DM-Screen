@@ -56,9 +56,9 @@ const SPELL_SCHOOLS = {
   'Abjuration': '#3B82F6',
   'Conjuration': '#F59E0B',
   'Divination': '#A855F7',
-  'Enchantment': '#EC4899',
+  'Enchantment': '#8A2BE2',
   'Evocation': '#EF4444',
-  'Illusion': '#8B5CF6',
+  'Illusion': '#8A2BE2',
   'Necromancy': '#6B7280',
   'Transmutation': '#22C55E',
 };

@@ -66,11 +66,11 @@ test.describe('Theme Redesign - Dual Theme System', () => {
       await expect(page.locator('text=My Campaigns')).toBeVisible();
       await expect(page.locator('text=ROOKIE QUEST KEEPER').first()).toBeVisible();
       
-      // Verify GM Side section
+      // Verify GM Side section using role selector
       await expect(page.getByRole('heading', { name: 'GM SIDE' })).toBeVisible();
       
-      // Verify Player Features section
-      await expect(page.locator('text=Player Features')).toBeVisible();
+      // Verify Player Side section (was "Player Features", now "PLAYER SIDE")
+      await expect(page.locator('text=PLAYER SIDE').first()).toBeVisible();
       
       await page.screenshot({ path: 'theme-unified-dashboard.jpeg', quality: 20, fullPage: false });
     });

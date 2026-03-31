@@ -96,7 +96,7 @@ const GUIDE_CONTENT = {
       "Add major events, milestones, and story beats to keep everything organized.",
       "Perfect for session recaps and remembering key moments!"
     ],
-    color: '#8B5CF6'
+    color: '#8A2BE2'
   },
   // Consolidated Combat tab
   'combat': {
@@ -120,7 +120,7 @@ const GUIDE_CONTENT = {
       "Essential tools for keeping your session running smoothly!",
       "Search and filter through thousands of 5e items and spells."
     ],
-    color: '#8B5CF6'
+    color: '#8A2BE2'
   },
   // Consolidated Inventory tab
   'inventory': {
@@ -162,7 +162,7 @@ const GUIDE_CONTENT = {
       "Draw relationship lines: allies, enemies, family, rivals.",
       "Great for tracking political intrigue and social dynamics!"
     ],
-    color: '#8B5CF6'
+    color: '#8A2BE2'
   },
   'timeline': {
     title: "Session Timeline",
@@ -172,7 +172,7 @@ const GUIDE_CONTENT = {
       "Add events, milestones, and key moments.",
       "Never forget what happened - great for recaps!"
     ],
-    color: '#8B5CF6'
+    color: '#8A2BE2'
   },
   'random-gen': {
     title: "Random Generators",
@@ -182,7 +182,7 @@ const GUIDE_CONTENT = {
       "Perfect for improv moments when you need something fast.",
       "Save favorites to use later in your campaign."
     ],
-    color: '#8B5CF6'
+    color: '#8A2BE2'
   },
   'gods': {
     title: "Pantheon Manager",
@@ -252,7 +252,7 @@ const GUIDE_CONTENT = {
       "Add key events and let Rook fill in the details.",
       "Share recaps with your players to keep everyone caught up."
     ],
-    color: '#8B5CF6'
+    color: '#8A2BE2'
   },
   'calendar': {
     title: "Campaign Calendar",

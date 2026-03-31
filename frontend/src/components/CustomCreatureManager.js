@@ -329,7 +329,7 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
 
       {/* ROOK AI Generator */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%)',
+        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(138, 43, 226, 0.1) 100%)',
         border: '2px solid #a855f7',
         borderRadius: '16px',
         padding: '20px',
@@ -552,7 +552,7 @@ function CustomCreatureManager({ campaignId, onSelectCreature, isOpen, onClose, 
               data-testid={`creature-card-${creature.id}`}
               style={{
                 background: justCreated === creature.id 
-                  ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%)'
+                  ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(138, 43, 226, 0.1) 100%)'
                   : 'rgba(0, 0, 0, 0.3)',
                 border: justCreated === creature.id ? '2px solid #a855f7' : '2px solid #374151',
                 borderRadius: '12px',

@@ -30,13 +30,13 @@ const theme = {
 const EVENT_TYPES = [
   { id: 'session', label: 'Session', icon: Calendar, color: '#06B6D4' },
   { id: 'combat', label: 'Combat', icon: Swords, color: '#D97706' },
-  { id: 'npc_met', label: 'NPC Met', icon: Users, color: '#8B5CF6' },
+  { id: 'npc_met', label: 'NPC Met', icon: Users, color: '#8A2BE2' },
   { id: 'location', label: 'Location', icon: MapPin, color: '#22C55E' },
   { id: 'quest', label: 'Quest', icon: Flag, color: '#F59E0B' },
   { id: 'death', label: 'Death', icon: Skull, color: '#6B7280' },
   { id: 'level_up', label: 'Level Up', icon: Star, color: '#06B6D4' },
   { id: 'major', label: 'Major Event', icon: Crown, color: '#F59E0B' },
-  { id: 'milestone', label: 'Milestone', icon: Milestone, color: '#EC4899' }
+  { id: 'milestone', label: 'Milestone', icon: Milestone, color: '#4DD0E1' }
 ];
 
 function SessionTimeline({ campaignId }) {

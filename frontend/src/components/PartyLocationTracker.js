@@ -34,7 +34,7 @@ const PIN_TYPES = {
   city: { icon: Building, color: '#06B6D4', label: 'City' },
   town: { icon: Home, color: '#22C55E', label: 'Town' },
   village: { icon: Home, color: '#84CC16', label: 'Village' },
-  landmark: { icon: Mountain, color: '#8B5CF6', label: 'Landmark' },
+  landmark: { icon: Mountain, color: '#8A2BE2', label: 'Landmark' },
   dungeon: { icon: Mountain, color: '#D97706', label: 'Dungeon' },
   port: { icon: Waves, color: '#06B6D4', label: 'Port' },
   forest: { icon: Trees, color: '#16A34A', label: 'Forest' },
@@ -44,7 +44,7 @@ const PIN_TYPES = {
 const POI_TYPES = {
   shop: { icon: Store, color: '#F59E0B', label: 'Shop' },
   tavern: { icon: Beer, color: '#F97316', label: 'Tavern/Inn' },
-  temple: { icon: Church, color: '#8B5CF6', label: 'Temple' },
+  temple: { icon: Church, color: '#8A2BE2', label: 'Temple' },
   blacksmith: { icon: Hammer, color: '#D97706', label: 'Blacksmith' },
   guild: { icon: Building, color: '#06B6D4', label: 'Guild Hall' },
   library: { icon: BookOpen, color: '#06B6D4', label: 'Library' },

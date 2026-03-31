@@ -33,8 +33,8 @@ const theme = {
 const ITEM_TYPES = {
   weapon: { icon: Swords, color: '#D97706' },
   armor: { icon: Shield, color: '#06B6D4' },
-  potion: { icon: Heart, color: '#EC4899' },
-  scroll: { icon: Wand2, color: '#8B5CF6' },
+  potion: { icon: Heart, color: '#4DD0E1' },
+  scroll: { icon: Wand2, color: '#8A2BE2' },
   wondrous: { icon: Sparkles, color: '#F59E0B' },
   treasure: { icon: Gem, color: '#EAB308' },
   misc: { icon: Package, color: '#6B7280' },
@@ -280,7 +280,7 @@ function PlayerPartyLoot({ campaignId, characterId, characterName }) {
                                 fontSize: '10px',
                                 padding: '2px 6px',
                                 background: item.rarity === 'rare' ? '#06B6D4' :
-                                           item.rarity === 'very_rare' ? '#8B5CF6' :
+                                           item.rarity === 'very_rare' ? '#8A2BE2' :
                                            item.rarity === 'legendary' ? '#F59E0B' :
                                            item.rarity === 'uncommon' ? '#22C55E' : theme.muted,
                                 color: '#fff',

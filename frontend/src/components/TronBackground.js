@@ -116,7 +116,7 @@ function TronBackground({
             ? 'linear-gradient(to top, rgba(6, 182, 212, 0.08) 0%, transparent 100%)'
             : variant === 'red'
             ? 'linear-gradient(to top, rgba(225, 29, 72, 0.08) 0%, transparent 100%)'
-            : 'linear-gradient(to top, rgba(139, 92, 246, 0.05) 0%, transparent 100%)',
+            : 'linear-gradient(to top, rgba(138, 43, 226, 0.05) 0%, transparent 100%)',
           pointerEvents: 'none'
         }}
       />

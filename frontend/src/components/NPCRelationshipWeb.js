@@ -31,8 +31,8 @@ const theme = {
 const RELATIONSHIP_TYPES = [
   { id: 'ally', label: 'Ally', color: '#22C55E', icon: HandshakeIcon },
   { id: 'enemy', label: 'Enemy', color: '#D97706', icon: Swords },
-  { id: 'family', label: 'Family', color: '#8B5CF6', icon: Heart },
-  { id: 'romantic', label: 'Romantic', color: '#EC4899', icon: Heart },
+  { id: 'family', label: 'Family', color: '#8A2BE2', icon: Heart },
+  { id: 'romantic', label: 'Romantic', color: '#4DD0E1', icon: Heart },
   { id: 'business', label: 'Business', color: '#F59E0B', icon: Crown },
   { id: 'rival', label: 'Rival', color: '#F97316', icon: AlertCircle },
   { id: 'neutral', label: 'Neutral', color: '#6B7280', icon: HelpCircle },

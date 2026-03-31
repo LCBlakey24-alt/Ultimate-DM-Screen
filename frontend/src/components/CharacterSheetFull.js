@@ -9,7 +9,7 @@ import {
 import LevelUpWizard from './LevelUpWizard';
 import CharacterInventory from './CharacterInventory';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, SPELL_DATABASE } from '../data/spellDatabase';
-import { useDiceRoller } from './ui/DiceRoller3D';
+import DiceRoller3D from './ui/DiceRoller3D';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -231,8 +231,45 @@ export default function CharacterSheetFull() {
   // Spell slot tracking - { 1: 0, 2: 0, ... } = used slots per level
   const [usedSlots, setUsedSlots] = useState({});
   
-  // 3D Dice Roller
-  const { rollState, rollDice, closeRoller, DiceRoller3D } = useDiceRoller();
+  // 3D Dice Roller state
+  const [show3DDice, setShow3DDice] = useState(false);
+  const [diceRolls, setDiceRolls] = useState([]);
+  const [diceLabel, setDiceLabel] = useState('');
+  const [diceModifier, setDiceModifier] = useState(0);
+  const [diceTotal, setDiceTotal] = useState(0);
+  const [diceCrit, setDiceCrit] = useState(false);
+  const [diceFumble, setDiceFumble] = useState(false);
+
+  // 3D Dice Roll Function
+  const rollDice = (notation, label = '', modifier = 0) => {
+    const match = notation.match(/(\d+)?d(\d+)/i);
+    if (!match) return;
+    
+    const count = parseInt(match[1]) || 1;
+    const sides = parseInt(match[2]);
+    
+    const rolls = [];
+    let total = 0;
+    
+    for (let i = 0; i < count; i++) {
+      const result = Math.floor(Math.random() * sides) + 1;
+      rolls.push({ sides, result });
+      total += result;
+    }
+    
+    total += modifier;
+    
+    const isCrit = count === 1 && sides === 20 && rolls[0].result === 20;
+    const isFumble = count === 1 && sides === 20 && rolls[0].result === 1;
+    
+    setDiceRolls(rolls);
+    setDiceLabel(label || notation);
+    setDiceModifier(modifier);
+    setDiceTotal(total);
+    setDiceCrit(isCrit);
+    setDiceFumble(isFumble);
+    setShow3DDice(true);
+  };
 
   useEffect(() => {
     if (characterId) fetchCharacter();
@@ -356,14 +393,44 @@ export default function CharacterSheetFull() {
     position: 'relative'
   };
 
-  // Background gradient overlay
+  // Background gradient overlay - black at top, blue/cyan glow at bottom
   const bgOverlayStyle = {
     position: 'fixed',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'radial-gradient(ellipse at 0% 100%, rgba(0, 102, 255, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 100% 0%, rgba(77, 208, 225, 0.1) 0%, transparent 50%)',
+    background: `
+      linear-gradient(180deg, 
+        rgba(5, 10, 48, 1) 0%, 
+        rgba(5, 10, 48, 0.95) 40%, 
+        rgba(0, 102, 255, 0.15) 70%,
+        rgba(77, 208, 225, 0.12) 100%
+      )
+    `,
+    pointerEvents: 'none',
+    zIndex: 0
+  };
+
+  // Subtle corner glows
+  const bottomLeftGlow = {
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    width: '50%',
+    height: '50%',
+    background: 'radial-gradient(ellipse at 0% 100%, rgba(0, 102, 255, 0.1) 0%, transparent 60%)',
+    pointerEvents: 'none',
+    zIndex: 0
+  };
+
+  const bottomRightGlow = {
+    position: 'fixed',
+    bottom: 0,
+    right: 0,
+    width: '50%',
+    height: '50%',
+    background: 'radial-gradient(ellipse at 100% 100%, rgba(77, 208, 225, 0.08) 0%, transparent 60%)',
     pointerEvents: 'none',
     zIndex: 0
   };
@@ -390,11 +457,11 @@ export default function CharacterSheetFull() {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '12px 16px',
-    background: type === 'attack' ? 'rgba(239, 68, 68, 0.15)' : 
-                type === 'spell' ? 'rgba(77, 208, 225, 0.15)' :
+    background: type === 'attack' ? 'rgba(77, 208, 225, 0.15)' : 
+                type === 'spell' ? 'rgba(0, 102, 255, 0.15)' :
                 type === 'heal' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-    border: `1px solid ${type === 'attack' ? 'rgba(239, 68, 68, 0.3)' : 
-             type === 'spell' ? 'rgba(77, 208, 225, 0.3)' :
+    border: `1px solid ${type === 'attack' ? 'rgba(77, 208, 225, 0.3)' : 
+             type === 'spell' ? 'rgba(0, 102, 255, 0.3)' :
              type === 'heal' ? 'rgba(16, 185, 129, 0.3)' : theme.border}`,
     borderRadius: '8px',
     cursor: 'pointer',
@@ -428,6 +495,9 @@ export default function CharacterSheetFull() {
     <div style={pageStyle}>
       {/* Background gradient overlay */}
       <div style={bgOverlayStyle} />
+      {/* Corner glows */}
+      <div style={bottomLeftGlow} />
+      <div style={bottomRightGlow} />
       
       {/* Header - Fixed */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexShrink: 0, position: 'relative', zIndex: 1 }}>
@@ -557,23 +627,23 @@ export default function CharacterSheetFull() {
                     alignItems: 'center',
                     padding: '10px 12px',
                     marginBottom: '4px',
-                    background: isProficient ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
-                    border: isProficient ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid transparent',
+                    background: isProficient ? 'rgba(138, 43, 226, 0.15)' : 'transparent',
+                    border: isProficient ? '1px solid rgba(138, 43, 226, 0.4)' : '1px solid transparent',
                     borderRadius: '6px',
                     color: isProficient ? '#a78bfa' : theme.text.secondary,
                     fontSize: '14px',
                     cursor: 'pointer',
                     textAlign: 'left',
                     transition: 'all 0.2s',
-                    boxShadow: isProficient ? '0 0 10px rgba(139, 92, 246, 0.3)' : 'none'
+                    boxShadow: isProficient ? '0 0 10px rgba(138, 43, 226, 0.3)' : 'none'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(139, 92, 246, 0.25)';
-                    e.currentTarget.style.boxShadow = '0 0 15px rgba(139, 92, 246, 0.4)';
+                    e.currentTarget.style.background = 'rgba(138, 43, 226, 0.25)';
+                    e.currentTarget.style.boxShadow = '0 0 15px rgba(138, 43, 226, 0.4)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = isProficient ? 'rgba(139, 92, 246, 0.15)' : 'transparent';
-                    e.currentTarget.style.boxShadow = isProficient ? '0 0 10px rgba(139, 92, 246, 0.3)' : 'none';
+                    e.currentTarget.style.background = isProficient ? 'rgba(138, 43, 226, 0.15)' : 'transparent';
+                    e.currentTarget.style.boxShadow = isProficient ? '0 0 10px rgba(138, 43, 226, 0.3)' : 'none';
                   }}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -781,7 +851,7 @@ export default function CharacterSheetFull() {
 
                 {/* Reactions Box */}
                 <div style={{ 
-                  background: 'rgba(139, 92, 246, 0.05)', 
+                  background: 'rgba(138, 43, 226, 0.05)', 
                   border: '1px solid rgba(77, 208, 225, 0.2)', 
                   borderRadius: '12px', 
                   padding: '14px',
@@ -859,7 +929,7 @@ export default function CharacterSheetFull() {
                               onClick={() => setUsedSlots({})}
                               style={{
                                 background: 'rgba(77, 208, 225, 0.2)',
-                                border: '1px solid rgba(139, 92, 246, 0.3)',
+                                border: '1px solid rgba(138, 43, 226, 0.3)',
                                 borderRadius: '4px',
                                 padding: '4px 8px',
                                 fontSize: '10px',
@@ -1150,14 +1220,15 @@ export default function CharacterSheetFull() {
       
       {/* 3D Dice Roller Overlay */}
       <DiceRoller3D 
-        isOpen={rollState.isOpen}
-        onClose={closeRoller}
-        rolls={rollState.rolls}
-        label={rollState.label}
-        modifier={rollState.modifier}
-        total={rollState.total}
-        isCrit={rollState.isCrit}
-        isFumble={rollState.isFumble}
+        isOpen={show3DDice}
+        onClose={() => setShow3DDice(false)}
+        rolls={diceRolls}
+        label={diceLabel}
+        modifier={diceModifier}
+        total={diceTotal}
+        isCrit={diceCrit}
+        isFumble={diceFumble}
+        theme="player"
       />
     </div>
   );

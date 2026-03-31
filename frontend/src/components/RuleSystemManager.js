@@ -32,8 +32,8 @@ const theme = {
 const CONTENT_TYPES = [
   { id: 'classes', label: 'Classes', icon: Users, color: '#06B6D4' },
   { id: 'subclasses', label: 'Subclasses', icon: Users, color: '#6366F1' },
-  { id: 'races', label: 'Races/Species', icon: Users, color: '#8B5CF6' },
-  { id: 'spells', label: 'Spells', icon: Sparkles, color: '#EC4899' },
+  { id: 'races', label: 'Races/Species', icon: Users, color: '#8A2BE2' },
+  { id: 'spells', label: 'Spells', icon: Sparkles, color: '#4DD0E1' },
   { id: 'items', label: 'Items', icon: Package, color: '#F59E0B' },
   { id: 'feats', label: 'Feats', icon: Shield, color: '#22C55E' },
   { id: 'monsters', label: 'Monsters', icon: Swords, color: '#D97706' },

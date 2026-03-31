@@ -42,7 +42,7 @@ const UPLOAD_TYPES = [
     accept: 'audio/*',
     description: 'Background music, sound effects, ambient audio',
     endpoint: '/campaigns/{id}/audio',
-    color: '#EC4899'
+    color: '#4DD0E1'
   },
   {
     id: 'misc',

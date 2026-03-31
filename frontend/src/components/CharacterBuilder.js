@@ -26,9 +26,9 @@ const DRAFT_KEY = "rq_character_builder_draft_v1";
 // Theme colors
 const theme = {
   bg: { primary: '#0F0A1E', surface: '#1A112E', elevated: '#2E1F45' },
-  sunset: { purple: '#8B5CF6', pink: '#EC4899', gold: '#F59E0B' },
+  sunset: { purple: '#8A2BE2', pink: '#4DD0E1', gold: '#F59E0B' },
   text: { primary: '#F8FAFC', secondary: '#94A3B8', muted: '#64748B' },
-  border: 'rgba(139, 92, 246, 0.3)'
+  border: 'rgba(138, 43, 226, 0.3)'
 };
 
 const formatAbility = (ability) => ability.slice(0, 3).toUpperCase();
@@ -358,7 +358,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
   const methodBtnStyle = (active) => ({
     flex: 1,
     padding: '12px 16px',
-    background: active ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' : 'rgba(139, 92, 246, 0.1)',
+    background: active ? 'linear-gradient(135deg, #8A2BE2, #4DD0E1)' : 'rgba(138, 43, 226, 0.1)',
     border: active ? 'none' : `1px solid ${theme.border}`,
     borderRadius: '10px',
     color: theme.text.primary,
@@ -382,7 +382,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
     justifyContent: 'center',
     gap: '8px',
     padding: '10px 16px',
-    background: 'rgba(139, 92, 246, 0.1)',
+    background: 'rgba(138, 43, 226, 0.1)',
     borderRadius: '8px',
     fontSize: '14px'
   };
@@ -413,7 +413,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             </div>
           ) : (
             <>
-          <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: '2rem', marginBottom: '8px', background: 'linear-gradient(135deg, #8B5CF6, #EC4899, #F59E0B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: '2rem', marginBottom: '8px', background: 'linear-gradient(135deg, #8A2BE2, #4DD0E1, #F59E0B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             {isEditMode ? 'Edit Character' : 'Create Character'}
           </h1>
           <p style={{ color: theme.text.muted, marginBottom: '32px' }}>{isEditMode ? 'Modify your hero\'s details' : 'Build your hero for the adventure ahead'}</p>
@@ -584,7 +584,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                 <button
                   type="button"
                   onClick={() => setMethodAndStats("roll")}
-                  style={{ marginBottom: '20px', padding: '10px 20px', background: 'rgba(139, 92, 246, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.primary, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                  style={{ marginBottom: '20px', padding: '10px 20px', background: 'rgba(138, 43, 226, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.primary, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
                   <Dices size={16} /> Re-roll All Stats
                 </button>
@@ -685,7 +685,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
               style={{
                 width: '100%',
                 padding: '16px',
-                background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)',
+                background: 'linear-gradient(135deg, #8A2BE2 0%, #4DD0E1 50%, #F59E0B 100%)',
                 border: 'none',
                 borderRadius: '14px',
                 color: 'white',

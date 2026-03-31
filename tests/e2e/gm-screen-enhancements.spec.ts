@@ -235,7 +235,9 @@ test.describe('GM Screen Enhancements', () => {
     await page.screenshot({ path: 'all-tabs-verified.jpeg', quality: 20, fullPage: false });
   });
 
-  test('Live Session Mode toggle button is visible', async ({ page }) => {
+  // NOTE: Live Session Mode floating panel was removed and merged into GM Screen
+  // The floating toggle button no longer exists - this test is now obsolete
+  test.skip('Live Session Mode toggle button is visible (REMOVED - merged into GM Screen)', async ({ page }) => {
     await loginAndNavigateToGMScreen(page);
     
     // Remove Emergent badge that may block clicks

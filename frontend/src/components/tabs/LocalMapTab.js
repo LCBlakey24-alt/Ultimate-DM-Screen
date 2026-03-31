@@ -30,7 +30,7 @@ const theme = {
 const POI_TYPES = [
   { id: 'shop', label: 'Shop', icon: Store, color: '#F59E0B' },
   { id: 'tavern', label: 'Tavern/Inn', icon: Beer, color: '#F97316' },
-  { id: 'temple', label: 'Temple', icon: Church, color: '#8B5CF6' },
+  { id: 'temple', label: 'Temple', icon: Church, color: '#8A2BE2' },
   { id: 'blacksmith', label: 'Blacksmith', icon: Hammer, color: '#EF4444' },
   { id: 'guild', label: 'Guild Hall', icon: Building, color: '#3B82F6' },
   { id: 'library', label: 'Library', icon: BookOpen, color: '#06B6D4' },

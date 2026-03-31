@@ -109,7 +109,7 @@ export default function AuthPage({ onLogin }) {
     width: '100%',
     padding: '14px 16px 14px 48px',
     background: 'rgba(15, 10, 30, 0.6)',
-    border: '1px solid rgba(139, 92, 246, 0.3)',
+    border: '1px solid rgba(138, 43, 226, 0.3)',
     borderRadius: '12px',
     color: '#F8FAFC',
     fontSize: '15px',
@@ -127,7 +127,7 @@ export default function AuthPage({ onLogin }) {
     left: '16px',
     top: '50%',
     transform: 'translateY(-50%)',
-    color: '#8B5CF6'
+    color: '#8A2BE2'
   };
 
   return (
@@ -204,10 +204,10 @@ export default function AuthPage({ onLogin }) {
           background: 'rgba(10, 17, 64, 0.85)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(139, 92, 246, 0.3)',
+          border: '1px solid rgba(138, 43, 226, 0.3)',
           borderRadius: '24px',
           padding: '40px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.15)'
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 60px rgba(138, 43, 226, 0.15)'
         }}>
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
@@ -243,7 +243,7 @@ export default function AuthPage({ onLogin }) {
                   data-testid="login-email"
                   style={inputStyle}
                   onFocus={(e) => e.target.style.borderColor = 'rgba(236, 72, 153, 0.6)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(139, 92, 246, 0.3)'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(138, 43, 226, 0.3)'}
                 />
               </div>
               
@@ -257,7 +257,7 @@ export default function AuthPage({ onLogin }) {
                   data-testid="login-password"
                   style={inputStyle}
                   onFocus={(e) => e.target.style.borderColor = 'rgba(236, 72, 153, 0.6)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(139, 92, 246, 0.3)'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(138, 43, 226, 0.3)'}
                 />
               </div>
 
@@ -267,7 +267,7 @@ export default function AuthPage({ onLogin }) {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#8B5CF6',
+                  color: '#8A2BE2',
                   fontSize: '13px',
                   cursor: 'pointer',
                   marginBottom: '24px',
@@ -312,7 +312,7 @@ export default function AuthPage({ onLogin }) {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#EC4899',
+                    color: '#4DD0E1',
                     fontWeight: '600',
                     cursor: 'pointer',
                     padding: 0
@@ -336,7 +336,7 @@ export default function AuthPage({ onLogin }) {
                   onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
                   style={inputStyle}
                   onFocus={(e) => e.target.style.borderColor = 'rgba(236, 72, 153, 0.6)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(139, 92, 246, 0.3)'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(138, 43, 226, 0.3)'}
                 />
               </div>
               
@@ -349,7 +349,7 @@ export default function AuthPage({ onLogin }) {
                   onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                   style={inputStyle}
                   onFocus={(e) => e.target.style.borderColor = 'rgba(236, 72, 153, 0.6)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(139, 92, 246, 0.3)'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(138, 43, 226, 0.3)'}
                 />
               </div>
               
@@ -362,7 +362,7 @@ export default function AuthPage({ onLogin }) {
                   onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                   style={inputStyle}
                   onFocus={(e) => e.target.style.borderColor = 'rgba(236, 72, 153, 0.6)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(139, 92, 246, 0.3)'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(138, 43, 226, 0.3)'}
                 />
               </div>
 
@@ -375,7 +375,7 @@ export default function AuthPage({ onLogin }) {
                   onChange={(e) => setRegisterData({ ...registerData, referral_code: e.target.value })}
                   style={inputStyle}
                   onFocus={(e) => e.target.style.borderColor = 'rgba(236, 72, 153, 0.6)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(139, 92, 246, 0.3)'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(138, 43, 226, 0.3)'}
                 />
               </div>
 
@@ -413,7 +413,7 @@ export default function AuthPage({ onLogin }) {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#EC4899',
+                    color: '#4DD0E1',
                     fontWeight: '600',
                     cursor: 'pointer',
                     padding: 0
@@ -437,7 +437,7 @@ export default function AuthPage({ onLogin }) {
                   onChange={(e) => setForgotEmail(e.target.value)}
                   style={inputStyle}
                   onFocus={(e) => e.target.style.borderColor = 'rgba(236, 72, 153, 0.6)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(139, 92, 246, 0.3)'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(138, 43, 226, 0.3)'}
                 />
               </div>
 
@@ -472,7 +472,7 @@ export default function AuthPage({ onLogin }) {
                   gap: '8px',
                   padding: '12px',
                   background: 'transparent',
-                  border: '1px solid rgba(139, 92, 246, 0.3)',
+                  border: '1px solid rgba(138, 43, 226, 0.3)',
                   borderRadius: '12px',
                   color: '#94A3B8',
                   fontSize: '14px',
@@ -496,7 +496,7 @@ export default function AuthPage({ onLogin }) {
                   onChange={(e) => setResetData({ ...resetData, new_password: e.target.value })}
                   style={inputStyle}
                   onFocus={(e) => e.target.style.borderColor = 'rgba(236, 72, 153, 0.6)'}
-                  onBlur={(e) => e.target.style.borderColor = 'rgba(139, 92, 246, 0.3)'}
+                  onBlur={(e) => e.target.style.borderColor = 'rgba(138, 43, 226, 0.3)'}
                 />
               </div>
 

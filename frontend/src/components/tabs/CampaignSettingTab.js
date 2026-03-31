@@ -299,7 +299,7 @@ function CampaignSettingTab({ campaignId }) {
         </div>
 
         {/* World Setting Selector - AI Context */}
-        <div className="glow-panel" style={{ marginBottom: '24px', borderColor: '#8B5CF6' }}>
+        <div className="glow-panel" style={{ marginBottom: '24px', borderColor: '#8A2BE2' }}>
           <h3 style={{ 
             fontSize: '16px', 
             color: '#ffffff', 
@@ -308,7 +308,7 @@ function CampaignSettingTab({ campaignId }) {
             alignItems: 'center',
             gap: '8px'
           }}>
-            <Wand2 size={18} style={{ color: '#8B5CF6' }} />
+            <Wand2 size={18} style={{ color: '#8A2BE2' }} />
             AI World Context
           </h3>
           <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>
@@ -383,7 +383,7 @@ function CampaignSettingTab({ campaignId }) {
             disabled={savingWorldSetting}
             style={{
               width: '100%',
-              background: '#8B5CF6',
+              background: '#8A2BE2',
               border: 'none',
               padding: '10px',
               borderRadius: '8px',

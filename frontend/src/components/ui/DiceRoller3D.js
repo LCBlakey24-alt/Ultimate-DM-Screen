@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 // Dice face configurations for 3D effect
@@ -12,20 +12,23 @@ const DICE_FACES = {
   d100: ['10', '20', '30', '40', '50', '60', '70', '80', '90', '00']
 };
 
-const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCrit, isFumble }) => {
+const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCrit, isFumble, theme = 'gm' }) => {
   const [phase, setPhase] = useState('rolling'); // rolling, bouncing, final
   const [displayNumbers, setDisplayNumbers] = useState([]);
   const [showTotal, setShowTotal] = useState(false);
+  const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
 
   useEffect(() => {
     if (!isOpen) {
       setPhase('rolling');
       setDisplayNumbers([]);
       setShowTotal(false);
+      setRotation({ x: 0, y: 0, z: 0 });
       return;
     }
 
-    // Phase 1: Rolling animation with random numbers
+    // Phase 1: Rolling animation with random numbers and rotation
+    let spinInterval;
     const rollInterval = setInterval(() => {
       setDisplayNumbers(rolls.map(roll => ({
         ...roll,
@@ -33,9 +36,20 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
       })));
     }, 50);
 
+    // Spin animation
+    spinInterval = setInterval(() => {
+      setRotation(prev => ({
+        x: prev.x + 25,
+        y: prev.y + 35,
+        z: prev.z + 15
+      }));
+    }, 30);
+
     // Phase 2: Stop rolling, show bounce
     setTimeout(() => {
       clearInterval(rollInterval);
+      clearInterval(spinInterval);
+      setRotation({ x: 0, y: 0, z: 0 });
       setDisplayNumbers(rolls.map(roll => ({
         ...roll,
         display: roll.result
@@ -54,20 +68,23 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
       onClose();
     }, 3500);
 
-    return () => clearInterval(rollInterval);
+    return () => {
+      clearInterval(rollInterval);
+      clearInterval(spinInterval);
+    };
   }, [isOpen, rolls, onClose]);
 
   if (!isOpen) return null;
 
-  const getCritColor = () => {
-    if (isCrit) return '#F59E0B'; // Gold for nat 20
-    if (isFumble) return '#ef4444'; // Red for nat 1
-    return '#4DD0E1'; // Cyan default (new theme)
-  };
+  // Theme colors
+  const colors = theme === 'player' 
+    ? { primary: '#4DD0E1', secondary: '#0066FF', glow: 'rgba(77, 208, 225, 0.4)' }
+    : { primary: '#8A2BE2', secondary: '#4B0082', glow: 'rgba(138, 43, 226, 0.4)' };
 
-  // Theme-aware dice colors
-  const getDiceColor = (sides) => {
-    return '#8A2BE2'; // Purple for GM theme
+  const getCritColor = () => {
+    if (isCrit) return '#F59E0B';
+    if (isFumble) return '#ef4444';
+    return colors.primary;
   };
 
   return createPortal(
@@ -79,23 +96,40 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'linear-gradient(135deg, rgba(75, 0, 130, 0.95), rgba(138, 43, 226, 0.95))',
+        zIndex: 10000,
+        cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 10000,
-        cursor: 'pointer'
+        // Dark blurred overlay - much darker than before
+        background: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)'
       }}
     >
+      {/* Subtle gradient glow at bottom */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '40%',
+        background: theme === 'player'
+          ? 'radial-gradient(ellipse at 50% 100%, rgba(77, 208, 225, 0.15) 0%, transparent 70%)'
+          : 'radial-gradient(ellipse at 50% 100%, rgba(138, 43, 226, 0.15) 0%, transparent 70%)',
+        pointerEvents: 'none'
+      }} />
+
       {/* Label */}
       <div style={{
         fontFamily: "'Outfit', sans-serif",
-        fontSize: '24px',
-        color: '#94A3B8',
-        marginBottom: '20px',
+        fontSize: '20px',
+        color: 'rgba(255, 255, 255, 0.6)',
+        marginBottom: '24px',
         textTransform: 'uppercase',
-        letterSpacing: '0.2em',
+        letterSpacing: '0.3em',
+        fontWeight: '500',
         opacity: phase === 'final' ? 1 : 0.7,
         transition: 'opacity 0.3s'
       }}>
@@ -105,71 +139,69 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
       {/* Dice Container */}
       <div style={{
         display: 'flex',
-        gap: '30px',
-        marginBottom: '30px',
+        gap: '40px',
+        marginBottom: '40px',
         flexWrap: 'wrap',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        perspective: '1000px'
       }}>
-        {displayNumbers.map((die, index) => (
-          <div
-            key={index}
-            style={{
-              width: '120px',
-              height: '120px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: `linear-gradient(145deg, ${getDiceColor(die.sides)}40, ${getDiceColor(die.sides)}20)`,
-              border: `3px solid ${getDiceColor(die.sides)}`,
-              borderRadius: die.sides === 4 ? '0' : die.sides === 6 ? '16px' : '50%',
-              transform: die.sides === 4 ? 'rotate(45deg)' : 'none',
-              boxShadow: phase === 'final' 
-                ? `0 0 30px ${getDiceColor(die.sides)}80, 0 0 60px ${getDiceColor(die.sides)}40`
-                : `0 0 15px ${getDiceColor(die.sides)}40`,
-              animation: phase === 'rolling' 
-                ? 'diceRoll 0.8s ease-out forwards' 
-                : phase === 'bouncing' 
-                  ? 'numberBounce 0.7s ease-out forwards'
-                  : 'glowPulse 2s ease-in-out infinite',
-              transition: 'box-shadow 0.3s'
-            }}
-          >
-            <span style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontSize: die.display >= 10 ? '42px' : '52px',
-              fontWeight: '700',
-              color: die.result === die.sides ? '#F59E0B' : die.result === 1 ? '#ef4444' : '#F8FAFC',
-              transform: die.sides === 4 ? 'rotate(-45deg)' : 'none',
-              textShadow: `0 0 20px ${getDiceColor(die.sides)}`
-            }}>
-              {die.display}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Dice Type Labels */}
-      <div style={{
-        display: 'flex',
-        gap: '30px',
-        marginBottom: '30px'
-      }}>
-        {displayNumbers.map((die, index) => (
-          <div
-            key={index}
-            style={{
-              width: '120px',
-              textAlign: 'center',
-              fontFamily: "'Manrope', sans-serif",
-              fontSize: '14px',
-              color: getDiceColor(die.sides),
-              fontWeight: '600',
-              letterSpacing: '0.1em'
-            }}
-          >
-            d{die.sides}
-          </div>
-        ))}
+        {displayNumbers.map((die, index) => {
+          const isHighlight = die.result === die.sides || die.result === 1;
+          const dieColor = die.result === die.sides ? '#F59E0B' : die.result === 1 ? '#ef4444' : colors.primary;
+          
+          return (
+            <div
+              key={index}
+              style={{
+                width: '140px',
+                height: '140px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                transformStyle: 'preserve-3d',
+                transform: phase === 'rolling' 
+                  ? `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg)`
+                  : phase === 'bouncing'
+                    ? 'rotateX(0deg) rotateY(0deg) scale(1.1)'
+                    : 'rotateX(0deg) rotateY(0deg) scale(1)',
+                transition: phase === 'rolling' ? 'none' : 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
+              }}
+            >
+              {/* Dice shape */}
+              <div style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: `linear-gradient(145deg, rgba(20, 20, 30, 0.9), rgba(10, 10, 15, 0.95))`,
+                border: `3px solid ${dieColor}`,
+                borderRadius: die.sides === 4 ? '4px' : die.sides === 6 ? '20px' : '50%',
+                boxShadow: phase === 'final' 
+                  ? `0 0 40px ${dieColor}60, 0 0 80px ${dieColor}30, inset 0 0 30px ${dieColor}20`
+                  : `0 0 20px ${dieColor}40, inset 0 0 15px ${dieColor}10`,
+                animation: phase === 'final' && isHighlight ? 'critGlow 1.5s ease-in-out infinite' : 'none',
+                transform: die.sides === 4 ? 'rotate(45deg)' : 'none'
+              }}>
+                {/* Number */}
+                <span style={{
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: die.display >= 10 ? '48px' : '60px',
+                  fontWeight: '800',
+                  color: phase === 'final' ? (isHighlight ? dieColor : '#FFFFFF') : 'rgba(255, 255, 255, 0.8)',
+                  transform: die.sides === 4 ? 'rotate(-45deg)' : 'none',
+                  textShadow: phase === 'final' 
+                    ? `0 0 30px ${dieColor}, 0 0 60px ${dieColor}80`
+                    : 'none',
+                  transition: 'color 0.3s, text-shadow 0.3s'
+                }}>
+                  {die.display}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Total Display */}
@@ -178,52 +210,46 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          animation: 'numberBounce 0.5s ease-out forwards'
+          animation: 'fadeInUp 0.5s ease-out'
         }}>
+          {/* Modifier display */}
           {modifier !== 0 && (
             <div style={{
               fontFamily: "'Manrope', sans-serif",
-              fontSize: '18px',
-              color: '#94A3B8',
+              fontSize: '16px',
+              color: 'rgba(255, 255, 255, 0.5)',
               marginBottom: '8px'
             }}>
               {rolls.map(r => r.result).join(' + ')}{modifier >= 0 ? ` + ${modifier}` : ` - ${Math.abs(modifier)}`}
             </div>
           )}
+          
+          {/* Total number */}
           <div style={{
             fontFamily: "'Outfit', sans-serif",
-            fontSize: '72px',
-            fontWeight: '700',
+            fontSize: '80px',
+            fontWeight: '800',
             color: getCritColor(),
-            textShadow: `0 0 40px ${getCritColor()}80, 0 0 80px ${getCritColor()}40`,
-            animation: isCrit || isFumble ? 'glowPulse 1s ease-in-out infinite' : 'none'
+            textShadow: `0 0 40px ${getCritColor()}, 0 0 80px ${getCritColor()}60`,
+            lineHeight: 1
           }}>
             {total}
           </div>
-          {isCrit && (
+
+          {/* Crit/Fumble label */}
+          {(isCrit || isFumble) && (
             <div style={{
               fontFamily: "'Outfit', sans-serif",
               fontSize: '24px',
-              color: '#F59E0B',
+              fontWeight: '700',
+              color: isCrit ? '#F59E0B' : '#ef4444',
               textTransform: 'uppercase',
-              letterSpacing: '0.3em',
-              marginTop: '10px',
-              textShadow: '0 0 20px rgba(34, 197, 94, 0.8)'
+              letterSpacing: '0.2em',
+              marginTop: '12px',
+              textShadow: `0 0 20px ${isCrit ? '#F59E0B' : '#ef4444'}`,
+              animation: 'pulse 0.5s ease-in-out infinite alternate'
             }}>
-              CRITICAL HIT!
-            </div>
-          )}
-          {isFumble && (
-            <div style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontSize: '24px',
-              color: '#ef4444',
-              textTransform: 'uppercase',
-              letterSpacing: '0.3em',
-              marginTop: '10px',
-              textShadow: '0 0 20px rgba(239, 68, 68, 0.8)'
-            }}>
-              CRITICAL MISS!
+              {isCrit ? 'CRITICAL HIT!' : 'CRITICAL MISS!'}
             </div>
           )}
         </div>
@@ -232,75 +258,47 @@ const DiceRoller3D = ({ isOpen, onClose, rolls, label, modifier = 0, total, isCr
       {/* Click to close hint */}
       <div style={{
         position: 'absolute',
-        bottom: '40px',
+        bottom: '30px',
         fontFamily: "'Manrope', sans-serif",
-        fontSize: '12px',
-        color: '#64748b',
+        fontSize: '13px',
+        color: 'rgba(255, 255, 255, 0.3)',
         letterSpacing: '0.1em'
       }}>
         Click anywhere to close
       </div>
+
+      {/* CSS Animations */}
+      <style>{`
+        @keyframes critGlow {
+          0%, 100% { 
+            box-shadow: 0 0 40px currentColor, 0 0 80px currentColor;
+            transform: ${rolls[0]?.sides === 4 ? 'rotate(45deg) scale(1)' : 'scale(1)'};
+          }
+          50% { 
+            box-shadow: 0 0 60px currentColor, 0 0 120px currentColor;
+            transform: ${rolls[0]?.sides === 4 ? 'rotate(45deg) scale(1.05)' : 'scale(1.05)'};
+          }
+        }
+        
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes pulse {
+          from { opacity: 0.8; transform: scale(1); }
+          to { opacity: 1; transform: scale(1.05); }
+        }
+      `}</style>
     </div>,
     document.body
   );
-};
-
-// Hook to use the dice roller
-export const useDiceRoller = () => {
-  const [rollState, setRollState] = useState({
-    isOpen: false,
-    rolls: [],
-    label: '',
-    modifier: 0,
-    total: 0,
-    isCrit: false,
-    isFumble: false
-  });
-
-  const rollDice = useCallback((diceNotation, modifier = 0, label = 'Roll') => {
-    // Parse dice notation like "1d20", "2d6", "1d20+1d8"
-    const dicePattern = /(\d+)d(\d+)/g;
-    const rolls = [];
-    let match;
-    let total = modifier;
-    let isCrit = false;
-    let isFumble = false;
-
-    while ((match = dicePattern.exec(diceNotation)) !== null) {
-      const count = parseInt(match[1]);
-      const sides = parseInt(match[2]);
-      
-      for (let i = 0; i < count; i++) {
-        const result = Math.floor(Math.random() * sides) + 1;
-        rolls.push({ sides, result });
-        total += result;
-        
-        // Check for crits on d20
-        if (sides === 20) {
-          if (result === 20) isCrit = true;
-          if (result === 1) isFumble = true;
-        }
-      }
-    }
-
-    setRollState({
-      isOpen: true,
-      rolls,
-      label,
-      modifier,
-      total,
-      isCrit,
-      isFumble
-    });
-
-    return { rolls, total, isCrit, isFumble };
-  }, []);
-
-  const closeRoller = useCallback(() => {
-    setRollState(prev => ({ ...prev, isOpen: false }));
-  }, []);
-
-  return { rollState, rollDice, closeRoller, DiceRoller3D };
 };
 
 export default DiceRoller3D;

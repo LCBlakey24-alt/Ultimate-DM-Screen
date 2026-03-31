@@ -14,7 +14,7 @@ const theme = {
   panel: 'rgba(15, 10, 30, 0.85)',
   border: 'rgba(238, 0, 107, 0.4)',
   accent: '#ee006b',
-  purple: '#8B5CF6',
+  purple: '#8A2BE2',
   gold: '#F59E0B',
   text: '#ffffff',
   muted: '#94a3b8'
@@ -215,7 +215,7 @@ export default function CharacterInventory({ characterId, character, onUpdate })
           <div 
             style={{
               padding: '12px',
-              background: equippedItems.armor ? 'rgba(139, 92, 246, 0.2)' : 'rgba(0,0,0,0.3)',
+              background: equippedItems.armor ? 'rgba(138, 43, 226, 0.2)' : 'rgba(0,0,0,0.3)',
               border: `1px solid ${equippedItems.armor ? theme.purple : '#374151'}`,
               borderRadius: '8px',
               cursor: 'pointer'
@@ -234,7 +234,7 @@ export default function CharacterInventory({ characterId, character, onUpdate })
           <div 
             style={{
               padding: '12px',
-              background: equippedItems.shield ? 'rgba(139, 92, 246, 0.2)' : 'rgba(0,0,0,0.3)',
+              background: equippedItems.shield ? 'rgba(138, 43, 226, 0.2)' : 'rgba(0,0,0,0.3)',
               border: `1px solid ${equippedItems.shield ? theme.purple : '#374151'}`,
               borderRadius: '8px',
               cursor: 'pointer'
@@ -302,7 +302,7 @@ export default function CharacterInventory({ characterId, character, onUpdate })
         <div style={{ 
           marginTop: '12px', 
           padding: '8px 12px', 
-          background: 'rgba(139, 92, 246, 0.2)',
+          background: 'rgba(138, 43, 226, 0.2)',
           borderRadius: '8px',
           display: 'flex',
           justifyContent: 'space-between',
@@ -432,7 +432,7 @@ export default function CharacterInventory({ characterId, character, onUpdate })
                     justifyContent: 'space-between',
                     alignItems: 'center'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(139, 92, 246, 0.2)'}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(138, 43, 226, 0.2)'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                 >
                   <div>
@@ -474,7 +474,7 @@ export default function CharacterInventory({ characterId, character, onUpdate })
                 style={{
                   padding: '10px 12px',
                   borderBottom: '1px solid #1f2937',
-                  background: expandedItem === item.id ? 'rgba(139, 92, 246, 0.1)' : 'transparent'
+                  background: expandedItem === item.id ? 'rgba(138, 43, 226, 0.1)' : 'transparent'
                 }}
               >
                 <div 
