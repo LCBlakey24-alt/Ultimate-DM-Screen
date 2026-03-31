@@ -1514,6 +1514,132 @@ async def get_session_outlines(campaign_id: str, username: str = Depends(get_cur
     return {"outlines": outlines}
 
 
+@router.post("/ai/session-checklist/{campaign_id}")
+async def generate_session_checklist(campaign_id: str, request: Dict[str, Any], username: str = Depends(get_current_user)):
+    """AI generates a prep checklist from a session outline or campaign context."""
+    await verify_campaign_ownership(campaign_id, username)
+
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        raise HTTPException(status_code=500, detail="AI service not configured")
+
+    outline_id = request.get('outline_id')
+    outline_content = ""
+    outline_ref = None
+
+    if outline_id:
+        outline_doc = await db.session_outlines.find_one({'id': outline_id, 'campaign_id': campaign_id}, {'_id': 0})
+        if outline_doc:
+            outline_content = outline_doc.get('content', '')
+            outline_ref = outline_id
+
+    campaign = await db.campaigns.find_one({'id': campaign_id}, {'_id': 0})
+    campaign_name = campaign.get('name', 'Unknown') if campaign else 'Unknown'
+
+    if not outline_content:
+        notes = await db.ingame_notes.find({'campaign_id': campaign_id}, {'_id': 0}).sort('created_at', -1).to_list(5)
+        outline_content = "\n".join([f"- {n.get('title','')}: {n.get('content','')[:300]}" for n in notes]) or "No context available."
+
+    prompt = f"""You are a TTRPG session prep assistant. Based on the following session outline/context, generate a detailed prep checklist for the Game Master.
+
+Campaign: {campaign_name}
+
+Session Outline/Context:
+{outline_content}
+
+Generate a JSON array of checklist items. Each item should have:
+- "category": one of "npcs", "maps", "encounters", "loot", "story", "atmosphere", "handouts", "rules"
+- "text": the checklist item description (concise, actionable)
+- "priority": "high", "medium", or "low"
+
+Return ONLY a valid JSON array like:
+[
+  {{"category": "npcs", "text": "Prepare voice/accent for tavern keeper Marla", "priority": "high"}},
+  {{"category": "encounters", "text": "Set up goblin ambush encounter (4x goblins, 1 bugbear)", "priority": "high"}},
+  {{"category": "maps", "text": "Draw map of the abandoned mine entrance", "priority": "medium"}},
+  {{"category": "loot", "text": "Roll loot table for dungeon chest (DMG p.137)", "priority": "low"}}
+]
+
+Generate 8-15 practical checklist items. Return ONLY the JSON array, no other text."""
+
+    try:
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"checklist-{campaign_id}-{uuid.uuid4().hex[:8]}",
+            system_message="You are a practical TTRPG session prep assistant. Generate actionable, specific checklist items."
+        ).with_model("openai", "gpt-4o")
+
+        response = await chat.send_message(UserMessage(text=prompt))
+        response_text = response.strip() if isinstance(response, str) else str(response)
+
+        json_match = re.search(r'\[[\s\S]*\]', response_text)
+        if not json_match:
+            raise HTTPException(status_code=500, detail="Failed to parse AI checklist response")
+
+        items_raw = json.loads(json_match.group())
+        items = []
+        for i, item in enumerate(items_raw):
+            items.append({
+                'id': str(uuid.uuid4()),
+                'category': item.get('category', 'story'),
+                'text': item.get('text', ''),
+                'priority': item.get('priority', 'medium'),
+                'completed': False,
+                'order': i,
+            })
+
+        checklist = {
+            'id': str(uuid.uuid4()),
+            'campaign_id': campaign_id,
+            'outline_id': outline_ref,
+            'items': items,
+            'generated_by': username,
+            'generated_at': datetime.now(timezone.utc).isoformat(),
+        }
+        await db.session_checklists.insert_one(checklist)
+        del checklist['_id']
+        return checklist
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Session checklist generation failed: {e}")
+        raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
+
+
+@router.get("/ai/session-checklists/{campaign_id}")
+async def get_session_checklists(campaign_id: str, username: str = Depends(get_current_user)):
+    """Get all session prep checklists for a campaign."""
+    checklists = await db.session_checklists.find(
+        {'campaign_id': campaign_id}, {'_id': 0}
+    ).sort('generated_at', -1).to_list(20)
+    return {"checklists": checklists}
+
+
+@router.patch("/ai/session-checklist/{checklist_id}")
+async def update_session_checklist(checklist_id: str, request: Dict[str, Any], username: str = Depends(get_current_user)):
+    """Update checklist item completion status."""
+    checklist = await db.session_checklists.find_one({'id': checklist_id})
+    if not checklist:
+        raise HTTPException(status_code=404, detail="Checklist not found")
+
+    item_id = request.get('item_id')
+    completed = request.get('completed')
+    if item_id is not None and completed is not None:
+        items = checklist.get('items', [])
+        for item in items:
+            if item['id'] == item_id:
+                item['completed'] = completed
+                break
+        await db.session_checklists.update_one(
+            {'id': checklist_id},
+            {'$set': {'items': items}}
+        )
+
+    updated = await db.session_checklists.find_one({'id': checklist_id}, {'_id': 0})
+    return updated
+
+
 @router.post("/ai/session-replay/{campaign_id}")
 async def generate_session_replay(campaign_id: str, request: Dict[str, Any], username: str = Depends(get_current_user)):
     """AI generates a narrative recap of the session from combat logs, notes, and dice rolls."""

@@ -58,7 +58,24 @@ export const CLASS_FEATURES = {
       { level: 10, name: 'Magical Secrets', type: 'passive', description: 'Learn 2 spells from any class' },
       { level: 15, name: 'Bardic Inspiration (d12)', type: 'bonus_action', description: 'Inspiration die increases to d12', uses: 'CHA mod/short rest' },
       { level: 20, name: 'Superior Inspiration', type: 'passive', description: 'Regain 1 Bardic Inspiration if you have none when rolling initiative' }
-    ]
+    ],
+    features_2024: [
+      { level: 1, name: 'Bardic Inspiration', type: 'bonus_action', description: 'Give ally a Bardic Inspiration die (d6). Uses = PB, regain on long rest.', uses: 'PB/long rest' },
+      { level: 1, name: 'Spellcasting', type: 'passive', description: 'Cast bard spells using CHA. Ritual casting. Spell preparation replaces spells known.' },
+      { level: 2, name: 'Expertise', type: 'passive', description: 'Double proficiency bonus on two skills' },
+      { level: 2, name: 'Jack of All Trades', type: 'passive', description: 'Add half proficiency bonus to any ability check not using proficiency' },
+      { level: 3, name: 'Bard Subclass', type: 'passive', description: 'Choose a Bard subclass', isChoice: true },
+      { level: 5, name: 'Bardic Inspiration (d8)', type: 'bonus_action', description: 'Inspiration die increases to d8', uses: 'PB/long rest' },
+      { level: 5, name: 'Font of Inspiration', type: 'passive', description: 'Regain all Bardic Inspiration on short or long rest' },
+      { level: 7, name: 'Countercharm', type: 'reaction', description: 'Reaction when ally fails save vs charmed/frightened: reroll with Bardic Inspiration die' },
+      { level: 9, name: 'Expertise (2)', type: 'passive', description: 'Double proficiency on two more skills' },
+      { level: 10, name: 'Bardic Inspiration (d10)', type: 'bonus_action', description: 'Inspiration die increases to d10', uses: 'PB/short rest' },
+      { level: 10, name: 'Magical Secrets', type: 'passive', description: 'Learn 2 spells from any spell list' },
+      { level: 12, name: 'Bardic Inspiration (d12)', type: 'bonus_action', description: 'Inspiration die increases to d12', uses: 'PB/short rest' },
+      { level: 14, name: 'Magical Secrets (2)', type: 'passive', description: 'Learn 2 more spells from any spell list' },
+      { level: 18, name: 'Superior Inspiration', type: 'passive', description: 'Regain 2 Bardic Inspiration uses when you roll initiative and have none' },
+      { level: 20, name: 'Words of Creation', type: 'passive', description: 'When you roll Bardic Inspiration, you can roll twice and use either result. Once per turn, impose disadvantage on a save.' },
+    ],
   },
 
   cleric: {
@@ -77,7 +94,20 @@ export const CLASS_FEATURES = {
       { level: 17, name: 'Destroy Undead (CR 4)', type: 'passive', description: 'Destroy undead CR 4 or lower' },
       { level: 18, name: 'Channel Divinity (3/rest)', type: 'action', description: 'Use Channel Divinity three times between rests', uses: '3/short rest' },
       { level: 20, name: 'Divine Intervention Improved', type: 'action', description: 'Divine Intervention automatically succeeds', uses: '1/long rest' }
-    ]
+    ],
+    features_2024: [
+      { level: 1, name: 'Divine Order', type: 'passive', description: 'Choose Protector (+heavy armor, martial weapons) or Thaumaturge (+extra cantrip, Religion proficiency)', isChoice: true },
+      { level: 1, name: 'Spellcasting', type: 'passive', description: 'Cast cleric spells using WIS. Prepare spells from full cleric list each long rest.' },
+      { level: 2, name: 'Channel Divinity', type: 'action', description: 'Divine Spark (heal or damage PBd8) and Turn Undead. Uses = PB per long rest.', uses: 'PB/long rest' },
+      { level: 3, name: 'Cleric Subclass', type: 'passive', description: 'Choose a Cleric subclass', isChoice: true },
+      { level: 5, name: 'Searing Light', type: 'passive', description: 'Turn Undead: destroyed if CR <= 2. Divine Spark damage adds to cantrips.' },
+      { level: 7, name: 'Blessed Healer', type: 'passive', description: 'When you cast a healing spell on another, you also heal PB HP' },
+      { level: 10, name: 'Divine Intervention', type: 'action', description: 'Cast any cleric spell of 5th level or lower without a slot as a Magic action', uses: '1/long rest' },
+      { level: 11, name: 'Improved Destroy Undead', type: 'passive', description: 'Turn Undead destroys creatures CR 4 or lower' },
+      { level: 14, name: 'Improved Blessed Healer', type: 'passive', description: 'Blessed Healer healing increases. Channel Divinity fully restores on short rest.' },
+      { level: 18, name: 'Greater Divine Intervention', type: 'action', description: 'Cast Wish once via Divine Intervention (cannot use again for 2d4 days)', uses: '1/2d4 days' },
+      { level: 20, name: 'Greater Channel Divinity', type: 'passive', description: 'Channel Divinity charges increase. Divine Spark deals/heals max dice.' },
+    ],
   },
 
   druid: {
@@ -91,7 +121,20 @@ export const CLASS_FEATURES = {
       { level: 18, name: 'Timeless Body', type: 'passive', description: 'Age 10x slower, can\'t be magically aged' },
       { level: 18, name: 'Beast Spells', type: 'passive', description: 'Can cast spells in Wild Shape form' },
       { level: 20, name: 'Archdruid', type: 'passive', description: 'Unlimited Wild Shape uses, ignore verbal/somatic components' }
-    ]
+    ],
+    features_2024: [
+      { level: 1, name: 'Primal Order', type: 'passive', description: 'Choose Magician (+extra cantrip) or Warden (+martial weapon proficiency, +medium armor)', isChoice: true },
+      { level: 1, name: 'Spellcasting', type: 'passive', description: 'Cast druid spells using WIS. Prepare from full druid list each long rest.' },
+      { level: 2, name: 'Wild Shape', type: 'bonus_action', description: 'Transform as bonus action. Temp HP replaces beast stat block. Uses = PB per long rest.', uses: 'PB/long rest' },
+      { level: 2, name: 'Wild Companion', type: 'action', description: 'Expend Wild Shape use to cast Find Familiar without material components' },
+      { level: 3, name: 'Druid Subclass', type: 'passive', description: 'Choose a Druid subclass', isChoice: true },
+      { level: 5, name: 'Wild Resurgence', type: 'passive', description: 'Once per turn, convert a Wild Shape use into a spell slot (level = PB/2 rounded up)' },
+      { level: 7, name: 'Elemental Fury', type: 'passive', description: 'Add extra damage to one cantrip or weapon attack per turn' },
+      { level: 9, name: 'Improved Wild Shape', type: 'passive', description: 'Wild Shape temp HP and forms improve' },
+      { level: 15, name: 'Improved Elemental Fury', type: 'passive', description: 'Elemental Fury damage increases' },
+      { level: 18, name: 'Beast Spells', type: 'passive', description: 'Cast spells while in Wild Shape form' },
+      { level: 20, name: 'Archdruid', type: 'passive', description: 'Regain one Wild Shape use each turn. +PB to nature spell DCs.' },
+    ],
   },
 
   fighter: {
@@ -223,7 +266,28 @@ export const CLASS_FEATURES = {
       { level: 15, name: 'Timeless Body', type: 'passive', description: 'No frailty of age, can\'t be magically aged, don\'t need food or water' },
       { level: 18, name: 'Empty Body', type: 'action', description: 'Spend 4 ki to become invisible for 1 minute with resistance to all damage except force', uses: '4 ki' },
       { level: 20, name: 'Perfect Self', type: 'passive', description: 'Regain 4 ki if you have none when rolling initiative' }
-    ]
+    ],
+    features_2024: [
+      { level: 1, name: 'Unarmored Defense', type: 'passive', description: 'AC = 10 + DEX + WIS when not wearing armor' },
+      { level: 1, name: 'Martial Arts', type: 'bonus_action', description: 'Unarmed strikes use DEX, martial arts die (d6). Bonus action unarmed strike after Attack action.' },
+      { level: 2, name: 'Discipline Points', type: 'resource', description: 'Discipline Points = monk level. Flurry of Blows, Patient Defense, Step of the Wind.', uses: 'Level/short rest' },
+      { level: 2, name: 'Unarmored Movement', type: 'passive', description: '+10 ft speed when not wearing armor' },
+      { level: 2, name: 'Uncanny Metabolism', type: 'passive', description: 'On initiative, regain all Discipline Points. Regain hit die = martial arts die once per long rest.' },
+      { level: 3, name: 'Deflect Attacks', type: 'reaction', description: 'Reduce any attack damage by 1d10 + DEX + monk level. Spend 1 DP to redirect.' },
+      { level: 3, name: 'Monk Subclass', type: 'passive', description: 'Choose a Monk subclass', isChoice: true },
+      { level: 4, name: 'Slow Fall', type: 'reaction', description: 'Reduce falling damage by 5 x monk level' },
+      { level: 5, name: 'Extra Attack', type: 'passive', description: 'Attack twice per Attack action' },
+      { level: 5, name: 'Stunning Strike', type: 'action_modifier', description: 'Spend 1 DP on hit: target makes CON save or is Stunned until start of your next turn', uses: '1 DP' },
+      { level: 6, name: 'Empowered Strikes', type: 'passive', description: 'Unarmed strikes count as magical' },
+      { level: 7, name: 'Evasion', type: 'passive', description: 'DEX saves for half: no damage on success, half on fail' },
+      { level: 9, name: 'Acrobatic Movement', type: 'passive', description: 'Move along vertical surfaces and across liquids without falling during move' },
+      { level: 10, name: 'Heightened Discipline', type: 'passive', description: 'Martial arts die increases to d8. Self-Restoration: end Charmed/Frightened.' },
+      { level: 13, name: 'Deflect Energy', type: 'reaction', description: 'Deflect Attacks now works against ranged spell attacks too' },
+      { level: 14, name: 'Disciplined Survivor', type: 'passive', description: 'Proficiency in all saving throws. Spend 1 DP to reroll a failed save.' },
+      { level: 15, name: 'Perfect Discipline', type: 'passive', description: 'Martial arts die becomes d10. Spend no DP for Patient Defense, Step of the Wind.' },
+      { level: 18, name: 'Superior Defense', type: 'passive', description: 'Spend 3 DP at start of turn: resistance to all damage except Force for the round' },
+      { level: 20, name: 'Body and Mind', type: 'passive', description: '+4 DEX, +4 WIS (max 25). Martial arts die becomes d12.' },
+    ],
   },
 
   paladin: {
@@ -243,7 +307,25 @@ export const CLASS_FEATURES = {
       { level: 11, name: 'Improved Divine Smite', type: 'passive', description: 'All melee weapon attacks deal +1d8 radiant damage' },
       { level: 14, name: 'Cleansing Touch', type: 'action', description: 'End one spell on yourself or willing creature you touch', uses: 'CHA mod/long rest' },
       { level: 18, name: 'Aura Improvements', type: 'passive', description: 'Auras extend to 30 ft' }
-    ]
+    ],
+    features_2024: [
+      { level: 1, name: 'Lay on Hands', type: 'bonus_action', description: 'Heal HP from pool = paladin level x 5, or expend 5 to cure poison/disease', uses: 'Level x 5/long rest' },
+      { level: 1, name: 'Spellcasting', type: 'passive', description: 'Cast paladin spells using CHA. Prepare from paladin list each long rest.' },
+      { level: 1, name: 'Weapon Mastery', type: 'passive', description: 'Master 2 weapons with mastery properties' },
+      { level: 2, name: 'Divine Smite', type: 'bonus_action', description: 'Bonus action spell: deal 2d8 radiant on next melee hit (+1d8/slot above 1st, +1d8 vs fiends/undead)', uses: 'Spell slot' },
+      { level: 2, name: 'Fighting Style', type: 'passive', description: 'Choose a Fighting Style feat', isChoice: true },
+      { level: 3, name: 'Channel Divinity', type: 'action', description: 'Uses = PB per long rest. Divine Sense: detect celestials/fiends/undead.', uses: 'PB/long rest' },
+      { level: 3, name: 'Paladin Subclass', type: 'passive', description: 'Choose a Paladin subclass', isChoice: true },
+      { level: 5, name: 'Extra Attack', type: 'passive', description: 'Attack twice per Attack action' },
+      { level: 5, name: 'Faithful Steed', type: 'passive', description: 'Cast Find Steed without a spell slot once per long rest', uses: '1/long rest' },
+      { level: 6, name: 'Aura of Protection', type: 'passive', description: 'You and allies within 10 ft add CHA modifier to saving throws' },
+      { level: 9, name: 'Abjure Foes', type: 'action', description: 'Channel Divinity: creatures in 60ft must WIS save or be Frightened for 1 min' },
+      { level: 10, name: 'Aura of Courage', type: 'passive', description: 'You and allies within 10 ft can\'t be frightened while you\'re conscious' },
+      { level: 11, name: 'Radiant Strikes', type: 'passive', description: 'Melee weapon attacks deal extra 1d8 radiant damage' },
+      { level: 14, name: 'Restoring Touch', type: 'action', description: 'Spend 5 Lay on Hands points to end one condition: Blinded, Charmed, Deafened, Frightened, Paralyzed, Stunned' },
+      { level: 18, name: 'Aura Expansion', type: 'passive', description: 'All paladin auras extend to 30 ft' },
+      { level: 20, name: 'Epic Boon', type: 'passive', description: 'Gain an Epic Boon feat of your choice' },
+    ],
   },
 
   ranger: {
@@ -261,7 +343,24 @@ export const CLASS_FEATURES = {
       { level: 14, name: 'Vanish', type: 'bonus_action', description: 'Hide as bonus action, can\'t be tracked nonmagically unless you choose' },
       { level: 18, name: 'Feral Senses', type: 'passive', description: 'No disadvantage attacking creatures you can\'t see, know location of invisible creatures within 30 ft' },
       { level: 20, name: 'Foe Slayer', type: 'passive', description: 'Add WIS modifier to attack or damage roll against favored enemy once per turn' }
-    ]
+    ],
+    features_2024: [
+      { level: 1, name: 'Favored Enemy', type: 'bonus_action', description: 'Cast Hunter\'s Mark without a spell slot PB times per long rest', uses: 'PB/long rest' },
+      { level: 1, name: 'Spellcasting', type: 'passive', description: 'Cast ranger spells using WIS. Prepare from ranger list each long rest.' },
+      { level: 1, name: 'Weapon Mastery', type: 'passive', description: 'Master 2 weapons with mastery properties' },
+      { level: 2, name: 'Deft Explorer', type: 'passive', description: 'Expertise in one skill. Gain additional at 6 and 10.' },
+      { level: 2, name: 'Fighting Style', type: 'passive', description: 'Choose a Fighting Style feat', isChoice: true },
+      { level: 3, name: 'Ranger Subclass', type: 'passive', description: 'Choose a Ranger subclass', isChoice: true },
+      { level: 5, name: 'Extra Attack', type: 'passive', description: 'Attack twice per Attack action' },
+      { level: 6, name: 'Roving', type: 'passive', description: '+10 ft speed, gain swimming & climbing speed equal to walking speed' },
+      { level: 9, name: 'Expertise (2)', type: 'passive', description: 'Gain Expertise in another skill' },
+      { level: 10, name: 'Tireless', type: 'passive', description: 'On short rest, reduce exhaustion by 1. PB times per long rest: gain temp HP = 1d8 + WIS.' },
+      { level: 13, name: 'Relentless Hunter', type: 'passive', description: 'Hunter\'s Mark no longer requires concentration' },
+      { level: 14, name: 'Nature\'s Veil', type: 'bonus_action', description: 'Become invisible until start of next turn', uses: 'PB/long rest' },
+      { level: 17, name: 'Precise Hunter', type: 'passive', description: 'Hunter\'s Mark damage increases to 1d10' },
+      { level: 18, name: 'Feral Senses', type: 'passive', description: 'Blindsight 30 ft' },
+      { level: 20, name: 'Foe Slayer', type: 'passive', description: 'Hunter\'s Mark deals extra WIS modifier damage. Once per turn, no save needed for Favored Enemy.' },
+    ],
   },
 
   rogue: {
@@ -287,7 +386,26 @@ export const CLASS_FEATURES = {
       { level: 18, name: 'Elusive', type: 'passive', description: 'No attack has advantage against you while you\'re not incapacitated' },
       { level: 19, name: 'Sneak Attack (10d6)', type: 'action_modifier', description: 'Sneak Attack damage increases to 10d6' },
       { level: 20, name: 'Stroke of Luck', type: 'special', description: 'Turn a miss into a hit, or treat failed ability check as natural 20', uses: '1/short rest' }
-    ]
+    ],
+    features_2024: [
+      { level: 1, name: 'Expertise', type: 'passive', description: 'Double proficiency bonus on two skills' },
+      { level: 1, name: 'Sneak Attack', type: 'action_modifier', description: 'Once per turn, deal extra 1d6 damage when you have advantage or an ally is within 5 ft of target' },
+      { level: 1, name: 'Thieves\' Cant', type: 'passive', description: 'Secret mix of dialect, jargon, and code' },
+      { level: 2, name: 'Cunning Action', type: 'bonus_action', description: 'Dash, Disengage, or Hide as a bonus action' },
+      { level: 3, name: 'Rogue Subclass', type: 'passive', description: 'Choose a Rogue subclass', isChoice: true },
+      { level: 3, name: 'Steady Aim', type: 'bonus_action', description: 'If you haven\'t moved, gain advantage on next attack. Speed becomes 0.' },
+      { level: 5, name: 'Cunning Strike', type: 'action_modifier', description: 'On Sneak Attack, forgo 1d6 to apply Disarm, Poison, Trip, or Withdraw effects' },
+      { level: 5, name: 'Uncanny Dodge', type: 'reaction', description: 'Halve the damage from one attack you can see' },
+      { level: 7, name: 'Evasion', type: 'passive', description: 'DEX saves for half: no damage on success, half on fail' },
+      { level: 7, name: 'Reliable Talent', type: 'passive', description: 'Minimum 10 on any ability check using proficient skills' },
+      { level: 9, name: 'Expertise (2)', type: 'passive', description: 'Gain Expertise in two more skills' },
+      { level: 11, name: 'Improved Cunning Strike', type: 'action_modifier', description: 'New Cunning Strike options: Daze, Knock Out, Obscure' },
+      { level: 13, name: 'Subtle Strikes', type: 'passive', description: 'Don\'t need advantage when ally is within 5 ft. Sneak Attack now works with ranged.' },
+      { level: 14, name: 'Devious Strikes', type: 'action_modifier', description: 'Forgo 2d6 Sneak Attack for powerful effects: Daze, Knock Out, Obscure' },
+      { level: 15, name: 'Slippery Mind', type: 'passive', description: 'Proficiency in WIS and CHA saving throws' },
+      { level: 18, name: 'Elusive', type: 'passive', description: 'No attack has advantage against you unless incapacitated' },
+      { level: 20, name: 'Stroke of Luck', type: 'special', description: 'Turn any miss into a hit or any failed ability check into a 20', uses: '1/short rest' },
+    ],
   },
 
   sorcerer: {
@@ -301,7 +419,20 @@ export const CLASS_FEATURES = {
       { level: 10, name: 'Metamagic (3)', type: 'passive', description: 'Learn one additional Metamagic option' },
       { level: 17, name: 'Metamagic (4)', type: 'passive', description: 'Learn one additional Metamagic option' },
       { level: 20, name: 'Sorcerous Restoration', type: 'passive', description: 'Regain 4 sorcery points on short rest' }
-    ]
+    ],
+    features_2024: [
+      { level: 1, name: 'Innate Sorcery', type: 'bonus_action', description: 'Bonus action: +1 spell attack bonus, +1 spell save DC for 1 minute. Uses = PB/long rest.', uses: 'PB/long rest' },
+      { level: 1, name: 'Spellcasting', type: 'passive', description: 'Cast sorcerer spells using CHA. Spells known replaced by spell preparation.' },
+      { level: 2, name: 'Font of Magic', type: 'resource', description: 'Sorcery Points = sorcerer level. Create/convert spell slots.', uses: 'Level/long rest' },
+      { level: 2, name: 'Metamagic', type: 'action_modifier', description: 'Choose 2 Metamagic options (Careful, Distant, Empowered, Extended, Heightened, Quickened, Seeking, Subtle, Transmuted, Twinned)' },
+      { level: 3, name: 'Sorcerer Subclass', type: 'passive', description: 'Choose a Sorcerer subclass', isChoice: true },
+      { level: 5, name: 'Sorcerous Vitality', type: 'passive', description: 'On short rest, spend sorcery points equal to half level (rounded down) to regain hit dice' },
+      { level: 7, name: 'Sorcery Incarnate', type: 'passive', description: 'While Innate Sorcery is active, use two Metamagic options on a single spell' },
+      { level: 10, name: 'Metamagic (3)', type: 'passive', description: 'Learn one additional Metamagic option' },
+      { level: 13, name: 'Arcane Eruption', type: 'passive', description: 'When you use Innate Sorcery, force each creature within 10 ft to make CON save or take damage' },
+      { level: 17, name: 'Metamagic (4)', type: 'passive', description: 'Learn one additional Metamagic option' },
+      { level: 20, name: 'Arcane Apotheosis', type: 'passive', description: 'While Innate Sorcery is active, spend 1 SP to use Metamagic you don\'t know. Once per turn, regain 1 SP when casting a sorcerer spell.' },
+    ],
   },
 
   warlock: {
@@ -324,7 +455,26 @@ export const CLASS_FEATURES = {
       { level: 17, name: 'Mystic Arcanum (9th)', type: 'special', description: 'Cast one 9th-level spell once per long rest without using a slot', uses: '1/long rest' },
       { level: 18, name: 'Eldritch Invocations (8)', type: 'passive', description: 'Learn additional Eldritch Invocation' },
       { level: 20, name: 'Eldritch Master', type: 'special', description: 'Spend 1 minute entreating patron to regain all Pact Magic slots', uses: '1/long rest' }
-    ]
+    ],
+    features_2024: [
+      { level: 1, name: 'Otherworldly Patron', type: 'passive', description: 'Choose a patron. Pact Magic: cast with CHA, slots regain on short rest.', isChoice: true },
+      { level: 1, name: 'Eldritch Invocations (2)', type: 'passive', description: 'Learn 2 Eldritch Invocations' },
+      { level: 1, name: 'Pact Magic', type: 'passive', description: 'All warlock spell slots are the same level and regain on short/long rest' },
+      { level: 2, name: 'Magical Cunning', type: 'action', description: 'If you have no Pact Magic slots, regain half (round up) as a Magic action once per long rest', uses: '1/long rest' },
+      { level: 3, name: 'Pact Boon', type: 'passive', description: 'Choose Pact of the Blade, Chain, or Tome', isChoice: true },
+      { level: 5, name: 'Eldritch Invocations (3)', type: 'passive', description: 'Learn additional Invocation' },
+      { level: 7, name: 'Eldritch Invocations (4)', type: 'passive', description: 'Learn additional Invocation' },
+      { level: 9, name: 'Contact Patron', type: 'passive', description: 'Cast Contact Other Plane once per long rest without a spell slot', uses: '1/long rest' },
+      { level: 9, name: 'Eldritch Invocations (5)', type: 'passive', description: 'Learn additional Invocation' },
+      { level: 11, name: 'Mystic Arcanum (6th)', type: 'special', description: 'Cast one 6th-level spell once per long rest', uses: '1/long rest' },
+      { level: 12, name: 'Eldritch Invocations (6)', type: 'passive', description: 'Learn additional Invocation' },
+      { level: 13, name: 'Mystic Arcanum (7th)', type: 'special', description: 'Cast one 7th-level spell once per long rest', uses: '1/long rest' },
+      { level: 15, name: 'Mystic Arcanum (8th)', type: 'special', description: 'Cast one 8th-level spell once per long rest', uses: '1/long rest' },
+      { level: 15, name: 'Eldritch Invocations (7)', type: 'passive', description: 'Learn additional Invocation' },
+      { level: 17, name: 'Mystic Arcanum (9th)', type: 'special', description: 'Cast one 9th-level spell once per long rest', uses: '1/long rest' },
+      { level: 18, name: 'Eldritch Invocations (8)', type: 'passive', description: 'Learn additional Invocation' },
+      { level: 20, name: 'Eldritch Master', type: 'special', description: 'Regain all Pact Magic slots and one Mystic Arcanum (6-9) per long rest', uses: '1/long rest' },
+    ],
   },
 
   wizard: {
@@ -336,16 +486,28 @@ export const CLASS_FEATURES = {
       { level: 2, name: 'Arcane Tradition', type: 'passive', description: 'Choose a school of magic for specialization bonuses' },
       { level: 18, name: 'Spell Mastery', type: 'passive', description: 'Choose one 1st-level and one 2nd-level spell to cast at will' },
       { level: 20, name: 'Signature Spells', type: 'passive', description: 'Choose two 3rd-level spells - always prepared, cast once each at 3rd level without using a slot, regain on short rest' }
-    ]
+    ],
+    features_2024: [
+      { level: 1, name: 'Arcane Recovery', type: 'special', description: 'Once per long rest during short rest, recover spell slot levels totaling up to half wizard level', uses: '1/long rest' },
+      { level: 1, name: 'Spellcasting', type: 'passive', description: 'Cast wizard spells using INT. Learn spells by copying into spellbook.' },
+      { level: 1, name: 'Ritual Adept', type: 'passive', description: 'Cast any spell in your spellbook as a ritual if it has the Ritual tag (no preparation needed)' },
+      { level: 1, name: 'Scholar', type: 'passive', description: 'Gain Expertise in Arcana, History, Investigation, Nature, or Religion', isChoice: true },
+      { level: 2, name: 'Memorize Spell', type: 'passive', description: 'On short rest, swap one prepared spell for another in your spellbook' },
+      { level: 3, name: 'Wizard Subclass', type: 'passive', description: 'Choose a Wizard subclass', isChoice: true },
+      { level: 5, name: 'Modify Spell', type: 'passive', description: 'When casting a spell, change its damage type to another listed type' },
+      { level: 18, name: 'Spell Mastery', type: 'passive', description: 'Choose one 1st-level and one 2nd-level spell to cast at will without slots' },
+      { level: 20, name: 'Signature Spells', type: 'passive', description: 'Two 3rd-level spells are always prepared and can be cast once per short rest without a slot' },
+    ],
   }
 };
 
 // Helper function to get all features for a class up to a given level
-export function getClassFeatures(className, level) {
+export function getClassFeatures(className, level, edition = '2014') {
   const classData = CLASS_FEATURES[className?.toLowerCase()];
   if (!classData) return [];
   
-  return classData.features.filter(f => f.level <= level);
+  const featureList = (edition === '2024' && classData.features_2024) ? classData.features_2024 : classData.features;
+  return featureList.filter(f => f.level <= level);
 }
 
 // Helper to get features of a specific type

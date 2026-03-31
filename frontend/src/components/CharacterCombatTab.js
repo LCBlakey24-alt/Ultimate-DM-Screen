@@ -223,8 +223,11 @@ export default function CharacterCombatTab({
   function toggleCondition(key) {
     setActiveConditions(prev => {
       const next = prev.includes(key) ? prev.filter(c => c !== key) : [...prev, key];
-      onUpdateCharacter?.({ conditions: next });
-      if (key === 'concentrating' && !next.includes(key)) setConcentratingOn('');
+      // Defer side effects to avoid setState-during-render warning
+      setTimeout(() => {
+        onUpdateCharacter?.({ conditions: next });
+        if (key === 'concentrating' && !next.includes(key)) setConcentratingOn('');
+      }, 0);
       return next;
     });
   }

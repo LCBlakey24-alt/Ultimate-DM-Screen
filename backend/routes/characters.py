@@ -506,6 +506,7 @@ async def patch_character(
         'conditions', 'inspiration', 'concentrating_on', 'used_spell_slots',
         'resources', 'notes', 'equipped', 'equipment', 'inventory',
         'armor_class', 'speed', 'currency', 'gold', 'attuned_items',
+        'exhaustion_level',
     }
     filtered = {k: v for k, v in updates.items() if k in allowed}
     if not filtered:
