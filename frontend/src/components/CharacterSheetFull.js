@@ -327,9 +327,10 @@ export default function CharacterSheetFull() {
       const response = await axios.get(`${API}/characters/${characterId}`);
       setCharacter(response.data);
       // Clamp HP to ensure it never exceeds max_hp (fixes bug where HP displays higher than max)
-      const charMaxHp = response.data.max_hp || 10;
-      const charHp = response.data.hp || charMaxHp;
+      const charMaxHp = response.data.max_hit_points ?? response.data.max_hp ?? 10;
+      const charHp = response.data.current_hit_points ?? response.data.hp ?? charMaxHp;
       setCurrentHp(Math.min(charHp, charMaxHp));
+      setTempHp(response.data.temporary_hit_points || 0);
     } catch (err) {
       setError('Failed to load character');
       toast.error('Failed to load character');
@@ -351,8 +352,8 @@ export default function CharacterSheetFull() {
   }, [character]);
 
   const profBonus = useMemo(() => Math.ceil((character?.level || 1) / 4) + 1, [character]);
-  const maxHp = character?.max_hp || (8 + getModifier(abilities.constitution));
-  const ac = character?.ac || (10 + getModifier(abilities.dexterity));
+  const maxHp = character?.max_hit_points ?? character?.max_hp ?? (8 + getModifier(abilities.constitution));
+  const ac = character?.armor_class ?? character?.ac ?? (10 + getModifier(abilities.dexterity));
   const initiative = getModifier(abilities.dexterity);
   const speed = character?.speed || 30;
 
@@ -387,7 +388,7 @@ export default function CharacterSheetFull() {
           const newHp = Math.max(0, currentHp - remainingDamage);
           setCurrentHp(newHp);
           try {
-            await axios.patch(`${API}/characters/${characterId}`, { hp: newHp });
+            await axios.patch(`${API}/characters/${characterId}`, { current_hit_points: newHp });
           } catch (err) {
             console.error('Failed to update HP');
           }
@@ -400,7 +401,7 @@ export default function CharacterSheetFull() {
     const newHp = Math.max(0, Math.min(maxHp, currentHp + delta));
     setCurrentHp(newHp);
     try {
-      await axios.patch(`${API}/characters/${characterId}`, { hp: newHp });
+      await axios.patch(`${API}/characters/${characterId}`, { current_hit_points: newHp });
     } catch (err) {
       console.error('Failed to update HP');
     }
@@ -453,7 +454,7 @@ export default function CharacterSheetFull() {
         : `${API}/characters/${characterId}/long-rest`;
       const response = await axios.post(url);
       setCharacter(response.data);
-      setCurrentHp(response.data.current_hit_points || response.data.hp || currentHp);
+      setCurrentHp(response.data.current_hit_points ?? response.data.hp ?? currentHp);
       toast.success(`${type === 'short' ? 'Short' : 'Long'} rest complete`);
     } catch (err) {
       toast.error(`Rest failed: ${err.response?.data?.detail || 'unknown error'}`);
@@ -1073,23 +1074,25 @@ function BackstoryTab({ character, characterId, theme, onUpdateCharacter }) {
 
 function VitalChip({ icon: Icon, label, value, color, onClick, testId }) {
   const interactive = typeof onClick === 'function';
+  const Tag = interactive ? 'button' : 'div';
   return (
-    <div
+    <Tag
       onClick={onClick}
       data-testid={testId}
+      type={interactive ? 'button' : undefined}
       style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         padding: '6px 12px', borderRadius: '10px',
         background: `${color}15`, border: `1px solid ${color}40`,
         cursor: interactive ? 'pointer' : 'default',
-        minWidth: '60px', transition: 'all 0.2s'
+        minWidth: '60px', transition: 'all 0.2s',
+        font: 'inherit', color: 'inherit'
       }}
-      role={interactive ? 'button' : undefined}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: '#9EB0D0', fontWeight: 600 }}>
         <Icon size={11} color={color} /> {label}
       </div>
       <div style={{ fontSize: '15px', fontWeight: 700, color, marginTop: '2px' }}>{value}</div>
-    </div>
+    </Tag>
   );
 }
