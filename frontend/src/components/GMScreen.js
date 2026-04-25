@@ -3,10 +3,10 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-// Logo import removed for minimalist design
 import { 
   Sword, Users, BookOpen, Send, 
-  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap, Compass, UserCircle, Music, Target, Volume2, Link2, Sparkles, Grid3x3, Globe
+  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap, Compass, UserCircle, Music, Target, Volume2, Link2, Sparkles, Grid3x3, Globe,
+  ChevronDown, ChevronRight, BarChart3
 } from 'lucide-react';
 import DiceRoller from '@/components/DiceRoller';
 import DiceRoller3D from '@/components/ui/DiceRoller3D';
@@ -14,14 +14,16 @@ import DiceRollHistory from './DiceRollHistory';
 import LootGenerator from '@/components/LootGenerator';
 import PartyInventory from '@/components/PartyInventory';
 import { QuickReferenceModal } from '@/components/QuickReference';
-import MonsterLookup from '@/components/MonsterLookup';
 import RandomTables from '@/components/RandomTables';
-import CustomCreatureManager from '@/components/CustomCreatureManager';
-import QuickCombatModal from '@/components/QuickCombatModal';
 import PartyLocationTracker from '@/components/PartyLocationTracker';
-import NPCQuickReference from '@/components/NPCQuickReference';
 import TronBackground from '@/components/TronBackground';
-// New GM Tools
+import QuickCombatModal from '@/components/QuickCombatModal';
+// Extracted GM Tab Components
+import CombatTab from '@/components/gm/CombatTab';
+import NpcsTab from '@/components/gm/NpcsTab';
+import PartyTab from '@/components/gm/PartyTab';
+import NotesTab from '@/components/gm/NotesTab';
+import MonstersTab from '@/components/gm/MonstersTab';
 import Soundboard from '@/components/gm/Soundboard';
 import LiveSessionMode from '@/components/gm/LiveSessionMode';
 import SmartSessionLog from '@/components/gm/SmartSessionLog';
@@ -29,10 +31,7 @@ import StoryArcTracker from '@/components/gm/StoryArcTracker';
 import NPCRelationshipMap from '@/components/gm/NPCRelationshipMap';
 import AICoGM from '@/components/gm/AICoGM';
 import AISessionPlanner from '@/components/gm/AISessionPlanner';
-import InitiativeTracker from '@/components/gm/InitiativeTracker';
 import SessionTimer from '@/components/gm/SessionTimer';
-import QuickNpcGenerator from '@/components/gm/QuickNpcGenerator';
-import SendItemPanel from '@/components/gm/SendItemPanel';
 import MapMaker from '@/components/gm/MapMaker';
 import EventSystem from '@/components/gm/EventSystem';
 
@@ -82,6 +81,10 @@ function GMScreen({ username }) {
   
   // Live Session Mode state
   const [showLiveSession, setShowLiveSession] = useState(false);
+  
+  // Grouped tab collapse state
+  const [collapsedGroups, setCollapsedGroups] = useState({});
+  const toggleGroup = (group) => setCollapsedGroups(prev => ({ ...prev, [group]: !prev[group] }));
 
   useEffect(() => {
     fetchAllData();
@@ -350,25 +353,6 @@ function GMScreen({ username }) {
 
   if (loading) return <div className="loading-screen"><div className="loading-spinner"></div></div>;
 
-  const tabs = [
-    { id: 'combat', icon: Swords, label: 'Combat' },
-    { id: 'battlemap', icon: Grid3x3, label: 'Battle Map' },
-    { id: 'worldmap', icon: Globe, label: 'World Map' },
-    { id: 'location', icon: Compass, label: 'Location' },
-    { id: 'npcs', icon: UserCircle, label: 'NPCs' },
-    { id: 'network', icon: Link2, label: 'NPC Network' },
-    { id: 'monsters', icon: Skull, label: 'Monsters' },
-    { id: 'tables', icon: Wand2, label: 'Tables' },
-    { id: 'loot', icon: Coins, label: 'Loot' },
-    { id: 'dice', icon: Dices, label: 'Dice' },
-    { id: 'party', icon: Users, label: 'Party' },
-    { id: 'notes', icon: FileText, label: 'Notes' },
-    { id: 'story', icon: Target, label: 'Story Arcs' },
-    { id: 'planner', icon: Sparkles, label: 'AI Planner' },
-    { id: 'events', icon: Coins, label: 'Events' },
-    { id: 'sound', icon: Volume2, label: 'Soundboard' },
-  ];
-
   // GM Theme - Midnight Neon (Dark Purple/Violet)
   const theme = {
     bg: { 
@@ -395,6 +379,35 @@ function GMScreen({ username }) {
     border: 'rgba(138, 43, 226, 0.3)',
     gradient: 'linear-gradient(135deg, #4B0082 0%, #8A2BE2 100%)'
   };
+
+  const tabGroups = [
+    { group: 'COMBAT', color: '#EF4444', tabs: [
+      { id: 'combat', icon: Swords, label: 'Combat' },
+      { id: 'battlemap', icon: Grid3x3, label: 'Battle Map' },
+    ]},
+    { group: 'WORLD', color: '#3B82F6', tabs: [
+      { id: 'worldmap', icon: Globe, label: 'World Map' },
+      { id: 'location', icon: Compass, label: 'Location' },
+      { id: 'events', icon: BarChart3, label: 'Events' },
+    ]},
+    { group: 'CHARACTERS', color: '#8B5CF6', tabs: [
+      { id: 'npcs', icon: UserCircle, label: 'NPCs' },
+      { id: 'network', icon: Link2, label: 'NPC Network' },
+      { id: 'party', icon: Users, label: 'Party' },
+      { id: 'monsters', icon: Skull, label: 'Monsters' },
+    ]},
+    { group: 'REFERENCE', color: '#F59E0B', tabs: [
+      { id: 'tables', icon: Wand2, label: 'Tables' },
+      { id: 'loot', icon: Coins, label: 'Loot' },
+      { id: 'dice', icon: Dices, label: 'Dice' },
+    ]},
+    { group: 'SESSION', color: '#10B981', tabs: [
+      { id: 'notes', icon: FileText, label: 'Notes' },
+      { id: 'story', icon: Target, label: 'Story Arcs' },
+      { id: 'planner', icon: Sparkles, label: 'AI Planner' },
+      { id: 'sound', icon: Volume2, label: 'Soundboard' },
+    ]},
+  ];
 
   return (
     <div style={{ 
@@ -504,57 +517,66 @@ function GMScreen({ username }) {
             marginBottom: '12px',
             paddingLeft: '16px'
           }}>
-            GM Tools
+            Live Play
           </h3>
           
-          {/* Sidebar Tabs with Sunset Hover Effect */}
+          {/* Grouped Sidebar Tabs */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            {tabs.map(tab => {
-              const isActive = activeTab === tab.id;
-              const isHovered = hoveredTab === tab.id && !isActive;
-              
+            {tabGroups.map(group => {
+              const isCollapsed = collapsedGroups[group.group];
+              const hasActive = group.tabs.some(t => t.id === activeTab);
               return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  onMouseEnter={() => setHoveredTab(tab.id)}
-                  onMouseLeave={() => setHoveredTab(null)}
-                  data-testid={`tab-${tab.id}`}
-                  className={`tab-glow press-scale ${isActive ? 'tab-active' : ''}`}
-                  style={{
-                    position: 'relative',
-                    padding: '12px 16px',
-                    border: 'none',
-                    background: isActive ? theme.gradient : (isHovered ? theme.bg.hover : 'transparent'),
-                    color: isActive ? theme.text.primary : (isHovered ? theme.text.primary : theme.text.secondary),
-                    fontWeight: '500',
-                    fontSize: '15px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    textAlign: 'left',
-                    width: '100%',
-                    minHeight: '46px',
-                    overflow: 'hidden',
-                    borderRadius: '6px'
-                  }}
-                >
-                  <tab.icon size={18} />
-                  <span style={{ flex: 1 }}>{tab.label}</span>
+                <div key={group.group}>
+                  {/* Group Header */}
+                  <button
+                    onClick={() => toggleGroup(group.group)}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: '8px',
+                      padding: '8px 16px', border: 'none', background: 'transparent',
+                      cursor: 'pointer', color: hasActive ? group.color : theme.text.muted,
+                      fontSize: '10px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase',
+                      transition: 'color 0.2s',
+                    }}
+                  >
+                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: group.color, flexShrink: 0, opacity: hasActive ? 1 : 0.4 }} />
+                    <span style={{ flex: 1, textAlign: 'left' }}>{group.group}</span>
+                    {isCollapsed ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
+                  </button>
                   
-                  {/* Purple/gold bar on right side - slides in on hover */}
-                  <div style={{
-                    position: 'absolute',
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: isHovered && !isActive ? '3px' : '0px',
-                    background: theme.accent.gm,
-                    transition: 'width 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }} />
-                </button>
+                  {/* Group Tabs */}
+                  {!isCollapsed && group.tabs.map(tab => {
+                    const isActive = activeTab === tab.id;
+                    const isHovered = hoveredTab === tab.id && !isActive;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        onMouseEnter={() => setHoveredTab(tab.id)}
+                        onMouseLeave={() => setHoveredTab(null)}
+                        data-testid={`tab-${tab.id}`}
+                        className={`tab-glow press-scale ${isActive ? 'tab-active' : ''}`}
+                        style={{
+                          position: 'relative', padding: '10px 16px 10px 28px', border: 'none',
+                          background: isActive ? theme.gradient : (isHovered ? theme.bg.hover : 'transparent'),
+                          color: isActive ? theme.text.primary : (isHovered ? theme.text.primary : theme.text.secondary),
+                          fontWeight: '500', fontSize: '14px', cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', gap: '10px',
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          textAlign: 'left', width: '100%', minHeight: '40px',
+                          overflow: 'hidden', borderRadius: '6px'
+                        }}
+                      >
+                        <tab.icon size={16} />
+                        <span style={{ flex: 1 }}>{tab.label}</span>
+                        <div style={{
+                          position: 'absolute', right: 0, top: 0, bottom: 0,
+                          width: isHovered && !isActive ? '3px' : '0px',
+                          background: group.color, transition: 'width 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                        }} />
+                      </button>
+                    );
+                  })}
+                </div>
               );
             })}
           </div>
@@ -582,148 +604,8 @@ function GMScreen({ username }) {
           }}>
             {/* COMBAT TAB */}
             {activeTab === 'combat' && (
-              <div>
-                <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Swords size={24} style={{ color: theme.accent.primary }} /> Combat Control
-                </h2>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-                  {/* Encounter Selector */}
-                  <div>
-                    <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '12px' }}>Select Encounter</h3>
-                    {scenarios.length === 0 ? (
-                      <div style={{ background: theme.bg.card, border: `1px dashed ${theme.border}`, borderRadius: '10px', padding: '30px', textAlign: 'center' }}>
-                        <Swords size={32} style={{ color: theme.text.muted, margin: '0 auto 12px' }} />
-                        <p style={{ color: theme.text.secondary, fontSize: '14px', marginBottom: '8px' }}>No encounters created</p>
-                        <p style={{ color: theme.text.muted, fontSize: '13px' }}>Create encounters in the Combat Creator tab of your campaign dashboard</p>
-                      </div>
-                    ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto' }}>
-                      {scenarios.map(s => (
-                        <button
-                          key={s.id}
-                          data-testid={`encounter-${s.id}`}
-                          onClick={() => setSelectedScenario(s)}
-                          style={{
-                            padding: '14px 16px',
-                            background: selectedScenario?.id === s.id ? theme.accent.gmSubtle : theme.bg.card,
-                            border: `1px solid ${selectedScenario?.id === s.id ? theme.accent.gm : theme.border}`,
-                            borderLeft: selectedScenario?.id === s.id ? `3px solid ${theme.accent.gm}` : `1px solid ${theme.border}`,
-                            borderRadius: '10px',
-                            color: theme.text.primary,
-                            textAlign: 'left',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s'
-                          }}
-                        >
-                          <div style={{ fontWeight: '500', marginBottom: '4px', fontSize: '15px' }}>{s.name}</div>
-                          <div style={{ fontSize: '13px', color: theme.text.secondary, display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                            <span>{s.combatants?.length || 0} combatants</span>
-                            {s.map_url && <span style={{ color: theme.accent.gm }}>Has Map</span>}
-                            {s.combatants?.some(c => c.loot?.length > 0) && <span style={{ color: '#F59E0B' }}>Has Loot</span>}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Combat Actions */}
-                <div>
-                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '12px' }}>Launch Combat</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <Button 
-                      onClick={launchCombat} 
-                      data-testid="start-combat-btn"
-                      disabled={!selectedScenario}
-                      style={{ 
-                        width: '100%', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        gap: '10px',
-                        padding: '16px',
-                        fontSize: '16px',
-                        background: selectedScenario ? theme.gradient : theme.bg.card,
-                        border: 'none',
-                        borderRadius: '10px',
-                        color: theme.text.primary,
-                        opacity: selectedScenario ? 1 : 0.5
-                      }}
-                    >
-                      <Play size={18} /> Start Combat <ArrowRight size={16} />
-                    </Button>
-                    
-                    <Button 
-                      onClick={quickStartCombat} 
-                      data-testid="quick-combat-btn"
-                      disabled={players.length === 0}
-                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: 'rgba(138, 43, 226, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary, fontSize: '15px' }}
-                    >
-                      <Users size={16} /> Quick Start with Players ({players.length})
-                    </Button>
-                    
-                    {/* Spontaneous Combat Button */}
-                    <Button 
-                      onClick={() => setShowQuickCombat(true)} 
-                      data-testid="spontaneous-combat-btn"
-                      style={{ 
-                        width: '100%', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        gap: '8px', 
-                        padding: '14px',
-                        background: 'rgba(239, 68, 68, 0.8)',
-                        border: 'none',
-                        borderRadius: '10px',
-                        color: theme.text.primary,
-                        fontSize: '15px'
-                      }}
-                    >
-                      <Zap size={16} /> Spontaneous Combat
-                    </Button>
-                    
-                    <p style={{ fontSize: '13px', color: theme.text.muted, textAlign: 'center', fontStyle: 'italic', marginTop: '8px' }}>
-                      Combat opens in a dedicated full-screen view with initiative tracker and battle map
-                    </p>
-                  </div>
-                  
-                  {/* Selected Encounter Preview */}
-                  {selectedScenario && (
-                    <div style={{ marginTop: '20px', background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '14px' }}>
-                      <h4 style={{ fontSize: '15px', color: theme.text.primary, fontWeight: '500', marginBottom: '10px' }}>{selectedScenario.name}</h4>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                        {selectedScenario.combatants?.slice(0, 6).map(c => (
-                          <div key={c.id} style={{ 
-                            background: c.type === 'player' ? 'rgba(138, 43, 226, 0.2)' : 'rgba(239, 68, 68, 0.2)', 
-                            border: `1px solid ${c.type === 'player' ? theme.accent.primary : '#EF4444'}`,
-                            padding: '6px 10px',
-                            borderRadius: '6px',
-                            fontSize: '13px',
-                            color: theme.text.primary
-                          }}>
-                            {c.name}
-                            {c.loot?.length > 0 && <Coins size={10} style={{ marginLeft: '4px', color: '#F59E0B' }} />}
-                          </div>
-                        ))}
-                        {selectedScenario.combatants?.length > 6 && (
-                          <div style={{ padding: '6px 10px', fontSize: '13px', color: theme.text.muted }}>
-                            +{selectedScenario.combatants.length - 6} more
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Initiative Tracker */}
-              <div style={{ marginTop: '24px', background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '12px', padding: '16px' }}>
-                <InitiativeTracker theme={theme} campaignId={campaignId} combatants={selectedScenario?.combatants || []} />
-              </div>
-            </div>
-          )}
+              <CombatTab theme={theme} campaignId={campaignId} scenarios={scenarios} selectedScenario={selectedScenario} setSelectedScenario={setSelectedScenario} launchCombat={launchCombat} quickStartCombat={quickStartCombat} players={players} setShowQuickCombat={setShowQuickCombat} />
+            )}
 
           {/* BATTLE MAP TAB */}
           {activeTab === 'battlemap' && (
@@ -747,216 +629,7 @@ function GMScreen({ username }) {
           {/* NPCs TAB */}
           {/* NPCS TAB - Combined with Name Generator */}
           {activeTab === 'npcs' && (
-            <div>
-              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <UserCircle size={24} style={{ color: theme.accent.orange }} /> NPCs & Name Generator
-              </h2>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
-                {/* Left: Saved NPCs */}
-                <div style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '12px', padding: '20px' }}>
-                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '16px' }}>
-                    Saved NPCs
-                  </h3>
-                  <NPCQuickReference campaignId={campaignId} />
-                </div>
-                
-                {/* Right: Name Generator */}
-                <div>
-                  <div style={{ background: theme.bg.card, border: `1px solid ${theme.accent.orange}`, borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
-                    <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.orange, fontWeight: '600', marginBottom: '20px' }}>Generate NPC Name</h3>
-                    
-                    {/* Race Selection */}
-                    <div style={{ marginBottom: '16px' }}>
-                      <label style={{ display: 'block', color: theme.text.secondary, fontSize: '13px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Race</label>
-                      <select
-                        value={nameRace}
-                        onChange={(e) => setNameRace(e.target.value)}
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          background: 'rgba(15, 10, 30, 0.6)',
-                          border: `1px solid ${theme.border}`,
-                          borderRadius: '10px',
-                          color: theme.text.primary,
-                          fontSize: '15px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <option value="human">Human</option>
-                        <option value="elf">Elf</option>
-                        <option value="dwarf">Dwarf</option>
-                        <option value="halfling">Halfling</option>
-                        <option value="orc">Orc / Half-Orc</option>
-                        <option value="tiefling">Tiefling</option>
-                      </select>
-                    </div>
-                    
-                    {/* Gender Selection */}
-                    <div style={{ marginBottom: '24px' }}>
-                      <label style={{ display: 'block', color: theme.text.secondary, fontSize: '13px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Gender</label>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        {['any', 'male', 'female'].map(g => (
-                          <button
-                            key={g}
-                            onClick={() => setNameGender(g)}
-                            style={{
-                              flex: 1,
-                              padding: '12px',
-                              background: nameGender === g ? 'rgba(249, 115, 22, 0.2)' : 'rgba(15, 10, 30, 0.5)',
-                              border: `1px solid ${nameGender === g ? theme.accent.orange : theme.border}`,
-                              borderRadius: '8px',
-                              color: nameGender === g ? theme.accent.orange : theme.text.secondary,
-                              fontSize: '14px',
-                              fontWeight: '500',
-                              cursor: 'pointer',
-                              textTransform: 'capitalize',
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            {g}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    {/* Generate Button */}
-                    <Button
-                      onClick={generateRandomName}
-                      className="btn-primary"
-                      data-testid="generate-name-btn"
-                      style={{
-                        width: '100%',
-                        padding: '16px',
-                        fontSize: '16px',
-                        background: theme.gradient,
-                        borderRadius: '10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '10px'
-                      }}
-                    >
-                      <Shuffle size={20} />
-                      Generate Name
-                    </Button>
-                  </div>
-                  
-                  {/* Generated Name Display */}
-                  {generatedName && (
-                    <div style={{ 
-                      background: 'rgba(138, 43, 226, 0.1)',
-                      border: `1px solid ${theme.accent.primary}`,
-                      borderRadius: '12px',
-                      padding: '24px',
-                      textAlign: 'center',
-                      marginBottom: '20px'
-                    }}>
-                      <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Generated Name</p>
-                      <h3 style={{ 
-                        fontFamily: "'Cinzel', serif",
-                        fontSize: '28px', 
-                        color: theme.text.primary, 
-                        fontWeight: '600',
-                        marginBottom: '8px',
-                        background: theme.gradient,
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent'
-                      }}>
-                        {generatedName.fullName}
-                      </h3>
-                      <p style={{ color: theme.accent.secondary, fontSize: '15px', marginBottom: '20px' }}>
-                        {generatedName.gender} {generatedName.race.charAt(0).toUpperCase() + generatedName.race.slice(1)}
-                      </p>
-                      
-                      <div style={{ display: 'flex', gap: '12px' }}>
-                        <Button
-                          onClick={generateRandomName}
-                          className="btn-secondary"
-                          style={{ flex: 1, borderRadius: '10px', padding: '12px', fontSize: '14px' }}
-                        >
-                          <Shuffle size={16} style={{ marginRight: '6px' }} />
-                          Reroll
-                        </Button>
-                        <Button
-                          onClick={saveNameAsNPC}
-                          disabled={savingNPC}
-                          className="btn-primary"
-                          data-testid="save-as-npc-btn"
-                          style={{ 
-                            flex: 1,
-                            borderRadius: '10px',
-                            padding: '12px',
-                            fontSize: '14px',
-                            background: `linear-gradient(135deg, ${theme.accent.gm} 0%, #D97706 100%)`
-                          }}
-                        >
-                          {savingNPC ? (
-                            <Loader className="animate-spin" size={16} />
-                          ) : (
-                            <>
-                              <UserPlus size={16} style={{ marginRight: '6px' }} />
-                              Save as NPC
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Saved Names This Session */}
-                  {savedNames.length > 0 && (
-                    <div style={{ background: theme.bg.card, border: `1px solid ${theme.accent.primary}`, borderRadius: '12px', padding: '20px' }}>
-                      <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '14px', color: theme.accent.gm, fontWeight: '600', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <UserPlus size={16} />
-                        Saved This Session ({savedNames.length})
-                      </h3>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
-                        {savedNames.map((name, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              padding: '10px 14px',
-                              background: theme.accent.gmSubtle,
-                              border: `1px solid ${theme.accent.gm}`,
-                              borderRadius: '8px',
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center'
-                            }}
-                          >
-                            <div>
-                              <span style={{ color: theme.text.primary, fontWeight: '500', fontSize: '14px' }}>{name.fullName}</span>
-                              <span style={{ color: theme.text.secondary, fontSize: '12px', marginLeft: '8px' }}>
-                                {name.race.charAt(0).toUpperCase() + name.race.slice(1)}
-                              </span>
-                            </div>
-                            <span style={{ 
-                              background: theme.accent.gm, 
-                              color: '#000', 
-                              padding: '3px 8px', 
-                              borderRadius: '4px', 
-                              fontSize: '10px', 
-                              fontWeight: '600' 
-                            }}>
-                              SAVED
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Quick NPC Generator */}
-              <div style={{ marginTop: '20px', background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '12px', padding: '20px' }}>
-                <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '16px' }}>
-                  Quick NPC Generator
-                </h3>
-                <QuickNpcGenerator theme={theme} />
-              </div>
-            </div>
+            <NpcsTab theme={theme} campaignId={campaignId} nameRace={nameRace} setNameRace={setNameRace} nameGender={nameGender} setNameGender={setNameGender} generatedName={generatedName} generateRandomName={generateRandomName} saveNameAsNPC={saveNameAsNPC} savingNPC={savingNPC} savedNames={savedNames} />
           )}
 
           {/* DICE TAB */}
@@ -971,40 +644,7 @@ function GMScreen({ username }) {
 
           {/* MONSTER LOOKUP TAB - Combined with Custom Creatures */}
           {activeTab === 'monsters' && (
-            <div>
-              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Skull size={24} style={{ color: theme.accent.primary }} /> Monsters & Custom Creatures
-              </h2>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
-                {/* Left: Monster Lookup */}
-                <div style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '12px', padding: '20px' }}>
-                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.primary, fontWeight: '600', marginBottom: '16px' }}>
-                    SRD Monster Lookup
-                  </h3>
-                  <MonsterLookup />
-                </div>
-                
-                {/* Right: Custom Creatures */}
-                <div style={{ background: theme.bg.card, border: `1px solid ${theme.accent.gm}`, borderRadius: '12px', padding: '20px' }}>
-                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '12px' }}>
-                    Custom Creatures
-                  </h3>
-                  <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '16px' }}>
-                    Create homebrew monsters or import creatures from CSV files.
-                  </p>
-                  <CustomCreatureManager 
-                    campaignId={campaignId}
-                    isOpen={true}
-                    onClose={() => {}}
-                    onSelectCreature={(creature) => {
-                      toast.success(`${creature.name} added! Go to Combat tab to use it in an encounter.`);
-                    }}
-                    embedded={true}
-                  />
-                </div>
-              </div>
-            </div>
+            <MonstersTab theme={theme} campaignId={campaignId} />
           )}
 
           {/* RANDOM TABLES TAB */}
@@ -1038,187 +678,12 @@ function GMScreen({ username }) {
 
           {/* PARTY TAB */}
           {activeTab === 'party' && (
-            <div>
-              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Users size={24} style={{ color: theme.accent.primary }} /> Party Overview
-              </h2>
-              
-              {players.length === 0 ? (
-                <div style={{ background: theme.bg.card, border: `1px dashed ${theme.border}`, borderRadius: '12px', padding: '40px', textAlign: 'center' }}>
-                  <Users size={40} style={{ color: theme.accent.primary, margin: '0 auto 16px' }} />
-                  <p style={{ color: theme.text.secondary, fontSize: '15px', marginBottom: '8px' }}>No players in campaign</p>
-                  <p style={{ color: theme.text.muted, fontSize: '14px' }}>Add players in the Players tab of your campaign dashboard</p>
-                </div>
-              ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-                  {players.map(player => (
-                    <div
-                      key={player.id}
-                      style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '12px', padding: '18px' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
-                        <div style={{ 
-                          width: '50px', height: '50px', borderRadius: '50%', 
-                          background: theme.gradient, 
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                          fontWeight: '700', color: theme.text.primary, fontSize: '20px', fontFamily: "'Cinzel', serif"
-                        }}>
-                          {player.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <div style={{ color: theme.text.primary, fontWeight: '600', fontSize: '17px', fontFamily: "'Cinzel', serif" }}>{player.name}</div>
-                          <div style={{ color: theme.accent.secondary, fontSize: '14px' }}>
-                            {player.race || 'Unknown'} {player.class || 'Adventurer'} {player.level ? `Lv.${player.level}` : ''}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                        <div style={{ background: 'rgba(236, 72, 153, 0.15)', border: `1px solid ${theme.accent.secondary}`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: theme.accent.secondary, fontWeight: '500' }}>HP</div>
-                          <div style={{ fontSize: '18px', color: theme.text.primary, fontWeight: '600' }}>{player.hp || player.max_hp || '?'}/{player.max_hp || '?'}</div>
-                        </div>
-                        <div style={{ background: 'rgba(138, 43, 226, 0.15)', border: `1px solid ${theme.accent.primary}`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: theme.accent.primary, fontWeight: '500' }}>AC</div>
-                          <div style={{ fontSize: '18px', color: theme.text.primary, fontWeight: '600' }}>{player.ac || '?'}</div>
-                        </div>
-                        <div style={{ background: theme.accent.gmSubtle, border: `1px solid ${theme.accent.gm}`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '12px', color: theme.accent.gm, fontWeight: '500' }}>INIT</div>
-                          <div style={{ fontSize: '18px', color: theme.text.primary, fontWeight: '600' }}>
-                            {player.stats?.dexterity ? (() => {
-                              const mod = Math.floor((player.stats.dexterity - 10) / 2);
-                              return mod >= 0 ? `+${mod}` : `${mod}`;
-                            })() : '?'}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {player.stats && (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '4px', marginTop: '14px' }}>
-                          {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map((stat, i) => {
-                            const statKey = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'][i];
-                            const val = player.stats[statKey] || 10;
-                            const mod = Math.floor((val - 10) / 2);
-                            return (
-                              <div key={stat} style={{ textAlign: 'center', background: 'rgba(15, 10, 30, 0.5)', borderRadius: '6px', padding: '6px' }}>
-                                <div style={{ fontSize: '11px', color: theme.text.muted }}>{stat}</div>
-                                <div style={{ fontSize: '14px', color: theme.text.primary, fontWeight: '500' }}>{val}</div>
-                                <div style={{ fontSize: '11px', color: mod >= 0 ? theme.accent.gm : theme.accent.secondary }}>{mod >= 0 ? '+' : ''}{mod}</div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Send Item to Player */}
-              <div style={{ marginTop: '20px' }}>
-                <SendItemPanel theme={theme} partyCharacters={players.map(p => ({
-                  id: p.id, name: p.name, level: p.level, character_class: p.class || p.character_class,
-                }))} />
-              </div>
-            </div>
+            <PartyTab theme={theme} players={players} />
           )}
 
           {/* NOTES TAB */}
           {activeTab === 'notes' && (
-            <div>
-              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <FileText size={24} style={{ color: theme.accent.secondary }} /> Session Notes
-              </h2>
-              
-              <div className="mobile-grid-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                {/* Add Note */}
-                <div>
-                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '12px' }}>Quick Note</h3>
-                  <textarea
-                    value={quickNote}
-                    onChange={(e) => setQuickNote(e.target.value)}
-                    style={{ 
-                      minHeight: '150px', 
-                      marginBottom: '12px', 
-                      fontSize: '15px', 
-                      width: '100%',
-                      background: 'rgba(15, 10, 30, 0.6)',
-                      border: `1px solid ${theme.border}`,
-                      borderRadius: '10px',
-                      padding: '14px',
-                      color: theme.text.primary,
-                      resize: 'vertical'
-                    }}
-                    placeholder="Write a quick note about the session... NPCs met, events, plot points, etc."
-                  />
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <Button 
-                      onClick={handleSubmitNote} 
-                      disabled={processingNote || !quickNote.trim()} 
-                      className="press-scale"
-                      style={{ flex: 1, display: 'flex', gap: '8px', justifyContent: 'center', background: theme.gradient, color: theme.text.primary, border: 'none', borderRadius: '10px', padding: '14px', fontSize: '15px' }}
-                    >
-                      {processingNote ? <Loader size={16} className="animate-spin" /> : <Send size={16} />} Save Note
-                    </Button>
-                    <Button 
-                      onClick={async () => {
-                        if (!quickNote.trim()) return;
-                        try {
-                          await axios.post(`${API}/campaigns/${campaignId}/sync-note`, {
-                            note_content: quickNote,
-                            note_type: 'gm_note',
-                            title: 'Session Update',
-                            create_timeline_event: true
-                          });
-                          toast.success('Note synced to all players!');
-                          setQuickNote('');
-                        } catch (err) {
-                          toast.error('Failed to sync note');
-                        }
-                      }}
-                      disabled={!quickNote.trim()}
-                      className="press-scale tab-glow"
-                      style={{ 
-                        display: 'flex', 
-                        gap: '8px', 
-                        justifyContent: 'center', 
-                        background: 'rgba(138, 43, 226, 0.2)', 
-                        color: theme.accent.secondary, 
-                        border: `1px solid ${theme.accent.secondary}`, 
-                        borderRadius: '10px', 
-                        padding: '14px', 
-                        fontSize: '14px',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-                      <Users size={16} /> Sync to Players
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Notes List */}
-                <div>
-                  <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '16px', color: theme.accent.gm, fontWeight: '600', marginBottom: '12px' }}>Recent Notes ({sessionNotes.length})</h3>
-                  <div className="scroll-smooth" style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {sessionNotes.length === 0 ? (
-                      <div className="card-hover" style={{ background: theme.bg.card, border: `2px dashed ${theme.border}`, padding: '30px', textAlign: 'center', borderRadius: '10px' }}>
-                        <FileText size={32} style={{ color: theme.text.muted, margin: '0 auto 12px' }} />
-                        <p style={{ color: theme.text.secondary, fontSize: '13px' }}>No notes yet</p>
-                      </div>
-                    ) : (
-                      sessionNotes.map(note => (
-                        <div key={note.id} className="card-hover" style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, padding: '12px', borderRadius: '8px' }}>
-                          <div style={{ fontSize: '10px', color: theme.text.muted, marginBottom: '6px' }}>
-                            {new Date(note.created_at).toLocaleString()}
-                          </div>
-                          <div style={{ color: theme.text.white, fontSize: '13px', lineHeight: '1.5' }}>{note.content}</div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <NotesTab theme={theme} campaignId={campaignId} quickNote={quickNote} setQuickNote={setQuickNote} processingNote={processingNote} handleSubmitNote={handleSubmitNote} sessionNotes={sessionNotes} setSessionNotes={setSessionNotes} />
           )}
 
           {/* STORY ARCS TAB */}
