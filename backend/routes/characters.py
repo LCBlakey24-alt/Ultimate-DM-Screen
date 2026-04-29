@@ -33,72 +33,6 @@ def normalize_ruleset_id(edition: str, explicit_ruleset_id: str = "") -> str:
         return explicit_ruleset_id
     return "dnd5e_2024" if str(edition) == "2024" else "dnd5e_2014"
 
-
-PREMADE_TEMPLATES = [
-    {
-        "id": "fighter_guardian_2014_v1", "ruleset_id": "dnd5e_2014", "name": "Shield Guardian",
-        "character_class": "Fighter", "race": "Human", "background": "Soldier", "complexity": 1,
-        "playstyle_tags": ["tank", "melee", "simple"], "pitch": "A sturdy front-liner who protects allies."
-    },
-    {
-        "id": "wizard_scholar_2014_v1", "ruleset_id": "dnd5e_2014", "name": "Arcane Scholar",
-        "character_class": "Wizard", "race": "High Elf", "background": "Sage", "complexity": 3,
-        "playstyle_tags": ["magic", "control", "utility"], "pitch": "A tactical spellcaster with broad utility."
-    },
-    {
-        "id": "fighter_guardian_2024_v1", "ruleset_id": "dnd5e_2024", "name": "Shield Guardian (2024)",
-        "character_class": "Fighter", "race": "Human", "background": "Guard", "complexity": 1,
-        "playstyle_tags": ["tank", "melee", "simple"], "pitch": "A durable defender built for 2024 rules."
-    },
-    {
-        "id": "wizard_scholar_2024_v1", "ruleset_id": "dnd5e_2024", "name": "Arcane Scholar (2024)",
-        "character_class": "Wizard", "race": "Elf", "background": "Scribe", "complexity": 3,
-        "playstyle_tags": ["magic", "control", "utility"], "pitch": "A flexible 2024 wizard starter template."
-    }
-]
-
-
-
-@router.get("/character-templates")
-async def list_character_templates(ruleset_id: str = "dnd5e_2014"):
-    templates = [t for t in PREMADE_TEMPLATES if t.get("ruleset_id") == ruleset_id]
-    return {"templates": templates, "count": len(templates), "ruleset_id": ruleset_id}
-
-
-@router.post("/character-templates/ai-match")
-async def ai_match_character_template(payload: TemplateMatchRequest):
-    ruleset_id = payload.ruleset_id
-    description = payload.description.lower()
-    candidates = [t for t in PREMADE_TEMPLATES if t.get("ruleset_id") == ruleset_id]
-
-    keywords = {
-        "tank": ["tank", "protect", "defend", "front line"],
-        "magic": ["magic", "spell", "wizard", "cast"],
-        "melee": ["melee", "sword", "close"],
-        "utility": ["utility", "support", "control"],
-        "simple": ["easy", "simple", "beginner"]
-    }
-
-    def score(template):
-        score_value = 0
-        tags = set(template.get("playstyle_tags", []))
-        for tag, keys in keywords.items():
-            if any(k in description for k in keys) and tag in tags:
-                score_value += 2
-        if template.get("complexity") == 1 and any(k in description for k in ["easy", "simple", "beginner"]):
-            score_value += 1
-        return score_value
-
-    ranked = sorted(candidates, key=score, reverse=True)
-    best = ranked[0] if ranked else None
-    alts = ranked[1:3] if len(ranked) > 1 else []
-    return {
-        "ruleset_id": ruleset_id,
-        "best_match": best,
-        "alternatives": alts,
-        "note": "Deterministic template matching (MVP)."
-    }
-
 @router.get("/characters")
 async def get_user_characters(username: str = Depends(get_current_user)):
     """Get all characters owned by the current user"""
@@ -593,35 +527,6 @@ async def get_level_up_options(
         asi_levels.append(10)
     is_asi_level = target_level in asi_levels
     spellcaster_classes = {'bard', 'cleric', 'druid', 'paladin', 'ranger', 'sorcerer', 'warlock', 'wizard'}
-    known_caster_progression = {
-        'bard': {1: 4, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9, 7: 10, 8: 11, 9: 12, 10: 14, 11: 15, 12: 15, 13: 16, 14: 18, 15: 19, 16: 19, 17: 20, 18: 22, 19: 22, 20: 22},
-        'sorcerer': {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 11, 11: 12, 12: 12, 13: 13, 14: 13, 15: 14, 16: 14, 17: 15, 18: 15, 19: 15, 20: 15},
-        'warlock': {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 10, 11: 11, 12: 11, 13: 12, 14: 12, 15: 13, 16: 13, 17: 14, 18: 14, 19: 15, 20: 15},
-        'ranger': {2: 2, 3: 3, 4: 3, 5: 4, 6: 4, 7: 5, 8: 5, 9: 6, 10: 6, 11: 7, 12: 7, 13: 8, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10, 19: 11, 20: 11},
-    }
-    cantrip_progression = {
-        'bard': {1: 2, 4: 3, 10: 4},
-        'cleric': {1: 3, 4: 4, 10: 5},
-        'druid': {1: 2, 4: 3, 10: 4},
-        'sorcerer': {1: 4, 4: 5, 10: 6},
-        'warlock': {1: 2, 4: 3, 10: 4},
-        'wizard': {1: 3, 4: 4, 10: 5},
-    }
-    spell_learn_count = 0
-    if char_class == 'wizard':
-        spell_learn_count = 2
-    elif char_class in known_caster_progression:
-        old_count = known_caster_progression[char_class].get(current_level, 0)
-        new_count = known_caster_progression[char_class].get(target_level, old_count)
-        spell_learn_count = max(0, new_count - old_count)
-    cantrip_gain = 0
-    if char_class in cantrip_progression:
-        prog = cantrip_progression[char_class]
-        old_cantrip = max([v for k, v in prog.items() if k <= current_level], default=0)
-        new_cantrip = max([v for k, v in prog.items() if k <= target_level], default=old_cantrip)
-        cantrip_gain = max(0, new_cantrip - old_cantrip)
-    subclass_unlock_level = get_subclass_unlock_level(existing.get('character_class', ''), existing.get('edition', '2014'))
-    subclass_choice_available = current_level < subclass_unlock_level <= target_level and not existing.get('subclass')
     return {
         "character_id": character_id,
         "current_level": current_level,
@@ -629,11 +534,6 @@ async def get_level_up_options(
         "is_asi_level": is_asi_level,
         "asi_or_feat_required": is_asi_level,
         "is_spellcaster": char_class in spellcaster_classes,
-        "spell_learn_count": spell_learn_count,
-        "cantrip_gain": cantrip_gain,
-        "subclass_unlock_level": subclass_unlock_level,
-        "subclass_choice_available": subclass_choice_available,
-        "valid_choice_types": ["asi", "feat"] if is_asi_level else ["standard"],
         "class_name": existing.get('character_class', ''),
         "ruleset_id": existing.get('ruleset_id', 'dnd5e_2014')
     }
