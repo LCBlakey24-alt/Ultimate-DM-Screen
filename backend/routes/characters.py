@@ -9,7 +9,7 @@ from utils.auth import (
 from models import (
     PlayerCharacter, PlayerCharacterCreate, PlayerCharacterUpdate,
     LevelUpRequest, CampaignJoinRequest, AICharacterGenerateRequest,
-    JournalEntry, JournalEntryCreate, SUBSCRIPTION_PLANS
+    JournalEntry, JournalEntryCreate, SUBSCRIPTION_PLANS, TemplateMatchRequest
 )
 from typing import Optional, Dict, Any, List
 import uuid
@@ -102,9 +102,9 @@ async def create_character(
     
     # Prepare character data, excluding fields that will be calculated or explicitly set
     char_data = character.model_dump()
-    excluded_fields = ['max_hit_points', 'current_hit_points', 'proficiency_bonus', 'armor_class', 
+    excluded_fields = ['max_hit_points', 'current_hit_points', 'proficiency_bonus', 'armor_class',
                        'spells_known', 'spells_prepared', 'cantrips_known', 'feats', 'edition',
-                       'portrait_url', 'campaign_id']
+                       'portrait_url', 'campaign_id', 'ruleset_id']
     char_data = {k: v for k, v in char_data.items() if k not in excluded_fields}
     
     # Normalize spell/cantrip inputs - ensure they are in object format
@@ -428,9 +428,32 @@ async def level_up_character(
                 update_data[f'spell_slots_{spell_level}_used'] = 0
 
     # Persist new spells/cantrips from level-up selections
-    if level_up.new_spells:
+    # Rules guardrails:
+    # - Wizard learns exactly 2 spells per wizard level.
+    # - Known casters can only learn net gain for that level.
+    known_caster_progression = {
+        'bard': {1: 4, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9, 7: 10, 8: 11, 9: 12, 10: 14, 11: 15, 12: 15, 13: 16, 14: 18, 15: 19, 16: 19, 17: 20, 18: 22, 19: 22, 20: 22},
+        'sorcerer': {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 11, 11: 12, 12: 12, 13: 13, 14: 13, 15: 14, 16: 14, 17: 15, 18: 15, 19: 15, 20: 15},
+        'warlock': {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 10, 11: 11, 12: 11, 13: 12, 14: 12, 15: 13, 16: 13, 17: 14, 18: 14, 19: 15, 20: 15},
+        'ranger': {2: 2, 3: 3, 4: 3, 5: 4, 6: 4, 7: 5, 8: 5, 9: 6, 10: 6, 11: 7, 12: 7, 13: 8, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10, 19: 11, 20: 11},
+    }
+    new_spells = level_up.new_spells or []
+    if char_class == 'wizard' and len(new_spells) not in (0, 2):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Wizard level-up requires exactly 2 new spells.")
+    if char_class in known_caster_progression:
+        table = known_caster_progression[char_class]
+        old_known = table.get(current_level, 0)
+        new_known = table.get(level_up.new_level, old_known)
+        expected_gain = max(0, new_known - old_known)
+        if len(new_spells) not in (0, expected_gain):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"{existing.get('character_class')} level-up expects {expected_gain} new spell(s)."
+            )
+
+    if new_spells:
         existing_spells = existing.get('spells_known', [])
-        for spell in level_up.new_spells:
+        for spell in new_spells:
             if not any(s.get('name') == spell.get('name') for s in existing_spells):
                 existing_spells.append(spell)
         update_data['spells_known'] = existing_spells

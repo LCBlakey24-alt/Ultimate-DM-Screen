@@ -38,6 +38,8 @@ export default function BasicCharacterBuilder() {
         level: Number(level),
         background: 'Acolyte',
         alignment: 'Neutral',
+        edition,
+        ruleset_id: edition === '2024' ? 'dnd5e_2024' : 'dnd5e_2014',
         edition: '2014',
         ...statBlock,
         max_hit_points: maxHP,

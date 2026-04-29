@@ -1637,6 +1637,11 @@ class LevelUpRequest(BaseModel):
     new_class: Optional[str] = None
 
 
+class TemplateMatchRequest(BaseModel):
+    ruleset_id: str = "dnd5e_2014"
+    description: str = ""
+
+
 class JournalEntry(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     character_id: Optional[str] = None
