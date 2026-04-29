@@ -373,6 +373,43 @@ async def level_up_character(
     update_data['asi_increases'] = asi_increases
     
     # Calculate spell slots for spellcasters
+    def get_spell_slot_progression(caster_class: str, level: int) -> Dict[str, int]:
+        if not caster_class:
+            return {}
+        caster_class = caster_class.lower()
+        # Full caster spell slots table (level -> slots per spell level)
+        full_caster_slots = {
+            1: {1: 2}, 2: {1: 3}, 3: {1: 4, 2: 2}, 4: {1: 4, 2: 3},
+            5: {1: 4, 2: 3, 3: 2}, 6: {1: 4, 2: 3, 3: 3}, 7: {1: 4, 2: 3, 3: 3, 4: 1},
+            8: {1: 4, 2: 3, 3: 3, 4: 2}, 9: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1},
+            10: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2}, 11: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1},
+            12: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1}, 13: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1},
+            14: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1}, 15: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1},
+            16: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1}, 17: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1},
+            18: {1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 1, 7: 1, 8: 1, 9: 1}, 19: {1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 1, 8: 1, 9: 1},
+            20: {1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 2, 8: 1, 9: 1}
+        }
+        half_caster_slots = {
+            2: {1: 2}, 3: {1: 3}, 4: {1: 3}, 5: {1: 4, 2: 2}, 6: {1: 4, 2: 2}, 7: {1: 4, 2: 3},
+            8: {1: 4, 2: 3}, 9: {1: 4, 2: 3, 3: 2}, 10: {1: 4, 2: 3, 3: 2}, 11: {1: 4, 2: 3, 3: 3},
+            12: {1: 4, 2: 3, 3: 3}, 13: {1: 4, 2: 3, 3: 3, 4: 1}, 14: {1: 4, 2: 3, 3: 3, 4: 1},
+            15: {1: 4, 2: 3, 3: 3, 4: 2}, 16: {1: 4, 2: 3, 3: 3, 4: 2}, 17: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1},
+            18: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1}, 19: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2}, 20: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2}
+        }
+        warlock_slots = {
+            1: {1: 1}, 2: {1: 2}, 3: {2: 2}, 4: {2: 2}, 5: {3: 2}, 6: {3: 2}, 7: {4: 2}, 8: {4: 2},
+            9: {5: 2}, 10: {5: 2}, 11: {5: 3}, 12: {5: 3}, 13: {5: 3}, 14: {5: 3}, 15: {5: 3},
+            16: {5: 3}, 17: {5: 4}, 18: {5: 4}, 19: {5: 4}, 20: {5: 4}
+        }
+        if caster_class in {'bard', 'cleric', 'druid', 'sorcerer', 'wizard'}:
+            slots = full_caster_slots.get(level, {})
+        elif caster_class in {'paladin', 'ranger'}:
+            slots = half_caster_slots.get(level, {})
+        elif caster_class == 'warlock':
+            slots = warlock_slots.get(level, {})
+        else:
+            slots = {}
+        return {str(k): int(v) for k, v in slots.items()}
     spellcaster_config = {
         'bard': {'ability': 'charisma', 'type': 'full'},
         'cleric': {'ability': 'wisdom', 'type': 'full'},
@@ -388,44 +425,9 @@ async def level_up_character(
         config = spellcaster_config[char_class]
         update_data['spellcasting_ability'] = config['ability']
         
-        # Full caster spell slots table (level -> slots per spell level)
-        full_caster_slots = {
-            1: {1: 2}, 2: {1: 3}, 3: {1: 4, 2: 2}, 4: {1: 4, 2: 3},
-            5: {1: 4, 2: 3, 3: 2}, 6: {1: 4, 2: 3, 3: 3}, 7: {1: 4, 2: 3, 3: 3, 4: 1},
-            8: {1: 4, 2: 3, 3: 3, 4: 2}, 9: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1},
-            10: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2}, 11: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1},
-            12: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1}, 13: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1},
-            14: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1}, 15: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1},
-            16: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1}, 17: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1},
-            18: {1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 1, 7: 1, 8: 1, 9: 1}, 19: {1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 1, 8: 1, 9: 1},
-            20: {1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 2, 8: 1, 9: 1}
-        }
-        
-        # Half caster spell slots (paladin/ranger) - use half level (round down) for slot table
-        half_caster_slots = {
-            2: {1: 2}, 3: {1: 3}, 4: {1: 3}, 5: {1: 4, 2: 2}, 6: {1: 4, 2: 2}, 7: {1: 4, 2: 3},
-            8: {1: 4, 2: 3}, 9: {1: 4, 2: 3, 3: 2}, 10: {1: 4, 2: 3, 3: 2}, 11: {1: 4, 2: 3, 3: 3},
-            12: {1: 4, 2: 3, 3: 3}, 13: {1: 4, 2: 3, 3: 3, 4: 1}, 14: {1: 4, 2: 3, 3: 3, 4: 1},
-            15: {1: 4, 2: 3, 3: 3, 4: 2}, 16: {1: 4, 2: 3, 3: 3, 4: 2}, 17: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1},
-            18: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1}, 19: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2}, 20: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2}
-        }
-        
-        # Warlock pact magic slots (all same level, limited slots)
-        warlock_slots = {
-            1: {1: 1}, 2: {1: 2}, 3: {2: 2}, 4: {2: 2}, 5: {3: 2}, 6: {3: 2}, 7: {4: 2}, 8: {4: 2},
-            9: {5: 2}, 10: {5: 2}, 11: {5: 3}, 12: {5: 3}, 13: {5: 3}, 14: {5: 3}, 15: {5: 3},
-            16: {5: 3}, 17: {5: 4}, 18: {5: 4}, 19: {5: 4}, 20: {5: 4}
-        }
-        
-        slot_table = full_caster_slots if config['type'] == 'full' else (warlock_slots if config['type'] == 'pact' else half_caster_slots)
-        
-        # Get slots for current level
-        if level_up.new_level in slot_table:
-            slots = slot_table[level_up.new_level]
-            for spell_level, num_slots in slots.items():
-                update_data[f'spell_slots_{spell_level}'] = num_slots
-                # Reset used slots on level up (restore all)
-                update_data[f'spell_slots_{spell_level}_used'] = 0
+        slots = get_spell_slot_progression(char_class, level_up.new_level)
+        update_data['spell_slots'] = slots
+        update_data['spell_slots_remaining'] = slots.copy()
 
     # Persist new spells/cantrips from level-up selections
     # Rules guardrails:
@@ -502,6 +504,38 @@ async def level_up_character(
             'is_asi_level': is_asi_level,
             'choice_made': level_up.choice_type if is_asi_level else None
         }
+    }
+
+
+@router.get("/characters/{character_id}/level-up-options")
+async def get_level_up_options(
+    character_id: str,
+    target_level: int,
+    username: str = Depends(get_current_user)
+):
+    existing = await db.player_characters.find_one({'id': character_id, 'user_id': username}, {'_id': 0})
+    if not existing:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
+    current_level = existing.get('level', 1)
+    if target_level != current_level + 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Target level must be {current_level + 1}")
+    char_class = (existing.get('character_class') or '').lower()
+    asi_levels = [4, 8, 12, 16, 19]
+    if char_class == 'fighter':
+        asi_levels.extend([6, 14])
+    elif char_class == 'rogue':
+        asi_levels.append(10)
+    is_asi_level = target_level in asi_levels
+    spellcaster_classes = {'bard', 'cleric', 'druid', 'paladin', 'ranger', 'sorcerer', 'warlock', 'wizard'}
+    return {
+        "character_id": character_id,
+        "current_level": current_level,
+        "target_level": target_level,
+        "is_asi_level": is_asi_level,
+        "asi_or_feat_required": is_asi_level,
+        "is_spellcaster": char_class in spellcaster_classes,
+        "class_name": existing.get('character_class', ''),
+        "ruleset_id": existing.get('ruleset_id', 'dnd5e_2014')
     }
 
 
