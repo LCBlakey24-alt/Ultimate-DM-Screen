@@ -638,7 +638,9 @@ export default function CharacterCombatTab({
               const effectData = CONDITION_EFFECTS[c.key];
               const effectCount = effectData ? Object.keys(effectData.effects).length : 0;
               return (
-                <button key={c.key} onClick={() => toggleCondition(c.key)} title={`${c.desc}${effectData?.notes ? '\n\nEffect: ' + effectData.notes : ''}`} style={{
+                <button key={c.key}
+                  data-testid={`condition-toggle-${c.key}`}
+                  onClick={() => toggleCondition(c.key)} title={`${c.desc}${effectData?.notes ? '\n\nEffect: ' + effectData.notes : ''}`} style={{
                   fontSize: 10, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
                   background: isActive ? (c.key === 'concentrating' ? 'rgba(59,130,246,0.25)' : 'rgba(239,68,68,0.2)') : 'rgba(255,255,255,0.04)',
                   color: isActive ? (c.key === 'concentrating' ? '#3B82F6' : '#EF4444') : '#9CA3AF',

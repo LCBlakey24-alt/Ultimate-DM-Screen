@@ -93,6 +93,7 @@ class Campaign(BaseModel):
     name: str
     description: str = ""
     system: str = "5e 2024 Compatible"  # TTRPG system
+    rules_edition: str = "2024"  # "2014" or "2024" — controls AI prompts + class rules across the GM screen
     world_setting: str = "custom"  # e.g., "forgotten_realms", "eberron", "greyhawk", "custom"
     world_setting_notes: str = ""  # Additional notes about the setting for AI context
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -101,6 +102,7 @@ class CampaignCreate(BaseModel):
     name: str
     description: str = ""
     system: str = "5e 2024 Compatible"
+    rules_edition: str = "2024"
     world_setting: str = "custom"
     world_setting_notes: str = ""
 

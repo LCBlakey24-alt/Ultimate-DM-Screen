@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { 
   Sword, Users, BookOpen, Send, 
-  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap, Compass, UserCircle, Music, Target, Volume2, Link2, Sparkles, Grid3x3, Globe,
+  Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap, Compass, UserCircle, Music, Target, Volume2, Link2, Sparkles,
   ChevronDown, ChevronRight, BarChart3
 } from 'lucide-react';
 import DiceRoller from '@/components/DiceRoller';
@@ -32,7 +32,6 @@ import NPCRelationshipMap from '@/components/gm/NPCRelationshipMap';
 import AICoGM from '@/components/gm/AICoGM';
 import AISessionPlanner from '@/components/gm/AISessionPlanner';
 import SessionTimer from '@/components/gm/SessionTimer';
-import MapMaker from '@/components/gm/MapMaker';
 import EventSystem from '@/components/gm/EventSystem';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -85,6 +84,30 @@ function GMScreen({ username }) {
   // Grouped tab collapse state
   const [collapsedGroups, setCollapsedGroups] = useState({});
   const toggleGroup = (group) => setCollapsedGroups(prev => ({ ...prev, [group]: !prev[group] }));
+
+  // Rules edition (2014 vs 2024) — propagated to AI prompts via campaign.rules_edition
+  const rulesEdition = campaign?.rules_edition === '2014' ? '2014' : '2024';
+  const setRulesEdition = async (next) => {
+    if (!campaign || !['2014', '2024'].includes(next)) return;
+    if (rulesEdition === next) return;
+    const prev = campaign;
+    // Optimistic update
+    setCampaign({ ...campaign, rules_edition: next });
+    try {
+      await axios.put(`${API}/campaigns/${campaignId}`, {
+        name: campaign.name,
+        description: campaign.description || '',
+        system: campaign.system || '5e 2024 Compatible',
+        rules_edition: next,
+        world_setting: campaign.world_setting || 'custom',
+        world_setting_notes: campaign.world_setting_notes || '',
+      });
+      toast.success(`Rules switched to D&D 5e ${next}`);
+    } catch (err) {
+      setCampaign(prev);
+      toast.error('Failed to update rules edition');
+    }
+  };
 
   useEffect(() => {
     fetchAllData();
@@ -382,10 +405,8 @@ function GMScreen({ username }) {
   const tabGroups = [
     { group: 'COMBAT', color: '#EF4444', tabs: [
       { id: 'combat', icon: Swords, label: 'Combat' },
-      { id: 'battlemap', icon: Grid3x3, label: 'Battle Map' },
     ]},
     { group: 'WORLD', color: '#3B82F6', tabs: [
-      { id: 'worldmap', icon: Globe, label: 'World Map' },
       { id: 'location', icon: Compass, label: 'Location' },
       { id: 'events', icon: BarChart3, label: 'Events' },
     ]},
@@ -478,6 +499,35 @@ function GMScreen({ username }) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {/* Rules edition toggle — propagates to AI via campaign.rules_edition */}
+            <div data-testid="rules-edition-toggle" style={{
+              display: 'flex', alignItems: 'center',
+              borderRadius: '10px', overflow: 'hidden',
+              border: `1px solid ${theme.border}`, background: 'rgba(212, 160, 23, 0.06)',
+            }}>
+              <span style={{ fontSize: '10px', fontWeight: 700, color: theme.text.muted, padding: '0 8px', letterSpacing: 0.5 }}>
+                RULES
+              </span>
+              {['2014', '2024'].map(ed => {
+                const active = rulesEdition === ed;
+                return (
+                  <button
+                    key={ed}
+                    data-testid={`rules-edition-${ed}`}
+                    onClick={() => setRulesEdition(ed)}
+                    title={`Switch the AI and GM tools to D&D 5e ${ed} rules`}
+                    style={{
+                      padding: '6px 12px', fontSize: '12px', fontWeight: 700,
+                      background: active ? '#D4A017' : 'transparent',
+                      color: active ? '#0A1628' : theme.text.secondary,
+                      border: 'none', cursor: 'pointer',
+                      letterSpacing: 0.5, transition: 'all 0.12s',
+                    }}>
+                    {ed}
+                  </button>
+                );
+              })}
+            </div>
             <SessionTimer theme={theme} />
             <Button onClick={() => setShowQuickRef(true)} style={{ display: 'flex', gap: '6px', padding: '10px 16px', fontSize: '14px', background: 'rgba(212, 160, 23, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary }}>
               <BookOpen size={16} /> Reference
@@ -605,20 +655,6 @@ function GMScreen({ username }) {
             {activeTab === 'combat' && (
               <CombatTab theme={theme} campaignId={campaignId} scenarios={scenarios} selectedScenario={selectedScenario} setSelectedScenario={setSelectedScenario} launchCombat={launchCombat} quickStartCombat={quickStartCombat} players={players} setShowQuickCombat={setShowQuickCombat} />
             )}
-
-          {/* BATTLE MAP TAB */}
-          {activeTab === 'battlemap' && (
-            <div style={{ padding: '16px' }}>
-              <MapMaker theme={theme} mode="battle" campaignId={campaignId} />
-            </div>
-          )}
-
-          {/* WORLD MAP TAB */}
-          {activeTab === 'worldmap' && (
-            <div style={{ padding: '16px' }}>
-              <MapMaker theme={theme} mode="world" campaignId={campaignId} />
-            </div>
-          )}
 
           {/* LOCATION TAB */}
           {activeTab === 'location' && (

@@ -35,6 +35,52 @@ except ImportError:
 
 router = APIRouter()
 
+# ────────────────────────────────────────────────────────────────────────────
+# Edition-aware prompt helpers
+# ────────────────────────────────────────────────────────────────────────────
+EDITION_INSTRUCTIONS_2024 = (
+    "Use **D&D 5e 2024 (One D&D / 2024 PHB)** rules. Honor these key 2024 mechanics:\n"
+    "- Origin Feats granted by Background at character creation (Tough, Magic Initiate, Skilled, etc.)\n"
+    "- Subclasses chosen at level 3 for ALL classes (Cleric, Warlock, Wizard, Sorcerer included)\n"
+    "- Weapon Mastery properties for martial classes (Cleave, Graze, Nick, Push, Sap, Slow, Topple, Vex)\n"
+    "- Backgrounds grant +2/+1 Ability Score Improvements (NOT race/species)\n"
+    "- Species replaces 'Race'; Half-Elf/Half-Orc removed; new species variants (Drow Elf, Wood Elf, etc.)\n"
+    "- Rogue: Cunning Strike feature; Bard: expanded Inspiration uses; Wizard: Memorize Spell mid-combat\n"
+    "- Heroic Inspiration mechanics standardized\n"
+    "Stay strictly within SRD/OGL content."
+)
+
+EDITION_INSTRUCTIONS_2014 = (
+    "Use **D&D 5e 2014 (Original Player's Handbook)** rules. Honor these key 2014 mechanics:\n"
+    "- Race grants ASIs (e.g., Human Variant +1/+1, Half-Elf +2 CHA + floating)\n"
+    "- Half-Elf, Half-Orc, Dragonborn original-style available\n"
+    "- Subclass timing varies: Cleric L1, Wizard L2, Sorcerer L1, Warlock L1, others L3\n"
+    "- No Weapon Mastery; standard 2014 attack rules\n"
+    "- Backgrounds give skill/tool/language proficiencies and feature, NO ASI\n"
+    "- Original Inspiration (advantage on a single roll, GM-granted)\n"
+    "Stay strictly within SRD/OGL content."
+)
+
+def _campaign_edition(campaign: Optional[Dict[str, Any]]) -> str:
+    """Return '2014' or '2024' from a campaign dict (defaults to 2024)."""
+    if not campaign:
+        return "2024"
+    raw = str(campaign.get('rules_edition') or '').strip()
+    if raw in ('2014', '2024'):
+        return raw
+    # Fallback: infer from `system` string (e.g. '5e 2024 Compatible')
+    system_str = str(campaign.get('system') or '').lower()
+    if '2024' in system_str:
+        return '2024'
+    if '2014' in system_str:
+        return '2014'
+    return '2024'
+
+def edition_prompt_fragment(campaign: Optional[Dict[str, Any]]) -> str:
+    """Returns an edition-specific instruction block for AI prompts."""
+    ed = _campaign_edition(campaign)
+    return EDITION_INSTRUCTIONS_2024 if ed == '2024' else EDITION_INSTRUCTIONS_2014
+
 @router.post("/ai/generate-with-rules")
 async def ai_generate_with_rules(request: Dict[str, Any], username: str = Depends(get_current_user)):
     """AI generation that respects the campaign's rule system"""
@@ -67,6 +113,7 @@ async def ai_generate_with_rules(request: Dict[str, Any], username: str = Depend
     
     # Generic rule instructions based on campaign system setting
     rule_instructions = f"You are a TTRPG assistant for a campaign using the {system_name} rules.\n\n"
+    rule_instructions += edition_prompt_fragment(campaign) + "\n\n"
     rule_instructions += "Generate content that fits this campaign's setting and rule system. "
     rule_instructions += "Use appropriate terminology and mechanics for the system being used.\n"
     rule_instructions += system_context
@@ -388,10 +435,12 @@ async def generate_ai_content(request: AIGenerationRequest, username: str = Depe
         # Get campaign context if campaign_id provided
         system_context = ""
         world_context = ""
+        edition_context = ""
         if hasattr(request, 'campaign_id') and request.campaign_id:
             campaign = await db.campaigns.find_one({'id': request.campaign_id})
             if campaign:
                 system_context = f" for {campaign.get('system', '5e Compatible')} system"
+                edition_context = f"\n\nRULES EDITION:\n{edition_prompt_fragment(campaign)}"
                 
                 # Build world setting context
                 world_setting = campaign.get('world_setting', 'custom')
@@ -423,6 +472,9 @@ async def generate_ai_content(request: AIGenerationRequest, username: str = Depe
                     world_context = f"\n\nWORLD SETTING CONTEXT:\n{base_world_context}\n\nADDITIONAL CAMPAIGN NOTES:\n{world_notes}"
                 else:
                     world_context = f"\n\nWORLD SETTING CONTEXT:\n{base_world_context}"
+                # Always append edition rules at the end so AI honors 2014 vs 2024 mechanics
+                if edition_context:
+                    world_context += edition_context
                 
                 # Add custom rules if available (limit context size)
                 custom_rules = []
@@ -503,10 +555,12 @@ async def generate_ai_content(request: AIGenerationRequest, username: str = Depe
         # Get campaign context if campaign_id provided
         system_context = ""
         world_context = ""
+        edition_context = ""
         if hasattr(request, 'campaign_id') and request.campaign_id:
             campaign = await db.campaigns.find_one({'id': request.campaign_id})
             if campaign:
                 system_context = f" for {campaign.get('system', '5e Compatible')} system"
+                edition_context = f"\n\nRULES EDITION:\n{edition_prompt_fragment(campaign)}"
                 
                 # Build world setting context
                 world_setting = campaign.get('world_setting', 'custom')
@@ -538,6 +592,9 @@ async def generate_ai_content(request: AIGenerationRequest, username: str = Depe
                     world_context = f"\n\nWORLD SETTING CONTEXT:\n{base_world_context}\n\nADDITIONAL CAMPAIGN NOTES:\n{world_notes}"
                 else:
                     world_context = f"\n\nWORLD SETTING CONTEXT:\n{base_world_context}"
+                # Always append edition rules at the end so AI honors 2014 vs 2024 mechanics
+                if edition_context:
+                    world_context += edition_context
                 
                 # Add custom rules if available (limit context size)
                 custom_rules = []
@@ -613,12 +670,18 @@ async def rook_chat(request: RookChatRequest, username: str = Depends(get_curren
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="AI key not configured")
     
     campaign_context = ""
+    edition_block = ""
     if request.campaign_id:
         campaign_context = await get_campaign_context(request.campaign_id)
+        campaign = await db.campaigns.find_one({'id': request.campaign_id}, {'_id': 0})
+        if campaign:
+            edition_block = f"\n\nRULES EDITION:\n{edition_prompt_fragment(campaign)}"
     
     system_msg = request.context or "You are ROOK, an AI co-GM assistant for D&D 5e. Help the Game Master with encounters, NPCs, world building, and story development. Use only SRD/OGL content. Be creative, concise, and dramatic."
     if campaign_context:
         system_msg += f"\n\nCAMPAIGN CONTEXT:\n{campaign_context}"
+    if edition_block:
+        system_msg += edition_block
     
     chat = LlmChat(
         api_key=api_key,
@@ -1366,6 +1429,7 @@ async def ai_generate_with_rules(request: Dict[str, Any], username: str = Depend
     
     # Generic rule instructions based on campaign system setting
     rule_instructions = f"You are a TTRPG assistant for a campaign using the {system_name} rules.\n\n"
+    rule_instructions += edition_prompt_fragment(campaign) + "\n\n"
     rule_instructions += "Generate content that fits this campaign's setting and rule system. "
     rule_instructions += "Use appropriate terminology and mechanics for the system being used.\n"
     rule_instructions += system_context
@@ -1437,6 +1501,9 @@ Setting: {campaign.get('setting', 'Fantasy')}
 GM Focus: {focus}
 Tone: {tone}
 {f"GM Additional Notes: {extra_notes}" if extra_notes else ""}
+
+RULES EDITION:
+{edition_prompt_fragment(campaign)}
 
 Recent Session Notes:
 {notes_text}
@@ -1543,6 +1610,9 @@ async def generate_session_checklist(campaign_id: str, request: Dict[str, Any], 
     prompt = f"""You are a TTRPG session prep assistant. Based on the following session outline/context, generate a detailed prep checklist for the Game Master.
 
 Campaign: {campaign_name}
+
+RULES EDITION:
+{edition_prompt_fragment(campaign)}
 
 Session Outline/Context:
 {outline_content}
