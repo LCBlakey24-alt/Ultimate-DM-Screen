@@ -13,12 +13,14 @@ import CharacterSpellbook from './CharacterSpellbook';
 import SessionJournal from './SessionJournal';
 import PlayerProgressionDashboard from './PlayerProgressionDashboard';
 import RestPanel from './RestPanel';
+import CombatLog from './CombatLog';
 import RookHints from './RookHints';
 import { CLASS_FEATURES } from '../data/classFeatures';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, SPELL_DATABASE } from '../data/spellDatabase';
 import DiceRoller3D from './ui/DiceRoller3D';
 import DiceRollHistory from './DiceRollHistory';
-import { getConditionRollEffect, getConditionIndicator } from '../data/conditionEffects';
+import { getConditionRollEffect, getConditionIndicator, CONDITION_EFFECTS } from '../data/conditionEffects';
+import { getClassAccent } from '../lib/theme';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -239,6 +241,29 @@ export default function CharacterSheetFull() {
   
   // Spell slot tracking - { 1: 0, 2: 0, ... } = used slots per level
   const [usedSlots, setUsedSlots] = useState({});
+
+  // Per-character Combat Log (in-memory; capped at 100 most recent)
+  const [combatLog, setCombatLog] = useState([]);
+  const logEvent = (type, text) => {
+    setCombatLog(prev => [
+      ...prev.slice(-99),
+      { id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, ts: Date.now(), type, text }
+    ]);
+  };
+  const clearCombatLog = () => setCombatLog([]);
+
+  // Persisted setter — also pushes used_spell_slots to backend so it survives reloads.
+  const persistUsedSlots = (next) => {
+    setUsedSlots(prev => {
+      const resolved = typeof next === 'function' ? next(prev) : next;
+      // Fire-and-forget PATCH; errors are non-fatal (UI will retry on next click)
+      if (characterId) {
+        axios.patch(`${API}/characters/${characterId}`, { used_spell_slots: resolved })
+          .catch(() => { /* swallow — UI state already updated */ });
+      }
+      return resolved;
+    });
+  };
   
   // 3D Dice Roller state
   const [show3DDice, setShow3DDice] = useState(false);
@@ -315,6 +340,17 @@ export default function CharacterSheetFull() {
       isCrit, isFumble,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
     }, ...prev].slice(0, 50));
+
+    // Combat Log: classify the roll
+    const lower = (strLabel || '').toLowerCase();
+    let logType = 'roll';
+    if (lower.includes('attack') || lower.includes('hit') || lower.includes('strike')) logType = 'attack';
+    else if (lower.includes('cast') || lower.includes('spell') || lower.includes('cantrip') ||
+             lower.includes('bolt') || lower.includes('blast') || lower.includes('cure') ||
+             lower.includes('heal') || lower.includes('lvl ')) logType = 'spell';
+    const advTag = rollType !== 'normal' ? ` [${rollType.toUpperCase()}]` : '';
+    const critTag = isCrit ? ' — CRIT!' : isFumble ? ' — FUMBLE' : '';
+    logEvent(logType, `${strLabel || notation}: ${total}${advTag}${critTag}`);
   };
 
   useEffect(() => {
@@ -331,6 +367,8 @@ export default function CharacterSheetFull() {
       const charHp = response.data.current_hit_points ?? response.data.hp ?? charMaxHp;
       setCurrentHp(Math.min(charHp, charMaxHp));
       setTempHp(response.data.temporary_hit_points || 0);
+      // Hydrate spell slot usage from server so it survives reloads
+      setUsedSlots(response.data.used_spell_slots || {});
     } catch (err) {
       setError('Failed to load character');
       toast.error('Failed to load character');
@@ -358,7 +396,16 @@ export default function CharacterSheetFull() {
   const ac = character?.armor_class ?? character?.ac ?? (10 + getModifier(abilities.dexterity));
   const initiative = getModifier(abilities.dexterity);
   const rawSpeed = character?.speed || 30;
-  const speed = exhaustion >= 5 ? 0 : (exhaustion >= 2 ? Math.floor(rawSpeed / 2) : rawSpeed);
+  const activeConditions = character?.conditions || [];
+  // Conditions that reduce speed to 0 per 5e RAW
+  const speedZeroConditions = ['grappled', 'restrained', 'paralyzed', 'petrified', 'stunned', 'unconscious'];
+  const hasSpeedZero = speedZeroConditions.some(c => activeConditions.includes(c));
+  const speed = (exhaustion >= 5 || hasSpeedZero)
+    ? 0
+    : (exhaustion >= 2 ? Math.floor(rawSpeed / 2) : rawSpeed);
+  // Conditions preventing actions (incapacitated chain)
+  const incapacitatingConditions = ['incapacitated', 'paralyzed', 'petrified', 'stunned', 'unconscious'];
+  const isIncapacitated = incapacitatingConditions.some(c => activeConditions.includes(c));
 
   // Get class-specific actions
   const classActions = useMemo(() => {
@@ -377,6 +424,10 @@ export default function CharacterSheetFull() {
   }, [character]);
 
   const handleHpChange = async (delta) => {
+    if (delta !== 0) {
+      logEvent(delta < 0 ? 'damage' : 'heal',
+        delta < 0 ? `Took ${Math.abs(delta)} damage` : `Recovered ${delta} HP`);
+    }
     // Handle damage (negative delta)
     if (delta < 0) {
       const damage = Math.abs(delta);
@@ -446,6 +497,18 @@ export default function CharacterSheetFull() {
   // Resource & Rest handlers
   const handleUpdateCharacter = async (updates) => {
     const prevSnapshot = character;
+    // Combat Log: track condition + exhaustion changes
+    if (updates && 'conditions' in updates && Array.isArray(updates.conditions)) {
+      const before = new Set(character?.conditions || []);
+      const after = new Set(updates.conditions);
+      after.forEach(c => { if (!before.has(c)) logEvent('condition', `Gained condition: ${c}`); });
+      before.forEach(c => { if (!after.has(c)) logEvent('condition', `Removed condition: ${c}`); });
+    }
+    if (updates && 'exhaustion_level' in updates) {
+      const before = character?.exhaustion_level || 0;
+      const after = updates.exhaustion_level || 0;
+      if (after !== before) logEvent('condition', `Exhaustion ${before} → ${after}`);
+    }
     setCharacter(prev => prev ? { ...prev, ...updates } : prev);
     try {
       await axios.patch(`${API}/characters/${characterId}`, updates);
@@ -475,7 +538,25 @@ export default function CharacterSheetFull() {
       const response = await axios.post(url);
       setCharacter(response.data);
       setCurrentHp(response.data.current_hit_points ?? response.data.hp ?? currentHp);
+
+      // Spell slot recovery per 5e RAW
+      if (type === 'long') {
+        // Long rest: ALL spell slots restored
+        setUsedSlots({});
+        axios.patch(`${API}/characters/${characterId}`, { used_spell_slots: {} }).catch(() => {});
+      } else {
+        // Short rest: ONLY Pact Magic (Warlock) slots restored
+        setUsedSlots(prev => {
+          const next = { ...prev, pact: 0 };
+          axios.patch(`${API}/characters/${characterId}`, { used_spell_slots: next }).catch(() => {});
+          return next;
+        });
+      }
+
       toast.success(`${type === 'short' ? 'Short' : 'Long'} rest complete`);
+      logEvent('rest', type === 'long'
+        ? 'Long Rest: HP fully restored, all spell slots restored'
+        : 'Short Rest: Pact Magic slots restored');
     } catch (err) {
       toast.error(`Rest failed: ${err.response?.data?.detail || 'unknown error'}`);
     }
@@ -586,13 +667,27 @@ export default function CharacterSheetFull() {
 
         {/* Identity */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-          {character.portrait_url ? (
-            <img src={character.portrait_url} alt="" style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${theme.accent.primary}`, boxShadow: theme.glow }} onError={e => { e.target.style.display = 'none'; }} />
-          ) : (
-            <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: theme.bg.surface, border: `2px solid ${theme.accent.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <User size={24} color="#fff" />
-            </div>
-          )}
+          {(() => { const accent = getClassAccent(character); return (
+          <div style={{ position: 'relative' }}>
+            {character.portrait_url ? (
+              <img src={character.portrait_url} alt="" style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${theme.accent.primary}`, boxShadow: `0 0 0 1px ${accent.tint}` }} onError={e => { e.target.style.display = 'none'; }} />
+            ) : (
+              <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: theme.bg.surface, border: `2px solid ${theme.accent.primary}`, boxShadow: `0 0 0 1px ${accent.tint}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <User size={24} color="#fff" />
+              </div>
+            )}
+            {/* Class accent crest dot */}
+            <span data-testid="class-accent-dot"
+              title={accent.label}
+              style={{
+                position: 'absolute', bottom: -2, right: -2,
+                width: 14, height: 14, borderRadius: '50%',
+                background: accent.icon,
+                border: `2px solid ${theme.bg.primary}`,
+                boxShadow: `0 0 0 1px ${accent.tint}`
+              }} />
+          </div>
+          ); })()}
           <div style={{ textAlign: 'left' }}>
             <h1 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '1.3rem', margin: 0, color: theme.accent.primary }}>
               {character.name}
@@ -643,6 +738,44 @@ export default function CharacterSheetFull() {
             <Sparkles size={14} color={character.inspiration ? '#F59E0B' : theme.text.muted} />
             <div style={{ fontSize: '9px', color: character.inspiration ? '#F59E0B' : theme.text.muted, fontWeight: 600, letterSpacing: '0.5px', marginTop: '2px' }}>INSP</div>
           </button>
+          {/* Active Conditions chips — surfaces blinded/paralyzed/etc on the sheet */}
+          {(activeConditions.length > 0 || exhaustion > 0 || isIncapacitated) && (
+            <div data-testid="active-conditions-strip" style={{
+              display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap',
+              padding: '4px 8px', borderRadius: '10px',
+              background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)',
+              maxWidth: '320px'
+            }}>
+              {activeConditions.map(cond => {
+                const meta = CONDITION_EFFECTS[cond];
+                if (!meta) return null;
+                return (
+                  <span key={cond} title={meta.notes}
+                    data-testid={`active-condition-${cond}`}
+                    style={{
+                      fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px',
+                      background: `${meta.color}25`, color: meta.color,
+                      border: `1px solid ${meta.color}50`, letterSpacing: 0.4,
+                      textTransform: 'uppercase'
+                    }}>
+                    {meta.label}
+                  </span>
+                );
+              })}
+              {exhaustion > 0 && (
+                <span title={`Exhaustion ${exhaustion}/6 — ${exhaustion >= 6 ? 'Death' : 'Cumulative penalties'}`}
+                  data-testid="active-condition-exhaustion"
+                  style={{
+                    fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px',
+                    background: 'rgba(146, 64, 14, 0.25)', color: '#FBBF24',
+                    border: '1px solid rgba(146, 64, 14, 0.5)', letterSpacing: 0.4,
+                    textTransform: 'uppercase'
+                  }}>
+                  EXHAUSTION {exhaustion}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
@@ -837,6 +970,9 @@ export default function CharacterSheetFull() {
                 <div style={{ marginTop: '8px' }}>
                   <RestPanel character={character} theme={theme} onRest={handleRest} onUpdateCharacter={handleUpdateCharacter} />
                 </div>
+                <div style={{ marginTop: '8px' }}>
+                  <CombatLog entries={combatLog} onClear={clearCombatLog} theme={theme} />
+                </div>
               </div>
             )}
 
@@ -845,9 +981,10 @@ export default function CharacterSheetFull() {
                 <CharacterSpellbook
                   character={character}
                   usedSlots={usedSlots}
-                  setUsedSlots={setUsedSlots}
+                  setUsedSlots={persistUsedSlots}
                   rollDice={rollDice}
                   onUpdateCharacter={handleUpdateCharacter}
+                  onRest={handleRest}
                 />
               </div>
             )}

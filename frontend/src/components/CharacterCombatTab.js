@@ -4,6 +4,7 @@ import { CLASS_FEATURES } from '../data/classFeatures';
 import { ALL_WEAPONS, ARMOR } from '../data/equipmentDatabase';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS } from '../data/spellDatabase';
 import { getConditionRollEffect, getConditionIndicator, CONDITION_EFFECTS } from '../data/conditionEffects';
+import { getClassAccent } from '../lib/theme';
 
 // 5e SRD conditions
 const CONDITIONS = [
@@ -802,50 +803,57 @@ export default function CharacterCombatTab({
       </Section>
 
       {/* ── Spell Slots (for casters) ── */}
-      {classInfo && Object.keys(spellSlots).length > 0 && (
-        <Section title={classInfo.pactMagic ? 'Pact Magic' : 'Spell Slots'} accent="#EC4899">
+      {classInfo && Object.keys(spellSlots).length > 0 && (() => { const classAccent = getClassAccent(character); return (
+        <Section title={classInfo.pactMagic ? 'Pact Magic' : 'Spell Slots'} accent="#D4A017">
           {classInfo.pactMagic ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 11, color: '#9CA3AF', minWidth: 50 }}>Lvl {spellSlots.level}</span>
               {Array.from({ length: spellSlots.slots }).map((_, i) => {
                 const isUsed = (usedSlots['pact'] || 0) > i;
                 return (
-                  <button key={i} onClick={() => toggleSlot('pact', i)} style={{
-                    width: 22, height: 22, borderRadius: 6, cursor: 'pointer',
-                    border: '2px solid #EC4899', background: isUsed ? 'rgba(100,100,100,0.3)' : 'rgba(236,72,153,0.3)',
-                    color: isUsed ? '#6B7280' : '#EC4899', fontSize: 11, fontWeight: 700,
-                    transition: 'all 0.15s',
-                  }} title={isUsed ? 'Click to recover' : 'Click to use'}>
-                    {isUsed ? '○' : '●'}
-                  </button>
+                  <button key={i} onClick={() => toggleSlot('pact', i)}
+                    data-testid={`combat-pact-slot-${i}`}
+                    style={{
+                      width: 18, height: 18, transform: 'rotate(45deg)',
+                      cursor: 'pointer', padding: 0,
+                      border: `2px solid ${isUsed ? 'rgba(212,160,23,0.3)' : '#D4A017'}`,
+                      background: isUsed ? 'transparent' : classAccent.icon,
+                      transition: 'all 0.12s ease',
+                    }}
+                    title={isUsed ? 'Click to recover' : 'Click to use'} />
                 );
               })}
-              <span style={{ fontSize: 10, color: '#22C55E', fontWeight: 600, marginLeft: 4, padding: '1px 5px', borderRadius: 3, background: 'rgba(34,197,94,0.12)' }}>SHORT</span>
+              <span style={{ fontSize: 10, color: '#D4A017', fontWeight: 700, marginLeft: 4, padding: '1px 6px', borderRadius: 3, background: 'rgba(212,160,23,0.12)', border: '1px solid rgba(212,160,23,0.3)' }}>SHORT REST</span>
             </div>
           ) : (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {Object.entries(spellSlots).map(([lvl, count]) => (
-                <div key={lvl} style={{ padding: '6px 10px', background: 'rgba(236,72,153,0.06)', borderRadius: 8, minWidth: 60, textAlign: 'center' }}>
-                  <div style={{ fontSize: 10, color: '#9CA3AF', marginBottom: 4 }}>Lvl {lvl}</div>
-                  <div style={{ display: 'flex', gap: 3, justifyContent: 'center' }}>
+                <div key={lvl} style={{ padding: '6px 10px', background: 'rgba(212,160,23,0.06)', border: '1px solid rgba(212,160,23,0.2)', borderRadius: 8, minWidth: 64, textAlign: 'center' }}>
+                  <div style={{ fontSize: 9, color: '#D4A017', marginBottom: 6, fontWeight: 700, letterSpacing: 0.5 }}>LVL {lvl}</div>
+                  <div style={{ display: 'flex', gap: 6, justifyContent: 'center', padding: '4px 0' }}>
                     {Array.from({ length: count }).map((_, i) => {
                       const isUsed = (usedSlots[lvl] || 0) > i;
                       return (
-                        <button key={i} onClick={() => toggleSlot(lvl, i)} style={{
-                          width: 18, height: 18, borderRadius: '50%', cursor: 'pointer',
-                          border: '2px solid #EC4899', background: isUsed ? 'rgba(100,100,100,0.3)' : 'rgba(236,72,153,0.35)',
-                          padding: 0, transition: 'all 0.15s',
-                        }} title={isUsed ? 'Recover slot' : 'Use slot'} />
+                        <button key={i} onClick={() => toggleSlot(lvl, i)}
+                          data-testid={`combat-slot-${lvl}-${i}`}
+                          style={{
+                            width: 14, height: 14, transform: 'rotate(45deg)',
+                            cursor: 'pointer', padding: 0,
+                            border: `1.5px solid ${isUsed ? 'rgba(212,160,23,0.3)' : '#D4A017'}`,
+                            background: isUsed ? 'transparent' : classAccent.icon,
+                            transition: 'all 0.12s ease',
+                          }}
+                          title={isUsed ? 'Recover slot' : 'Use slot'} />
                       );
                     })}
                   </div>
-                  <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 3 }}>{count - (usedSlots[lvl] || 0)}/{count}</div>
+                  <div style={{ fontSize: 9, color: '#9CA3AF', marginTop: 4, fontWeight: 600 }}>{count - (usedSlots[lvl] || 0)}/{count}</div>
                 </div>
               ))}
             </div>
           )}
         </Section>
-      )}
+      ); })()}
 
       {/* ── Features & Abilities ── */}
       <Section title="Features & Abilities" accent={accent}>

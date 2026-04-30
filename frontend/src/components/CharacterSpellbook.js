@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { BookOpen, Zap, Shield, Search, ChevronDown, ChevronUp, Star, Plus, X } from 'lucide-react';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, getMaxSpellLevel, getMulticlassSpellSlots } from '../data/spellDatabase';
 import { API_BASE } from '../lib/api';
+import { getClassAccent } from '../lib/theme';
 
 const CANTRIP_DAMAGE = {
   'Fire Bolt': '1d10', 'Eldritch Blast': '1d10', 'Sacred Flame': '1d8',
@@ -45,7 +46,7 @@ const UPCAST_SCALING = {
 };
 
 export default function CharacterSpellbook({
-  character, usedSlots, setUsedSlots, rollDice, onUpdateCharacter
+  character, usedSlots, setUsedSlots, rollDice, onUpdateCharacter, onRest
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedSpell, setExpandedSpell] = useState(null);
@@ -58,6 +59,7 @@ export default function CharacterSpellbook({
   const [srdLoading, setSrdLoading] = useState(false);
 
   const classInfo = SPELLCASTING_CLASSES[character?.character_class];
+  const classAccent = getClassAccent(character);
   if (!classInfo) {
     return (
       <div style={{ color: theme.text.muted, textAlign: 'center', padding: '40px' }}>
@@ -336,35 +338,73 @@ export default function CharacterSpellbook({
             <span style={{ fontSize: 10, fontWeight: 700, color: theme.text.muted, textTransform: 'uppercase' }}>
               {classInfo.pactMagic ? 'Pact Magic' : 'Spell Slots'}
             </span>
-            <button
-              data-testid="reset-spell-slots"
-              onClick={() => setUsedSlots({})}
-              style={{
-                background: 'rgba(77,208,225,0.15)', border: '1px solid rgba(77,208,225,0.3)',
-                borderRadius: 4, padding: '3px 8px', fontSize: 9, color: theme.accent.primary,
-                cursor: 'pointer', fontWeight: 600,
-              }}
-            >
-              Reset All
-            </button>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button
+                data-testid="short-rest-spellbook-btn"
+                title="Short Rest — restores Pact Magic (Warlock) slots only"
+                onClick={() => {
+                  if (onRest) {
+                    onRest('short');
+                  } else {
+                    // Fallback: clear pact key locally
+                    setUsedSlots(prev => ({ ...prev, pact: 0 }));
+                  }
+                }}
+                style={{
+                  background: 'rgba(212, 160, 23, 0.10)',
+                  border: '1px solid rgba(212, 160, 23, 0.35)',
+                  borderRadius: 4, padding: '3px 8px', fontSize: 9,
+                  color: '#D4A017', cursor: 'pointer', fontWeight: 700, letterSpacing: 0.5,
+                }}
+              >
+                SHORT REST
+              </button>
+              <button
+                data-testid="long-rest-spellbook-btn"
+                title="Long Rest — restores all spell slots, reduces exhaustion by 1"
+                onClick={() => {
+                  if (onRest) {
+                    onRest('long');
+                  } else {
+                    // Fallback: clear all slots locally + decrement exhaustion via update
+                    setUsedSlots({});
+                    if (onUpdateCharacter && (character?.exhaustion_level || 0) > 0) {
+                      onUpdateCharacter({ exhaustion_level: Math.max(0, (character.exhaustion_level || 0) - 1) });
+                    }
+                  }
+                }}
+                style={{
+                  background: '#D4A017',
+                  border: '1px solid #D4A017',
+                  borderRadius: 4, padding: '3px 8px', fontSize: 9,
+                  color: '#0A1628', cursor: 'pointer', fontWeight: 800, letterSpacing: 0.5,
+                }}
+              >
+                LONG REST
+              </button>
+            </div>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
             {classInfo.pactMagic ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 {Array.from({ length: slots.slots }).map((_, i) => {
                   const isUsed = (usedSlots.pact || 0) > i;
                   return (
-                    <button key={i} onClick={() => setUsedSlots(prev => ({
-                      ...prev, pact: isUsed ? (prev.pact || 0) - 1 : (prev.pact || 0) + 1
-                    }))} style={{
-                      width: 30, height: 30, borderRadius: 6,
-                      border: `2px solid ${theme.accent.secondary}`,
-                      background: isUsed ? 'rgba(100,100,100,0.3)' : 'rgba(236,72,153,0.3)',
-                      cursor: 'pointer', fontSize: 14,
-                      color: isUsed ? theme.text.muted : theme.accent.secondary,
-                    }}>
-                      {isUsed ? '○' : '●'}
-                    </button>
+                    <button key={i}
+                      data-testid={`pact-slot-${i}`}
+                      title={isUsed ? 'Spent — click to restore' : 'Available — click to spend'}
+                      onClick={() => setUsedSlots(prev => ({
+                        ...prev, pact: isUsed ? (prev.pact || 0) - 1 : (prev.pact || 0) + 1
+                      }))}
+                      style={{
+                        // Gem (rotated square) — flat fill, gold border, no gradient
+                        width: 24, height: 24,
+                        transform: 'rotate(45deg)',
+                        background: isUsed ? 'transparent' : classAccent.icon,
+                        border: `2px solid ${isUsed ? 'rgba(212,160,23,0.3)' : '#D4A017'}`,
+                        cursor: 'pointer', padding: 0,
+                        transition: 'all 0.12s ease',
+                      }} />
                   );
                 })}
                 <span style={{ fontSize: 11, color: theme.text.muted, marginLeft: 6 }}>Lvl {slots.level}</span>
@@ -374,22 +414,31 @@ export default function CharacterSpellbook({
                 const used = usedSlots[lvl] || 0;
                 return (
                   <div key={lvl} style={{
-                    padding: 8, background: 'rgba(236,72,153,0.08)', borderRadius: 8, minWidth: 60,
+                    padding: 8, background: 'rgba(212,160,23,0.06)',
+                    border: '1px solid rgba(212,160,23,0.2)',
+                    borderRadius: 8, minWidth: 64,
                   }}>
-                    <div style={{ fontSize: 9, color: theme.text.muted, textAlign: 'center', marginBottom: 4 }}>Lvl {lvl}</div>
-                    <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <div style={{ fontSize: 9, color: '#D4A017', textAlign: 'center', marginBottom: 6, fontWeight: 700, letterSpacing: 0.5 }}>LVL {lvl}</div>
+                    <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap', padding: '4px 0' }}>
                       {Array.from({ length: count }).map((_, i) => (
-                        <button key={i} onClick={() => setUsedSlots(prev => ({
-                          ...prev, [lvl]: used > i ? used - 1 : used + 1
-                        }))} style={{
-                          width: 20, height: 20, borderRadius: '50%',
-                          border: `2px solid ${theme.accent.secondary}`,
-                          background: used > i ? 'rgba(100,100,100,0.3)' : 'rgba(236,72,153,0.4)',
-                          cursor: 'pointer', padding: 0,
-                        }} />
+                        <button key={i}
+                          data-testid={`slot-${lvl}-${i}`}
+                          title={used > i ? 'Spent — click to restore' : 'Available — click to spend'}
+                          onClick={() => setUsedSlots(prev => ({
+                            ...prev, [lvl]: used > i ? used - 1 : used + 1
+                          }))}
+                          style={{
+                            // Diamond gem shape via rotated square
+                            width: 14, height: 14,
+                            transform: 'rotate(45deg)',
+                            background: used > i ? 'transparent' : classAccent.icon,
+                            border: `1.5px solid ${used > i ? 'rgba(212,160,23,0.3)' : '#D4A017'}`,
+                            cursor: 'pointer', padding: 0,
+                            transition: 'all 0.12s ease',
+                          }} />
                       ))}
                     </div>
-                    <div style={{ fontSize: 9, color: theme.text.muted, textAlign: 'center', marginTop: 3 }}>
+                    <div style={{ fontSize: 9, color: theme.text.muted, textAlign: 'center', marginTop: 4, fontWeight: 600 }}>
                       {count - used}/{count}
                     </div>
                   </div>
