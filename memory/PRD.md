@@ -119,8 +119,18 @@ Tackled the highest-impact P0 bugs + first wave of P1 polish from `/app/memory/A
 - `UnifiedDashboard.js` is 1376 lines — should split into Header / PlayerSection / CampaignSection / Modals
 - Live admin API returns 403 for `lcblakey24` (env-specific role gating, not a regression)
 
+## Phase 26 — Audit Fixes Batch 2 (Apr 30 / Iter 86)
+Continued audit polish — heavier touch on character sheet + GM + Live Session:
+- **MapMaker DELETED** (frontend `gm/MapMaker.js`). Backend `/api/campaigns/{cid}/maps`, `/world-maps`, `/local-maps` endpoints PRESERVED for data safety. New concept (square-grid travel overlay) documented in `/app/memory/ROADMAP.md` per user spec.
+- **Character Sheet — Skills upgraded** to 3-tier proficiency display: ○ not-proficient · ● proficient · ★ expertise (×2 prof bonus). Tooltips + colored modifier values match.
+- **Character Sheet — `SPELLS NOT PREPARED` warning chip** in header for prepared casters (Cleric/Druid/Wizard/Paladin/Artificer) when `spells_known > 0` but `prepared_spell_names` is empty. Click → opens Spells tab.
+- **GM Screen — sidebar collapsed-state persisted** to localStorage (`gm.sidebar.collapsedGroups`). The right-side **dice panel show/hide also persisted** (`gm.dicePanel.show`).
+- **Live Combat (CombatPage) — `HIDE HP` toggle** in header. When ON, monster HP renders as fuzzy labels (Healthy / Wounded / Bloodied / Critical / Down) instead of numeric — perfect for screen-share play. Player HP always shows numeric.
+
+**Tests**: backend 6/6 (login + character GET + partial PATCH + 3 maps endpoints all 200). Frontend 8/8 critical flows verified (skill ○ icons, prepared-spells warning hidden correctly, GM sidebar persistence, dice panel persistence, MapMaker file deleted with no orphan refs, Iter 85 regression). See `/app/test_reports/iteration_86.json`.
+
 ## Test iterations
-77, 78, 79, 80, 81, 82, 83, 84, 85 (Phase 25 — 100% backend, 100% critical frontend audit batch 1)
+77, 78, 79, 80, 81, 82, 83, 84, 85, 86 (Phase 26 — 100% backend, 100% frontend audit batch 2)
 
 ---
 *Last updated: April 30, 2026*
