@@ -70,6 +70,8 @@ function UnifiedDashboard({ username, onLogout }) {
   const navigate = useNavigate();
   const [characters, setCharacters] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
+  const [characterSearch, setCharacterSearch] = useState('');
+  const [campaignSearch, setCampaignSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showReferralModal, setShowReferralModal] = useState(false);
@@ -654,6 +656,21 @@ function UnifiedDashboard({ username, onLogout }) {
             </div>
 
             {/* Character List */}
+            {characters.length > 0 && (
+              <input
+                data-testid="character-search-input"
+                type="text"
+                placeholder="Search characters by name, class, or race…"
+                value={characterSearch}
+                onChange={e => setCharacterSearch(e.target.value)}
+                style={{
+                  width: '100%', marginBottom: 12,
+                  background: theme.bg.surface, color: theme.text.primary,
+                  border: `1px solid ${theme.border}`, borderRadius: 8,
+                  padding: '10px 14px', fontSize: 13, outline: 'none',
+                }}
+              />
+            )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {characters.length === 0 ? (
                 <div style={{
@@ -683,7 +700,13 @@ function UnifiedDashboard({ username, onLogout }) {
                   </Button>
                 </div>
               ) : (
-                characters.map((char, index) => (
+                characters
+                  .filter(c => !characterSearch || (
+                    (c.name || '').toLowerCase().includes(characterSearch.toLowerCase()) ||
+                    (c.character_class || '').toLowerCase().includes(characterSearch.toLowerCase()) ||
+                    (c.race || '').toLowerCase().includes(characterSearch.toLowerCase())
+                  ))
+                  .map((char, index) => (
                   <div
                     key={char.id}
                     onClick={() => navigate(`/characters/${char.id}`)}
@@ -876,6 +899,21 @@ function UnifiedDashboard({ username, onLogout }) {
             </div>
 
             {/* Campaign List */}
+            {campaigns.length > 0 && (
+              <input
+                data-testid="campaign-search-input"
+                type="text"
+                placeholder="Search campaigns by name, setting, or description…"
+                value={campaignSearch}
+                onChange={e => setCampaignSearch(e.target.value)}
+                style={{
+                  width: '100%', marginBottom: 12,
+                  background: theme.bg.surface, color: theme.text.primary,
+                  border: `1px solid ${theme.border}`, borderRadius: 8,
+                  padding: '10px 14px', fontSize: 13, outline: 'none',
+                }}
+              />
+            )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {campaigns.length === 0 ? (
                 <div style={{
@@ -929,7 +967,13 @@ function UnifiedDashboard({ username, onLogout }) {
                   )}
                 </div>
               ) : (
-                campaigns.map((campaign, index) => (
+                campaigns
+                  .filter(c => !campaignSearch || (
+                    (c.name || '').toLowerCase().includes(campaignSearch.toLowerCase()) ||
+                    (c.setting || '').toLowerCase().includes(campaignSearch.toLowerCase()) ||
+                    (c.description || '').toLowerCase().includes(campaignSearch.toLowerCase())
+                  ))
+                  .map((campaign, index) => (
                   <div
                     key={campaign.id}
                     onClick={() => navigate(`/campaign/${campaign.id}`)}
@@ -961,13 +1005,26 @@ function UnifiedDashboard({ username, onLogout }) {
                         display: 'flex', 
                         gap: '16px',
                         color: theme.gm.primary, 
-                        fontSize: '13px' 
+                        fontSize: '13px',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
                       }}>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <Users size={12} /> {campaign.player_count || 0} players
                         </span>
                         <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <MapPin size={12} /> {campaign.setting || 'Fantasy'}
+                        </span>
+                        {/* Rules edition pill */}
+                        <span data-testid={`campaign-edition-${campaign.id}`} style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 3,
+                          padding: '2px 8px', borderRadius: 10,
+                          fontSize: 10, fontWeight: 800, letterSpacing: 0.5,
+                          background: 'rgba(212, 160, 23, 0.15)',
+                          border: '1px solid rgba(212, 160, 23, 0.4)',
+                          color: '#D4A017',
+                        }}>
+                          {(campaign.rules_edition === '2014' ? '2014' : '2024')} RULES
                         </span>
                       </div>
                     </div>

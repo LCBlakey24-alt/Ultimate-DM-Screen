@@ -55,12 +55,14 @@ export default function CombatTab({ theme, campaignId, scenarios, selectedScenar
               style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '16px', fontSize: '16px', background: selectedScenario ? theme.gradient : theme.bg.card, border: 'none', borderRadius: '10px', color: theme.text.primary, opacity: selectedScenario ? 1 : 0.5 }}>
               <Play size={18} /> Start Combat <ArrowRight size={16} />
             </Button>
-            <Button onClick={quickStartCombat} data-testid="quick-combat-btn" disabled={players.length === 0}
-              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: 'rgba(212, 160, 23, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary, fontSize: '15px' }}>
-              <Users size={16} /> Quick Start with Players ({players.length})
-            </Button>
+            {players.length > 0 && (
+              <Button onClick={quickStartCombat} data-testid="quick-combat-btn"
+                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: 'rgba(212, 160, 23, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary, fontSize: '15px' }}>
+                <Users size={16} /> Quick Start with Players ({players.length})
+              </Button>
+            )}
             <Button onClick={() => setShowQuickCombat(true)} data-testid="spontaneous-combat-btn"
-              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: 'rgba(239, 68, 68, 0.8)', border: 'none', borderRadius: '10px', color: theme.text.primary, fontSize: '15px' }}>
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: 'rgba(212, 160, 23, 0.10)', border: '1px solid rgba(212, 160, 23, 0.4)', borderRadius: '10px', color: '#D4A017', fontSize: '15px', fontWeight: 700 }}>
               <Zap size={16} /> Spontaneous Combat
             </Button>
             <p style={{ fontSize: '13px', color: theme.text.muted, textAlign: 'center', fontStyle: 'italic', marginTop: '8px' }}>

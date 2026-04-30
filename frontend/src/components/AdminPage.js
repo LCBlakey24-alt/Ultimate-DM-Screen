@@ -212,15 +212,14 @@ function AdminPage({ username }) {
       padding: '24px'
     }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        {/* Header with gradient accent */}
+        {/* Header */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: '16px', 
           marginBottom: '40px',
           paddingBottom: '24px',
-          borderBottom: '1px solid',
-          borderImage: 'linear-gradient(90deg, #F59E0B, #06B6D4) 1'
+          borderBottom: '1px solid rgba(212, 160, 23, 0.35)',
         }}>
           <Button 
             onClick={() => navigate('/home')} 
@@ -261,14 +260,14 @@ function AdminPage({ username }) {
           marginBottom: '32px'
         }}>
           <div style={{
-            background: theme.player.subtle,
-            border: `1px solid ${theme.player.border}`,
+            background: '#0F2440',
+            border: '1px solid rgba(212, 160, 23, 0.35)',
             padding: '20px',
             textAlign: 'center',
-            boxShadow: theme.player.glow
+            borderRadius: 8,
           }}>
-            <User size={24} color={theme.player.cyan} style={{ marginBottom: '8px' }} />
-            <div style={{ color: theme.player.cyan, fontSize: '28px', fontWeight: '800' }}>
+            <User size={24} color="#D4A017" style={{ marginBottom: '8px' }} />
+            <div style={{ color: '#F8FAFC', fontSize: '28px', fontWeight: '800' }}>
               {stats?.total_users || 0}
             </div>
             <div style={{ color: theme.text.muted, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -277,14 +276,14 @@ function AdminPage({ username }) {
           </div>
           
           <div style={{
-            background: theme.gm.subtle,
-            border: `1px solid ${theme.gm.border}`,
+            background: '#0F2440',
+            border: '1px solid rgba(212, 160, 23, 0.35)',
             padding: '20px',
             textAlign: 'center',
-            boxShadow: theme.gm.glow
+            borderRadius: 8,
           }}>
-            <Key size={24} color={theme.gm.primary} style={{ marginBottom: '8px' }} />
-            <div style={{ color: theme.gm.primary, fontSize: '28px', fontWeight: '800' }}>
+            <Key size={24} color="#D4A017" style={{ marginBottom: '8px' }} />
+            <div style={{ color: '#F8FAFC', fontSize: '28px', fontWeight: '800' }}>
               {promoCodes.length}
             </div>
             <div style={{ color: theme.text.muted, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -293,13 +292,14 @@ function AdminPage({ username }) {
           </div>
           
           <div style={{
-            background: theme.legendary.subtle,
-            border: `1px solid ${theme.legendary.border}`,
+            background: '#0F2440',
+            border: '1px solid rgba(212, 160, 23, 0.35)',
             padding: '20px',
-            textAlign: 'center'
+            textAlign: 'center',
+            borderRadius: 8,
           }}>
-            <Gift size={24} color={theme.legendary.primary} style={{ marginBottom: '8px' }} />
-            <div style={{ color: theme.legendary.primary, fontSize: '28px', fontWeight: '800' }}>
+            <Gift size={24} color="#D4A017" style={{ marginBottom: '8px' }} />
+            <div style={{ color: '#F8FAFC', fontSize: '28px', fontWeight: '800' }}>
               {stats?.total_referrals || 0}
             </div>
             <div style={{ color: theme.text.muted, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -308,13 +308,14 @@ function AdminPage({ username }) {
           </div>
 
           <div style={{
-            background: 'rgba(34, 197, 94, 0.15)',
-            border: '1px solid rgba(34, 197, 94, 0.4)',
+            background: '#0F2440',
+            border: '1px solid rgba(212, 160, 23, 0.35)',
             padding: '20px',
-            textAlign: 'center'
+            textAlign: 'center',
+            borderRadius: 8,
           }}>
-            <Star size={24} color="#F59E0B" style={{ marginBottom: '8px' }} />
-            <div style={{ color: '#F59E0B', fontSize: '28px', fontWeight: '800' }}>
+            <Star size={24} color="#D4A017" style={{ marginBottom: '8px' }} />
+            <div style={{ color: '#F8FAFC', fontSize: '28px', fontWeight: '800' }}>
               {reviews.filter(r => r.is_approved).length}
             </div>
             <div style={{ color: theme.text.muted, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -334,18 +335,12 @@ function AdminPage({ username }) {
             style={{
               flex: 1,
               padding: '16px',
-              background: activeTab === 'promos' ? theme.gm.subtle : theme.bg.dark,
+              background: activeTab === 'promos' ? 'rgba(212, 160, 23, 0.10)' : '#0A1628',
               border: 'none',
-              borderBottom: activeTab === 'promos' ? `2px solid ${theme.gm.primary}` : `1px solid ${theme.border}`,
-              color: activeTab === 'promos' ? theme.gm.primary : theme.text.muted,
-              fontSize: '14px',
-              fontWeight: '400',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              fontFamily: "'Montserrat', sans-serif",
+              borderBottom: activeTab === 'promos' ? '2px solid #D4A017' : '1px solid rgba(212, 160, 23, 0.20)',
+              color: activeTab === 'promos' ? '#D4A017' : theme.text.muted,
+              fontSize: '14px', fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
               letterSpacing: '1px'
             }}
           >
@@ -357,18 +352,12 @@ function AdminPage({ username }) {
             style={{
               flex: 1,
               padding: '16px',
-              background: activeTab === 'reviews' ? theme.player.subtle : theme.bg.dark,
+              background: activeTab === 'reviews' ? 'rgba(212, 160, 23, 0.10)' : '#0A1628',
               border: 'none',
-              borderBottom: activeTab === 'reviews' ? `2px solid ${theme.player.cyan}` : `1px solid ${theme.border}`,
-              color: activeTab === 'reviews' ? theme.player.cyan : theme.text.muted,
-              fontSize: '14px',
-              fontWeight: '400',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              fontFamily: "'Montserrat', sans-serif",
+              borderBottom: activeTab === 'reviews' ? '2px solid #D4A017' : '1px solid rgba(212, 160, 23, 0.20)',
+              color: activeTab === 'reviews' ? '#D4A017' : theme.text.muted,
+              fontSize: '14px', fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
               letterSpacing: '1px'
             }}
           >
@@ -380,18 +369,12 @@ function AdminPage({ username }) {
             style={{
               flex: 1,
               padding: '16px',
-              background: activeTab === 'rules' ? theme.legendary.subtle : theme.bg.dark,
+              background: activeTab === 'rules' ? 'rgba(212, 160, 23, 0.10)' : '#0A1628',
               border: 'none',
-              borderBottom: activeTab === 'rules' ? `2px solid ${theme.legendary.primary}` : `1px solid ${theme.border}`,
-              color: activeTab === 'rules' ? theme.legendary.primary : theme.text.muted,
-              fontSize: '14px',
-              fontWeight: '400',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              fontFamily: "'Montserrat', sans-serif",
+              borderBottom: activeTab === 'rules' ? '2px solid #D4A017' : '1px solid rgba(212, 160, 23, 0.20)',
+              color: activeTab === 'rules' ? '#D4A017' : theme.text.muted,
+              fontSize: '14px', fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
               letterSpacing: '1px'
             }}
           >

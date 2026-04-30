@@ -178,9 +178,26 @@ function CombatPage() {
     }
   };
 
-  const endCombat = () => {
+  const endCombat = async () => {
     if (!window.confirm('End combat and return to campaign?')) return;
-    toast.success('Combat ended!');
+    // Sync each player combatant's HP back to their character record so it persists
+    try {
+      const playerCombatants = combatants.filter(c => c.type === 'player' && c.character_id);
+      await Promise.all(playerCombatants.map(c =>
+        axios.patch(`${API}/characters/${c.character_id}`, {
+          current_hit_points: c.hp,
+          temporary_hit_points: c.tempHp || 0,
+          conditions: c.conditions || [],
+        }).catch(() => null) // non-fatal per character
+      ));
+      if (playerCombatants.length > 0) {
+        toast.success(`Combat ended — synced HP for ${playerCombatants.length} player(s)`);
+      } else {
+        toast.success('Combat ended!');
+      }
+    } catch (err) {
+      toast.error('Combat ended (some HP changes may not have synced)');
+    }
     navigate(`/campaign/${campaignId}`);
   };
 
@@ -502,47 +519,52 @@ function CombatPage() {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: `linear-gradient(180deg, rgba(15, 10, 30, 0.95) 0%, rgba(15, 10, 30, 0.98) 100%), url('https://static.prod-images.emergentagent.com/jobs/b9fc55bd-0a80-4d15-9934-a7087e3445c8/images/9be68b2095230a13a9d52ed25ea5ba93da54c6f47b915d5cd89f4c7b8992a6d3.png')`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
+      background: '#0A1628',
       display: 'flex',
       flexDirection: 'column'
     }}>
       {/* Header */}
       <div style={{
-        background: theme.bg.panel,
-        backdropFilter: 'blur(16px)',
-        borderBottom: `1px solid ${theme.border}`,
+        background: '#0F2440',
+        borderBottom: '1px solid rgba(212, 160, 23, 0.35)',
         padding: '12px 24px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Button onClick={endCombat} style={{ background: 'rgba(138, 43, 226, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '8px 12px' }}><ArrowLeft size={20} /></Button>
+          <Button data-testid="combat-back-btn" onClick={endCombat} title="Back to GM Screen"
+            style={{
+              background: 'rgba(212, 160, 23, 0.10)',
+              border: '1px solid rgba(212, 160, 23, 0.35)',
+              borderRadius: '10px', padding: '8px 12px',
+              color: '#D4A017', fontWeight: 700,
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+            <ArrowLeft size={18} /> Back
+          </Button>
           <div>
-            <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Sword size={22} style={{ color: '#EF4444' }} />
+            <h1 style={{ fontSize: '22px', color: theme.text.primary, fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Sword size={22} style={{ color: '#D4A017' }} />
               {scenarioData.name}
             </h1>
-            <p style={{ fontSize: '13px', color: theme.sunset.purple }}>{campaignName}</p>
+            <p style={{ fontSize: '13px', color: '#94A3B8' }}>{campaignName}</p>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ 
-            background: 'rgba(239, 68, 68, 0.15)', 
-            border: '2px solid #EF4444', 
-            borderRadius: '25px', 
-            padding: '10px 24px',
-            color: '#EF4444',
-            fontWeight: '700',
-            fontSize: '18px',
-            fontFamily: "'Cinzel', serif"
+          <div data-testid="combat-round-counter" style={{ 
+            background: 'rgba(212, 160, 23, 0.12)', 
+            border: '1px solid #D4A017', 
+            borderRadius: '12px', 
+            padding: '8px 18px',
+            color: '#D4A017',
+            fontWeight: '800',
+            fontSize: '16px',
+            letterSpacing: 1,
           }}>
-            Round {round}
+            ROUND {round}
           </div>
-          <Button onClick={nextTurn} style={{ display: 'flex', gap: '8px', padding: '12px 24px', background: theme.gradient, border: 'none', borderRadius: '10px', color: '#fff', fontWeight: '600' }}>
+          <Button onClick={nextTurn} style={{ display: 'flex', gap: '8px', padding: '12px 24px', background: '#D4A017', border: 'none', borderRadius: '10px', color: '#0A1628', fontWeight: '800' }}>
             <SkipForward size={18} /> Next Turn
           </Button>
           <Button onClick={endCombat} style={{ display: 'flex', gap: '8px', padding: '12px 20px', background: 'transparent', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary }}>

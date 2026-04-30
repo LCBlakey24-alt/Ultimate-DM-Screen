@@ -10,10 +10,10 @@ const TEXT = '#F8FAFC';
 const TEXT_MUTED = '#94A3B8';
 
 const modes = [
+  { key: 'kids', title: 'Kids Mode', icon: Baby, description: 'Simple choices, plain language, and family-friendly character setup.' },
   { key: 'premade', title: 'Premade Characters', icon: Users, description: 'Choose a ready-to-play hero, then pick how much control you want over future choices.' },
   { key: 'basic', title: 'Basic Build', icon: Zap, description: 'Only pick name, level, class, and race. We auto-fill the rest.' },
   { key: 'full', title: 'Full Creation', icon: Wand2, description: 'Complete control over background, ability scores, skills, and detailed setup.' },
-  { key: 'kids', title: 'Kids Mode', icon: Baby, description: 'Simple choices, plain language, and family-friendly character setup.' }
 ];
 
 export default function CharacterCreationModePicker() {
@@ -43,7 +43,12 @@ export default function CharacterCreationModePicker() {
           Pick the experience that matches how you want to play.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
+        <div style={{
+          display: 'grid',
+          // Always 2x2 on tablets+, single column on mobile — never the orphan-card 3+1 layout.
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          maxWidth: 800, gap: 16
+        }}>
           {modes.map((mode) => {
             const Icon = mode.icon;
             return (

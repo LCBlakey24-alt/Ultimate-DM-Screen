@@ -31,7 +31,7 @@ export default function CharacterCombatTab({
 }) {
   const [expandedFeature, setExpandedFeature] = useState(null);
   const [restLoading, setRestLoading] = useState(false);
-  const [showConditions, setShowConditions] = useState(false);
+  const [showConditions, setShowConditions] = useState(true);
   const [activeConditions, setActiveConditions] = useState(character?.conditions || []);
   const [concentratingOn, setConcentratingOn] = useState(character?.concentrating_on || '');
   const [inspiration, setInspiration] = useState(character?.inspiration || false);
@@ -725,6 +725,16 @@ export default function CharacterCombatTab({
                 </div>
               )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* Hint when nothing equipped — only Unarmed shows */}
+          {weaponAttacks.length === 1 && weaponAttacks[0].isUnarmed && (
+            <div data-testid="no-weapons-hint" style={{
+              fontSize: 11, padding: '8px 10px', borderRadius: 6, marginBottom: 4,
+              background: 'rgba(212, 160, 23, 0.08)', border: '1px solid rgba(212, 160, 23, 0.25)',
+              color: '#D4A017', fontWeight: 600, textAlign: 'center',
+            }}>
+              No weapons equipped — open the Inventory tab and tap "Equip" on a weapon to add it here.
+            </div>
+          )}
           {weaponAttacks.map((atk, i) => (
             <div key={i} data-testid={`attack-${atk.slot}`} style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px', borderRadius: 8,
