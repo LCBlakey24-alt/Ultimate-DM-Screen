@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Plus, Trash2, Copy, Users, Gift, Shield, Key, Star, Check, X, Sword, User, BookOpen } from 'lucide-react';
 import RuleSystemManager from './RuleSystemManager';
+import TemplateEditor from './TemplateEditor';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -380,6 +381,24 @@ function AdminPage({ username }) {
           >
             <BookOpen size={18} />
             RULE SYSTEMS
+          </button>
+          <button
+            onClick={() => setActiveTab('templates')}
+            data-testid="admin-tab-templates"
+            style={{
+              flex: 1,
+              padding: '16px',
+              background: activeTab === 'templates' ? 'rgba(212, 160, 23, 0.10)' : '#0A1628',
+              border: 'none',
+              borderBottom: activeTab === 'templates' ? '2px solid #D4A017' : '1px solid rgba(212, 160, 23, 0.20)',
+              color: activeTab === 'templates' ? '#D4A017' : theme.text.muted,
+              fontSize: '14px', fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              letterSpacing: '1px'
+            }}
+          >
+            <Users size={18} />
+            TEMPLATES
           </button>
         </div>
 
@@ -815,6 +834,25 @@ function AdminPage({ username }) {
         {/* Rule Systems Tab */}
         {activeTab === 'rules' && (
           <RuleSystemManager />
+        )}
+
+        {/* Templates Tab */}
+        {activeTab === 'templates' && (
+          <div style={{
+            background: theme.bg.panel,
+            border: `1px solid rgba(212, 160, 23, 0.35)`,
+            padding: '24px',
+          }}>
+            <div style={{ marginBottom: 16 }}>
+              <h2 style={{ color: '#D4A017', fontSize: 18, fontWeight: 800, margin: 0, letterSpacing: 1 }}>
+                PREMADE CHARACTER TEMPLATES
+              </h2>
+              <p style={{ color: theme.text.muted, fontSize: 12, marginTop: 4 }}>
+                Toggle visibility, clone to homebrew, or delete custom templates. Core templates ship with the app and can only be hidden.
+              </p>
+            </div>
+            <TemplateEditor />
+          </div>
         )}
       </div>
     </div>

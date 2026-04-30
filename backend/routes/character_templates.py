@@ -240,18 +240,33 @@ for _s in SEED_TEMPLATES:
 
 
 async def seed_templates_if_empty() -> int:
-    """Insert SEED_TEMPLATES into `character_templates` collection if not already present.
-    Returns number of templates inserted. Idempotent — safe to call on every startup.
+    """Seed SEED_TEMPLATES into `character_templates` collection.
+
+    - New templates are inserted with all seed fields.
+    - Existing templates are ONLY bumped when the seeded version is higher than
+      the stored version, and even then only a scoped set of "content-owned"
+      fields is touched — preserving any admin DB edits (e.g. override `pitch`
+      or `source`) that were made via the admin editor.
+
+    Returns number of templates inserted.
     """
+    _CONTENT_FIELDS = {
+        # Only bump gameplay data on version increases — never overwrite
+        # admin-authored fields like `pitch`, `name`, `source`, or `active`.
+        'character_class', 'race', 'subrace', 'background', 'alignment',
+        'ability_scores', 'ruleset_id', 'version', 'playstyle_tags',
+    }
     inserted = 0
     for t in SEED_TEMPLATES:
         existing = await db.character_templates.find_one({'id': t['id']}, {'_id': 0})
         if existing is None:
+            # Full insert — seed is source of truth for brand-new rows
             await db.character_templates.insert_one({**t})
             inserted += 1
         elif existing.get('version', 1) < t.get('version', 1):
-            # Bump existing template to latest seeded version (preserving DB-only edits is out-of-scope here)
-            await db.character_templates.update_one({'id': t['id']}, {'$set': {**t}})
+            # Scoped bump — preserve admin edits to name/pitch/source/active
+            scoped_update = {k: v for k, v in t.items() if k in _CONTENT_FIELDS}
+            await db.character_templates.update_one({'id': t['id']}, {'$set': scoped_update})
     if inserted:
         logger.info(f"Seeded {inserted} character templates into character_templates collection.")
     return inserted
@@ -371,3 +386,76 @@ async def ai_match_template(
         "rationale": rationale or f"Playstyle tags for {best['name']} align with: {', '.join(best.get('playstyle_tags', [])[:3])}.",
         "alternatives": [_summarize_template(t) for _, t in scores[1:4] if _ > 0]
     }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ADMIN CRUD — list-all / toggle-active / clone / delete
+# ─────────────────────────────────────────────────────────────────────────────
+from utils.auth import is_admin
+import uuid
+
+
+async def _require_admin(username: str):
+    if not await is_admin(username):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin only")
+
+
+@router.get("/admin/character-templates")
+async def admin_list_templates(username: str = Depends(get_current_user)):
+    """Admin view — returns ALL templates including inactive, with full fields."""
+    await _require_admin(username)
+    cursor = db.character_templates.find({}, {'_id': 0})
+    templates = [t async for t in cursor]
+    return {"templates": templates, "total": len(templates)}
+
+
+@router.patch("/admin/character-templates/{template_id}")
+async def admin_update_template(
+    template_id: str,
+    payload: Dict[str, Any],
+    username: str = Depends(get_current_user)
+):
+    """Admin update — toggle `active`, edit `pitch`, `name`, `source`, or `playstyle_tags`.
+    Scoped allow-list prevents accidental edits to schema-critical fields.
+    """
+    await _require_admin(username)
+    ALLOWED = {'active', 'pitch', 'name', 'source', 'playstyle_tags', 'alignment', 'background'}
+    update = {k: v for k, v in payload.items() if k in ALLOWED}
+    if not update:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No allowed fields to update")
+    result = await db.character_templates.update_one({'id': template_id}, {'$set': update})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Template not found")
+    updated = await db.character_templates.find_one({'id': template_id}, {'_id': 0})
+    return updated
+
+
+@router.post("/admin/character-templates/{template_id}/clone")
+async def admin_clone_template(template_id: str, username: str = Depends(get_current_user)):
+    """Clone a template with a new id, marked as source='homebrew'."""
+    await _require_admin(username)
+    original = await db.character_templates.find_one({'id': template_id}, {'_id': 0})
+    if not original:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Template not found")
+    clone = {**original}
+    clone['id'] = f"tmpl-custom-{uuid.uuid4().hex[:8]}"
+    clone['name'] = f"{original['name']} (Clone)"
+    clone['source'] = 'homebrew'
+    clone['version'] = 1
+    clone['active'] = True
+    await db.character_templates.insert_one(clone)
+    clone.pop('_id', None)
+    return clone
+
+
+@router.delete("/admin/character-templates/{template_id}")
+async def admin_delete_template(template_id: str, username: str = Depends(get_current_user)):
+    """Hard-delete a template. Only applies to non-core (source != 'core') templates."""
+    await _require_admin(username)
+    original = await db.character_templates.find_one({'id': template_id}, {'_id': 0})
+    if not original:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Template not found")
+    if original.get('source') == 'core':
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot delete a core template — toggle `active` to hide it instead")
+    await db.character_templates.delete_one({'id': template_id})
+    return {"deleted": template_id}

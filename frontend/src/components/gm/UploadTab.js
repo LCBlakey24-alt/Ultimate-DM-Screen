@@ -15,7 +15,7 @@ const UPLOAD_TYPES = [
     accept: 'image/*',
     description: 'Upload world maps, dungeon maps, city layouts',
     endpoint: '/campaigns/{id}/maps',
-    color: '#4DD0E1'
+    color: '#D4A017'
   },
   {
     id: 'character',
@@ -24,7 +24,7 @@ const UPLOAD_TYPES = [
     accept: 'image/*',
     description: 'NPC portraits, player character art',
     endpoint: '/campaigns/{id}/portraits',
-    color: '#10B981'
+    color: '#D4A017'
   },
   {
     id: 'document',
@@ -33,7 +33,7 @@ const UPLOAD_TYPES = [
     accept: '.pdf,.doc,.docx,.txt,.md',
     description: 'Rulebooks, lore documents, handouts',
     endpoint: '/campaigns/{id}/documents',
-    color: '#F59E0B'
+    color: '#D4A017'
   },
   {
     id: 'audio',
@@ -42,7 +42,7 @@ const UPLOAD_TYPES = [
     accept: 'audio/*',
     description: 'Background music, sound effects, ambient audio',
     endpoint: '/campaigns/{id}/audio',
-    color: '#4DD0E1'
+    color: '#D4A017'
   },
   {
     id: 'misc',

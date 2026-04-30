@@ -106,6 +106,14 @@ def cantrips_to_learn(class_name: str, current_level: int, target_level: int) ->
         return seen
     return max(0, _at(target_level) - _at(current_level))
 
+def spells_known_table(class_name: str) -> Dict[int, int]:
+    """Public accessor for the spells-known progression table."""
+    return dict(_SPELLS_KNOWN_PROGRESSION.get(class_name, {}))
+
+def cantrips_known_table(class_name: str) -> Dict[int, int]:
+    """Public accessor for the cantrips-known progression table."""
+    return dict(_CANTRIPS_KNOWN_PROGRESSION.get(class_name, {}))
+
 def class_progression_summary(class_name: str, edition: str) -> Dict[str, Any]:
     """All level-up reference data for one class — frontend uses this for the wizard."""
     return {

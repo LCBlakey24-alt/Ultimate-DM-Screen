@@ -44,6 +44,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
   const [selectedSubclass, setSelectedSubclass] = useState(null);
   const [selectedManeuvers, setSelectedManeuvers] = useState([]);
   const [preflight, setPreflight] = useState(null);
+  const [preflightLoading, setPreflightLoading] = useState(false);
 
   const currentLevel = character?.level || 1;
   const newLevel = currentLevel + 1;
@@ -192,9 +193,11 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
 
   useEffect(() => {
     if (!isOpen || !character?.id) return;
+    setPreflightLoading(true);
     axios.get(`${API}/characters/${character.id}/level-up-options`, { params: { target_level: newLevel } })
       .then(res => setPreflight(res.data))
-      .catch(() => setPreflight(null));
+      .catch(() => setPreflight(null))
+      .finally(() => setPreflightLoading(false));
   }, [isOpen, character?.id, newLevel]);
 
   const rollHitDie = () => {
@@ -419,6 +422,22 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
 
         {/* Content */}
         <div style={{ padding: '24px', overflowY: 'auto', maxHeight: 'calc(90vh - 200px)' }}>
+          {/* Preflight loading skeleton — prevents flicker from local-fallback to server values */}
+          {preflightLoading && !preflight && (
+            <div data-testid="levelup-preflight-skeleton" style={{
+              display: 'flex', flexDirection: 'column', gap: 10, padding: 16,
+              background: 'rgba(212, 160, 23, 0.04)',
+              border: '1px solid rgba(212, 160, 23, 0.20)',
+              borderRadius: 8, marginBottom: 12,
+            }}>
+              <div style={{ width: '60%', height: 14, background: 'rgba(212, 160, 23, 0.15)', borderRadius: 4 }} />
+              <div style={{ width: '85%', height: 10, background: 'rgba(212, 160, 23, 0.10)', borderRadius: 4 }} />
+              <div style={{ width: '40%', height: 10, background: 'rgba(212, 160, 23, 0.10)', borderRadius: 4 }} />
+              <div style={{ fontSize: 11, color: 'rgba(212, 160, 23, 0.70)', fontWeight: 600, textAlign: 'center', marginTop: 4 }}>
+                Loading level-up options…
+              </div>
+            </div>
+          )}
           {/* Step 0: Class Choice (Continue or Multiclass) */}
           {step === 0 && (
             <div>

@@ -539,7 +539,7 @@ async def get_level_up_options(
     # Import progression here to keep module-load order light
     from data.class_progression import (
         subclasses_for, spells_to_learn, cantrips_to_learn,
-        feats_for_edition, _SPELLS_KNOWN_PROGRESSION, _CANTRIPS_KNOWN_PROGRESSION,
+        feats_for_edition, spells_known_table, cantrips_known_table,
     )
 
     cls_canonical = char_class_raw.title() if char_class_raw else ''
@@ -576,8 +576,8 @@ async def get_level_up_options(
         "subclass_options": subclass_options,
         "feat_options": feat_options,
         # Reference tables (for client-side validation if needed)
-        "spells_known_table": _SPELLS_KNOWN_PROGRESSION.get(cls_canonical, {}),
-        "cantrips_known_table": _CANTRIPS_KNOWN_PROGRESSION.get(cls_canonical, {}),
+        "spells_known_table": spells_known_table(cls_canonical),
+        "cantrips_known_table": cantrips_known_table(cls_canonical),
     }
 
 
@@ -620,6 +620,8 @@ async def patch_character(
         'resources', 'notes', 'equipped', 'equipment', 'inventory',
         'armor_class', 'speed', 'currency', 'gold', 'attuned_items',
         'exhaustion_level', 'backstory',
+        # Personality roleplay fields
+        'personality_trait', 'ideal', 'bond', 'flaw',
         # Spell management (Learn Spell / Prepare Spell on sheet)
         'cantrips_known', 'spells_known', 'spells_prepared',
         'used_spell_slots',

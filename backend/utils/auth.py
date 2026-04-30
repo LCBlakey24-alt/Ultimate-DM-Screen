@@ -75,7 +75,11 @@ async def verify_campaign_membership(campaign_id: str, username: str) -> dict:
 
 
 async def is_admin(username: str) -> bool:
-    return username in ADMIN_USERNAMES
+    if not username:
+        return False
+    # Case-insensitive match so capitalized usernames (e.g. "LCBlakey24") still grant admin
+    admins = {a.lower() for a in ADMIN_USERNAMES}
+    return username.lower() in admins
 
 
 def generate_referral_code(username: str) -> str:

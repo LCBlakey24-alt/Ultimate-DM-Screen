@@ -165,6 +165,12 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
   const [srdSpells, setSrdSpells] = useState([]);
   const [spellsLoading, setSpellsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Personality prompts — added to review step for richer AI/GM context
+  const [personalityTrait, setPersonalityTrait] = useState(initialState.personalityTrait || '');
+  const [ideal, setIdeal] = useState(initialState.ideal || '');
+  const [bond, setBond] = useState(initialState.bond || '');
+  const [flaw, setFlaw] = useState(initialState.flaw || '');
+  const [backstory, setBackstory] = useState(initialState.backstory || '');
 
   // Load existing character data in edit mode
   useEffect(() => {
@@ -183,6 +189,12 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       setBackground(char.background || "");
       setPortrait(char.portrait_url || "");
       setAlignment(char.alignment || 'Neutral');
+      // Personality fields
+      setPersonalityTrait(char.personality_trait || '');
+      setIdeal(char.ideal || '');
+      setBond(char.bond || '');
+      setFlaw(char.flaw || '');
+      setBackstory(char.backstory || '');
       setEdition(char.edition || "2014");
       setStats({
         strength: char.strength || 10, dexterity: char.dexterity || 10,
@@ -497,7 +509,13 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       intelligence: Number(finalScores.intelligence),
       wisdom: Number(finalScores.wisdom),
       charisma: Number(finalScores.charisma),
-      portrait_url: portrait || ""
+      portrait_url: portrait || "",
+      // Personality prompts
+      personality_trait: personalityTrait || "",
+      ideal: ideal || "",
+      bond: bond || "",
+      flaw: flaw || "",
+      backstory: backstory || "",
     };
 
     if (!isEditMode) {
@@ -1343,6 +1361,66 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
           type="url" value={portrait} onChange={e => setPortrait(e.target.value)}
           placeholder="https://..." style={inputStyle} data-testid="portrait-input"
         />
+      </div>
+
+      {/* Personality prompts — optional but encouraged. Helps GMs & AI co-GM give richer RP. */}
+      <div style={{ ...panelStyle, padding: '16px', marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <Sparkles size={14} color="#D4A017" />
+          <div style={{ fontSize: 12, fontWeight: 800, color: '#D4A017', letterSpacing: 1 }}>
+            PERSONALITY & ROLEPLAY
+          </div>
+          <span style={{ fontSize: 10, color: theme.text.muted, fontStyle: 'italic' }}>
+            optional — but richer AI + GM story hooks
+          </span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div>
+            <label style={labelStyle}>Personality Trait</label>
+            <textarea
+              value={personalityTrait} onChange={e => setPersonalityTrait(e.target.value)}
+              placeholder="e.g. I speak in riddles, I'm suspicious of strangers..."
+              style={{ ...inputStyle, minHeight: 56, resize: 'vertical' }}
+              data-testid="personality-trait-input"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Ideal</label>
+            <textarea
+              value={ideal} onChange={e => setIdeal(e.target.value)}
+              placeholder="e.g. Knowledge must be shared freely, Chaos is the only truth..."
+              style={{ ...inputStyle, minHeight: 56, resize: 'vertical' }}
+              data-testid="ideal-input"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Bond</label>
+            <textarea
+              value={bond} onChange={e => setBond(e.target.value)}
+              placeholder="e.g. My sister was taken by slavers — I will find her..."
+              style={{ ...inputStyle, minHeight: 56, resize: 'vertical' }}
+              data-testid="bond-input"
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Flaw / Fear</label>
+            <textarea
+              value={flaw} onChange={e => setFlaw(e.target.value)}
+              placeholder="e.g. I'm afraid of deep water, I trust too easily..."
+              style={{ ...inputStyle, minHeight: 56, resize: 'vertical' }}
+              data-testid="flaw-input"
+            />
+          </div>
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <label style={labelStyle}>Backstory (1-2 paragraphs)</label>
+          <textarea
+            value={backstory} onChange={e => setBackstory(e.target.value)}
+            placeholder="Where did your hero come from? What drives them?"
+            style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }}
+            data-testid="backstory-input"
+          />
+        </div>
       </div>
 
       {/* Summary card */}
