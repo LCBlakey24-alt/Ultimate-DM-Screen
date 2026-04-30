@@ -139,8 +139,38 @@ Ambitious batch — builder, admin, combat polish + first shipped P2 feature:
 
 **Tests**: backend 4/4 (auth, character GET/PATCH round-trip, campaign GET). Frontend 9/9 (builder-progress + live-preview, 4 admin testids, regression for search + pill + skill icons + condition toggles, code review for drag-drop + concentration + share recap). See `/app/test_reports/iteration_87.json` + `/app/backend/tests/test_iter87_audit_batch3.py`.
 
+## Phase 28 — Technical Audit Sprint (Apr 30 / Iter 88)
+Five tightly-scoped architectural cleanups from user's tech audit — ALL shipped:
+
+1. **Upload UI consolidated**. The Settings modal in `CampaignDashboard.js` (lines 535-746) deleted entirely. New top-level `Uploads` tab nested under the **GM Tools** sidebar group renders the existing `gm/UploadTab.js` — single source of truth. `campaign-settings-btn` + `Settings` icon import + `showSettingsModal` state all removed. `CampaignDashboard.js` shrunk from 769 → 540 lines.
+
+2. **`/level-up-options` extended** with full legal collections per request:
+   - `subclass_options[]` (filtered by class)
+   - `feat_options[]` (filtered by edition + general/origin category, only at ASI levels)
+   - `spells_to_learn` / `cantrips_to_learn` (computed counts)
+   - `can_choose_subclass` / `subclass_unlock_level` flags
+   - `spells_known_table` / `cantrips_known_table` reference data
+   - `edition` resolved from char or `ruleset_id`
+   New helper module `/app/backend/data/class_progression.py` houses subclass + spell + cantrip + feat tables (SRD-only).
+
+3. **LevelUpWizard now consumes preflight** as source of truth:
+   - `cantripGain` / `spellGain` use `preflight.cantrips_to_learn` / `spells_to_learn` when present (local table fallback only)
+   - `hasSubclassChoice` uses `preflight.can_choose_subclass` when present (handles edition-specific subclass timing)
+   - feat list filtered by `preflight.feat_options` set when provided (ensures wizard renders only legal options)
+
+4. **Premade templates moved to MongoDB**. Collection `character_templates` seeded on startup via new `seed_templates_if_empty()` (idempotent, version-aware). Each doc carries `version`, `active`, `source` flags — content ops can now version/disable templates without code changes. `GET /api/character-templates`, `GET /api/character-templates/{id}`, and `POST /api/character-templates/ai-match` all read from DB. Startup logs: `Seeded 24 character templates into character_templates collection.`
+
+5. **Dead code removed**. `showSettingsModal` state, `Settings` icon import, and the entire 200+ line modal block all deleted.
+
+**Tests**: backend 7/7 (12+12+24 templates from DB with version/source/active fields, AI-match, level-up-options new fields all correct, ASI feat list >30). Frontend 6/6 (campaign-settings-btn gone, Uploads tab works, all 12 templates load from DB, regression for character/campaign search + admin testids). See `/app/test_reports/iteration_88.json` + `/app/backend/tests/test_iter88_audit_batch4.py`.
+
+**Known follow-ups (testing agent flagged):**
+- `seed_templates_if_empty` does full `$set` on version bumps — will overwrite admin DB edits when content-ops starts editing. Future: switch to `$setOnInsert` or scoped field updates.
+- `routes/characters.py` imports private `_SPELLS_KNOWN_PROGRESSION` from `data.class_progression`. Future: expose public helpers.
+- `UploadTab.js` cards still use the old purple gradient theme (PRE-EXISTING). Theme cleanup batch deferred.
+
 ## Test iterations
-77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87 (Phase 27 — 100% backend, 100% frontend audit batch 3 + P2 Recap)
+77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88 (Phase 28 — 100% backend, 100% frontend tech audit sprint)
 
 ---
 *Last updated: April 30, 2026*
