@@ -2,9 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== ROOK CYBER-FANTASY DUAL THEME ===== */
-/* Fonts: Outfit (headings), Manrope (body), Cinzel (logo only) */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Manrope:wght@300;400;500;600;700&family=Cinzel:wght@600;700;800&display=swap');
+/* ===== ROOK — Dark Navy + Gold (Block A) ===== */
+/* Font: Montserrat (single family) — bold across the app per user spec */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+/* Global font override — every element renders in Montserrat.
+   Default weight is bold (700) per design lock; lighter weights are preserved
+   only where explicit utility classes (font-medium, font-normal) are used. */
+*, *::before, *::after {
+  font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+html, body {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-weight: 700;
+}
+/* Restore lighter weights for elements that explicitly need them (Tailwind utilities) */
+.font-normal { font-weight: 400 !important; }
+.font-medium { font-weight: 500 !important; }
+.font-semibold { font-weight: 600 !important; }
+.font-bold { font-weight: 700 !important; }
+.font-extrabold { font-weight: 800 !important; }
 
 /* ===== CSS VARIABLES - DUAL THEME SYSTEM ===== */
 :root {

@@ -99,8 +99,12 @@ Immersive SRD-5.1-compliant TTRPG app with GM tools + a Player experience that m
 - **Edition-aware AI prompts**: new `edition_prompt_fragment(campaign)` helper in `routes/ai.py` injects 2024 mechanics (Origin Feats, Weapon Mastery, Subclasses-at-L3, Species over Race, Background ASI) or 2014 mechanics (Race ASIs, Half-Elf/Half-Orc, original subclass timing) into the system/world context of every GM-facing AI endpoint: `ai_generate_with_rules`, `generate_ai_content`, `rook chat`, `session planner`, `prep checklist`. Helper falls back to inferring from `system` string when `rules_edition` missing.
 - **Tests**: backend 4/4 pass (rules_edition GET/PUT round-trip, helper code review, edition fragment markers verified); frontend 100% on critical flows (toggle visible, PUT fires + toast, gold active state, MapMaker tabs gone, all condition-toggle testids present + persistence). See `/app/test_reports/iteration_84.json`.
 
+## Phase 24 — Landing/Home Visual Unification + Montserrat Bold (Apr 30)
+- **Landing page rewritten** to match `/home` (UnifiedDashboard) — strict Dark Navy `#0A1628` + Gold `#D4A017` palette. Removed all purple/cyan AI-slop gradients, glow shadows, and `linear-gradient` backgrounds. Hero, features grid, pricing tiers, and footer now use the same flat panel/border conventions as the rest of the app.
+- **Global Montserrat font lock** (`index.css`): replaced Outfit + Manrope + Cinzel imports with a single Montserrat (400/500/600/700/800) import. Added a `*, *::before, *::after { font-family: 'Montserrat' !important; }` override so every existing inline `fontFamily: 'Cinzel'/'Outfit'` declaration in any component now renders as Montserrat without further code edits. Body weight defaults to 700 (bold) per user spec; Tailwind utility classes (`font-medium`, `font-bold`, etc.) restored to maintain hierarchy.
+
 ## Test iterations
-77, 78, 79, 80, 81, 82, 83 (Phase 22), 84 (Phase 23 — 100% backend, 100% critical frontend)
+77, 78, 79, 80, 81, 82, 83 (Phase 22), 84 (Phase 23 — 100% backend, 100% critical frontend), Phase 24 (visual smoke test only — landing page + home rendered + Montserrat verified via getComputedStyle)
 
 ---
 *Last updated: April 30, 2026*
