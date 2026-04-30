@@ -41,6 +41,15 @@ export default function CombatLog({ entries = [], onClear, theme }) {
   const [collapsed, setCollapsed] = useState(false);
   const [filter, setFilter] = useState('all');
 
+  // Auto-expand on first entry so players notice activity (one-shot)
+  const [autoExpanded, setAutoExpanded] = useState(false);
+  React.useEffect(() => {
+    if (entries.length > 0 && !autoExpanded) {
+      setCollapsed(false);
+      setAutoExpanded(true);
+    }
+  }, [entries.length, autoExpanded]);
+
   const filtered = useMemo(() => {
     if (filter === 'all') return entries;
     return entries.filter(e => e.type === filter);

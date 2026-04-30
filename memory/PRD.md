@@ -82,8 +82,17 @@ Immersive SRD-5.1-compliant TTRPG app with GM tools + a Player experience that m
 - **2024-specific feats**: every feat in `levelUpData.js` now has `editions: ['2014', '2024']` + `category: 'origin'|'general'|'epic'`. Added 6 new 2024-only Origin feats (Crafter, Musician, Lucky-Origin, Healer-Origin, Savage Attacker-Origin, Alert-Origin) and 8 Epic Boons (Combat Prowess, Dimensional Travel, Fate, Fortitude, Irresistible Offense, Spell Recall, Night Spirit, Truesight). New `getFeatsByEdition(edition, category?)` helper. LevelUpWizard now filters via `getFeatsByEdition(character.edition || '2014')`.
 - **Residual purple/cyan purge**: bulk sed across CharacterBuilder, CharacterSheetFull, CharacterSpellbook, CharacterCombatTab, UnifiedDashboard removed all remaining `rgba(138, 43, 226, *)` and `rgba(77, 208, 225, *)` tokens → gold.
 
+## Phase 22 — Spellbook Rest, Conditions Audit, Class Accents, Combat Log (Apr 30 / Iter 83)
+- **Spellbook Short / Long Rest buttons** replaced the single Reset All. Short Rest restores Pact Magic only; Long Rest restores all slots + decrements exhaustion (RAW). Both buttons hook into existing `handleRest` flow so backend `/long-rest` / `/short-rest` endpoints fire.
+- **`used_spell_slots` persistence**: CharacterSheetFull hydrates from `character.used_spell_slots` on fetch and PATCHes via a `persistUsedSlots` wrapper on every change → slot consumption now survives page reloads.
+- **Conditions → sheet linkage audit**: speed-zero conditions (`grappled`, `restrained`, `paralyzed`, `petrified`, `stunned`, `unconscious`) now force SPD vital chip to 0; new `active-conditions-strip` in the header shows active conditions + exhaustion as labeled chips; `incapacitated` chain detection added. Existing roll-mode mapping (advantage/disadvantage/auto-fail) for blinded, paralyzed, poisoned, frightened, prone, restrained, stunned, unconscious, invisible, petrified — re-verified working through `getConditionRollEffect`.
+- **Per-class color accents**: new `CLASS_ACCENTS` map + `getClassAccent(character)` helper in `lib/theme.js`. Applied as: small accent crest dot on the character portrait (data-testid='class-accent-dot'), and slot-fill color on gem-style spell slots. Subtle by design — borders + surfaces remain strict Dark Navy + Gold.
+- **Gem-style spell slots**: rotated-square (45°) diamond shapes with flat fills, gold borders, class-tinted active fill. Applied in both CharacterSpellbook and CharacterCombatTab.
+- **Per-character Combat Log** (`CombatLog.js`): new collapsible panel in Combat tab. Captures HP delta, rolls (classified into attack / spell / roll), rests, condition changes, exhaustion changes. Filter buttons + clear, auto-expands on first entry.
+- **Tests**: backend 6/6 pass (used_spell_slots PATCH persistence, conditions PATCH persistence, /long-rest, /short-rest). Frontend 100% on critical flows (class dot, conditions strip, speed-zero under grappled, rest buttons, gem slots, persistence, combat log present). See `/app/test_reports/iteration_83.json`.
+
 ## Test iterations
-77, 78, 79, 80, 81 (Block B 14/14 backend pass), 82 (Phase 18 - Learn Spell bug fix verified), Phase 20 (Block A visual verification via screenshots)
+77, 78, 79, 80, 81 (Block B 14/14 backend pass), 82 (Phase 18 - Learn Spell bug fix verified), Phase 20 (Block A visual verification via screenshots), 83 (Phase 22 - 100% backend, 100% critical frontend)
 
 ---
 *Last updated: April 30, 2026*
