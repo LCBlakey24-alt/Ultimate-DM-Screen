@@ -141,6 +141,13 @@ async def startup_event():
     await initialize_rule_systems()
     logger.info("Rule systems initialized")
 
+    # Seed premade character templates into MongoDB if missing.
+    try:
+        from routes.character_templates import seed_templates_if_empty
+        await seed_templates_if_empty()
+    except Exception as e:
+        logger.warning(f"Could not seed character templates: {e}")
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

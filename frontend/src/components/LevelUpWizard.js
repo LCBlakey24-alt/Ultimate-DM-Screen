@@ -104,7 +104,9 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
   };
   const oldCantripCount = getCantripCount(currentLevel);
   const newCantripCount = getCantripCount(newLevel);
-  const cantripGain = newCantripCount - oldCantripCount;
+  // Prefer preflight (server-side source of truth) when available; fall back to local table.
+  const localCantripGain = newCantripCount - oldCantripCount;
+  const cantripGain = preflight?.cantrips_to_learn ?? localCantripGain;
   
   // New spells to learn (for "known" casters)
   const spellsKnownTable = SPELLS_KNOWN[characterClass] || {};
@@ -117,7 +119,8 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
   };
   const oldSpellsKnown = getSpellsKnownCount(currentLevel);
   const newSpellsKnown = getSpellsKnownCount(newLevel);
-  const spellGain = newSpellsKnown - oldSpellsKnown;
+  const localSpellGain = newSpellsKnown - oldSpellsKnown;
+  const spellGain = preflight?.spells_to_learn ?? localSpellGain;
   
   // Wizard special: gains 2 spells to spellbook each level
   const isWizard = characterClass === 'Wizard';
@@ -137,7 +140,11 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
   const classKey = characterClass?.toLowerCase();
   const classData = CLASS_FEATURES[classKey];
   const hasFightingStyleChoice = classData?.fighting_style_level === newClassLevel && classData?.fighting_styles;
-  const hasSubclassChoice = classData?.subclass_level === newClassLevel && classData?.subclasses;
+  // Prefer preflight gating when available (handles edition-specific subclass timing)
+  const localHasSubclassChoice = classData?.subclass_level === newClassLevel && classData?.subclasses;
+  const hasSubclassChoice = preflight?.can_choose_subclass !== undefined
+    ? preflight.can_choose_subclass
+    : localHasSubclassChoice;
   const hasSubclassFeature = selectedSubclass && classData?.subclasses?.[selectedSubclass]?.features?.some(f => f.level === newClassLevel);
   const isBattleMaster = selectedSubclass === 'battle_master' || character?.subclass === 'battle_master';
   const bmNeedsManeuvers = isBattleMaster && classData?.subclasses?.battle_master?.features?.some(
@@ -1239,7 +1246,15 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
               {choiceType === 'feat' && (
                 <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {getFeatsByEdition(character?.edition || '2014').map(feat => (
+                    {(() => {
+                      // Source of truth: server preflight feat_options when provided (filtered by edition + class).
+                      // Fallback to local edition table when preflight not yet loaded.
+                      const localList = getFeatsByEdition(character?.edition || '2014');
+                      const allowedNames = preflight?.feat_options?.length
+                        ? new Set(preflight.feat_options)
+                        : null;
+                      return localList.filter(f => !allowedNames || allowedNames.has(f.name));
+                    })().map(feat => (
                       <button
                         key={feat.name}
                         onClick={() => setSelectedFeat(feat)}

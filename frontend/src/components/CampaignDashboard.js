@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map, ChevronDown, ChevronRight, Package, Dice6, Clock, Network, Compass, Building, Backpack, Settings, Upload } from 'lucide-react';
+import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map, ChevronDown, ChevronRight, Package, Dice6, Clock, Network, Compass, Building, Backpack, Upload } from 'lucide-react';
 import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
 import GodsTab from '@/components/tabs/GodsTab';
 import LocationsTab from '@/components/tabs/LocationsTab';
@@ -20,6 +20,7 @@ import InventoryConsolidatedTab from '@/components/tabs/InventoryConsolidatedTab
 import ChronicleConsolidatedTab from '@/components/tabs/ChronicleConsolidatedTab';
 import CombatConsolidatedTab from '@/components/tabs/CombatConsolidatedTab';
 import ToolsConsolidatedTab from '@/components/tabs/ToolsConsolidatedTab';
+import UploadTab from '@/components/gm/UploadTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -98,7 +99,6 @@ function CampaignDashboard({ username, onLogout }) {
 
   // Collapsed groups state
   const [collapsedGroups, setCollapsedGroups] = useState({});
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
   
   const toggleGroup = (groupId) => {
     setCollapsedGroups(prev => ({ ...prev, [groupId]: !prev[groupId] }));
@@ -146,6 +146,7 @@ function CampaignDashboard({ username, onLogout }) {
       tabs: [
         { id: 'tools', icon: ScrollText, label: 'Tools' },
         { id: 'inventory', icon: Backpack, label: 'Inventory' },
+        { id: 'uploads', icon: Upload, label: 'Uploads' },
       ]
     },
   ];
@@ -355,26 +356,6 @@ function CampaignDashboard({ username, onLogout }) {
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Button 
-              data-testid="campaign-settings-btn"
-              onClick={() => setShowSettingsModal(true)}
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px',
-                background: 'rgba(138, 43, 226, 0.2)',
-                border: `1px solid ${theme.accent.primary}`,
-                color: theme.accent.primary,
-                fontSize: '13px',
-                padding: '10px 16px',
-                minHeight: '44px',
-                fontWeight: '500'
-              }}
-            >
-              <Settings size={18} />
-              <span className="desktop-only">Settings</span>
-            </Button>
-            
-            <Button 
               data-testid="open-dm-screen-btn"
               onClick={handleOpenGMScreen}
               style={{ 
@@ -502,6 +483,7 @@ function CampaignDashboard({ username, onLogout }) {
             {activeTab === 'combat' && <CombatConsolidatedTab campaignId={campaignId} />}
             {activeTab === 'battle-maps' && <MapsTab campaignId={campaignId} />}
             {activeTab === 'tools' && <ToolsConsolidatedTab campaignId={campaignId} />}
+            {activeTab === 'uploads' && <UploadTab theme={theme} campaignId={campaignId} />}
             {activeTab === 'inventory' && <InventoryConsolidatedTab campaignId={campaignId} />}
             {activeTab === 'session-recap' && <SessionRecapAI campaignId={campaignId} />}
             {activeTab === 'players' && <PlayersTab campaignId={campaignId} />}
@@ -549,218 +531,6 @@ function CampaignDashboard({ username, onLogout }) {
         }
       `}</style>
       
-      {/* Settings Modal - Upload Functionality */}
-      {showSettingsModal && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px'
-          }}
-          onClick={() => setShowSettingsModal(false)}
-        >
-          <div 
-            style={{
-              background: 'rgba(26, 17, 46, 0.98)',
-              border: `1px solid ${theme.border}`,
-              borderRadius: '16px',
-              width: '100%',
-              maxWidth: '800px',
-              maxHeight: '80vh',
-              overflow: 'auto',
-              padding: '32px'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h2 style={{ 
-                fontFamily: "'Cinzel', serif", 
-                fontSize: '24px', 
-                color: theme.sunset.gold,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}>
-                <Settings size={24} /> Campaign Settings
-              </h2>
-              <button 
-                onClick={() => setShowSettingsModal(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.text.secondary }}
-              >
-                <X size={24} />
-              </button>
-            </div>
-            
-            {/* Upload Sections */}
-            <div style={{ display: 'grid', gap: '20px' }}>
-              {/* Custom Ruleset Upload */}
-              <div style={{ 
-                background: 'rgba(138, 43, 226, 0.1)', 
-                border: `1px solid ${theme.accent.primary}`,
-                borderRadius: '12px',
-                padding: '20px'
-              }}>
-                <h3 style={{ 
-                  fontFamily: "'Cinzel', serif", 
-                  color: theme.accent.primary, 
-                  fontSize: '16px', 
-                  marginBottom: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <Upload size={18} /> Custom Rulesets
-                </h3>
-                <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '16px' }}>
-                  Upload custom rulebook PDFs or homebrew rules for your campaign.
-                </p>
-                <input
-                  type="file"
-                  accept=".pdf,.json"
-                  style={{ display: 'none' }}
-                  id="ruleset-upload"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) toast.info(`Ruleset upload: ${file.name} (Feature coming soon)`);
-                  }}
-                />
-                <Button 
-                  onClick={() => document.getElementById('ruleset-upload').click()}
-                  style={{ background: theme.accent.primary }}
-                >
-                  <Upload size={16} /> Upload Ruleset
-                </Button>
-              </div>
-              
-              {/* Custom Races Upload */}
-              <div style={{ 
-                background: 'rgba(236, 72, 153, 0.1)', 
-                border: `1px solid ${theme.accent.secondary}`,
-                borderRadius: '12px',
-                padding: '20px'
-              }}>
-                <h3 style={{ 
-                  fontFamily: "'Cinzel', serif", 
-                  color: theme.accent.secondary, 
-                  fontSize: '16px', 
-                  marginBottom: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <Upload size={18} /> Custom Races & Classes
-                </h3>
-                <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '16px' }}>
-                  Upload custom races, classes, backgrounds, and other character options.
-                </p>
-                <input
-                  type="file"
-                  accept=".json,.csv"
-                  style={{ display: 'none' }}
-                  id="races-upload"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) toast.info(`Character options upload: ${file.name} (Feature coming soon)`);
-                  }}
-                />
-                <Button 
-                  onClick={() => document.getElementById('races-upload').click()}
-                  style={{ background: theme.accent.secondary }}
-                >
-                  <Upload size={16} /> Upload Character Options
-                </Button>
-              </div>
-              
-              {/* Custom Items Upload */}
-              <div style={{ 
-                background: 'rgba(245, 158, 11, 0.1)', 
-                border: `1px solid ${theme.sunset.gold}`,
-                borderRadius: '12px',
-                padding: '20px'
-              }}>
-                <h3 style={{ 
-                  fontFamily: "'Cinzel', serif", 
-                  color: theme.sunset.gold, 
-                  fontSize: '16px', 
-                  marginBottom: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <Upload size={18} /> Custom Items & Spells
-                </h3>
-                <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '16px' }}>
-                  Upload homebrew items, spells, and magical artifacts for your world.
-                </p>
-                <input
-                  type="file"
-                  accept=".json,.csv"
-                  style={{ display: 'none' }}
-                  id="items-upload"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) toast.info(`Items upload: ${file.name} (Feature coming soon)`);
-                  }}
-                />
-                <Button 
-                  onClick={() => document.getElementById('items-upload').click()}
-                  style={{ background: theme.sunset.gold, color: '#000' }}
-                >
-                  <Upload size={16} /> Upload Items & Spells
-                </Button>
-              </div>
-              
-              {/* Custom Monsters Upload */}
-              <div style={{ 
-                background: 'rgba(255, 54, 0, 0.1)', 
-                border: `1px solid ${theme.accent.red}`,
-                borderRadius: '12px',
-                padding: '20px'
-              }}>
-                <h3 style={{ 
-                  fontFamily: "'Cinzel', serif", 
-                  color: theme.accent.red, 
-                  fontSize: '16px', 
-                  marginBottom: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <Upload size={18} /> Custom Monsters & NPCs
-                </h3>
-                <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '16px' }}>
-                  Upload custom creature stat blocks and NPC templates.
-                </p>
-                <input
-                  type="file"
-                  accept=".json,.csv"
-                  style={{ display: 'none' }}
-                  id="monsters-upload"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) toast.info(`Monsters upload: ${file.name} (Feature coming soon)`);
-                  }}
-                />
-                <Button 
-                  onClick={() => document.getElementById('monsters-upload').click()}
-                  style={{ background: theme.accent.red }}
-                >
-                  <Upload size={16} /> Upload Monsters & NPCs
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

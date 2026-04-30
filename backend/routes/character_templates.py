@@ -1,9 +1,22 @@
-"""Character template routes: premade characters and AI matching."""
+"""Character template routes: premade characters and AI matching.
+
+Templates are stored in MongoDB collection `character_templates`. The seed list
+below is loaded into the DB on startup if the collection is empty (or missing
+templates) — this lets content ops update / version templates without code changes.
+
+Each template document carries:
+  - `id`: stable string identifier (e.g. "tmpl-thorne-fighter")
+  - `version`: integer, bumped when content changes
+  - `active`: bool, false to hide a template
+  - `source`: string tag (e.g. "core", "homebrew", "campaign-{id}")
+  - `ruleset_id`: "dnd5e_2014" / "dnd5e_2024"
+  - all the gameplay fields below (race, class, ability_scores, etc.)
+"""
 from fastapi import APIRouter, HTTPException, Depends, status
 from config import db, logger
 from utils.auth import get_current_user
 from models import TemplateMatchRequest
-from typing import Optional
+from typing import Optional, List, Dict, Any
 import os
 
 try:
@@ -17,9 +30,11 @@ except ImportError:
 router = APIRouter()
 
 # ============================================
-# Premade character templates (SRD-safe)
+# SEED data — used to populate MongoDB on first startup.
+# In-app reads always go through `_get_templates(ruleset_id?)` below
+# which queries the `character_templates` collection.
 # ============================================
-PREMADE_TEMPLATES = [
+SEED_TEMPLATES: List[Dict[str, Any]] = [
     {
         "id": "tmpl-thorne-fighter",
         "ruleset_id": "dnd5e_2014",
@@ -210,12 +225,45 @@ PREMADE_TEMPLATES = [
 
 # Generate 2024 variants (same character pitches, updated ruleset_id)
 _TEMPLATES_2024 = []
-for _t in PREMADE_TEMPLATES:
+for _t in SEED_TEMPLATES:
     _clone = dict(_t)
     _clone["id"] = _t["id"].replace("tmpl-", "tmpl-2024-")
     _clone["ruleset_id"] = "dnd5e_2024"
     _TEMPLATES_2024.append(_clone)
-PREMADE_TEMPLATES = PREMADE_TEMPLATES + _TEMPLATES_2024
+SEED_TEMPLATES = SEED_TEMPLATES + _TEMPLATES_2024
+# Tag every seeded template with default version + active + source so DB rows are
+# self-describing for future content ops.
+for _s in SEED_TEMPLATES:
+    _s.setdefault("version", 1)
+    _s.setdefault("active", True)
+    _s.setdefault("source", "core")
+
+
+async def seed_templates_if_empty() -> int:
+    """Insert SEED_TEMPLATES into `character_templates` collection if not already present.
+    Returns number of templates inserted. Idempotent — safe to call on every startup.
+    """
+    inserted = 0
+    for t in SEED_TEMPLATES:
+        existing = await db.character_templates.find_one({'id': t['id']}, {'_id': 0})
+        if existing is None:
+            await db.character_templates.insert_one({**t})
+            inserted += 1
+        elif existing.get('version', 1) < t.get('version', 1):
+            # Bump existing template to latest seeded version (preserving DB-only edits is out-of-scope here)
+            await db.character_templates.update_one({'id': t['id']}, {'$set': {**t}})
+    if inserted:
+        logger.info(f"Seeded {inserted} character templates into character_templates collection.")
+    return inserted
+
+
+async def _get_templates(ruleset_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    """DB-backed read. Filters by ruleset_id when provided. Excludes _id."""
+    query: Dict[str, Any] = {'active': {'$ne': False}}
+    if ruleset_id:
+        query['ruleset_id'] = ruleset_id
+    cursor = db.character_templates.find(query, {'_id': 0})
+    return [t async for t in cursor]
 
 
 def _summarize_template(t):
@@ -230,6 +278,8 @@ def _summarize_template(t):
         "alignment": t.get("alignment", "Neutral"),
         "playstyle_tags": t.get("playstyle_tags", []),
         "ruleset_id": t.get("ruleset_id", "dnd5e_2014"),
+        "version": t.get("version", 1),
+        "source": t.get("source", "core"),
     }
 
 
@@ -239,9 +289,7 @@ async def list_character_templates(
     username: str = Depends(get_current_user)
 ):
     """List premade character templates, optionally filtered by ruleset."""
-    templates = PREMADE_TEMPLATES
-    if ruleset_id:
-        templates = [t for t in templates if t.get("ruleset_id", "dnd5e_2014") == ruleset_id]
+    templates = await _get_templates(ruleset_id)
     return {"templates": [_summarize_template(t) for t in templates]}
 
 
@@ -250,7 +298,7 @@ async def get_character_template(
     template_id: str,
     username: str = Depends(get_current_user)
 ):
-    template = next((t for t in PREMADE_TEMPLATES if t["id"] == template_id), None)
+    template = await db.character_templates.find_one({'id': template_id, 'active': {'$ne': False}}, {'_id': 0})
     if not template:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Template not found")
     return template
@@ -266,7 +314,7 @@ async def ai_match_template(
     if not description:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Describe how you want to play")
 
-    templates = [t for t in PREMADE_TEMPLATES if t.get("ruleset_id", "dnd5e_2014") == request.ruleset_id]
+    templates = await _get_templates(request.ruleset_id)
     if not templates:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No templates available for that ruleset")
 

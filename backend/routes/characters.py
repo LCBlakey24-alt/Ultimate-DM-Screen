@@ -519,23 +519,65 @@ async def get_level_up_options(
     current_level = existing.get('level', 1)
     if target_level != current_level + 1:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Target level must be {current_level + 1}")
-    char_class = (existing.get('character_class') or '').lower()
+    # ---- Class + edition resolution ----
+    char_class_raw = existing.get('character_class') or ''
+    char_class = char_class_raw.lower()
+    edition = existing.get('edition') or ('2024' if str(existing.get('ruleset_id', '')).endswith('2024') else '2014')
+
+    # ---- ASI / feat levels ----
     asi_levels = [4, 8, 12, 16, 19]
     if char_class == 'fighter':
         asi_levels.extend([6, 14])
     elif char_class == 'rogue':
         asi_levels.append(10)
     is_asi_level = target_level in asi_levels
+
+    # ---- Spellcaster + progression ----
     spellcaster_classes = {'bard', 'cleric', 'druid', 'paladin', 'ranger', 'sorcerer', 'warlock', 'wizard'}
+    is_spellcaster = char_class in spellcaster_classes
+
+    # Import progression here to keep module-load order light
+    from data.class_progression import (
+        subclasses_for, spells_to_learn, cantrips_to_learn,
+        feats_for_edition, _SPELLS_KNOWN_PROGRESSION, _CANTRIPS_KNOWN_PROGRESSION,
+    )
+
+    cls_canonical = char_class_raw.title() if char_class_raw else ''
+    spells_count = spells_to_learn(cls_canonical, current_level, target_level) if is_spellcaster else 0
+    cantrips_count = cantrips_to_learn(cls_canonical, current_level, target_level) if is_spellcaster else 0
+
+    # ---- Subclass availability ----
+    from config import get_subclass_unlock_level
+    subclass_unlock_level = get_subclass_unlock_level(cls_canonical, edition) if cls_canonical else 3
+    has_subclass = bool(existing.get('subclass'))
+    can_choose_subclass = (target_level >= subclass_unlock_level and not has_subclass)
+    subclass_options = subclasses_for(cls_canonical) if can_choose_subclass else []
+
+    # ---- Feat options (only relevant if asi_level + character chooses 'feat') ----
+    feat_options = feats_for_edition(edition, 'general') if is_asi_level else []
+
     return {
         "character_id": character_id,
         "current_level": current_level,
         "target_level": target_level,
+        "edition": edition,
+        "ruleset_id": existing.get('ruleset_id', f"dnd5e_{edition}"),
+        "class_name": char_class_raw,
+        # Flags
         "is_asi_level": is_asi_level,
         "asi_or_feat_required": is_asi_level,
-        "is_spellcaster": char_class in spellcaster_classes,
-        "class_name": existing.get('character_class', ''),
-        "ruleset_id": existing.get('ruleset_id', 'dnd5e_2014')
+        "is_spellcaster": is_spellcaster,
+        "can_choose_subclass": can_choose_subclass,
+        "subclass_unlock_level": subclass_unlock_level,
+        # Counts (source of truth — wizard must consume these)
+        "spells_to_learn": spells_count,
+        "cantrips_to_learn": cantrips_count,
+        # Legal option lists (filtered by class/edition/state)
+        "subclass_options": subclass_options,
+        "feat_options": feat_options,
+        # Reference tables (for client-side validation if needed)
+        "spells_known_table": _SPELLS_KNOWN_PROGRESSION.get(cls_canonical, {}),
+        "cantrips_known_table": _CANTRIPS_KNOWN_PROGRESSION.get(cls_canonical, {}),
     }
 
 
