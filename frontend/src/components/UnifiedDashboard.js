@@ -12,44 +12,44 @@ import TronBackground from '@/components/TronBackground';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Dual Theme - Landing page neutral bridging GM (purple) and Player (cyan)
+// Block A design reset — dark navy + gold outline, flat (no gradients)
 const theme = {
   bg: {
-    primary: '#080A1A',
-    surface: 'rgba(10, 17, 64, 0.85)',
-    surfaceHover: '#0F1225',
-    card: 'rgba(10, 17, 64, 0.9)',
-    hover: 'rgba(138, 43, 226, 0.15)'
+    primary: '#0A1628',
+    surface: '#0F2440',
+    surfaceHover: '#14304F',
+    card: '#0F2440',
+    hover: 'rgba(212, 160, 23, 0.08)'
   },
   sunset: {
-    purple: '#8A2BE2',
-    pink: '#4DD0E1'
+    purple: '#D4A017',
+    pink: '#D4A017'
   },
   gm: {
-    primary: '#8A2BE2',
-    secondary: '#4B0082',
-    hover: '#9932CC',
-    glow: 'rgba(138, 43, 226, 0.4)',
-    subtle: 'rgba(138, 43, 226, 0.15)',
-    border: 'rgba(138, 43, 226, 0.3)'
+    primary: '#D4A017',
+    secondary: '#D4A017',
+    hover: '#F5C542',
+    glow: 'transparent',
+    subtle: 'rgba(212, 160, 23, 0.08)',
+    border: 'rgba(212, 160, 23, 0.35)'
   },
   player: {
-    primary: '#4DD0E1',
-    secondary: '#0066FF',
-    glow: 'rgba(77, 208, 225, 0.4)',
-    subtle: 'rgba(77, 208, 225, 0.15)'
+    primary: '#D4A017',
+    secondary: '#F5C542',
+    glow: 'transparent',
+    subtle: 'rgba(212, 160, 23, 0.08)'
   },
   accent: {
-    pink: '#4DD0E1',
-    pinkGlow: 'rgba(77, 208, 225, 0.4)'
+    pink: '#D4A017',
+    pinkGlow: 'transparent'
   },
   text: {
-    primary: '#F8F8FF',
-    secondary: '#9EB0D0',
-    muted: '#6B7B9B'
+    primary: '#F8FAFC',
+    secondary: '#94A3B8',
+    muted: '#64748B'
   },
-  border: 'rgba(77, 208, 225, 0.2)',
-  gradient: 'linear-gradient(135deg, #8A2BE2 0%, #4DD0E1 100%)'
+  border: 'rgba(212, 160, 23, 0.35)',
+  gradient: '#D4A017'
 };
 
 // Ember Particles Component
@@ -324,10 +324,7 @@ function UnifiedDashboard({ username, onLogout }) {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: `linear-gradient(180deg, rgba(15, 10, 30, 0.92) 0%, rgba(15, 10, 30, 0.98) 100%), url('https://static.prod-images.emergentagent.com/jobs/b9fc55bd-0a80-4d15-9934-a7087e3445c8/images/9be68b2095230a13a9d52ed25ea5ba93da54c6f47b915d5cd89f4c7b8992a6d3.png')`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
+      background: theme.bg.primary,
       display: 'flex',
       flexDirection: 'column',
       position: 'relative'

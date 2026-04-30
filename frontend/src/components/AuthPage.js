@@ -140,7 +140,7 @@ export default function AuthPage({ onLogin }) {
           left: 0,
           right: 0,
           bottom: 0,
-          background: '#080A1A',
+          background: '#0A1628',
           zIndex: 0
         }}
       />
@@ -189,7 +189,7 @@ export default function AuthPage({ onLogin }) {
             fontFamily: "'Cinzel', serif",
             fontSize: '32px',
             fontWeight: '700',
-            background: 'linear-gradient(135deg, #8A2BE2, #4DD0E1)',
+            background: '#D4A017',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}>
@@ -284,7 +284,7 @@ export default function AuthPage({ onLogin }) {
                 style={{
                   width: '100%',
                   padding: '14px',
-                  background: 'linear-gradient(135deg, #8A2BE2 0%, #4DD0E1 100%)',
+                  background: '#D4A017',
                   border: 'none',
                   borderRadius: '12px',
                   color: 'white',
@@ -385,7 +385,7 @@ export default function AuthPage({ onLogin }) {
                 style={{
                   width: '100%',
                   padding: '14px',
-                  background: 'linear-gradient(135deg, #8A2BE2 0%, #4DD0E1 100%)',
+                  background: '#D4A017',
                   border: 'none',
                   borderRadius: '12px',
                   color: 'white',
@@ -447,7 +447,7 @@ export default function AuthPage({ onLogin }) {
                 style={{
                   width: '100%',
                   padding: '14px',
-                  background: 'linear-gradient(135deg, #8A2BE2 0%, #4DD0E1 100%)',
+                  background: '#D4A017',
                   border: 'none',
                   borderRadius: '12px',
                   color: 'white',
@@ -506,7 +506,7 @@ export default function AuthPage({ onLogin }) {
                 style={{
                   width: '100%',
                   padding: '14px',
-                  background: 'linear-gradient(135deg, #8A2BE2 0%, #4DD0E1 100%)',
+                  background: '#D4A017',
                   border: 'none',
                   borderRadius: '12px',
                   color: 'white',

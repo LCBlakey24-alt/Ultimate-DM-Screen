@@ -75,12 +75,20 @@ Immersive SRD-5.1-compliant TTRPG app with GM tools + a Player experience that m
 ### Blocked
 - Production login / password reset (hosting config)
 
-## Test iterations
-77, 78, 79, 80, 81 (Block B 14/14 backend pass + smoke), 82 (Phase 18 — **critical Learn Spell persistence bug found and fixed**: added cantrips_known/spells_known/spells_prepared/used_spell_slots to PATCH whitelist in routes/characters.py; handleUpdateCharacter now rethrows + rolls back optimistic state on failure)
+## Phase 20 — Block A Design Reset (Apr 30)
+Dark navy (`#0A1628`) + gold (`#D4A017`) outline theme applied across all player-facing pages. No gradients, no glow, flat panels, 1px gold borders.
+- **Shared theme** `/app/frontend/src/lib/theme.js` created (navy/gold palette, panelStyle, buttonStyle)
+- **Homepage (UnifiedDashboard)**: removed fantasy landscape bg image + purple/cyan gradients; swapped theme object to navy/gold
+- **Mode picker**: rewrote from scratch — 4 gold-outlined cards (Premade/Basic/Full/Kids) with hover brighten-gold effect
+- **Full builder (CharacterBuilder)**: theme palette swapped, all linear-gradients replaced with solid gold/navy, panel glass-morphism removed (boxShadow/backdropFilter stripped)
+- **Character Sheet (CharacterSheetFull)**: theme swap to `#0A1628` + `#D4A017`, all gold-button gradients → flat gold
+- **Premade Builder**: rewrote render to match theme (gold-outlined template cards, gold Use Template buttons, dark navy bg)
+- **Auth Page**: bg → `#0A1628`, all login/register buttons → solid gold (5 instances)
+- Basic Builder + Kids Mode already on the palette from Phase 17.
+- Verified via Playwright screenshots of all surfaces.
 
-## Phase 19 — Post-test Fixes (Apr 30)
-- **Learn Spell persistence bug** (from iteration 82): backend PATCH whitelist now accepts `cantrips_known`, `spells_known`, `spells_prepared`, `used_spell_slots`. Frontend `handleUpdateCharacter` rethrows errors and rolls back optimistic state so callers can show real toasts.
-- Verified end-to-end: Learn Fire Bolt → reload → UI shows CANTRIPS (1) Fire Bolt, API confirms persistence.
+## Test iterations
+77, 78, 79, 80, 81 (Block B 14/14 backend pass), 82 (Phase 18 - Learn Spell bug fix verified), Phase 20 (Block A visual verification via screenshots)
 
 ---
 *Last updated: April 30, 2026*

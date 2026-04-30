@@ -24,11 +24,11 @@ const DRAFT_KEY = "rq_character_builder_draft_v2";
 
 // Theme
 const theme = {
-  bg: { primary: '#0F0A1E', surface: '#1A112E', elevated: '#2E1F45' },
-  sunset: { purple: '#8A2BE2', pink: '#4DD0E1', gold: '#F59E0B' },
+  bg: { primary: '#0A1628', surface: '#0F2440', elevated: '#14304F' },
+  sunset: { purple: '#D4A017', pink: '#D4A017', gold: '#D4A017' },
   text: { primary: '#F8FAFC', secondary: '#94A3B8', muted: '#64748B' },
-  border: 'rgba(138, 43, 226, 0.3)',
-  borderActive: 'rgba(138, 43, 226, 0.7)'
+  border: 'rgba(212, 160, 23, 0.35)',
+  borderActive: '#D4A017'
 };
 
 // All 18 skills mapped to their governing ability
@@ -539,23 +539,22 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
   // ============ STYLES ============
   const pageStyle = {
     minHeight: '100vh',
-    background: 'radial-gradient(ellipse at top, rgba(138, 43, 226, 0.18) 0%, transparent 50%), linear-gradient(180deg, #0B0518 0%, #0F0A1E 100%)',
+    background: theme.bg.primary,
     padding: '24px',
     color: theme.text.primary
   };
   const containerStyle = { maxWidth: '1100px', margin: '0 auto' };
   const panelStyle = {
-    background: 'rgba(26, 17, 46, 0.7)',
-    backdropFilter: 'blur(16px)',
+    background: theme.bg.surface,
     border: `1px solid ${theme.border}`,
-    borderRadius: '20px',
+    borderRadius: '12px',
     padding: '28px',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+    boxShadow: 'none'
   };
   const inputStyle = {
     width: '100%', padding: '12px 14px',
-    background: 'rgba(15, 10, 30, 0.6)', border: `1px solid ${theme.border}`,
-    borderRadius: '10px', color: theme.text.primary, fontSize: '15px', outline: 'none'
+    background: theme.bg.primary, border: `1px solid ${theme.border}`,
+    borderRadius: '8px', color: theme.text.primary, fontSize: '15px', outline: 'none'
   };
   const labelStyle = { display: 'block', marginBottom: '8px', color: theme.text.secondary, fontSize: '13px', fontWeight: 500, letterSpacing: '0.3px', textTransform: 'uppercase' };
 
@@ -928,8 +927,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             data-testid={`method-${m.key}`}
             style={{
               flex: 1, minWidth: '160px', padding: '10px 12px',
-              background: method === m.key ? 'linear-gradient(135deg, #8A2BE2, #4DD0E1)' : 'rgba(138, 43, 226, 0.08)',
-              border: method === m.key ? 'none' : `1px solid ${theme.border}`,
+              background: method === m.key ? theme.sunset.gold : 'rgba(212, 160, 23, 0.06)',
+              border: method === m.key ? `1px solid ${theme.sunset.gold}` : `1px solid ${theme.border}`,
               borderRadius: '10px', color: theme.text.primary, cursor: 'pointer',
               textAlign: 'left', transition: 'all 0.2s'
             }}>
@@ -1305,7 +1304,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             <img src={portrait} alt="" style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${theme.sunset.purple}` }}
               onError={e => { e.target.style.display = 'none'; }} />
           ) : (
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #8A2BE2, #4DD0E1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: theme.bg.surface, border: `1px solid ${theme.sunset.gold}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <User size={28} color="#fff" />
             </div>
           )}
@@ -1376,7 +1375,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: theme.text.secondary, cursor: 'pointer', fontSize: '14px' }}>
             <ChevronLeft size={18} /> Dashboard
           </button>
-          <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: '1.4rem', margin: 0, background: 'linear-gradient(135deg, #8A2BE2, #4DD0E1, #F59E0B)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 style={{ fontFamily: "'Cinzel', serif", fontSize: '1.4rem', margin: 0, color: theme.sunset.gold }}>
             {isEditMode ? 'Edit Hero' : 'Forge Your Hero'}
           </h1>
           {!isEditMode ? (
@@ -1424,10 +1423,11 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
               style={{
                 padding: '12px 24px', borderRadius: '12px',
                 cursor: canAdvance() ? 'pointer' : 'not-allowed',
-                background: canAdvance() ? 'linear-gradient(135deg, #8A2BE2, #4DD0E1)' : 'rgba(138, 43, 226, 0.2)',
-                border: 'none', color: '#fff', opacity: canAdvance() ? 1 : 0.5,
+                background: canAdvance() ? theme.sunset.gold : 'rgba(212, 160, 23, 0.15)',
+                border: canAdvance() ? `1px solid ${theme.sunset.gold}` : `1px solid ${theme.border}`,
+                color: canAdvance() ? theme.bg.primary : theme.text.muted,
                 display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: 600,
-                boxShadow: canAdvance() ? '0 4px 16px rgba(138, 43, 226, 0.4)' : 'none'
+                boxShadow: 'none'
               }}>
               Next <ChevronRight size={16} />
             </button>
@@ -1438,8 +1438,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
               data-testid="builder-submit-btn"
               style={{
                 padding: '12px 28px', borderRadius: '12px', cursor: 'pointer',
-                background: 'linear-gradient(135deg, #8A2BE2 0%, #4DD0E1 50%, #F59E0B 100%)',
-                border: 'none', color: '#fff',
+                background: theme.sunset.gold,
+                border: `1px solid ${theme.sunset.gold}`, color: theme.bg.primary,
                 opacity: (isSubmitting || !canAdvance()) ? 0.6 : 1,
                 display: 'flex', alignItems: 'center', gap: '8px', fontSize: '15px', fontWeight: 700,
                 boxShadow: '0 4px 20px rgba(236, 72, 153, 0.4)'
@@ -1470,11 +1470,11 @@ function Stepper({ steps, current, onJump }) {
               style={{
                 flexShrink: 0, display: 'flex', alignItems: 'center', gap: '6px',
                 padding: '8px 12px', borderRadius: '20px',
-                background: active ? 'linear-gradient(135deg, #8A2BE2, #4DD0E1)' :
-                  completed ? 'rgba(16, 185, 129, 0.15)' : 'rgba(138, 43, 226, 0.08)',
-                border: active ? 'none' :
+                background: active ? theme.sunset.gold :
+                  completed ? 'rgba(16, 185, 129, 0.15)' : theme.bg.surface,
+                border: active ? `1px solid ${theme.sunset.gold}` :
                   completed ? '1px solid rgba(16, 185, 129, 0.3)' : `1px solid ${theme.border}`,
-                color: active ? '#fff' : completed ? '#10B981' : theme.text.muted,
+                color: active ? theme.bg.primary : completed ? '#10B981' : theme.text.muted,
                 cursor: 'pointer', fontSize: '12px', fontWeight: active ? 700 : 500,
                 whiteSpace: 'nowrap', transition: 'all 0.2s'
               }}>
@@ -1484,7 +1484,7 @@ function Stepper({ steps, current, onJump }) {
             {i < steps.length - 1 && (
               <div style={{
                 flex: '0 0 12px', height: '2px',
-                background: completed ? 'rgba(16, 185, 129, 0.4)' : 'rgba(138, 43, 226, 0.15)',
+                background: completed ? 'rgba(16, 185, 129, 0.4)' : theme.border,
                 borderRadius: '1px'
               }} />
             )}
@@ -1512,9 +1512,9 @@ function SelectCard({ active, onClick, color, title, subtitle, footer, ...rest }
       type="button" onClick={onClick} {...rest}
       style={{
         textAlign: 'left', padding: '12px 14px', borderRadius: '12px', cursor: 'pointer',
-        background: active ? `linear-gradient(135deg, ${color}30, ${color}10)` : 'rgba(15, 10, 30, 0.5)',
-        border: active ? `2px solid ${color}` : `1px solid ${theme.border}`,
-        boxShadow: active ? `0 0 0 3px ${color}15, 0 4px 16px rgba(0,0,0,0.3)` : 'none',
+        background: active ? theme.bg.elevated : theme.bg.surface,
+        border: active ? `2px solid ${theme.sunset.gold}` : `1px solid ${theme.border}`,
+        boxShadow: 'none',
         color: theme.text.primary, transition: 'all 0.2s ease',
         outline: 'none'
       }}>

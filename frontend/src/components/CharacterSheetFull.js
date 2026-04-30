@@ -25,10 +25,10 @@ const API = `${BACKEND_URL}/api`;
 
 // Simplified theme (performance-first): dark blue + gold accents
 const theme = {
-  bg: { primary: '#0B1E3A', surface: '#10264A', elevated: '#15325F' },
-  accent: { primary: '#D4AF37', secondary: '#B8941F', highlight: '#F1D77A' },
-  text: { primary: '#F4F7FB', secondary: '#C7D3E3', muted: '#8EA0B8' },
-  border: 'rgba(212, 175, 55, 0.45)',
+  bg: { primary: '#0A1628', surface: '#0F2440', elevated: '#14304F' },
+  accent: { primary: '#D4A017', secondary: '#D4A017', highlight: '#F5C542' },
+  text: { primary: '#F8FAFC', secondary: '#94A3B8', muted: '#64748B' },
+  border: 'rgba(212, 160, 23, 0.35)',
   glow: 'none'
 };
 
@@ -562,7 +562,7 @@ export default function CharacterSheetFull() {
       <div style={pageStyle}>
         <div style={{ ...panelStyle, textAlign: 'center', padding: '60px', margin: 'auto' }}>
           <h2 style={{ fontFamily: "'Montserrat', sans-serif", color: theme.text.primary, marginBottom: '16px' }}>Character Not Found</h2>
-          <button onClick={() => navigate('/home')} style={{ padding: '12px 24px', background: 'linear-gradient(135deg, #B8941F, #D4AF37)', border: 'none', borderRadius: '10px', color: 'white', cursor: 'pointer' }}>
+          <button onClick={() => navigate('/home')} style={{ padding: '12px 24px', background: theme.accent.primary, border: `1px solid ${theme.accent.primary}`, borderRadius: '8px', color: theme.bg.primary, cursor: 'pointer', fontWeight: 700 }}>
             Back to Dashboard
           </button>
         </div>
@@ -589,7 +589,7 @@ export default function CharacterSheetFull() {
           {character.portrait_url ? (
             <img src={character.portrait_url} alt="" style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${theme.accent.primary}`, boxShadow: theme.glow }} onError={e => { e.target.style.display = 'none'; }} />
           ) : (
-            <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'linear-gradient(135deg, #B8941F, #D4AF37)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: theme.bg.surface, border: `2px solid ${theme.accent.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <User size={24} color="#fff" />
             </div>
           )}
@@ -654,11 +654,11 @@ export default function CharacterSheetFull() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '6px', 
-                background: 'linear-gradient(135deg, #F59E0B, #D97706)', 
-                border: 'none', 
-                borderRadius: '10px', 
+                background: theme.accent.primary, 
+                border: `1px solid ${theme.accent.primary}`, 
+                borderRadius: '8px', 
                 padding: '8px 16px', 
-                color: '#fff', 
+                color: theme.bg.primary, 
                 cursor: 'pointer',
                 fontWeight: '500',
                 fontSize: '14px'
@@ -797,10 +797,10 @@ export default function CharacterSheetFull() {
                   flex: '1 1 auto',
                   minWidth: '80px',
                   padding: '12px 16px',
-                  background: activeTab === tab ? 'linear-gradient(135deg, #B8941F, #D4AF37)' : 'rgba(212, 175, 55, 0.12)',
+                  background: activeTab === tab ? theme.accent.primary : theme.bg.surface,
+                  color: activeTab === tab ? theme.bg.primary : theme.text.secondary,
                   border: activeTab === tab ? 'none' : `1px solid ${theme.border}`,
                   borderRadius: '10px',
-                  color: theme.text.primary,
                   fontSize: '15px',
                   fontWeight: activeTab === tab ? '600' : '400',
                   cursor: 'pointer',
