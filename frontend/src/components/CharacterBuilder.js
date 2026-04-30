@@ -18,6 +18,7 @@ import {
   validateAbilityScores
 } from "../lib/characterRules";
 import { RACES, CLASSES, BACKGROUNDS, EDITIONS } from "../data/characterRules5e";
+import { getFeatsByEdition } from "../data/levelUpData";
 import { API_BASE } from "../lib/api";
 
 const DRAFT_KEY = "rq_character_builder_draft_v2";
@@ -160,6 +161,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
   const [selectedCantrips, setSelectedCantrips] = useState(initialState.selectedCantrips || []);
   const [selectedSpells, setSelectedSpells] = useState(initialState.selectedSpells || []);
   const [equipmentChoice, setEquipmentChoice] = useState(initialState.equipmentChoice || 'A');
+  const [originFeat, setOriginFeat] = useState(initialState.originFeat || ''); // 2024 only
   const [srdSpells, setSrdSpells] = useState([]);
   const [spellsLoading, setSpellsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -273,9 +275,9 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
   // Auto-save draft
   useEffect(() => {
-    const draft = { step, name, race, subrace, className, subclass, background, portrait, alignment, method, edition, stats, selectedSkills, floatingAsi, chosenLanguages, versatilitySkills, fightingStyle, selectedCantrips, selectedSpells, equipmentChoice };
+    const draft = { step, name, race, subrace, className, subclass, background, portrait, alignment, method, edition, stats, selectedSkills, floatingAsi, chosenLanguages, versatilitySkills, fightingStyle, selectedCantrips, selectedSpells, equipmentChoice, originFeat };
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-  }, [step, name, race, subrace, className, subclass, background, portrait, alignment, method, edition, stats, selectedSkills, floatingAsi, chosenLanguages, versatilitySkills, fightingStyle, selectedCantrips, selectedSpells, equipmentChoice]);
+  }, [step, name, race, subrace, className, subclass, background, portrait, alignment, method, edition, stats, selectedSkills, floatingAsi, chosenLanguages, versatilitySkills, fightingStyle, selectedCantrips, selectedSpells, equipmentChoice, originFeat]);
 
   const pointBuySpent = useMemo(
     () => ABILITIES.reduce((sum, a) => sum + calculatePointBuyCost(stats[a]), 0),
@@ -386,7 +388,12 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       if (className === 'Fighter' && !fightingStyle) return false;
       return true;
     }
-    if (id === 'background') return !!background;
+    if (id === 'background') {
+      if (!background) return false;
+      // 2024 rules: background grants an origin feat at character creation
+      if (edition === '2024' && !originFeat) return false;
+      return true;
+    }
     if (id === 'abilities') {
       if (!validateAbilityScores(stats)) return false;
       if (method === 'point' && pointBuyRemaining !== 0) return false;
@@ -433,6 +440,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
     setVersatilitySkills([]); setFightingStyle('');
     setSelectedCantrips([]); setSelectedSpells([]);
     setEquipmentChoice('A');
+    setOriginFeat('');
     toast.success('Draft cleared');
   };
 
@@ -510,6 +518,10 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       payload.cantrips_known = selectedCantrips.map(name => ({ name }));
       const spellsKey = spellReq?.type === 'prepared' ? 'spells_prepared' : 'spells_known';
       payload[spellsKey] = selectedSpells.map(name => ({ name }));
+      // 2024 origin feat selected during background step
+      if (edition === '2024' && originFeat) {
+        payload.feats = [{ name: originFeat, source: 'origin (2024 background)' }];
+      }
     }
 
     try {
@@ -908,6 +920,42 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             </div>
           </div>
         </DetailPanel>
+      )}
+
+      {/* 2024 Origin Feat picker — required when edition is 2024 */}
+      {edition === '2024' && (
+        <div style={{ marginTop: 20, padding: 14, borderRadius: 12, background: theme.bg.surface, border: `1px solid ${theme.border}` }}>
+          <label style={labelStyle}>
+            2024 Origin Feat
+            <span style={{ color: originFeat ? '#10B981' : '#EF4444', textTransform: 'none', marginLeft: 6 }}>
+              {originFeat ? `✓ ${originFeat}` : '(REQUIRED in 2024 rules)'}
+            </span>
+          </label>
+          <div style={{ fontSize: 12, color: theme.text.muted, marginBottom: 8 }}>
+            Pick a 2024-style Origin feat granted by your background. (Origin feats are a new 2024 PHB feature replacing the 2014 background ASI flow.)
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 6 }}>
+            {getFeatsByEdition('2024', 'origin').map(feat => {
+              const sel = originFeat === feat.name;
+              return (
+                <button
+                  key={feat.name} type="button"
+                  data-testid={`origin-feat-${feat.name.toLowerCase().replace(/\s/g, '-').replace(/[()]/g, '')}`}
+                  onClick={() => setOriginFeat(sel ? '' : feat.name)}
+                  title={feat.description}
+                  style={{
+                    padding: '8px 10px', borderRadius: 8, fontSize: 12, textAlign: 'left',
+                    background: sel ? 'rgba(212, 160, 23, 0.18)' : theme.bg.primary,
+                    border: `1px solid ${sel ? theme.sunset.gold : theme.border}`,
+                    color: theme.text.primary, cursor: 'pointer'
+                  }}>
+                  <div style={{ fontWeight: 700, marginBottom: 2 }}>{sel ? '✓ ' : ''}{feat.name}</div>
+                  <div style={{ fontSize: 10, color: theme.text.muted, lineHeight: 1.4 }}>{feat.description}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       )}
     </div>
   );
