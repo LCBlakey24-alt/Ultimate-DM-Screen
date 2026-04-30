@@ -208,6 +208,15 @@ PREMADE_TEMPLATES = [
     }
 ]
 
+# Generate 2024 variants (same character pitches, updated ruleset_id)
+_TEMPLATES_2024 = []
+for _t in PREMADE_TEMPLATES:
+    _clone = dict(_t)
+    _clone["id"] = _t["id"].replace("tmpl-", "tmpl-2024-")
+    _clone["ruleset_id"] = "dnd5e_2024"
+    _TEMPLATES_2024.append(_clone)
+PREMADE_TEMPLATES = PREMADE_TEMPLATES + _TEMPLATES_2024
+
 
 def _summarize_template(t):
     return {
