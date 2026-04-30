@@ -294,7 +294,7 @@ export default function MapMaker({ theme, mode = 'battle', campaignId }) {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', padding: '10px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${theme.border}`, borderRadius: '10px' }}>
           {Object.entries(TEMPLATES).map(([key, tmpl]) => (
             <button key={key} data-testid={`template-${key}`} onClick={() => applyTemplate(key)}
-              style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', background: 'rgba(138,43,226,0.08)', border: `1px solid rgba(138,43,226,0.2)`, color: theme.accent?.primary || '#8A2BE2', transition: 'all 0.15s' }}>
+              style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', background: 'rgba(138,43,226,0.08)', border: `1px solid rgba(138,43,226,0.2)`, color: theme.accent?.primary || '#D4A017', transition: 'all 0.15s' }}>
               {tmpl.name}
             </button>
           ))}

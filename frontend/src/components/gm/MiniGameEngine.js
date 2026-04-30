@@ -142,7 +142,7 @@ export default function MiniGameEngine({ theme }) {
               </div>
             </div>
           ) : (
-            <button data-testid="play-round-btn" onClick={playRound} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', borderRadius: '8px', background: theme.gradient || 'linear-gradient(135deg, #8A2BE2, #F59E0B)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '13px' }}>
+            <button data-testid="play-round-btn" onClick={playRound} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', borderRadius: '8px', background: theme.gradient || 'linear-gradient(135deg, #D4A017, #F59E0B)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '13px' }}>
               <Dices size={14} /> Roll Round {gameState.round + 1}
             </button>
           )}
@@ -170,7 +170,7 @@ export default function MiniGameEngine({ theme }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
             {MINI_GAMES.map(game => (
               <div key={game.id} data-testid={`minigame-${game.id}`} style={{ background: theme.bg.card, border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '12px', cursor: 'pointer', transition: 'border-color 0.2s' }}
-                onClick={() => startGame(game)} onMouseEnter={e => e.currentTarget.style.borderColor = theme.accent?.primary || '#8A2BE2'} onMouseLeave={e => e.currentTarget.style.borderColor = theme.border}>
+                onClick={() => startGame(game)} onMouseEnter={e => e.currentTarget.style.borderColor = theme.accent?.primary || '#D4A017'} onMouseLeave={e => e.currentTarget.style.borderColor = theme.border}>
                 <div style={{ fontSize: '13px', fontWeight: 600, color: theme.text.primary, marginBottom: '4px' }}>{game.name}</div>
                 <div style={{ fontSize: '10px', color: theme.text.secondary, lineHeight: 1.4, marginBottom: '6px' }}>{game.description}</div>
                 <div style={{ display: 'flex', gap: '8px', fontSize: '10px' }}>

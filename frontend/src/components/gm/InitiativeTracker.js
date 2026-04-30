@@ -208,7 +208,7 @@ export default function InitiativeTracker({ theme, campaignId, combatants = [] }
         <div style={{ display: 'flex', gap: '6px' }}>
           {!isActive ? (
             <button data-testid="start-initiative-btn" onClick={startCombat}
-              style={{ flex: 1, padding: '10px', borderRadius: '8px', fontWeight: 700, fontSize: '13px', cursor: 'pointer', background: theme.gradient || 'linear-gradient(135deg, #8A2BE2, #F59E0B)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+              style={{ flex: 1, padding: '10px', borderRadius: '8px', fontWeight: 700, fontSize: '13px', cursor: 'pointer', background: theme.gradient || 'linear-gradient(135deg, #D4A017, #F59E0B)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
               <Play size={14} /> Start Combat
             </button>
           ) : (

@@ -33,7 +33,7 @@ const TAB_CONTEXTS = {
   },
   monsters: {
     label: 'Bestiary Expert',
-    color: '#8A2BE2',
+    color: '#D4A017',
     hints: ['How should I run this monster?', 'Describe its lair', 'What are its weaknesses?', 'Generate a unique variant'],
     system: 'You are a monster tactics expert for D&D 5e using only SRD/OGL content. Advise on how monsters fight, their lair actions, legendary actions, and weaknesses. Make each creature feel dangerous and unique.'
   },
@@ -65,7 +65,7 @@ const TAB_CONTEXTS = {
 
 const DEFAULT_CONTEXT = {
   label: 'ROOK AI',
-  color: '#8A2BE2',
+  color: '#D4A017',
   hints: ['Help me plan tonight\'s session', 'Generate an adventure hook', 'What should happen next?', 'Surprise me with something cool'],
   system: 'You are ROOK, an AI co-GM assistant for a D&D 5e tabletop RPG game. Help the Game Master with encounter ideas, NPC dialogue, world building, and story development. Use only SRD/OGL content. Be creative, concise, and dramatic.'
 };
@@ -126,7 +126,7 @@ export default function AICoGM({ theme, campaignId, activeTab }) {
       <button data-testid="ai-cogm-toggle" onClick={() => setIsOpen(true)}
         style={{
           position: 'fixed', bottom: '24px', right: '24px', width: '56px', height: '56px',
-          borderRadius: '50%', background: 'linear-gradient(135deg, #4B0082, #8A2BE2)',
+          borderRadius: '50%', background: 'linear-gradient(135deg, #D4A017, #D4A017)',
           border: '2px solid rgba(138,43,226,0.5)', cursor: 'pointer', zIndex: 2000,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 4px 20px rgba(138,43,226,0.4)', transition: 'transform 0.2s'
@@ -217,7 +217,7 @@ export default function AICoGM({ theme, campaignId, activeTab }) {
             <div style={{
               maxWidth: '85%', padding: '10px 14px', borderRadius: '12px',
               background: msg.role === 'user'
-                ? 'linear-gradient(135deg, #4B0082, #8A2BE2)'
+                ? 'linear-gradient(135deg, #D4A017, #D4A017)'
                 : msg.isError ? 'rgba(239,68,68,0.15)' : theme.bg.elevated,
               border: msg.role === 'user' ? 'none' : `1px solid ${msg.isError ? '#EF4444' : theme.border}`,
               color: theme.text.primary, fontSize: '13px', lineHeight: '1.5',
@@ -261,7 +261,7 @@ export default function AICoGM({ theme, campaignId, activeTab }) {
           <button onClick={() => sendMessage()} disabled={loading || !input.trim()}
             data-testid="ai-cogm-send"
             style={{
-              padding: '10px 14px', background: input.trim() ? `linear-gradient(135deg, #4B0082, ${ctx.color})` : theme.bg.elevated,
+              padding: '10px 14px', background: input.trim() ? `linear-gradient(135deg, #D4A017, ${ctx.color})` : theme.bg.elevated,
               border: 'none', borderRadius: '10px', cursor: input.trim() ? 'pointer' : 'default',
               color: '#fff', display: 'flex', alignItems: 'center'
             }}>

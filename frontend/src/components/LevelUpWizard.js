@@ -7,7 +7,7 @@ import { MULTICLASS_REQUIREMENTS, MULTICLASS_PROFICIENCIES, canMulticlassInto, c
 import { CLASS_FEATURES } from '../data/classFeatures';
 import { FEATURE_TYPE_CONFIG } from '../data/classResources';
 import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, CANTRIPS_KNOWN, SPELLS_KNOWN, getSpellsForClass, getMaxSpellLevel } from '../data/spellDatabase';
-import { HIT_DICE, ASI_LEVELS, FEATS, ABILITIES, ABILITY_SHORT } from '../data/levelUpData';
+import { HIT_DICE, ASI_LEVELS, FEATS, ABILITIES, ABILITY_SHORT, getFeatsByEdition } from '../data/levelUpData';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -1239,7 +1239,7 @@ export default function LevelUpWizard({ character, isOpen, onClose, onLevelUp })
               {choiceType === 'feat' && (
                 <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {FEATS.map(feat => (
+                    {getFeatsByEdition(character?.edition || '2014').map(feat => (
                       <button
                         key={feat.name}
                         onClick={() => setSelectedFeat(feat)}

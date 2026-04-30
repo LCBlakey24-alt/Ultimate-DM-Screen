@@ -127,7 +127,7 @@ export default function AuthPage({ onLogin }) {
     left: '16px',
     top: '50%',
     transform: 'translateY(-50%)',
-    color: '#8A2BE2'
+    color: '#D4A017'
   };
 
   return (
@@ -267,7 +267,7 @@ export default function AuthPage({ onLogin }) {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#8A2BE2',
+                  color: '#D4A017',
                   fontSize: '13px',
                   cursor: 'pointer',
                   marginBottom: '24px',
@@ -312,7 +312,7 @@ export default function AuthPage({ onLogin }) {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#4DD0E1',
+                    color: '#D4A017',
                     fontWeight: '600',
                     cursor: 'pointer',
                     padding: 0
@@ -413,7 +413,7 @@ export default function AuthPage({ onLogin }) {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#4DD0E1',
+                    color: '#D4A017',
                     fontWeight: '600',
                     cursor: 'pointer',
                     padding: 0

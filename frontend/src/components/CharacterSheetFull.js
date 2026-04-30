@@ -536,10 +536,10 @@ export default function CharacterSheetFull() {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '12px 16px',
-    background: type === 'attack' ? 'rgba(77, 208, 225, 0.15)' : 
+    background: type === 'attack' ? 'rgba(212, 160, 23, 0.15)' : 
                 type === 'spell' ? 'rgba(0, 102, 255, 0.15)' :
                 type === 'heal' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-    border: `1px solid ${type === 'attack' ? 'rgba(77, 208, 225, 0.3)' : 
+    border: `1px solid ${type === 'attack' ? 'rgba(212, 160, 23, 0.3)' : 
              type === 'spell' ? 'rgba(0, 102, 255, 0.3)' :
              type === 'heal' ? 'rgba(16, 185, 129, 0.3)' : theme.border}`,
     borderRadius: '8px',
@@ -580,7 +580,7 @@ export default function CharacterSheetFull() {
       
       {/* Header - Fixed (Identity + Vitals Bar) */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '12px', flexShrink: 0, position: 'relative', zIndex: 1 }}>
-        <button onClick={() => navigate('/home')} data-testid="sheet-back-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(77, 208, 225, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '8px 14px', color: theme.text.primary, cursor: 'pointer', flexShrink: 0 }}>
+        <button onClick={() => navigate('/home')} data-testid="sheet-back-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(212, 160, 23, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '8px 14px', color: theme.text.primary, cursor: 'pointer', flexShrink: 0 }}>
           <ChevronLeft size={18} /> Dashboard
         </button>
 
@@ -667,7 +667,7 @@ export default function CharacterSheetFull() {
               <ArrowUp size={16} /> Level Up
             </button>
           )}
-          <button onClick={() => navigate(`/characters/${characterId}/edit`)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(77, 208, 225, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '8px 16px', color: theme.text.primary, cursor: 'pointer' }}>
+          <button onClick={() => navigate(`/characters/${characterId}/edit`)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(212, 160, 23, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '8px 16px', color: theme.text.primary, cursor: 'pointer' }}>
             <Edit3 size={16} /> Edit
           </button>
         </div>
@@ -765,8 +765,8 @@ export default function CharacterSheetFull() {
                   style={{
                     width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     padding: '5px 8px', marginBottom: '1px',
-                    background: isProficient ? 'rgba(138, 43, 226, 0.15)' : condIndicator ? `${condIndicator.color}08` : 'transparent',
-                    border: isProficient ? '1px solid rgba(138, 43, 226, 0.4)' : '1px solid transparent',
+                    background: isProficient ? 'rgba(212, 160, 23, 0.15)' : condIndicator ? `${condIndicator.color}08` : 'transparent',
+                    border: isProficient ? '1px solid rgba(212, 160, 23, 0.4)' : '1px solid transparent',
                     borderRadius: '4px', color: isProficient ? '#a78bfa' : theme.text.secondary,
                     fontSize: '12px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
                   }}
@@ -932,7 +932,7 @@ export default function CharacterSheetFull() {
                     marginTop: 'auto',
                     padding: '12px 16px',
                     background: 'rgba(212, 175, 55, 0.12)',
-                    border: '1px solid rgba(77, 208, 225, 0.2)',
+                    border: '1px solid rgba(212, 160, 23, 0.2)',
                     borderRadius: '8px',
                     fontSize: '13px',
                     color: theme.text.muted,
@@ -953,7 +953,7 @@ export default function CharacterSheetFull() {
         position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
         display: 'flex', gap: '4px', padding: '6px 16px',
         background: 'rgba(10, 8, 25, 0.95)', backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(77, 208, 225, 0.2)', borderBottom: 'none',
+        border: '1px solid rgba(212, 160, 23, 0.2)', borderBottom: 'none',
         borderRadius: '12px 12px 0 0', zIndex: 100,
       }}>
         {[

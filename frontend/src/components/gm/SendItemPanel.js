@@ -129,7 +129,7 @@ export default function SendItemPanel({ theme, partyCharacters = [] }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
           padding: '10px', borderRadius: '8px', fontSize: '13px', fontWeight: 700,
           cursor: sending ? 'wait' : 'pointer',
-          background: theme.gradient || 'linear-gradient(135deg, #8A2BE2, #F59E0B)',
+          background: theme.gradient || 'linear-gradient(135deg, #D4A017, #F59E0B)',
           color: '#fff', border: 'none', opacity: (sending || !selectedChar || !itemName.trim()) ? 0.5 : 1,
         }}>
         <Send size={14} /> {sending ? 'Sending...' : 'Send Item'}

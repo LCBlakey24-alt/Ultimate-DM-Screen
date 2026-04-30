@@ -36,7 +36,7 @@ export default function PartyTab({ theme, players }) {
                   <div style={{ fontSize: '12px', color: theme.accent.secondary, fontWeight: '500' }}>HP</div>
                   <div style={{ fontSize: '18px', color: theme.text.primary, fontWeight: '600' }}>{player.hp || player.max_hp || '?'}/{player.max_hp || '?'}</div>
                 </div>
-                <div style={{ background: 'rgba(138, 43, 226, 0.15)', border: `1px solid ${theme.accent.primary}`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
+                <div style={{ background: 'rgba(212, 160, 23, 0.15)', border: `1px solid ${theme.accent.primary}`, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
                   <div style={{ fontSize: '12px', color: theme.accent.primary, fontWeight: '500' }}>AC</div>
                   <div style={{ fontSize: '18px', color: theme.text.primary, fontWeight: '600' }}>{player.ac || '?'}</div>
                 </div>

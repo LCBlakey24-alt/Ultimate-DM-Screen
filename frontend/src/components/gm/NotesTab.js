@@ -39,7 +39,7 @@ export default function NotesTab({ theme, campaignId, quickNote, setQuickNote, p
               {processingNote ? <Loader size={16} className="animate-spin" /> : <Send size={16} />} Save Note
             </Button>
             <Button onClick={syncNote} disabled={!quickNote.trim()} className="press-scale tab-glow"
-              style={{ display: 'flex', gap: '8px', justifyContent: 'center', background: 'rgba(138, 43, 226, 0.2)', color: theme.accent.secondary, border: `1px solid ${theme.accent.secondary}`, borderRadius: '10px', padding: '14px', fontSize: '14px', whiteSpace: 'nowrap' }}>
+              style={{ display: 'flex', gap: '8px', justifyContent: 'center', background: 'rgba(212, 160, 23, 0.2)', color: theme.accent.secondary, border: `1px solid ${theme.accent.secondary}`, borderRadius: '10px', padding: '14px', fontSize: '14px', whiteSpace: 'nowrap' }}>
               <Users size={16} /> Sync to Players
             </Button>
           </div>

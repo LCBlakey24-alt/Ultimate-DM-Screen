@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { BookOpen, Zap, Shield, Search, ChevronDown, ChevronUp, Star, Plus, X } from 'lucide-react';
-import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, getMaxSpellLevel } from '../data/spellDatabase';
+import { SPELLCASTING_CLASSES, SPELL_SLOTS, PACT_MAGIC_SLOTS, getMaxSpellLevel, getMulticlassSpellSlots } from '../data/spellDatabase';
 import { API_BASE } from '../lib/api';
 
 const CANTRIP_DAMAGE = {
@@ -15,7 +15,7 @@ const CANTRIP_DAMAGE = {
 
 const theme = {
   panel: 'rgba(15, 10, 30, 0.85)',
-  border: 'rgba(77, 208, 225, 0.3)',
+  border: 'rgba(212, 160, 23, 0.3)',
   accent: { primary: '#4DD0E1', secondary: '#EC4899', highlight: '#F59E0B' },
   text: { primary: '#ffffff', secondary: '#cbd5e1', muted: '#64748b' },
 };
@@ -78,12 +78,30 @@ export default function CharacterSpellbook({
   const spellDC = 8 + profBonus + spellAbilityMod;
   const spellAttackBonus = profBonus + spellAbilityMod;
 
-  // Spell slots
-  const slots = classInfo.pactMagic
-    ? PACT_MAGIC_SLOTS[level]
-    : classInfo.halfCaster
-      ? SPELL_SLOTS[Math.floor(level / 2)] || {}
-      : SPELL_SLOTS[level] || {};
+  // Spell slots — multiclass-aware
+  // If character has multiclass_levels (or class_levels) with 2+ entries, compute via the SRD multiclass table.
+  // Otherwise fall back to the single-class slot logic.
+  const classLevels = character?.multiclass_levels || character?.class_levels;
+  const isMulticlass = classLevels && Object.keys(classLevels).length > 1;
+  const multiclassData = useMemo(() =>
+    isMulticlass ? getMulticlassSpellSlots(classLevels) : null,
+    [isMulticlass, classLevels]
+  );
+
+  let slots;
+  if (isMulticlass && classInfo.pactMagic) {
+    // Pact magic always uses Warlock level only (separate from multiclass slot pool)
+    slots = multiclassData?.pactMagic || PACT_MAGIC_SLOTS[classLevels.Warlock || level];
+  } else if (isMulticlass) {
+    // Show the combined multiclass full/half-caster slot table
+    slots = multiclassData?.slots || {};
+  } else {
+    slots = classInfo.pactMagic
+      ? PACT_MAGIC_SLOTS[level]
+      : classInfo.halfCaster
+        ? SPELL_SLOTS[Math.floor(level / 2)] || {}
+        : SPELL_SLOTS[level] || {};
+  }
 
   const maxSpellLevel = getMaxSpellLevel(character.character_class, level);
 

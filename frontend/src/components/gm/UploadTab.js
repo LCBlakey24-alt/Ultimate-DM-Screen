@@ -51,7 +51,7 @@ const UPLOAD_TYPES = [
     accept: '*',
     description: 'Any other campaign assets',
     endpoint: '/campaigns/{id}/files',
-    color: '#8A2BE2'
+    color: '#D4A017'
   }
 ];
 

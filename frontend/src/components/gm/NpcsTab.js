@@ -58,7 +58,7 @@ export default function NpcsTab({ theme, campaignId, nameRace, setNameRace, name
           
           {/* Generated Name Display */}
           {generatedName && (
-            <div style={{ background: 'rgba(138, 43, 226, 0.1)', border: `1px solid ${theme.accent.primary}`, borderRadius: '12px', padding: '24px', textAlign: 'center', marginBottom: '20px' }}>
+            <div style={{ background: 'rgba(212, 160, 23, 0.1)', border: `1px solid ${theme.accent.primary}`, borderRadius: '12px', padding: '24px', textAlign: 'center', marginBottom: '20px' }}>
               <p style={{ color: theme.text.secondary, fontSize: '13px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Generated Name</p>
               <h3 style={{ fontFamily: "'Cinzel', serif", fontSize: '28px', color: theme.text.primary, fontWeight: '600', marginBottom: '8px', background: theme.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 {generatedName.fullName}

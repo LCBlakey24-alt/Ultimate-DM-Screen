@@ -356,28 +356,27 @@ function GMScreen({ username }) {
   // GM Theme - Midnight Neon (Dark Purple/Violet)
   const theme = {
     bg: { 
-      primary: '#0B0B0D', 
-      surface: '#131317', 
-      elevated: '#1C1C24',
-      panel: 'rgba(19, 19, 23, 0.9)',
-      card: 'rgba(11, 11, 13, 0.8)',
-      hover: 'rgba(138, 43, 226, 0.15)'
+      primary: '#0A1628', 
+      surface: '#0F2440', 
+      elevated: '#14304F',
+      panel: '#0F2440',
+      card: '#0F2440',
+      hover: 'rgba(212, 160, 23, 0.08)'
     },
     accent: { 
-      primary: '#8A2BE2',      // Blue Violet
-      secondary: '#4B0082',    // Indigo
-      gold: '#F59E0B',         // Gold for highlights
-      orange: '#BA55D3',       // Medium Orchid
-      hover: '#9932CC',        // Dark Orchid
-      subtle: 'rgba(138, 43, 226, 0.15)',
-      glow: '0 0 20px rgba(138, 43, 226, 0.4)',
-      // GM-specific accent (violet glow)
-      gm: '#8A2BE2',
-      gmSubtle: 'rgba(138, 43, 226, 0.15)'
+      primary: '#D4A017',
+      secondary: '#D4A017',
+      gold: '#D4A017',
+      orange: '#D4A017',
+      hover: '#F5C542',
+      subtle: 'rgba(212, 160, 23, 0.08)',
+      glow: 'none',
+      gm: '#D4A017',
+      gmSubtle: 'rgba(212, 160, 23, 0.08)'
     },
-    text: { primary: '#F8F8FF', secondary: '#A0A0B0', muted: '#6B6B7B' },
-    border: 'rgba(138, 43, 226, 0.3)',
-    gradient: 'linear-gradient(135deg, #4B0082 0%, #8A2BE2 100%)'
+    text: { primary: '#F8FAFC', secondary: '#94A3B8', muted: '#64748B' },
+    border: 'rgba(212, 160, 23, 0.35)',
+    gradient: '#D4A017'
   };
 
   const tabGroups = [
@@ -427,7 +426,7 @@ function GMScreen({ username }) {
             rgba(11, 11, 13, 1) 0%, 
             rgba(11, 11, 13, 0.95) 40%, 
             rgba(75, 0, 130, 0.2) 70%,
-            rgba(138, 43, 226, 0.15) 100%
+            rgba(212, 160, 23, 0.15) 100%
           )
         `,
         pointerEvents: 'none',
@@ -440,7 +439,7 @@ function GMScreen({ username }) {
         left: 0,
         width: '50%',
         height: '50%',
-        background: 'radial-gradient(ellipse at 0% 100%, rgba(138, 43, 226, 0.1) 0%, transparent 60%)',
+        background: 'radial-gradient(ellipse at 0% 100%, rgba(212, 160, 23, 0.1) 0%, transparent 60%)',
         pointerEvents: 'none',
         zIndex: 0
       }} />
@@ -480,7 +479,7 @@ function GMScreen({ username }) {
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <SessionTimer theme={theme} />
-            <Button onClick={() => setShowQuickRef(true)} style={{ display: 'flex', gap: '6px', padding: '10px 16px', fontSize: '14px', background: 'rgba(138, 43, 226, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary }}>
+            <Button onClick={() => setShowQuickRef(true)} style={{ display: 'flex', gap: '6px', padding: '10px 16px', fontSize: '14px', background: 'rgba(212, 160, 23, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary }}>
               <BookOpen size={16} /> Reference
             </Button>
             <Button onClick={handleEndSession} style={{ display: 'flex', gap: '6px', padding: '10px 16px', fontSize: '14px', background: theme.gradient, border: 'none', borderRadius: '10px', color: theme.text.primary }}>
@@ -768,7 +767,7 @@ function GMScreen({ username }) {
                         onClick={() => roll3DDice(`1${die}`, die.toUpperCase())}
                         style={{
                           padding: '10px 8px',
-                          background: 'rgba(138, 43, 226, 0.2)',
+                          background: 'rgba(212, 160, 23, 0.2)',
                           border: `1px solid ${theme.accent.primary}`,
                           borderRadius: '8px',
                           color: theme.accent.primary,
@@ -778,11 +777,11 @@ function GMScreen({ username }) {
                           transition: 'all 0.2s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(138, 43, 226, 0.4)';
+                          e.currentTarget.style.background = 'rgba(212, 160, 23, 0.4)';
                           e.currentTarget.style.transform = 'scale(1.05)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(138, 43, 226, 0.2)';
+                          e.currentTarget.style.background = 'rgba(212, 160, 23, 0.2)';
                           e.currentTarget.style.transform = 'scale(1)';
                         }}
                       >
@@ -807,7 +806,7 @@ function GMScreen({ username }) {
                         onClick={() => roll3DDice(dice, label)}
                         style={{
                           padding: '10px 12px',
-                          background: 'rgba(138, 43, 226, 0.15)',
+                          background: 'rgba(212, 160, 23, 0.15)',
                           border: `1px solid ${theme.accent.primary}`,
                           borderRadius: '8px',
                           color: theme.text.primary,
@@ -818,10 +817,10 @@ function GMScreen({ username }) {
                           transition: 'all 0.2s'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(138, 43, 226, 0.3)';
+                          e.currentTarget.style.background = 'rgba(212, 160, 23, 0.3)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(138, 43, 226, 0.15)';
+                          e.currentTarget.style.background = 'rgba(212, 160, 23, 0.15)';
                         }}
                       >
                         {label}
@@ -838,7 +837,7 @@ function GMScreen({ username }) {
                     style={{
                       width: '100%',
                       padding: '12px',
-                      background: 'rgba(138, 43, 226, 0.2)',
+                      background: 'rgba(212, 160, 23, 0.2)',
                       border: `1px solid ${theme.accent.primary}`,
                       borderRadius: '8px',
                       color: theme.accent.primary,
@@ -848,10 +847,10 @@ function GMScreen({ username }) {
                       transition: 'all 0.2s'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(138, 43, 226, 0.4)';
+                      e.currentTarget.style.background = 'rgba(212, 160, 23, 0.4)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(138, 43, 226, 0.2)';
+                      e.currentTarget.style.background = 'rgba(212, 160, 23, 0.2)';
                     }}
                   >
                     Roll d100

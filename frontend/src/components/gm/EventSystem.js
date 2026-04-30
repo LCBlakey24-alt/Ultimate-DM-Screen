@@ -531,7 +531,7 @@ function SliderField({ label, value, onChange, min, max, theme }) {
         <span style={{ fontSize: '12px', fontWeight: 700, color: theme.text.primary, fontFamily: "'JetBrains Mono', monospace" }}>{value}</span>
       </div>
       <input type="range" min={min} max={max} value={value} onChange={e => onChange(parseInt(e.target.value))}
-        style={{ width: '100%', accentColor: theme.accent?.primary || '#8A2BE2', height: '4px' }} />
+        style={{ width: '100%', accentColor: theme.accent?.primary || '#D4A017', height: '4px' }} />
     </div>
   );
 }

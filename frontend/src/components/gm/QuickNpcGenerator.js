@@ -87,7 +87,7 @@ export default function QuickNpcGenerator({ theme }) {
           style={{
             flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
             padding: '10px', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer',
-            background: npc ? 'rgba(139,92,246,0.12)' : (theme.gradient || 'linear-gradient(135deg, #8A2BE2, #F59E0B)'),
+            background: npc ? 'rgba(139,92,246,0.12)' : (theme.gradient || 'linear-gradient(135deg, #D4A017, #F59E0B)'),
             color: npc ? '#A78BFA' : '#fff',
             border: npc ? '1px solid rgba(139,92,246,0.3)' : 'none',
           }}>

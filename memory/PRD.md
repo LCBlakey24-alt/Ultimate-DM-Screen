@@ -75,17 +75,12 @@ Immersive SRD-5.1-compliant TTRPG app with GM tools + a Player experience that m
 ### Blocked
 - Production login / password reset (hosting config)
 
-## Phase 20 — Block A Design Reset (Apr 30)
-Dark navy (`#0A1628`) + gold (`#D4A017`) outline theme applied across all player-facing pages. No gradients, no glow, flat panels, 1px gold borders.
-- **Shared theme** `/app/frontend/src/lib/theme.js` created (navy/gold palette, panelStyle, buttonStyle)
-- **Homepage (UnifiedDashboard)**: removed fantasy landscape bg image + purple/cyan gradients; swapped theme object to navy/gold
-- **Mode picker**: rewrote from scratch — 4 gold-outlined cards (Premade/Basic/Full/Kids) with hover brighten-gold effect
-- **Full builder (CharacterBuilder)**: theme palette swapped, all linear-gradients replaced with solid gold/navy, panel glass-morphism removed (boxShadow/backdropFilter stripped)
-- **Character Sheet (CharacterSheetFull)**: theme swap to `#0A1628` + `#D4A017`, all gold-button gradients → flat gold
-- **Premade Builder**: rewrote render to match theme (gold-outlined template cards, gold Use Template buttons, dark navy bg)
-- **Auth Page**: bg → `#0A1628`, all login/register buttons → solid gold (5 instances)
-- Basic Builder + Kids Mode already on the palette from Phase 17.
-- Verified via Playwright screenshots of all surfaces.
+## Phase 21 — P2 Cleanup Sweep (Apr 30)
+- **GM theme parity**: GMScreen.js theme object swapped to navy/gold; bulk sed-replaced all purple (`#8A2BE2`, `#4B0082`, `#9932CC`, `#BA55D3`) and cyan (`rgba(77,208,225,*)`, `rgba(138,43,226,*)`) tokens across GMScreen + every gm/* tab
+- **Login icon overrides**: AuthPage.js purple icon colors (`#8A2BE2`, `#4DD0E1`) replaced with gold (`#D4A017`)
+- **Multiclass spell slots**: new `getMulticlassSpellSlots(classLevels)` helper in spellDatabase.js applies SRD multiclass rules — full casters contribute full level, half casters `floor(level/2)`, Warlock pact tracked separately. CharacterSpellbook detects `class_levels`/`multiclass_levels` with 2+ entries and uses the multiclass slot table (with separate Pact Magic display for Warlock multiclass).
+- **2024-specific feats**: every feat in `levelUpData.js` now has `editions: ['2014', '2024']` + `category: 'origin'|'general'|'epic'`. Added 6 new 2024-only Origin feats (Crafter, Musician, Lucky-Origin, Healer-Origin, Savage Attacker-Origin, Alert-Origin) and 8 Epic Boons (Combat Prowess, Dimensional Travel, Fate, Fortitude, Irresistible Offense, Spell Recall, Night Spirit, Truesight). New `getFeatsByEdition(edition, category?)` helper. LevelUpWizard now filters via `getFeatsByEdition(character.edition || '2014')`.
+- **Residual purple/cyan purge**: bulk sed across CharacterBuilder, CharacterSheetFull, CharacterSpellbook, CharacterCombatTab, UnifiedDashboard removed all remaining `rgba(138, 43, 226, *)` and `rgba(77, 208, 225, *)` tokens → gold.
 
 ## Test iterations
 77, 78, 79, 80, 81 (Block B 14/14 backend pass), 82 (Phase 18 - Learn Spell bug fix verified), Phase 20 (Block A visual verification via screenshots)

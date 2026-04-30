@@ -56,7 +56,7 @@ export default function CombatTab({ theme, campaignId, scenarios, selectedScenar
               <Play size={18} /> Start Combat <ArrowRight size={16} />
             </Button>
             <Button onClick={quickStartCombat} data-testid="quick-combat-btn" disabled={players.length === 0}
-              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: 'rgba(138, 43, 226, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary, fontSize: '15px' }}>
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', background: 'rgba(212, 160, 23, 0.1)', border: `1px solid ${theme.border}`, borderRadius: '10px', color: theme.text.secondary, fontSize: '15px' }}>
               <Users size={16} /> Quick Start with Players ({players.length})
             </Button>
             <Button onClick={() => setShowQuickCombat(true)} data-testid="spontaneous-combat-btn"
@@ -75,7 +75,7 @@ export default function CombatTab({ theme, campaignId, scenarios, selectedScenar
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {selectedScenario.combatants?.slice(0, 6).map(c => (
                   <div key={c.id} style={{ 
-                    background: c.type === 'player' ? 'rgba(138, 43, 226, 0.2)' : 'rgba(239, 68, 68, 0.2)', 
+                    background: c.type === 'player' ? 'rgba(212, 160, 23, 0.2)' : 'rgba(239, 68, 68, 0.2)', 
                     border: `1px solid ${c.type === 'player' ? theme.accent.primary : '#EF4444'}`,
                     padding: '6px 10px', borderRadius: '6px', fontSize: '13px', color: theme.text.primary
                   }}>

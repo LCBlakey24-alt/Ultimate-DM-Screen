@@ -354,4 +354,41 @@ export const getMaxSpellLevel = (className, characterLevel) => {
   return 0;
 };
 
+/**
+ * Multiclass spell slot calculation per SRD 5e:
+ *   - Full casters (Bard, Cleric, Druid, Sorcerer, Wizard) contribute their full level
+ *   - Half casters (Paladin, Ranger) contribute floor(level/2)
+ *   - Third casters (Eldritch Knight, Arcane Trickster) contribute floor(level/3) — not modeled
+ *   - Warlock Pact Magic is SEPARATE and uses PACT_MAGIC_SLOTS based on Warlock level only
+ *
+ * Returns the slot row from SPELL_SLOTS matching the multiclass caster level (1–20),
+ * plus separate pact magic slots when Warlock levels exist.
+ *
+ * @param {Object} classLevels  e.g. { Wizard: 5, Cleric: 3 }
+ * @returns {{ multiclassLevel, slots, pactMagic }}
+ */
+export const getMulticlassSpellSlots = (classLevels = {}) => {
+  let multiclassLevel = 0;
+  let warlockLevel = 0;
+
+  Object.entries(classLevels).forEach(([cls, lvl]) => {
+    const info = SPELLCASTING_CLASSES[cls];
+    if (!info) return;
+    const n = Number(lvl) || 0;
+    if (info.pactMagic) {
+      warlockLevel += n;
+    } else if (info.halfCaster) {
+      multiclassLevel += Math.floor(n / 2);
+    } else {
+      multiclassLevel += n;
+    }
+  });
+
+  return {
+    multiclassLevel,
+    slots: SPELL_SLOTS[multiclassLevel] || {},
+    pactMagic: warlockLevel > 0 ? (PACT_MAGIC_SLOTS[warlockLevel] || null) : null
+  };
+};
+
 export default SPELL_DATABASE;

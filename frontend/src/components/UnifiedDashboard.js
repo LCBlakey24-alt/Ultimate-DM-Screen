@@ -350,7 +350,7 @@ function UnifiedDashboard({ username, onLogout }) {
             src="/images/logo-mini.png" 
             alt="ROOK" 
             className="icon-float"
-            style={{ height: '40px', width: 'auto', filter: 'drop-shadow(0 0 12px rgba(138, 43, 226, 0.5))' }}
+            style={{ height: '40px', width: 'auto', filter: 'drop-shadow(0 0 12px rgba(212, 160, 23, 0.5))' }}
           />
           <h1 className="mobile-hide" style={{
             fontWeight: '700',
@@ -584,7 +584,7 @@ function UnifiedDashboard({ username, onLogout }) {
             left: 0,
             right: 0,
             height: '150px',
-            background: 'linear-gradient(180deg, rgba(77, 208, 225, 0.15) 0%, transparent 100%)',
+            background: 'linear-gradient(180deg, rgba(212, 160, 23, 0.15) 0%, transparent 100%)',
             pointerEvents: 'none'
           }} />
           
@@ -777,7 +777,7 @@ function UnifiedDashboard({ username, onLogout }) {
             left: 0,
             right: 0,
             height: '150px',
-            background: 'linear-gradient(180deg, rgba(138, 43, 226, 0.15) 0%, transparent 100%)',
+            background: 'linear-gradient(180deg, rgba(212, 160, 23, 0.15) 0%, transparent 100%)',
             pointerEvents: 'none'
           }} />
           
@@ -831,7 +831,7 @@ function UnifiedDashboard({ username, onLogout }) {
                     fontSize: '11px',
                     padding: '4px 10px',
                     borderRadius: '4px',
-                    background: 'rgba(138, 43, 226, 0.2)',
+                    background: 'rgba(212, 160, 23, 0.15)',
                     color: theme.gm.primary,
                     fontWeight: '500',
                     marginTop: '4px'

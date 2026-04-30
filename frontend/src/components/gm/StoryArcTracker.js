@@ -10,14 +10,14 @@ const ARC_STATUS = {
   planning: { label: 'Planning', color: '#6B7280', icon: Circle },
   active: { label: 'Active', color: '#10B981', icon: Target },
   paused: { label: 'Paused', color: '#F59E0B', icon: Clock },
-  completed: { label: 'Completed', color: '#8A2BE2', icon: CheckCircle },
+  completed: { label: 'Completed', color: '#D4A017', icon: CheckCircle },
   abandoned: { label: 'Abandoned', color: '#EF4444', icon: X }
 };
 
 // Priority levels
 const PRIORITIES = {
   main: { label: 'Main Quest', color: '#F59E0B', icon: Star },
-  side: { label: 'Side Quest', color: '#8A2BE2', icon: BookOpen },
+  side: { label: 'Side Quest', color: '#D4A017', icon: BookOpen },
   character: { label: 'Character Arc', color: '#10B981', icon: Users },
   background: { label: 'Background', color: '#6B7280', icon: Circle }
 };

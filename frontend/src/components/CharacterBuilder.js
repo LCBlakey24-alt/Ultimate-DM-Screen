@@ -649,7 +649,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
       {/* Floating ASI picker (Half-Elf 2014: +1 to two abilities of your choice) */}
       {edition === '2014' && floatingAsiBudget > 0 && (
-        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(138, 43, 226, 0.08)', border: `1px solid ${theme.border}` }}>
+        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(212, 160, 23, 0.08)', border: `1px solid ${theme.border}` }}>
           <label style={labelStyle}>
             Distribute {floatingAsiBudget} floating +1{floatingAsiBudget === 1 ? '' : 's'}
             {' — '}
@@ -680,8 +680,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                   }}
                   style={{
                     padding: '8px 10px', borderRadius: 8,
-                    background: chosen ? 'rgba(16, 185, 129, 0.2)' : disabled ? 'rgba(138, 43, 226, 0.05)' : 'rgba(15, 10, 30, 0.5)',
-                    border: `1px solid ${chosen ? '#10B981' : disabled ? 'rgba(138, 43, 226, 0.15)' : theme.border}`,
+                    background: chosen ? 'rgba(16, 185, 129, 0.2)' : disabled ? 'rgba(212, 160, 23, 0.05)' : 'rgba(15, 10, 30, 0.5)',
+                    border: `1px solid ${chosen ? '#10B981' : disabled ? 'rgba(212, 160, 23, 0.15)' : theme.border}`,
                     color: disabled ? theme.text.muted : theme.text.primary,
                     cursor: disabled ? 'not-allowed' : 'pointer',
                     opacity: disabled ? 0.5 : 1, fontSize: 12, fontWeight: 600
@@ -697,7 +697,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
       {/* Language picker (for races with "One of choice") */}
       {languageBudget > 0 && (
-        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(77, 208, 225, 0.06)', border: `1px solid ${theme.border}` }}>
+        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(212, 160, 23, 0.06)', border: `1px solid ${theme.border}` }}>
           <label style={labelStyle}>
             Choose {languageBudget} extra language{languageBudget === 1 ? '' : 's'}
             {' — '}
@@ -724,7 +724,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                   }}
                   style={{
                     padding: '5px 10px', borderRadius: 6, fontSize: 12,
-                    background: sel ? 'rgba(77, 208, 225, 0.2)' : 'rgba(15, 10, 30, 0.5)',
+                    background: sel ? 'rgba(212, 160, 23, 0.2)' : 'rgba(15, 10, 30, 0.5)',
                     border: `1px solid ${sel ? theme.sunset.pink : theme.border}`,
                     color: theme.text.primary, cursor: 'pointer'
                   }}>
@@ -949,7 +949,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
       {method === 'roll' && (
         <button type="button" onClick={() => setMethodAndStats('roll')}
-          style={{ marginBottom: '16px', padding: '8px 14px', background: 'rgba(138, 43, 226, 0.2)',
+          style={{ marginBottom: '16px', padding: '8px 14px', background: 'rgba(212, 160, 23, 0.2)',
             border: `1px solid ${theme.border}`, borderRadius: '8px', color: theme.text.primary,
             cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
           <Dices size={14} /> Re-roll All
@@ -1063,7 +1063,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
               style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '10px 12px', borderRadius: '8px',
-                background: fromBg ? 'rgba(245, 158, 11, 0.12)' : selected ? 'rgba(138, 43, 226, 0.15)' : 'rgba(15, 10, 30, 0.5)',
+                background: fromBg ? 'rgba(245, 158, 11, 0.12)' : selected ? 'rgba(212, 160, 23, 0.15)' : 'rgba(15, 10, 30, 0.5)',
                 border: `1px solid ${fromBg ? 'rgba(245, 158, 11, 0.3)' : selected ? theme.borderActive : theme.border}`,
                 color: disabled && !fromBg ? theme.text.muted : theme.text.primary,
                 cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled && !fromBg ? 0.45 : 1,
@@ -1084,7 +1084,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
       {/* Half-Elf Skill Versatility - pick 2 extra skills */}
       {hasHalfElfVersatility && (
-        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(77, 208, 225, 0.06)', border: `1px solid ${theme.border}` }}>
+        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(212, 160, 23, 0.06)', border: `1px solid ${theme.border}` }}>
           <label style={labelStyle}>
             Half-Elf: Skill Versatility — pick 2 extra skills
             {' — '}
@@ -1113,7 +1113,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                   }}
                   style={{
                     padding: '7px 10px', borderRadius: 6, fontSize: 12, textAlign: 'left',
-                    background: sel ? 'rgba(77, 208, 225, 0.2)' : disabled ? 'rgba(138, 43, 226, 0.05)' : 'rgba(15, 10, 30, 0.5)',
+                    background: sel ? 'rgba(212, 160, 23, 0.2)' : disabled ? 'rgba(212, 160, 23, 0.05)' : 'rgba(15, 10, 30, 0.5)',
                     border: `1px solid ${sel ? theme.sunset.pink : theme.border}`,
                     color: disabled ? theme.text.muted : theme.text.primary,
                     cursor: disabled ? 'not-allowed' : 'pointer',
@@ -1158,7 +1158,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
         data-testid={`spell-${spell.name.toLowerCase().replace(/ /g, '-')}`}
         style={{
           textAlign: 'left', padding: '10px 12px', borderRadius: 10,
-          background: picked ? 'rgba(138, 43, 226, 0.18)' : 'rgba(15, 10, 30, 0.5)',
+          background: picked ? 'rgba(212, 160, 23, 0.18)' : 'rgba(15, 10, 30, 0.5)',
           border: `1px solid ${picked ? theme.borderActive : theme.border}`,
           color: theme.text.primary, cursor: 'pointer', fontSize: 12
         }}
@@ -1322,7 +1322,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             const final = Number(stats[a]) + (asiBonus[a] || 0);
             const mod = Math.floor((final - 10) / 2);
             return (
-              <div key={a} style={{ textAlign: 'center', padding: '10px', borderRadius: '8px', background: 'rgba(138, 43, 226, 0.08)' }}>
+              <div key={a} style={{ textAlign: 'center', padding: '10px', borderRadius: '8px', background: 'rgba(212, 160, 23, 0.08)' }}>
                 <div style={{ fontSize: '10px', color: theme.text.muted, fontWeight: 600 }}>{formatAbility(a)}</div>
                 <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{final}</div>
                 <div style={{ fontSize: '12px', color: theme.sunset.gold, fontWeight: 600 }}>{formatModifier(mod)}</div>
@@ -1409,7 +1409,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             data-testid="builder-prev-btn"
             style={{
               padding: '12px 20px', borderRadius: '12px', cursor: step === 0 ? 'not-allowed' : 'pointer',
-              background: 'rgba(138, 43, 226, 0.15)', border: `1px solid ${theme.border}`,
+              background: 'rgba(212, 160, 23, 0.15)', border: `1px solid ${theme.border}`,
               color: theme.text.primary, opacity: step === 0 ? 0.4 : 1,
               display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px'
             }}>
@@ -1542,7 +1542,7 @@ function DetailPanel({ title, color, children }) {
 
 function InfoBanner({ children }) {
   return (
-    <div style={{ marginTop: '16px', padding: '10px 14px', borderRadius: '10px', background: 'rgba(77, 208, 225, 0.08)', border: '1px solid rgba(77, 208, 225, 0.2)', color: theme.text.secondary, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <div style={{ marginTop: '16px', padding: '10px 14px', borderRadius: '10px', background: 'rgba(212, 160, 23, 0.08)', border: '1px solid rgba(212, 160, 23, 0.2)', color: theme.text.secondary, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
       <Info size={14} color={theme.sunset.pink} />
       {children}
     </div>
@@ -1551,7 +1551,7 @@ function InfoBanner({ children }) {
 
 function Pill({ icon, children }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '6px', background: 'rgba(138, 43, 226, 0.15)', fontSize: '10px', color: theme.text.secondary, fontWeight: 500 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '6px', background: 'rgba(212, 160, 23, 0.15)', fontSize: '10px', color: theme.text.secondary, fontWeight: 500 }}>
       <span>{icon}</span>{children}
     </span>
   );
@@ -1559,7 +1559,7 @@ function Pill({ icon, children }) {
 
 function PreviewStat({ icon: Icon, label, value, color }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px 10px', borderRadius: '8px', background: 'rgba(138, 43, 226, 0.08)', border: `1px solid ${color}30` }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px 10px', borderRadius: '8px', background: 'rgba(212, 160, 23, 0.08)', border: `1px solid ${color}30` }}>
       <Icon size={14} color={color} />
       <div style={{ fontSize: '11px', color: theme.text.muted, fontWeight: 500 }}>{label}</div>
       <div style={{ fontSize: '15px', color, fontWeight: 700 }}>{value}</div>
@@ -1570,7 +1570,7 @@ function PreviewStat({ icon: Icon, label, value, color }) {
 const traitChipStyle = {
   display: 'inline-flex', alignItems: 'center', gap: '4px',
   padding: '4px 8px', borderRadius: '6px',
-  background: 'rgba(138, 43, 226, 0.12)', border: '1px solid rgba(138, 43, 226, 0.25)',
+  background: 'rgba(212, 160, 23, 0.12)', border: '1px solid rgba(212, 160, 23, 0.25)',
   fontSize: '11px', color: theme.text.secondary
 };
 const detailHeaderStyle = {

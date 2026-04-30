@@ -16,7 +16,7 @@ const RELATIONSHIP_TYPES = {
   enemy: { label: 'Enemy', color: '#EF4444', icon: Swords },
   family: { label: 'Family', color: '#EC4899', icon: Heart },
   business: { label: 'Business', color: '#F59E0B', icon: Briefcase },
-  political: { label: 'Political', color: '#8A2BE2', icon: Crown },
+  political: { label: 'Political', color: '#D4A017', icon: Crown },
   romantic: { label: 'Romantic', color: '#FF6B9D', icon: Heart },
   rival: { label: 'Rival', color: '#F97316', icon: Swords },
   unknown: { label: 'Unknown', color: '#6B7280', icon: HelpCircle }
@@ -255,7 +255,7 @@ function EditNPCModal({ npc, theme, onSave, onClose, isNew }) {
     hp: 10, max_hp: 10, ac: 10, speed: '30 ft.', proficiency_bonus: 2,
     stats: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
     saving_throws: [], skills: [], attacks: [], abilities: [], spells: null,
-    location: '', notes: '', color: '#8A2BE2',
+    location: '', notes: '', color: '#D4A017',
     ...npc
   }));
   const [section, setSection] = useState('basic');
@@ -337,7 +337,7 @@ function EditNPCModal({ npc, theme, onSave, onClose, isNew }) {
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={labelStyle}>Color</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  {['#8A2BE2','#4DD0E1','#22C55E','#F59E0B','#EF4444','#EC4899','#60A5FA','#F97316'].map(c => (
+                  {['#D4A017','#4DD0E1','#22C55E','#F59E0B','#EF4444','#EC4899','#60A5FA','#F97316'].map(c => (
                     <button key={c} onClick={() => set('color', c)} style={{ width: '28px', height: '28px', borderRadius: '50%', background: c,
                       border: form.color === c ? '3px solid #fff' : '2px solid transparent', cursor: 'pointer' }} />
                   ))}
@@ -708,7 +708,7 @@ export default function NPCRelationshipMap({ theme, campaignId }) {
           </span>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button data-testid="generate-npc-button" onClick={() => setShowGenerateModal(true)} style={{ padding: '8px 14px', background: 'linear-gradient(135deg, #4B0082, #8A2BE2)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <button data-testid="generate-npc-button" onClick={() => setShowGenerateModal(true)} style={{ padding: '8px 14px', background: 'linear-gradient(135deg, #D4A017, #D4A017)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Sparkles size={14} /> AI Generate
           </button>
           <button data-testid="add-npc-button" onClick={() => setShowEditModal('new')} style={{ padding: '8px 14px', background: theme.gradient, border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -772,7 +772,7 @@ export default function NPCRelationshipMap({ theme, campaignId }) {
             <Users size={48} style={{ marginBottom: '12px', opacity: 0.5 }} />
             <p style={{ marginBottom: '12px' }}>No NPCs yet</p>
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-              <button onClick={() => setShowGenerateModal(true)} style={{ padding: '10px 18px', background: 'linear-gradient(135deg, #4B0082, #8A2BE2)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button onClick={() => setShowGenerateModal(true)} style={{ padding: '10px 18px', background: 'linear-gradient(135deg, #D4A017, #D4A017)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Sparkles size={16} /> AI Generate
               </button>
               <button onClick={() => setShowEditModal('new')} style={{ padding: '10px 18px', background: theme.gradient, border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>

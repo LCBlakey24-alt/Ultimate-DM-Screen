@@ -12,8 +12,8 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const TAG_COLORS = {
   combat: { bg: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', border: 'rgba(239, 68, 68, 0.3)' },
   npc: { bg: 'rgba(16, 185, 129, 0.2)', color: '#10b981', border: 'rgba(16, 185, 129, 0.3)' },
-  lore: { bg: 'rgba(138, 43, 226, 0.2)', color: '#8A2BE2', border: 'rgba(138, 43, 226, 0.3)' },
-  location: { bg: 'rgba(77, 208, 225, 0.2)', color: '#4DD0E1', border: 'rgba(77, 208, 225, 0.3)' },
+  lore: { bg: 'rgba(212, 160, 23, 0.2)', color: '#D4A017', border: 'rgba(212, 160, 23, 0.3)' },
+  location: { bg: 'rgba(212, 160, 23, 0.2)', color: '#4DD0E1', border: 'rgba(212, 160, 23, 0.3)' },
   quest: { bg: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B', border: 'rgba(245, 158, 11, 0.3)' },
   player: { bg: 'rgba(236, 72, 153, 0.2)', color: '#4DD0E1', border: 'rgba(236, 72, 153, 0.3)' },
   important: { bg: 'rgba(255, 0, 0, 0.2)', color: '#ff0000', border: 'rgba(255, 0, 0, 0.3)' },
