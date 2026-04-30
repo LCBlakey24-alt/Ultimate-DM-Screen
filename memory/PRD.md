@@ -91,8 +91,16 @@ Immersive SRD-5.1-compliant TTRPG app with GM tools + a Player experience that m
 - **Per-character Combat Log** (`CombatLog.js`): new collapsible panel in Combat tab. Captures HP delta, rolls (classified into attack / spell / roll), rests, condition changes, exhaustion changes. Filter buttons + clear, auto-expands on first entry.
 - **Tests**: backend 6/6 pass (used_spell_slots PATCH persistence, conditions PATCH persistence, /long-rest, /short-rest). Frontend 100% on critical flows (class dot, conditions strip, speed-zero under grappled, rest buttons, gem slots, persistence, combat log present). See `/app/test_reports/iteration_83.json`.
 
+## Phase 23 — Live Play Polish + GM Rules Edition (Apr 30 / Iter 84)
+- **Removed Map Maker from Live Play Mode** (Battle Map and World Map tabs deleted; `MapMaker` import + `Grid3x3`/`Globe` icon imports removed). Live Play Mode is now strictly: COMBAT (Combat) → WORLD (Location, Events) → CHARACTERS → REFERENCE → SESSION.
+- **`gm/MiniGameEngine.js` deleted** — Event System fully absorbed it; no callers remained.
+- **`condition-toggle-{key}` data-testids** added to every condition button in `CharacterCombatTab.js`.
+- **2014 / 2024 Rules Edition Toggle** in GMScreen header. Backend Campaign model now exposes `rules_edition: str = "2024"`; `PUT /api/campaigns/{id}` persists changes; UI toast confirms switch.
+- **Edition-aware AI prompts**: new `edition_prompt_fragment(campaign)` helper in `routes/ai.py` injects 2024 mechanics (Origin Feats, Weapon Mastery, Subclasses-at-L3, Species over Race, Background ASI) or 2014 mechanics (Race ASIs, Half-Elf/Half-Orc, original subclass timing) into the system/world context of every GM-facing AI endpoint: `ai_generate_with_rules`, `generate_ai_content`, `rook chat`, `session planner`, `prep checklist`. Helper falls back to inferring from `system` string when `rules_edition` missing.
+- **Tests**: backend 4/4 pass (rules_edition GET/PUT round-trip, helper code review, edition fragment markers verified); frontend 100% on critical flows (toggle visible, PUT fires + toast, gold active state, MapMaker tabs gone, all condition-toggle testids present + persistence). See `/app/test_reports/iteration_84.json`.
+
 ## Test iterations
-77, 78, 79, 80, 81 (Block B 14/14 backend pass), 82 (Phase 18 - Learn Spell bug fix verified), Phase 20 (Block A visual verification via screenshots), 83 (Phase 22 - 100% backend, 100% critical frontend)
+77, 78, 79, 80, 81, 82, 83 (Phase 22), 84 (Phase 23 — 100% backend, 100% critical frontend)
 
 ---
 *Last updated: April 30, 2026*
