@@ -103,8 +103,24 @@ Immersive SRD-5.1-compliant TTRPG app with GM tools + a Player experience that m
 - **Landing page rewritten** to match `/home` (UnifiedDashboard) — strict Dark Navy `#0A1628` + Gold `#D4A017` palette. Removed all purple/cyan AI-slop gradients, glow shadows, and `linear-gradient` backgrounds. Hero, features grid, pricing tiers, and footer now use the same flat panel/border conventions as the rest of the app.
 - **Global Montserrat font lock** (`index.css`): replaced Outfit + Manrope + Cinzel imports with a single Montserrat (400/500/600/700/800) import. Added a `*, *::before, *::after { font-family: 'Montserrat' !important; }` override so every existing inline `fontFamily: 'Cinzel'/'Outfit'` declaration in any component now renders as Montserrat without further code edits. Body weight defaults to 700 (bold) per user spec; Tailwind utility classes (`font-medium`, `font-bold`, etc.) restored to maintain hierarchy.
 
+## Phase 25 — Audit Fixes Batch 1 (Apr 30 / Iter 85)
+Tackled the highest-impact P0 bugs + first wave of P1 polish from `/app/memory/AUDIT.md`:
+- **Combat tab**: "no-weapons-hint" gold callout when only Unarmed Strike is available, prompting the user to equip from Inventory. CONDITIONS section now **open by default** (was collapsed → invisible to new players).
+- **CombatPage** (full-screen combat): replaced AI-slop purple/red header with strict Dark Navy + Gold; visible labelled "Back" button (was just an icon); endCombat now **PATCHes each player combatant's `current_hit_points` / `temporary_hit_points` / `conditions` back to their character record** so HP changes persist post-combat.
+- **Home page**: live `character-search-input` + `campaign-search-input` filter inputs (filter by name/class/race or name/setting/description), and a `2024 RULES` / `2014 RULES` gold pill on every campaign card.
+- **Admin page**: unified all 4 stat boxes to flat Dark Navy + Gold (removed teal/red/green/orange tints), tabs gold-active (was red/cyan), removed gradient `borderImage` divider.
+- **Character creation mode picker**: Kids Mode reordered to first; grid layout `auto-fit minmax(240px, 1fr)` + maxWidth 800 yields clean 2×2 on desktop (no orphan-card 3+1 wrap).
+- **GM CombatTab**: Spontaneous Combat button red→gold; "Quick Start with Players (0)" now hidden when no players.
+
+**Tests**: backend 5/5 (POST login, GET character, PATCH with HP/temp/conditions persists, partial PATCH no-422, campaign rules_edition regression). Frontend 12/12 critical flow checks. See `/app/test_reports/iteration_85.json`. Testing agent created `/app/backend/tests/test_iter85_audit_batch1.py` for regression.
+
+**Known non-blockers flagged by testing agent for future cleanup:**
+- AdminPage stat boxes lack `data-testid` (cosmetic — visual unification still verified in code)
+- `UnifiedDashboard.js` is 1376 lines — should split into Header / PlayerSection / CampaignSection / Modals
+- Live admin API returns 403 for `lcblakey24` (env-specific role gating, not a regression)
+
 ## Test iterations
-77, 78, 79, 80, 81, 82, 83 (Phase 22), 84 (Phase 23 — 100% backend, 100% critical frontend), Phase 24 (visual smoke test only — landing page + home rendered + Montserrat verified via getComputedStyle)
+77, 78, 79, 80, 81, 82, 83, 84, 85 (Phase 25 — 100% backend, 100% critical frontend audit batch 1)
 
 ---
 *Last updated: April 30, 2026*
