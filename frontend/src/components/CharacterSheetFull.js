@@ -380,7 +380,13 @@ export default function CharacterSheetFull() {
       // Damage temp HP first
       if (tempHp > 0) {
         if (damage <= tempHp) {
-          setTempHp(tempHp - damage);
+          const newTempHp = tempHp - damage;
+          setTempHp(newTempHp);
+          try {
+            await axios.patch(`${API}/characters/${characterId}`, { temporary_hit_points: newTempHp });
+          } catch {
+            console.error('Failed to update temporary HP');
+          }
           return; // All damage absorbed by temp HP
         } else {
           const remainingDamage = damage - tempHp;
@@ -388,7 +394,10 @@ export default function CharacterSheetFull() {
           const newHp = Math.max(0, currentHp - remainingDamage);
           setCurrentHp(newHp);
           try {
-            await axios.patch(`${API}/characters/${characterId}`, { current_hit_points: newHp });
+            await axios.patch(`${API}/characters/${characterId}`, {
+              current_hit_points: newHp,
+              temporary_hit_points: 0
+            });
           } catch (err) {
             console.error('Failed to update HP');
           }

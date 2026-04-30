@@ -44,16 +44,38 @@ const ALL_SKILLS = {
 const formatAbility = (a) => a.slice(0, 3).toUpperCase();
 const formatModifier = (m) => (m >= 0 ? `+${m}` : `${m}`);
 
-// Steps definition
-const STEPS = [
+// Steps definition (spells/equipment steps are conditional, added dynamically)
+const BASE_STEPS = [
   { id: 'edition', label: 'Edition', icon: BookOpen },
   { id: 'race', label: 'Race', icon: User },
   { id: 'class', label: 'Class', icon: Sword },
   { id: 'background', label: 'Background', icon: Scroll },
   { id: 'abilities', label: 'Abilities', icon: Dices },
   { id: 'skills', label: 'Skills', icon: Award },
+  { id: 'spells', label: 'Spells', icon: Wand2, needs: ({ className }) => SPELL_CREATION.has(className) },
+  { id: 'equipment', label: 'Gear', icon: Backpack, needs: () => true },
   { id: 'review', label: 'Review', icon: Check }
 ];
+
+// Classes that pick spells at Level 1 creation
+const SPELL_CREATION = new Set(['Bard', 'Cleric', 'Druid', 'Sorcerer', 'Warlock', 'Wizard']);
+
+// SRD 5.1 starting spell counts (L1 creation)
+const SPELL_COUNTS_L1 = {
+  Bard:     { cantrips: 2, spells: 4, type: 'known' },
+  Cleric:   { cantrips: 3, spells: 0, type: 'prepared' }, // Cleric prepares any L1 clerc spell, count = WIS mod + level
+  Druid:    { cantrips: 2, spells: 0, type: 'prepared' },
+  Sorcerer: { cantrips: 4, spells: 2, type: 'known' },
+  Warlock:  { cantrips: 2, spells: 2, type: 'known' },
+  Wizard:   { cantrips: 3, spells: 6, type: 'spellbook' }, // 6 spells in spellbook at L1
+};
+
+// Classes that get Fighting Style at L1 or L2
+const FIGHTING_STYLE_CLASSES = {
+  Fighter: { level: 1, styles: ['Archery', 'Defense', 'Dueling', 'Great Weapon Fighting', 'Protection', 'Two-Weapon Fighting'] },
+  Paladin: { level: 2, styles: ['Defense', 'Dueling', 'Great Weapon Fighting', 'Protection'] },
+  Ranger:  { level: 2, styles: ['Archery', 'Defense', 'Dueling', 'Two-Weapon Fighting'] }
+};
 
 const getInitialState = () => ({
   step: 0,
@@ -68,7 +90,14 @@ const getInitialState = () => ({
   method: "standard",
   edition: "2014",
   stats: { strength: 15, dexterity: 14, constitution: 13, intelligence: 12, wisdom: 10, charisma: 8 },
-  selectedSkills: []
+  selectedSkills: [],
+  floatingAsi: {},
+  chosenLanguages: [],
+  versatilitySkills: [],      // Half-Elf: 2 extra skills
+  fightingStyle: '',
+  selectedCantrips: [],
+  selectedSpells: [],
+  equipmentChoice: 'A'
 });
 
 const loadDraft = () => {
@@ -126,6 +155,13 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
   const [selectedSkills, setSelectedSkills] = useState(initialState.selectedSkills || []);
   const [floatingAsi, setFloatingAsi] = useState(initialState.floatingAsi || {}); // { strength: 1, dexterity: 1 }
   const [chosenLanguages, setChosenLanguages] = useState(initialState.chosenLanguages || []); // ['Draconic', ...]
+  const [versatilitySkills, setVersatilitySkills] = useState(initialState.versatilitySkills || []); // Half-Elf
+  const [fightingStyle, setFightingStyle] = useState(initialState.fightingStyle || '');
+  const [selectedCantrips, setSelectedCantrips] = useState(initialState.selectedCantrips || []);
+  const [selectedSpells, setSelectedSpells] = useState(initialState.selectedSpells || []);
+  const [equipmentChoice, setEquipmentChoice] = useState(initialState.equipmentChoice || 'A');
+  const [srdSpells, setSrdSpells] = useState([]);
+  const [spellsLoading, setSpellsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Load existing character data in edit mode
@@ -167,12 +203,39 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
   const availableSubclasses = classData?.subclasses || [];
   const backgroundData = BACKGROUNDS[background] || null;
 
+  // Dynamic steps - spells only for spellcasters
+  const STEPS = useMemo(() => {
+    return BASE_STEPS.filter(s => !s.needs || s.needs({ className }));
+  }, [className]);
+
+  // Fetch SRD spells when className changes to a spellcaster
+  useEffect(() => {
+    if (!SPELL_CREATION.has(className)) {
+      setSrdSpells([]);
+      return;
+    }
+    setSpellsLoading(true);
+    axios.get(`${API_BASE}/srd/spells`, { params: { class_name: className } })
+      .then(res => setSrdSpells(res.data?.spells || []))
+      .catch(() => toast.error('Failed to load spells'))
+      .finally(() => setSpellsLoading(false));
+  }, [className]);
+
+  // Reset spell picks when class changes
+  useEffect(() => { setSelectedCantrips([]); setSelectedSpells([]); }, [className]);
+
+  // Reset fighting style when class changes to non-FS class
+  useEffect(() => {
+    if (!FIGHTING_STYLE_CLASSES[className]) setFightingStyle('');
+  }, [className]);
+
   // Reset subrace + race-specific picks when race changes
   useEffect(() => {
     if (race && availableSubraces.length === 0) setSubrace("");
     if (race && subrace && !availableSubraces.includes(subrace)) setSubrace("");
     setFloatingAsi({});
     setChosenLanguages([]);
+    setVersatilitySkills([]);
   }, [race, availableSubraces.length]);
 
   // How many floating +1s does this race offer? (2014 only)
@@ -210,9 +273,9 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
   // Auto-save draft
   useEffect(() => {
-    const draft = { step, name, race, subrace, className, subclass, background, portrait, alignment, method, edition, stats, selectedSkills, floatingAsi, chosenLanguages };
+    const draft = { step, name, race, subrace, className, subclass, background, portrait, alignment, method, edition, stats, selectedSkills, floatingAsi, chosenLanguages, versatilitySkills, fightingStyle, selectedCantrips, selectedSpells, equipmentChoice };
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-  }, [step, name, race, subrace, className, subclass, background, portrait, alignment, method, edition, stats, selectedSkills, floatingAsi, chosenLanguages]);
+  }, [step, name, race, subrace, className, subclass, background, portrait, alignment, method, edition, stats, selectedSkills, floatingAsi, chosenLanguages, versatilitySkills, fightingStyle, selectedCantrips, selectedSpells, equipmentChoice]);
 
   const pointBuySpent = useMemo(
     () => ABILITIES.reduce((sum, a) => sum + calculatePointBuyCost(stats[a]), 0),
@@ -240,6 +303,21 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
   }, [classData]);
   const classSkillCount = classData?.skillCount || 0;
   const backgroundSkills = backgroundData?.skillProficiencies || [];
+  const hasHalfElfVersatility = race === 'Half-Elf' && edition === '2014';
+  const versatilityNeeded = hasHalfElfVersatility ? 2 : 0;
+
+  // Spell counts for the current class at level 1
+  const spellReq = SPELL_COUNTS_L1[className] || null;
+  const wisMod = Math.floor((Number(stats.wisdom || 10) - 10) / 2);
+  const intMod = Math.floor((Number(stats.intelligence || 10) - 10) / 2);
+  const neededSpells = useMemo(() => {
+    if (!spellReq) return { cantrips: 0, spells: 0 };
+    // Cleric/Druid prepare spells: count = casting ability mod + level (min 1)
+    if (className === 'Cleric') return { cantrips: 3, spells: Math.max(1, wisMod + 1) };
+    if (className === 'Druid') return { cantrips: 2, spells: Math.max(1, wisMod + 1) };
+    if (className === 'Wizard') return { cantrips: 3, spells: 6 };
+    return spellReq;
+  }, [className, wisMod, intMod, spellReq]);
 
   // Toggle a class skill (cannot exceed count, cannot pick if already from background)
   const toggleSkill = (skill) => {
@@ -304,6 +382,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
     if (id === 'class') {
       if (!className) return false;
       if (edition === '2014' && SUBCLASS_AT_L1_2014.has(className) && !subclass) return false;
+      // Fighter requires fighting style at L1
+      if (className === 'Fighter' && !fightingStyle) return false;
       return true;
     }
     if (id === 'background') return !!background;
@@ -312,7 +392,17 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       if (method === 'point' && pointBuyRemaining !== 0) return false;
       return true;
     }
-    if (id === 'skills') return selectedSkills.length === classSkillCount;
+    if (id === 'skills') {
+      if (selectedSkills.length !== classSkillCount) return false;
+      if (hasHalfElfVersatility && versatilitySkills.length !== 2) return false;
+      return true;
+    }
+    if (id === 'spells') {
+      if (selectedCantrips.length !== neededSpells.cantrips) return false;
+      if (selectedSpells.length !== neededSpells.spells) return false;
+      return true;
+    }
+    if (id === 'equipment') return !!equipmentChoice;
     if (id === 'review') return name.trim().length > 0;
     return true;
   };
@@ -340,6 +430,9 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
     setAlignment('Neutral'); setMethod(reset.method); setEdition(reset.edition);
     setStats(reset.stats); setSelectedSkills([]);
     setFloatingAsi({}); setChosenLanguages([]);
+    setVersatilitySkills([]); setFightingStyle('');
+    setSelectedCantrips([]); setSelectedSpells([]);
+    setEquipmentChoice('A');
     toast.success('Draft cleared');
   };
 
@@ -349,8 +442,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
     const finalScores = isEditMode ? stats : finalStats;
 
-    // Build proficiencies from class + background
-    const allSkills = Array.from(new Set([...(backgroundSkills || []), ...selectedSkills]));
+    // Build proficiencies from class + background (+ Half-Elf Skill Versatility)
+    const allSkills = Array.from(new Set([...(backgroundSkills || []), ...selectedSkills, ...versatilitySkills]));
     const tools = backgroundData?.toolProficiencies || [];
     const baseLanguages = (raceData?.languages || []).filter(l => l !== 'One of choice' && l !== 'One additional language');
 
@@ -368,6 +461,17 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       name,
       description: `${className} feature gained at Level 1`
     }));
+    // Add Fighting Style as a feature if picked
+    if (fightingStyle) {
+      classFeatures.push({
+        name: `Fighting Style: ${fightingStyle}`,
+        description: `Fighting style chosen at character creation.`
+      });
+    }
+
+    // Determine starting equipment based on choice
+    const startingEquipmentList = (classData?.startingEquipment || []);
+    const backgroundEquipment = (backgroundData?.equipment || []);
 
     const payload = {
       name: name.trim(),
@@ -377,6 +481,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       subclass: subclass || "",
       background: background || "",
       edition,
+      ruleset_id: edition === '2024' ? 'dnd5e_2024' : 'dnd5e_2014',
       alignment,
       strength: Number(finalScores.strength),
       dexterity: Number(finalScores.dexterity),
@@ -399,6 +504,12 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       payload.racial_traits = [...racialTraits, ...subraceTraits];
       payload.class_features = classFeatures;
       payload.speed = raceData?.speed || 30;
+      payload.fighting_style = fightingStyle || '';
+      payload.equipment_choice = equipmentChoice;
+      payload.starting_equipment = [...startingEquipmentList, ...backgroundEquipment];
+      payload.cantrips_known = selectedCantrips.map(name => ({ name }));
+      const spellsKey = spellReq?.type === 'prepared' ? 'spells_prepared' : 'spells_known';
+      payload[spellsKey] = selectedSpells.map(name => ({ name }));
     }
 
     try {
@@ -702,6 +813,37 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
           })()}
         </div>
       )}
+
+      {/* Fighting Style (Fighter L1, Paladin L2, Ranger L2) */}
+      {FIGHTING_STYLE_CLASSES[className] && (
+        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.06)', border: `1px solid ${theme.border}` }}>
+          <label style={labelStyle}>
+            Fighting Style
+            <span style={{ color: className === 'Fighter' ? '#EF4444' : theme.text.muted, textTransform: 'none', marginLeft: 6 }}>
+              {className === 'Fighter' ? '(REQUIRED at Level 1)' : `(gained at Level ${FIGHTING_STYLE_CLASSES[className].level})`}
+            </span>
+          </label>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 6 }}>
+            {FIGHTING_STYLE_CLASSES[className].styles.map(style => {
+              const sel = fightingStyle === style;
+              return (
+                <button
+                  key={style} type="button"
+                  data-testid={`fighting-style-${style.toLowerCase().replace(/ /g, '-')}`}
+                  onClick={() => setFightingStyle(sel ? '' : style)}
+                  style={{
+                    padding: '8px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, textAlign: 'left',
+                    background: sel ? 'rgba(239, 68, 68, 0.2)' : 'rgba(15, 10, 30, 0.5)',
+                    border: `1px solid ${sel ? '#EF4444' : theme.border}`,
+                    color: theme.text.primary, cursor: 'pointer'
+                  }}>
+                  {sel ? '✓ ' : ''}{style}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -940,8 +1082,193 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
           );
         })}
       </div>
+
+      {/* Half-Elf Skill Versatility - pick 2 extra skills */}
+      {hasHalfElfVersatility && (
+        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(77, 208, 225, 0.06)', border: `1px solid ${theme.border}` }}>
+          <label style={labelStyle}>
+            Half-Elf: Skill Versatility — pick 2 extra skills
+            {' — '}
+            <span style={{ color: versatilitySkills.length === 2 ? '#10B981' : theme.sunset.gold, textTransform: 'none' }}>
+              {versatilitySkills.length}/2 picked
+            </span>
+          </label>
+          <div style={{ fontSize: 12, color: theme.text.muted, marginBottom: 8 }}>
+            Any two skills of your choice. Cannot overlap with class or background skills.
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '6px' }}>
+            {Object.keys(ALL_SKILLS).map(skill => {
+              const alreadyProfic = backgroundSkills.includes(skill) || selectedSkills.includes(skill);
+              const sel = versatilitySkills.includes(skill);
+              const disabled = alreadyProfic;
+              return (
+                <button
+                  key={skill} type="button" disabled={disabled}
+                  data-testid={`versatility-${skill.replace(/ /g, '-').toLowerCase()}`}
+                  onClick={() => {
+                    setVersatilitySkills(prev => {
+                      if (prev.includes(skill)) return prev.filter(s => s !== skill);
+                      if (prev.length >= 2) { toast.info('Only 2 versatility skills allowed'); return prev; }
+                      return [...prev, skill];
+                    });
+                  }}
+                  style={{
+                    padding: '7px 10px', borderRadius: 6, fontSize: 12, textAlign: 'left',
+                    background: sel ? 'rgba(77, 208, 225, 0.2)' : disabled ? 'rgba(138, 43, 226, 0.05)' : 'rgba(15, 10, 30, 0.5)',
+                    border: `1px solid ${sel ? theme.sunset.pink : theme.border}`,
+                    color: disabled ? theme.text.muted : theme.text.primary,
+                    cursor: disabled ? 'not-allowed' : 'pointer',
+                    opacity: disabled ? 0.4 : 1
+                  }}>
+                  {sel ? '✓ ' : ''}{skill}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
+
+  const renderSpellsStep = () => {
+    const cantrips = srdSpells.filter(s => s.level === 0);
+    const lvl1Spells = srdSpells.filter(s => s.level === 1);
+    const toggleCantrip = (name) => {
+      setSelectedCantrips(prev => {
+        if (prev.includes(name)) return prev.filter(x => x !== name);
+        if (prev.length >= neededSpells.cantrips) {
+          toast.info(`Only ${neededSpells.cantrips} cantrips allowed at Level 1`);
+          return prev;
+        }
+        return [...prev, name];
+      });
+    };
+    const toggleSpell = (name) => {
+      setSelectedSpells(prev => {
+        if (prev.includes(name)) return prev.filter(x => x !== name);
+        if (prev.length >= neededSpells.spells) {
+          toast.info(`Only ${neededSpells.spells} Level 1 spells allowed`);
+          return prev;
+        }
+        return [...prev, name];
+      });
+    };
+    const renderSpellCard = (spell, picked, onClick) => (
+      <button
+        key={spell.name} type="button" onClick={onClick}
+        data-testid={`spell-${spell.name.toLowerCase().replace(/ /g, '-')}`}
+        style={{
+          textAlign: 'left', padding: '10px 12px', borderRadius: 10,
+          background: picked ? 'rgba(138, 43, 226, 0.18)' : 'rgba(15, 10, 30, 0.5)',
+          border: `1px solid ${picked ? theme.borderActive : theme.border}`,
+          color: theme.text.primary, cursor: 'pointer', fontSize: 12
+        }}
+        title={spell.description?.slice(0, 240) || ''}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <strong style={{ fontFamily: "'Cinzel', serif", fontSize: 13 }}>{picked ? '✓ ' : ''}{spell.name}</strong>
+          <span style={{ fontSize: 10, color: theme.text.muted }}>{spell.school}</span>
+        </div>
+        <div style={{ fontSize: 10, color: theme.text.muted, marginTop: 3 }}>
+          {spell.casting_time} · {spell.range}{spell.concentration ? ' · Concentration' : ''}
+        </div>
+      </button>
+    );
+    return (
+      <div>
+        <StepHeader icon={Wand2} title="Choose Your Spells" subtitle={`${className} gets ${neededSpells.cantrips} cantrips and ${neededSpells.spells} L1 spell${neededSpells.spells === 1 ? '' : 's'} at Level 1`} color={theme.sunset.purple} />
+        {spellsLoading && <div style={{ color: theme.text.muted, padding: 20 }}>Loading spells…</div>}
+        {!spellsLoading && (
+          <>
+            {neededSpells.cantrips > 0 && (
+              <div style={{ marginBottom: 24 }}>
+                <label style={labelStyle}>
+                  Cantrips — <span style={{ color: selectedCantrips.length === neededSpells.cantrips ? '#10B981' : theme.sunset.gold, textTransform: 'none' }}>
+                    {selectedCantrips.length}/{neededSpells.cantrips}
+                  </span>
+                </label>
+                {cantrips.length === 0 && <div style={{ color: theme.text.muted, fontSize: 12 }}>No cantrips available for {className} in SRD.</div>}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 6 }}>
+                  {cantrips.map(s => renderSpellCard(s, selectedCantrips.includes(s.name), () => toggleCantrip(s.name)))}
+                </div>
+              </div>
+            )}
+            <div>
+              <label style={labelStyle}>
+                Level 1 Spells — <span style={{ color: selectedSpells.length === neededSpells.spells ? '#10B981' : theme.sunset.gold, textTransform: 'none' }}>
+                  {selectedSpells.length}/{neededSpells.spells}
+                </span>
+                {spellReq?.type === 'prepared' && <span style={{ fontSize: 11, marginLeft: 8, color: theme.text.muted, textTransform: 'none' }}>(prepared spells - can change on long rest)</span>}
+              </label>
+              {lvl1Spells.length === 0 && <div style={{ color: theme.text.muted, fontSize: 12 }}>No L1 spells available.</div>}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 6 }}>
+                {lvl1Spells.map(s => renderSpellCard(s, selectedSpells.includes(s.name), () => toggleSpell(s.name)))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
+  const renderEquipmentStep = () => {
+    const startingList = classData?.startingEquipment || [];
+    const bgEquip = backgroundData?.equipment || [];
+    // Split into two "option" lists (first half = A, second half = B) purely to make the choice tangible.
+    // The underlying data doesn't separate options, so we present the full list + a gold alternative.
+    return (
+      <div>
+        <StepHeader icon={Backpack} title="Choose Starting Gear" subtitle={`${className} gets class equipment. ${background} adds background items.`} color={theme.sunset.gold} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+          {['A', 'B'].map(choice => {
+            const active = equipmentChoice === choice;
+            return (
+              <button
+                key={choice} type="button" onClick={() => setEquipmentChoice(choice)}
+                data-testid={`equipment-${choice}`}
+                style={{
+                  textAlign: 'left', padding: 14, borderRadius: 12,
+                  background: active ? 'rgba(245, 158, 11, 0.12)' : 'rgba(15, 10, 30, 0.5)',
+                  border: `2px solid ${active ? theme.sunset.gold : theme.border}`,
+                  color: theme.text.primary, cursor: 'pointer'
+                }}>
+                <div style={{ fontFamily: "'Cinzel', serif", fontWeight: 700, marginBottom: 6, fontSize: 14 }}>
+                  {choice === 'A' ? 'Option A — Adventurer Package' : 'Option B — Starting Gold'}
+                </div>
+                <div style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 1.5 }}>
+                  {choice === 'A'
+                    ? `Take your ${className} starting equipment exactly as recommended.`
+                    : `Skip gear and start with rolled gold (DM discretion, roughly class-appropriate).`}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(15, 10, 30, 0.5)', border: `1px solid ${theme.border}` }}>
+          <div style={detailHeaderStyle}>Your gear</div>
+          {equipmentChoice === 'A' ? (
+            <div style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 1.8 }}>
+              <strong style={{ color: theme.sunset.purple }}>From {className}:</strong>
+              <ul style={{ margin: '4px 0 12px 18px', padding: 0 }}>
+                {startingList.length === 0 && <li>No starting equipment listed</li>}
+                {startingList.map((e, i) => <li key={`c${i}`}>{e}</li>)}
+              </ul>
+              <strong style={{ color: theme.sunset.gold }}>From {background}:</strong>
+              <ul style={{ margin: '4px 0 0 18px', padding: 0 }}>
+                {bgEquip.length === 0 && <li>None</li>}
+                {bgEquip.map((e, i) => <li key={`b${i}`}>{e}</li>)}
+              </ul>
+            </div>
+          ) : (
+            <div style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 1.5 }}>
+              You'll start with <strong>starting gold</strong> instead of equipment. Work with your DM to purchase gear before session 1.
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   const renderReviewStep = () => (
     <div>
@@ -1071,6 +1398,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
           {stepId === 'background' && renderBackgroundStep()}
           {stepId === 'abilities' && renderAbilitiesStep()}
           {stepId === 'skills' && renderSkillsStep()}
+          {stepId === 'spells' && renderSpellsStep()}
+          {stepId === 'equipment' && renderEquipmentStep()}
           {stepId === 'review' && renderReviewStep()}
         </div>
 
