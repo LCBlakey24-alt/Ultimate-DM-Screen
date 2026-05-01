@@ -14,7 +14,9 @@ router = APIRouter()
 
 
 async def verify_admin(username: str):
-    if username not in ADMIN_USERNAMES:
+    # Case-insensitive match so capitalized usernames (e.g. "LCBlakey24") still pass
+    admins = {a.lower() for a in ADMIN_USERNAMES}
+    if not username or username.lower() not in admins:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
 
 @router.post("/admin/upgrade-user")
@@ -475,4 +477,103 @@ async def delete_promo_code(code_id: str, username: str = Depends(get_current_us
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Promo code not found")
     return {"message": "Promo code deleted"}
+
+
+# ==================== IMPERSONATION ====================
+
+@router.post("/admin/users/{target_username}/impersonate")
+async def admin_impersonate_user(target_username: str, username: str = Depends(get_current_user)):
+    """Admin-only: issue a short-lived JWT for the target user so support can
+    reproduce their view. The client should stash its current token before swapping."""
+    await verify_admin(username)
+    target = await db.users.find_one({'username': target_username}, {'_id': 0})
+    if not target:
+        # Try by email as a fallback for convenience
+        target = await db.users.find_one({'email': target_username}, {'_id': 0})
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+    from utils.auth import create_token
+    token = create_token(target['username'])
+    logger.info(f"Admin {username} impersonating {target['username']}")
+    return {
+        "token": token,
+        "username": target['username'],
+        "email": target.get('email'),
+        "impersonated_by": username
+    }
+
+
+# ==================== CSV EXPORT ====================
+
+def _csv_escape(value) -> str:
+    if value is None:
+        return ""
+    s = str(value)
+    if any(ch in s for ch in [',', '"', '\n', '\r']):
+        return '"' + s.replace('"', '""') + '"'
+    return s
+
+
+@router.get("/admin/export/users.csv")
+async def admin_export_users_csv(username: str = Depends(get_current_user)):
+    """Admin-only: stream a CSV of all users (core profile + subscription)."""
+    from fastapi.responses import StreamingResponse
+    await verify_admin(username)
+
+    async def gen():
+        header = ["username", "email", "tier", "tier_name", "subscription_status",
+                  "lifetime_access", "ai_calls_this_month", "created_at"]
+        yield ",".join(header) + "\n"
+        async for user in db.users.find({}, {'_id': 0, 'password_hash': 0}):
+            sub = user.get('subscription', {}) or {}
+            tier = sub.get('tier', 'free')
+            row = [
+                _csv_escape(user.get('username')),
+                _csv_escape(user.get('email')),
+                _csv_escape(tier),
+                _csv_escape(SUBSCRIPTION_PLANS.get(tier, {}).get('name', 'Free')),
+                _csv_escape(sub.get('subscription_status', 'inactive')),
+                _csv_escape(sub.get('lifetime_access', False)),
+                _csv_escape(sub.get('ai_calls_this_month', 0)),
+                _csv_escape(user.get('created_at')),
+            ]
+            yield ",".join(row) + "\n"
+
+    return StreamingResponse(
+        gen(),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="rook-users.csv"'}
+    )
+
+
+@router.get("/admin/export/campaigns.csv")
+async def admin_export_campaigns_csv(username: str = Depends(get_current_user)):
+    """Admin-only: stream a CSV of all campaigns."""
+    from fastapi.responses import StreamingResponse
+    await verify_admin(username)
+
+    async def gen():
+        header = ["id", "name", "dm_user_id", "system", "rules_edition",
+                  "setting", "player_count", "created_at", "updated_at"]
+        yield ",".join(header) + "\n"
+        async for c in db.campaigns.find({}, {'_id': 0}):
+            players = c.get('players') or []
+            row = [
+                _csv_escape(c.get('id')),
+                _csv_escape(c.get('name')),
+                _csv_escape(c.get('dm_user_id')),
+                _csv_escape(c.get('system')),
+                _csv_escape(c.get('rules_edition', '2024')),
+                _csv_escape(c.get('setting')),
+                _csv_escape(len(players) if isinstance(players, list) else 0),
+                _csv_escape(c.get('created_at')),
+                _csv_escape(c.get('updated_at')),
+            ]
+            yield ",".join(row) + "\n"
+
+    return StreamingResponse(
+        gen(),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="rook-campaigns.csv"'}
+    )
 

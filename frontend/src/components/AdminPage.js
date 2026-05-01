@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft, Plus, Trash2, Copy, Users, Gift, Shield, Key, Star, Check, X, Sword, User, BookOpen } from 'lucide-react';
 import RuleSystemManager from './RuleSystemManager';
 import TemplateEditor from './TemplateEditor';
+import AdminUsersTab from './admin/AdminUsersTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -399,6 +400,24 @@ function AdminPage({ username }) {
           >
             <Users size={18} />
             TEMPLATES
+          </button>
+          <button
+            onClick={() => setActiveTab('users')}
+            data-testid="admin-tab-users"
+            style={{
+              flex: 1,
+              padding: '16px',
+              background: activeTab === 'users' ? 'rgba(212, 160, 23, 0.10)' : '#0A1628',
+              border: 'none',
+              borderBottom: activeTab === 'users' ? '2px solid #D4A017' : '1px solid rgba(212, 160, 23, 0.20)',
+              color: activeTab === 'users' ? '#D4A017' : theme.text.muted,
+              fontSize: '14px', fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              letterSpacing: '1px'
+            }}
+          >
+            <User size={18} />
+            USERS
           </button>
         </div>
 
@@ -854,6 +873,9 @@ function AdminPage({ username }) {
             <TemplateEditor />
           </div>
         )}
+
+        {/* Users Tab */}
+        {activeTab === 'users' && <AdminUsersTab />}
       </div>
     </div>
   );

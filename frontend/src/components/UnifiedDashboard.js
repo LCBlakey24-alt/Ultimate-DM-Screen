@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -72,6 +72,8 @@ function UnifiedDashboard({ username, onLogout }) {
   const [campaigns, setCampaigns] = useState([]);
   const [characterSearch, setCharacterSearch] = useState('');
   const [campaignSearch, setCampaignSearch] = useState('');
+  const [characterSort, setCharacterSort] = useState(() => localStorage.getItem('rq.charSort') || 'recent');
+  const [campaignSort, setCampaignSort] = useState(() => localStorage.getItem('rq.campSort') || 'recent');
   const [loading, setLoading] = useState(true);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showReferralModal, setShowReferralModal] = useState(false);
@@ -308,6 +310,41 @@ function UnifiedDashboard({ username, onLogout }) {
       e.target.value = '';
     }
   };
+
+  // Persist sort preferences
+  useEffect(() => { localStorage.setItem('rq.charSort', characterSort); }, [characterSort]);
+  useEffect(() => { localStorage.setItem('rq.campSort', campaignSort); }, [campaignSort]);
+
+  // Search + sort pipeline for characters
+  const displayCharacters = useMemo(() => {
+    const q = characterSearch.toLowerCase();
+    const filtered = !q ? [...characters] : characters.filter(c =>
+      (c.name || '').toLowerCase().includes(q) ||
+      (c.character_class || '').toLowerCase().includes(q) ||
+      (c.race || '').toLowerCase().includes(q)
+    );
+    const byRecent = (a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0);
+    if (characterSort === 'name') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    else if (characterSort === 'level') filtered.sort((a, b) => (Number(b.level) || 0) - (Number(a.level) || 0));
+    else if (characterSort === 'class') filtered.sort((a, b) => (a.character_class || '').localeCompare(b.character_class || ''));
+    else filtered.sort(byRecent);
+    return filtered;
+  }, [characters, characterSearch, characterSort]);
+
+  // Search + sort pipeline for campaigns
+  const displayCampaigns = useMemo(() => {
+    const q = campaignSearch.toLowerCase();
+    const filtered = !q ? [...campaigns] : campaigns.filter(c =>
+      (c.name || '').toLowerCase().includes(q) ||
+      (c.setting || '').toLowerCase().includes(q) ||
+      (c.description || '').toLowerCase().includes(q)
+    );
+    const byRecent = (a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0);
+    if (campaignSort === 'name') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    else if (campaignSort === 'edition') filtered.sort((a, b) => String(b.rules_edition || '2024').localeCompare(String(a.rules_edition || '2024')));
+    else filtered.sort(byRecent);
+    return filtered;
+  }, [campaigns, campaignSearch, campaignSort]);
 
   if (loading) {
     return (
@@ -657,19 +694,37 @@ function UnifiedDashboard({ username, onLogout }) {
 
             {/* Character List */}
             {characters.length > 0 && (
-              <input
-                data-testid="character-search-input"
-                type="text"
-                placeholder="Search characters by name, class, or race…"
-                value={characterSearch}
-                onChange={e => setCharacterSearch(e.target.value)}
-                style={{
-                  width: '100%', marginBottom: 12,
-                  background: theme.bg.surface, color: theme.text.primary,
-                  border: `1px solid ${theme.border}`, borderRadius: 8,
-                  padding: '10px 14px', fontSize: 13, outline: 'none',
-                }}
-              />
+              <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                <input
+                  data-testid="character-search-input"
+                  type="text"
+                  placeholder="Search characters by name, class, or race…"
+                  value={characterSearch}
+                  onChange={e => setCharacterSearch(e.target.value)}
+                  style={{
+                    flex: 1, minWidth: 220,
+                    background: theme.bg.surface, color: theme.text.primary,
+                    border: `1px solid ${theme.border}`, borderRadius: 8,
+                    padding: '10px 14px', fontSize: 13, outline: 'none',
+                  }}
+                />
+                <select
+                  data-testid="character-sort"
+                  value={characterSort}
+                  onChange={e => setCharacterSort(e.target.value)}
+                  style={{
+                    minWidth: 150,
+                    background: theme.bg.surface, color: theme.text.primary,
+                    border: `1px solid ${theme.border}`, borderRadius: 8,
+                    padding: '10px 14px', fontSize: 13, outline: 'none', cursor: 'pointer'
+                  }}
+                >
+                  <option value="recent">Sort: Recent</option>
+                  <option value="name">Sort: Name (A-Z)</option>
+                  <option value="level">Sort: Level (High→Low)</option>
+                  <option value="class">Sort: Class (A-Z)</option>
+                </select>
+              </div>
             )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {characters.length === 0 ? (
@@ -700,13 +755,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   </Button>
                 </div>
               ) : (
-                characters
-                  .filter(c => !characterSearch || (
-                    (c.name || '').toLowerCase().includes(characterSearch.toLowerCase()) ||
-                    (c.character_class || '').toLowerCase().includes(characterSearch.toLowerCase()) ||
-                    (c.race || '').toLowerCase().includes(characterSearch.toLowerCase())
-                  ))
-                  .map((char, index) => (
+                displayCharacters.map((char, index) => (
                   <div
                     key={char.id}
                     onClick={() => navigate(`/characters/${char.id}`)}
@@ -900,19 +949,36 @@ function UnifiedDashboard({ username, onLogout }) {
 
             {/* Campaign List */}
             {campaigns.length > 0 && (
-              <input
-                data-testid="campaign-search-input"
-                type="text"
-                placeholder="Search campaigns by name, setting, or description…"
-                value={campaignSearch}
-                onChange={e => setCampaignSearch(e.target.value)}
-                style={{
-                  width: '100%', marginBottom: 12,
-                  background: theme.bg.surface, color: theme.text.primary,
-                  border: `1px solid ${theme.border}`, borderRadius: 8,
-                  padding: '10px 14px', fontSize: 13, outline: 'none',
-                }}
-              />
+              <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                <input
+                  data-testid="campaign-search-input"
+                  type="text"
+                  placeholder="Search campaigns by name, setting, or description…"
+                  value={campaignSearch}
+                  onChange={e => setCampaignSearch(e.target.value)}
+                  style={{
+                    flex: 1, minWidth: 220,
+                    background: theme.bg.surface, color: theme.text.primary,
+                    border: `1px solid ${theme.border}`, borderRadius: 8,
+                    padding: '10px 14px', fontSize: 13, outline: 'none',
+                  }}
+                />
+                <select
+                  data-testid="campaign-sort"
+                  value={campaignSort}
+                  onChange={e => setCampaignSort(e.target.value)}
+                  style={{
+                    minWidth: 150,
+                    background: theme.bg.surface, color: theme.text.primary,
+                    border: `1px solid ${theme.border}`, borderRadius: 8,
+                    padding: '10px 14px', fontSize: 13, outline: 'none', cursor: 'pointer'
+                  }}
+                >
+                  <option value="recent">Sort: Recent</option>
+                  <option value="name">Sort: Name (A-Z)</option>
+                  <option value="edition">Sort: Edition (2024→2014)</option>
+                </select>
+              </div>
             )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {campaigns.length === 0 ? (
@@ -967,13 +1033,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   )}
                 </div>
               ) : (
-                campaigns
-                  .filter(c => !campaignSearch || (
-                    (c.name || '').toLowerCase().includes(campaignSearch.toLowerCase()) ||
-                    (c.setting || '').toLowerCase().includes(campaignSearch.toLowerCase()) ||
-                    (c.description || '').toLowerCase().includes(campaignSearch.toLowerCase())
-                  ))
-                  .map((campaign, index) => (
+                displayCampaigns.map((campaign, index) => (
                   <div
                     key={campaign.id}
                     onClick={() => navigate(`/campaign/${campaign.id}`)}

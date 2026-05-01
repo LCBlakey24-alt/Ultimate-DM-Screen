@@ -14,6 +14,7 @@ import PricingPage from '@/components/PricingPage';
 import AdminPage from '@/components/AdminPage';
 import LandingPage from '@/components/LandingPage';
 import AccountSettings from '@/components/AccountSettings';
+import ImpersonationBanner from '@/components/admin/ImpersonationBanner';
 import CharacterBuilder from '@/components/CharacterBuilder';
 import CharacterCreationModePicker from '@/components/CharacterCreationModePicker';
 import BasicCharacterBuilder from '@/components/BasicCharacterBuilder';
@@ -198,6 +199,7 @@ function App() {
       <BrowserRouter>
         <ThemeProvider>
           <ThemeRouter />
+          <ImpersonationBanner />
           <SubscriptionProvider>
             <KeyboardShortcutsProvider isAuthenticated={isAuthenticated}>
               <Routes>

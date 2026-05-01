@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import {
   ABILITIES,
-  STANDARD_ARRAY,
   MIN_ABILITY_SCORE,
   MAX_ABILITY_SCORE,
   POINT_BUY_TOTAL,
@@ -20,6 +19,7 @@ import {
 import { RACES, CLASSES, BACKGROUNDS, EDITIONS } from "../data/characterRules5e";
 import { getFeatsByEdition } from "../data/levelUpData";
 import { API_BASE } from "../lib/api";
+import AbilitiesStep from "./builder/AbilitiesStep";
 
 const DRAFT_KEY = "rq_character_builder_draft_v2";
 
@@ -346,41 +346,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
     });
   };
 
-  const setMethodAndStats = (nextMethod) => {
-    setMethod(nextMethod);
-    if (nextMethod === "standard") {
-      const assigned = {};
-      ABILITIES.forEach((a, i) => { assigned[a] = STANDARD_ARRAY[i]; });
-      setStats(assigned);
-    } else if (nextMethod === "point") {
-      setStats(ABILITIES.reduce((acc, a) => ({ ...acc, [a]: 8 }), {}));
-    } else if (nextMethod === "roll") {
-      const rolled = {};
-      ABILITIES.forEach((a) => {
-        const dice = Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1);
-        dice.sort((x, y) => y - x);
-        rolled[a] = dice[0] + dice[1] + dice[2];
-      });
-      setStats(rolled);
-    }
-  };
-
-  const handleStatChange = (a, v) => {
-    setStats(prev => ({ ...prev, [a]: clampScore(v) }));
-  };
-
-  const handleAssignedScoreChange = (ability, nextValue) => {
-    const value = Number(nextValue);
-    setStats(prev => {
-      const swappedAbility = ABILITIES.find(a => a !== ability && Number(prev[a]) === value);
-      if (!swappedAbility) return { ...prev, [ability]: value };
-      return {
-        ...prev,
-        [ability]: value,
-        [swappedAbility]: prev[ability]
-      };
-    });
-  };
+  // Ability score allocation now lives in builder/AbilitiesStep.js —
+  // it owns the drag-and-drop pool, cinematic roll animation, and point-buy steppers.
 
   // Step validation
   const canAdvance = () => {
@@ -978,122 +945,6 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
     </div>
   );
 
-  const renderAbilitiesStep = () => (
-    <div>
-      <StepHeader icon={Dices} title="Set Ability Scores" subtitle="Pick a method and assign your scores" color={theme.sunset.purple} />
-
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        {[
-          { key: 'standard', label: 'Standard Array', desc: '15, 14, 13, 12, 10, 8' },
-          { key: 'point', label: 'Point Buy', desc: `${POINT_BUY_TOTAL} points to spend` },
-          { key: 'roll', label: 'Roll 4d6', desc: 'Drop lowest, randomized' }
-        ].map(m => (
-          <button
-            key={m.key} type="button" onClick={() => setMethodAndStats(m.key)}
-            data-testid={`method-${m.key}`}
-            style={{
-              flex: 1, minWidth: '160px', padding: '10px 12px',
-              background: method === m.key ? theme.sunset.gold : 'rgba(212, 160, 23, 0.06)',
-              border: method === m.key ? `1px solid ${theme.sunset.gold}` : `1px solid ${theme.border}`,
-              borderRadius: '10px', color: theme.text.primary, cursor: 'pointer',
-              textAlign: 'left', transition: 'all 0.2s'
-            }}>
-            <div style={{ fontWeight: 600, fontSize: '14px' }}>{m.label}</div>
-            <div style={{ fontSize: '11px', opacity: 0.85 }}>{m.desc}</div>
-          </button>
-        ))}
-      </div>
-
-      {method === 'point' && (
-        <div style={{ marginBottom: '16px', padding: '10px 14px', borderRadius: '10px',
-          background: pointBuyRemaining === 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-          color: pointBuyRemaining === 0 ? '#10B981' : '#F59E0B', fontWeight: 600, fontSize: '14px'
-        }}>
-          Points: {pointBuySpent} / {POINT_BUY_TOTAL} ({pointBuyRemaining} remaining)
-        </div>
-      )}
-
-      {method === 'roll' && (
-        <button type="button" onClick={() => setMethodAndStats('roll')}
-          style={{ marginBottom: '16px', padding: '8px 14px', background: 'rgba(212, 160, 23, 0.2)',
-            border: `1px solid ${theme.border}`, borderRadius: '8px', color: theme.text.primary,
-            cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Dices size={14} /> Re-roll All
-        </button>
-      )}
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
-        {ABILITIES.map(ability => {
-          const base = stats[ability] || 10;
-          const bonus = asiBonus[ability] || 0;
-          const final = Number(base) + bonus;
-          const mod = Math.floor((final - 10) / 2);
-          const isPrimary = classData?.primaryAbility === ability;
-          return (
-            <div key={ability} style={{
-              ...abilityCardStyle,
-              border: isPrimary ? `2px solid ${theme.sunset.gold}` : `1px solid ${theme.border}`,
-              boxShadow: isPrimary ? '0 0 0 2px rgba(245, 158, 11, 0.15)' : 'none'
-            }}>
-              <div style={{ fontSize: '11px', color: isPrimary ? theme.sunset.gold : theme.text.muted, marginBottom: '6px', letterSpacing: '1px', fontWeight: 600 }}>
-                {formatAbility(ability)} {isPrimary && '★'}
-              </div>
-              <input
-                type="number" min={MIN_ABILITY_SCORE} max={MAX_ABILITY_SCORE}
-                value={base} disabled={method === 'standard' || method === 'roll'}
-                onChange={e => handleStatChange(ability, e.target.value)}
-                data-testid={`ability-${ability}`}
-                style={{
-                  width: '70px', padding: '8px',
-                  background: 'rgba(15, 10, 30, 0.8)', border: `1px solid ${theme.border}`,
-                  borderRadius: '8px', color: theme.text.primary, fontSize: '20px',
-                  fontWeight: 'bold', textAlign: 'center', outline: 'none',
-                  display: method === 'point' ? 'block' : 'none'
-                }} />
-              {(method === 'standard' || method === 'roll') && (
-                <select
-                  value={base}
-                  onChange={e => handleAssignedScoreChange(ability, e.target.value)}
-                  data-testid={`ability-assign-${ability}`}
-                  style={{
-                    width: '84px', padding: '8px',
-                    background: 'rgba(15, 10, 30, 0.8)', border: `1px solid ${theme.border}`,
-                    borderRadius: '8px', color: theme.text.primary, fontSize: '18px',
-                    fontWeight: 'bold', textAlign: 'center', outline: 'none'
-                  }}
-                >
-                  {Array.from(new Set(ABILITIES.map(a => Number(stats[a])))).sort((a, b) => b - a).map(score => (
-                    <option key={score} value={score}>{score}</option>
-                  ))}
-                </select>
-              )}
-              {bonus !== 0 && (
-                <div style={{ fontSize: '11px', color: '#10B981', marginTop: '4px', fontWeight: 600 }}>
-                  + {bonus} = {final}
-                </div>
-              )}
-              <div style={{ marginTop: '6px', fontSize: '15px', fontWeight: 700, color: mod >= 0 ? theme.sunset.gold : '#EF4444' }}>
-                {formatModifier(mod)}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {className && (
-        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(15, 10, 30, 0.5)', border: `1px solid ${theme.border}` }}>
-          <div style={{ fontSize: '12px', color: theme.text.muted, marginBottom: '10px', letterSpacing: '0.5px', textTransform: 'uppercase', fontWeight: 600 }}>Level 1 Combat Preview</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '10px' }}>
-            <PreviewStat icon={Heart} label="HP" value={derivedHp} color="#EF4444" />
-            <PreviewStat icon={Shield} label="AC" value={derivedAc} color={theme.sunset.purple} />
-            <PreviewStat icon={Zap} label="Init" value={formatModifier(dexMod)} color={theme.sunset.pink} />
-            <PreviewStat icon={User} label="Speed" value={`${raceData?.speed || 30}ft`} color={theme.sunset.gold} />
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
   const renderSkillsStep = () => (
     <div>
       <StepHeader icon={Award} title="Choose Your Skills" subtitle={`Pick ${classSkillCount} class skill${classSkillCount === 1 ? '' : 's'} (background already grants others)`} color={theme.sunset.pink} />
@@ -1552,7 +1403,17 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             {stepId === 'race' && renderRaceStep()}
             {stepId === 'class' && renderClassStep()}
             {stepId === 'background' && renderBackgroundStep()}
-            {stepId === 'abilities' && renderAbilitiesStep()}
+            {stepId === 'abilities' && (
+              <AbilitiesStep
+                method={method}
+                setMethod={setMethod}
+                stats={stats}
+                setStats={setStats}
+                asiBonus={asiBonus}
+                classData={classData}
+                raceData={raceData}
+              />
+            )}
             {stepId === 'skills' && renderSkillsStep()}
             {stepId === 'spells' && renderSpellsStep()}
             {stepId === 'equipment' && renderEquipmentStep()}
@@ -1792,9 +1653,4 @@ const traitChipStyle = {
 const detailHeaderStyle = {
   fontSize: '11px', color: theme.text.muted, marginBottom: '6px',
   letterSpacing: '0.5px', textTransform: 'uppercase', fontWeight: 600
-};
-const abilityCardStyle = {
-  background: 'rgba(15, 10, 30, 0.5)',
-  border: `1px solid ${theme.border}`,
-  borderRadius: '10px', padding: '12px', textAlign: 'center'
 };
