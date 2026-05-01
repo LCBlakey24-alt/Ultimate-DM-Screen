@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Zap, Dices, Users, Swords, BookOpen, Clock, Sparkles,
-  Volume2, Map, FileText, ChevronRight, ChevronLeft, Settings
+  Volume2, Map, FileText, ChevronRight, ChevronLeft, Settings, Sword
 } from 'lucide-react';
 
 // Quick access panel for fast session control
@@ -274,6 +274,7 @@ export default function LiveSessionMode({
             {[
               { id: 'combat', icon: Swords, label: 'Combat' },
               { id: 'npcs', icon: Users, label: 'NPCs' },
+              { id: 'equipment', icon: Sword, label: 'Equipment' },
               { id: 'notes', icon: FileText, label: 'Notes' },
               { id: 'sound', icon: Volume2, label: 'Soundboard' },
             ].map(nav => (

@@ -8,7 +8,6 @@ import {
   Loader, LogOut, Play, Dices, Coins, Swords, ArrowRight, Package, FileText, UserPlus, Shuffle, Skull, Wand2, PlusCircle, Zap, Compass, UserCircle, Music, Target, Volume2, Link2, Sparkles,
   ChevronDown, ChevronRight, BarChart3
 } from 'lucide-react';
-import DiceRoller from '@/components/DiceRoller';
 import DiceRoller3D from '@/components/ui/DiceRoller3D';
 import DiceRollHistory from './DiceRollHistory';
 import LootGenerator from '@/components/LootGenerator';
@@ -33,6 +32,7 @@ import AICoGM from '@/components/gm/AICoGM';
 import AISessionPlanner from '@/components/gm/AISessionPlanner';
 import SessionTimer from '@/components/gm/SessionTimer';
 import EventSystem from '@/components/gm/EventSystem';
+import EquipmentReferenceTab from '@/components/gm/EquipmentReferenceTab';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -435,8 +435,8 @@ function GMScreen({ username }) {
     ]},
     { group: 'REFERENCE', color: '#F59E0B', tabs: [
       { id: 'tables', icon: Wand2, label: 'Tables' },
+      { id: 'equipment', icon: Sword, label: 'Equipment' },
       { id: 'loot', icon: Coins, label: 'Loot' },
-      { id: 'dice', icon: Dices, label: 'Dice' },
     ]},
     { group: 'SESSION', color: '#10B981', tabs: [
       { id: 'notes', icon: FileText, label: 'Notes' },
@@ -684,16 +684,6 @@ function GMScreen({ username }) {
             <NpcsTab theme={theme} campaignId={campaignId} nameRace={nameRace} setNameRace={setNameRace} nameGender={nameGender} setNameGender={setNameGender} generatedName={generatedName} generateRandomName={generateRandomName} saveNameAsNPC={saveNameAsNPC} savingNPC={savingNPC} savedNames={savedNames} />
           )}
 
-          {/* DICE TAB */}
-          {activeTab === 'dice' && (
-            <div>
-              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Dices size={24} style={{ color: theme.accent.primary }} /> Dice Roller
-              </h2>
-              <DiceRoller />
-            </div>
-          )}
-
           {/* MONSTER LOOKUP TAB - Combined with Custom Creatures */}
           {activeTab === 'monsters' && (
             <MonstersTab theme={theme} campaignId={campaignId} />
@@ -715,6 +705,16 @@ function GMScreen({ username }) {
                 setSessionNotes(prev => [...prev, newNote]);
                 toast.success('Added to session notes!');
               }} />
+            </div>
+          )}
+
+          {/* EQUIPMENT REFERENCE TAB */}
+          {activeTab === 'equipment' && (
+            <div>
+              <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: '22px', color: theme.text.primary, fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Sword size={24} style={{ color: theme.accent.gm }} /> Equipment Reference
+              </h2>
+              <EquipmentReferenceTab />
             </div>
           )}
 
