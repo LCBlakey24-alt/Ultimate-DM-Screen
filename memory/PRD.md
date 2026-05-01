@@ -287,8 +287,35 @@ Player flexibility + AI-assisted homebrew. All 16/16 backend tests PASS, full UI
 - **Phase C++** — AI Rook Advisor sidebar inside Character Builder + Homebrew Workshop (chat panel offering balance/flavor advice at each step). GM-side Live Play "Homebrew Reference" tab + per-campaign approval flow. Monster homebrew form.
 - **Phase D** — Player Handouts (GM → player push, polling MVP) + Travel Grid Overlay on existing WorldMapTab.
 
+## Phase 33 — SRD Equipment Reference Tab + GM Simplification (May 1 / Iter 94)
+Live-play-ready equipment tables + a small GM-side declutter.
+
+**New Equipment Reference tab** (`/components/gm/EquipmentReferenceTab.js` + `/data/srdEquipment.js`):
+- 4 sections (`eq-section-*`): **Weapons** · **Armor & Shields** · **Adventuring Gear** · **Properties** (glossary)
+- Weapons subdivided by SRD 5.1 tables: Simple Melee (10) / Simple Ranged (4) / Martial Melee (18) / Martial Ranged (5) — 37 weapons total with cost, damage, weight, properties
+- Armor: Light (3) / Medium (5) / Heavy (4) / Shields (1) with AC, Str-required, Stealth-disadvantage, don time
+- Adventuring Gear: 57 SRD items with cost + weight
+- **7 filter chips** on the Weapons table: All / Simple / Martial / Finesse / Thrown / Two-Handed / Light — case-insensitive substring match on the `properties[]`
+- Global search box searches name, damage type, and properties
+- Wired into both `GMScreen.js` (new REFERENCE tab) and `LiveSessionMode.js` (Quick Nav list)
+- 100% SRD 5.1 / OGL / Creative Commons — no WotC material
+
+**GM Simplification**:
+- Removed redundant `Dice` tab from GMScreen REFERENCE group. Rationale: the global `FloatingDiceRoller` (bottom-right, visible everywhere) + the always-visible `DiceRollHistory` at the bottom of GMScreen already cover that functionality. The dedicated tab was purely duplicative.
+- Dropped the unused `DiceRoller` import that went with it.
+
+**Tests (iter 94)**: frontend-only iteration, 100% green, zero console errors. Equipment tab verified across all 4 sections + all 7 filter chips + search. Regression confirmed all 13 remaining GM tabs still render. See `/app/test_reports/iteration_94.json`.
+
+## Backlog
+- **AI Rook Advisor sidebar** inside Character Builder + Homebrew Workshop (Claude Sonnet chat panel reading current draft state for balance + flavor suggestions).
+- **GM-side Homebrew flow** — per-campaign approval toggle + Live Play "Homebrew Reference" tab.
+- **Mount `PortraitGenerator`** on NPC / Monster / Inventory Item editors.
+- **Player Handouts** (polling MVP) and **Travel Grid Overlay**.
+- **UnifiedDashboard refactor** (1376 LOC → Header / PlayerSection / CampaignSection / Modals).
+- Further GM tidy: consider folding `NPC Network` into `NPCs` as a sub-toggle (reduces sidebar density).
+
 ## Test iterations
-77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93 (Phase 32 — Custom Ability mode + Homebrew Workshop with .docx + AI parsing shipped 100% green)
+77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94 (Phase 33 — Equipment Reference + GM simplification: 100% frontend green)
 
 ---
 *Last updated: May 1, 2026*
