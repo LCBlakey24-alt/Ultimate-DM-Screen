@@ -20,6 +20,7 @@ import { RACES, CLASSES, BACKGROUNDS, EDITIONS } from "../data/characterRules5e"
 import { getFeatsByEdition } from "../data/levelUpData";
 import { API_BASE } from "../lib/api";
 import AbilitiesStep from "./builder/AbilitiesStep";
+import PortraitGenerator from "./builder/PortraitGenerator";
 
 const DRAFT_KEY = "rq_character_builder_draft_v2";
 
@@ -1207,10 +1208,13 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       </div>
 
       <div style={{ marginBottom: '20px' }}>
-        <label style={labelStyle}>Portrait URL (optional)</label>
-        <input
-          type="url" value={portrait} onChange={e => setPortrait(e.target.value)}
-          placeholder="https://..." style={inputStyle} data-testid="portrait-input"
+        <PortraitGenerator
+          character={{
+            race, subrace, className, subclass, background, alignment,
+            description: backstory
+          }}
+          portrait={portrait}
+          onChange={setPortrait}
         />
       </div>
 

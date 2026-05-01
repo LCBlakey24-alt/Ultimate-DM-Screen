@@ -622,6 +622,8 @@ async def patch_character(
         'exhaustion_level', 'backstory',
         # Personality roleplay fields
         'personality_trait', 'ideal', 'bond', 'flaw',
+        # Portrait (base64 data URI or URL — AI-generated or uploaded)
+        'portrait_url',
         # Spell management (Learn Spell / Prepare Spell on sheet)
         'cantrips_known', 'spells_known', 'spells_prepared',
         'used_spell_slots',
