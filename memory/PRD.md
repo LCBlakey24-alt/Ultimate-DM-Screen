@@ -190,8 +190,42 @@ Executed every follow-up from Iter 88 plus one new P2 feature:
 
 **Tests**: backend 10/10 pytest (admin list/patch/clone/delete, core-delete blocked, preflight regression, 3 ai.py post-dedupe endpoints, personality round-trip). Frontend 9/9 Playwright (Templates tab, 24 rows, filters, toggle, Personality testids, preflight skeleton, Iter 88 regression). See `/app/test_reports/iteration_89.json` + `/app/backend/tests/test_iter89_audit_batch5.py`.
 
+## Phase 30 — Ability Score UX Overhaul + Home Sort + Admin Users/CSV/Impersonate (Apr 30 / Iter 90-91)
+Player and admin polish — all shipped and verified end-to-end:
+
+**Ability Score UX Overhaul** (`CharacterBuilder.js` → new `/components/builder/AbilitiesStep.js`, ~600 LOC):
+- **Point Buy**: compact `[–] value [+]` single-step stepper buttons (`stat-dec-*` / `stat-inc-*`) per ability; disables at floor 8, ceiling 15, or when next-tier cost exceeds budget. `point-buy-remaining` pill updates live.
+- **Roll 4d6**: cinematic **sequential** dice animation (~1.5s) — each of 6 dice flickers through ~5 random faces then locks in, one after the other. Renders inside `roll-animation` container. `roll-dice-btn` re-rolls, `roll-reset-btn` un-assigns all values back to the pool.
+- **Drag-and-Drop assignment** (pure HTML5, no library — same pattern as CombatPage): pool of `pool-chip-*` items, drop onto `ability-slot-*`; slot→slot swaps; slot→pool unassigns; each assigned chip also has a `×` button (`slot-clear-*`) for one-click unassign. `score-pool` container.
+- **Standard Array** uses the same pool/drag UI (no more dropdowns).
+- Live HP/AC/Init preview shows `—` until every slot is assigned — prevents confusion with partial values.
+
+**Home Page Sort Controls** (`UnifiedDashboard.js`):
+- `character-sort` and `campaign-sort` `<select>` dropdowns alongside the existing search inputs. 
+- Character options: Recent, Name, Level (High→Low), Class. Campaign options: Recent, Name, Edition (2024→2014).
+- Preference persists in `localStorage` under `rq.charSort` / `rq.campSort` and survives reload.
+- Refactored to `displayCharacters` / `displayCampaigns` `useMemo` pipelines (search + sort in one flow).
+
+**Admin — Users Tab + CSV Export + Impersonation**:
+- Backend (`routes/admin.py`):
+  - `verify_admin` made case-insensitive so `LCBlakey24` matches `lcblakey24`.
+  - `POST /api/admin/users/{username}/impersonate` — issues a JWT for the target via `create_token()`; supports username or email lookup; admin-only.
+  - `GET /api/admin/export/users.csv` — streams users CSV with header: `username,email,tier,tier_name,subscription_status,lifetime_access,ai_calls_this_month,created_at`.
+  - `GET /api/admin/export/campaigns.csv` — streams campaigns CSV with header: `id,name,dm_user_id,system,rules_edition,setting,player_count,created_at,updated_at`.
+  - Tiny `_csv_escape` helper handles commas/quotes/newlines.
+- Frontend (new files):
+  - `/components/admin/AdminUsersTab.js` — filterable user table with `admin-user-search`, `export-users-csv-btn`, `export-campaigns-csv-btn`, `user-row-{username}` rows, and per-row `impersonate-{username}` button. Uses `dm_token` / `dm_username` keys consistent with the rest of the app.
+  - `/components/admin/ImpersonationBanner.js` — fixed top banner with `impersonation-banner` + `stop-impersonating-btn`. Mounted globally in `App.js`. Reads `rq_admin_token_stash` from sessionStorage; Stop restores admin token and redirects to `/admin`.
+- New tab `admin-tab-users` added to `AdminPage.js` rendering `AdminUsersTab`.
+
+**Tests**: backend 17/17 pytest in `/app/backend/tests/test_iter90_ability_admin.py` (auth, admin/check, CSV exports with exact header + data-row assertions + 401/403 paths, impersonate exact-case + case-insensitive + 404/403/401 paths, regression for /characters /campaigns /admin/users /level-up-options). Frontend e2e (iter 91) verified the full impersonation flow: token swap, banner appearance, sessionStorage stash, stop-impersonating restore, and redirect. Home sort persistence + Admin Users UI already verified in iter 90. See `/app/test_reports/iteration_90.json` + `/app/test_reports/iteration_91.json`.
+
+**Known follow-ups (testing agent flagged, low priority):**
+- `AdminUsersTab.js` still passes `Authorization` headers manually — the App.js axios interceptor already does this; redundant but harmless.
+- `ImpersonationBanner` reads sessionStorage on render; does not listen for `storage` events. Multi-tab state can briefly disagree until a reload. Non-blocking.
+
 ## Test iterations
-77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89 (Phase 29 — 100% backend + frontend, Admin templates editor + personality prompts shipped)
+77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91 (Phase 30 — Ability Score UX overhaul, Home sort, Admin CSV + Impersonation: 100% backend + frontend)
 
 ---
 *Last updated: April 30, 2026*
