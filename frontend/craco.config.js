@@ -1,12 +1,22 @@
 // craco.config.js
 const path = require("path");
-require("dotenv").config();
+const fs = require("fs");
+
+// Detect if we're in a CI/production build environment
+const isCI = process.env.CI === "true" || process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
+
+// Safely load dotenv if .env file exists
+const envPath = path.resolve(__dirname, ".env");
+if (fs.existsSync(envPath)) {
+  require("dotenv").config();
+}
 
 // Environment variable overrides
+// Disable plugins in CI/production to avoid build issues
 const config = {
-  disableHotReload: process.env.DISABLE_HOT_RELOAD === "true",
-  enableVisualEdits: process.env.REACT_APP_ENABLE_VISUAL_EDITS === "true",
-  enableHealthCheck: process.env.ENABLE_HEALTH_CHECK === "true",
+  disableHotReload: process.env.DISABLE_HOT_RELOAD === "true" || isCI,
+  enableVisualEdits: process.env.REACT_APP_ENABLE_VISUAL_EDITS === "true" && !isCI,
+  enableHealthCheck: process.env.ENABLE_HEALTH_CHECK === "true" && !isCI,
 };
 
 // Conditionally load visual editing modules only if enabled
@@ -14,8 +24,13 @@ let babelMetadataPlugin;
 let setupDevServer;
 
 if (config.enableVisualEdits) {
-  babelMetadataPlugin = require("./plugins/visual-edits/babel-metadata-plugin");
-  setupDevServer = require("./plugins/visual-edits/dev-server-setup");
+  try {
+    babelMetadataPlugin = require("./plugins/visual-edits/babel-metadata-plugin");
+    setupDevServer = require("./plugins/visual-edits/dev-server-setup");
+  } catch (err) {
+    console.warn("Warning: Could not load visual-edits plugins:", err.message);
+    config.enableVisualEdits = false;
+  }
 }
 
 // Conditionally load health check modules only if enabled
@@ -24,9 +39,14 @@ let setupHealthEndpoints;
 let healthPluginInstance;
 
 if (config.enableHealthCheck) {
-  WebpackHealthPlugin = require("./plugins/health-check/webpack-health-plugin");
-  setupHealthEndpoints = require("./plugins/health-check/health-endpoints");
-  healthPluginInstance = new WebpackHealthPlugin();
+  try {
+    WebpackHealthPlugin = require("./plugins/health-check/webpack-health-plugin");
+    setupHealthEndpoints = require("./plugins/health-check/health-endpoints");
+    healthPluginInstance = new WebpackHealthPlugin();
+  } catch (err) {
+    console.warn("Warning: Could not load health-check plugins:", err.message);
+    config.enableHealthCheck = false;
+  }
 }
 
 const webpackConfig = {
