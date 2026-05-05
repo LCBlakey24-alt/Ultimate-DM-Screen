@@ -20,19 +20,17 @@ import { CLASS_RESOURCES, getResourceMax, getRestoreType } from '../data/classRe
 import DiceRollFlicker from './DiceRollFlicker';
 import DiceRollHistory from './DiceRollHistory';
 import { getConditionRollEffect, getConditionIndicator, CONDITION_EFFECTS } from '../data/conditionEffects';
-import { getClassAccent } from '../lib/theme';
+import { getClassAccent, theme as globalTheme } from '../lib/theme';
+import CharacterHeader from './CharacterHeader';
+import CharacterLeftPanel from './CharacterLeftPanel';
+import CharacterSkillsPanel from './CharacterSkillsPanel';
+import CharacterTabs from './CharacterTabs';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Simplified theme (performance-first): dark blue + gold accents
-const theme = {
-  bg: { primary: '#0A1628', surface: '#0F2440', elevated: '#14304F' },
-  accent: { primary: '#D4A017', secondary: '#D4A017', highlight: '#F5C542' },
-  text: { primary: '#F8FAFC', secondary: '#94A3B8', muted: '#64748B' },
-  border: 'rgba(212, 160, 23, 0.35)',
-  glow: 'none'
-};
+// Use global theme from lib/theme.js so theme changes cascade
+const theme = globalTheme;
 
 const CHARACTER_TABS = [
   { id: 'overview', label: 'Overview', icon: Sparkles },
@@ -867,174 +865,24 @@ export default function CharacterSheetFull() {
       <div style={bottomRightGlow} />
       
       {/* Header - Fixed (Identity + Vitals Bar) */}
-      <div className="character-sheet-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '8px', flexShrink: 0, position: 'relative', zIndex: 1 }}>
-        <button onClick={() => navigate('/home')} data-testid="sheet-back-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(212, 160, 23, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '8px 14px', color: theme.text.primary, cursor: 'pointer', flexShrink: 0 }}>
-          <ChevronLeft size={18} /> Dashboard
-        </button>
-
-        {/* Identity */}
-        <div className="character-sheet-identity" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-          {(() => { const accent = getClassAccent(character); return (
-          <div style={{ position: 'relative' }}>
-            {character.portrait_url ? (
-              <img src={character.portrait_url} alt="" style={{ width: '46px', height: '46px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${theme.accent.primary}`, boxShadow: `0 0 0 1px ${accent.tint}` }} onError={e => { e.target.style.display = 'none'; }} />
-            ) : (
-              <div className="portrait-fallback" style={{ width: '46px', height: '46px', borderRadius: '50%', background: theme.bg.surface, border: `2px solid ${theme.accent.primary}`, boxShadow: `0 0 0 1px ${accent.tint}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <User size={24} color="#fff" />
-              </div>
-            )}
-            {/* Class accent crest dot */}
-            <span data-testid="class-accent-dot"
-              title={accent.label}
-              style={{
-                position: 'absolute', bottom: -2, right: -2,
-                width: 14, height: 14, borderRadius: '50%',
-                background: accent.icon,
-                border: `2px solid ${theme.bg.primary}`,
-                boxShadow: `0 0 0 1px ${accent.tint}`
-              }} />
-          </div>
-          ); })()}
-          <div style={{ textAlign: 'left' }}>
-            <h1 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '1.18rem', margin: 0, color: theme.accent.primary }}>
-              {character.name}
-            </h1>
-            <div style={{ color: theme.text.secondary, fontSize: '12px' }}>
-              {character.race}{character.subrace ? ` (${character.subrace})` : ''} •{' '}
-              {(() => {
-                const ml = character.multiclass_levels || character.class_levels;
-                if (ml && Object.keys(ml).length > 1) {
-                  return Object.entries(ml).map(([cls, lvl]) => `${cls} ${lvl}`).join(' / ');
-                }
-                return `${character.character_class}${character.subclass ? ` (${character.subclass})` : ''} • Lv ${character.level || 1}`;
-              })()}
-            </div>
-          </div>
-        </div>
-
-        {/* Vitals Bar - Always Visible */}
-        <div data-testid="vitals-bar" className="character-sheet-vitals" style={{ display: 'flex', gap: '5px', flex: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {/* HP */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '5px 8px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)', minWidth: '82px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: theme.text.muted, fontWeight: 600 }}><Heart size={11} color="#EF4444" /> HP</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-              <button onClick={() => handleHpChange(-1)} data-testid="hp-decrease" style={{ width: '20px', height: '20px', borderRadius: '4px', background: 'rgba(239, 68, 68, 0.2)', border: 'none', color: '#EF4444', cursor: 'pointer', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>−</button>
-              <span data-testid="current-hp" style={{ fontSize: '15px', fontWeight: 700, color: currentHp <= maxHp / 4 ? '#EF4444' : '#fff', minWidth: '52px', textAlign: 'center' }}>
-                {currentHp}/{maxHp}{tempHp > 0 && <span style={{ color: '#10B981', fontSize: '11px' }}> +{tempHp}</span>}
-              </span>
-              <button onClick={() => handleHpChange(1)} data-testid="hp-increase" style={{ width: '20px', height: '20px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.2)', border: 'none', color: '#10B981', cursor: 'pointer', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
-            </div>
-          </div>
-          {/* AC */}
-          <VitalChip icon={Shield} label="AC" value={ac} color={theme.accent.primary} testId="vital-ac" />
-          {/* Initiative */}
-          <VitalChip icon={Zap} label="INIT" value={formatModifier(initiative)} color={theme.accent.highlight} onClick={() => rollDice('1d20', initiative, 'Initiative')} testId="vital-init" />
-          {/* Speed */}
-          <VitalChip icon={Wind} label="SPD" value={`${speed}ft`} color={theme.accent.secondary} testId="vital-speed" />
-          {/* Inspiration */}
-          <button
-            onClick={() => handleUpdateCharacter({ inspiration: !character.inspiration })}
-            data-testid="inspiration-toggle"
-            title="Toggle Inspiration"
-            style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '6px 10px', borderRadius: '10px',
-              background: character.inspiration ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-              border: `1px solid ${character.inspiration ? 'rgba(245, 158, 11, 0.5)' : theme.border}`,
-              cursor: 'pointer', minWidth: '60px'
-            }}>
-            <Sparkles size={14} color={character.inspiration ? '#F59E0B' : theme.text.muted} />
-            <div style={{ fontSize: '9px', color: character.inspiration ? '#F59E0B' : theme.text.muted, fontWeight: 600, letterSpacing: '0.5px', marginTop: '2px' }}>INSP</div>
-          </button>
-          {/* "Spells not prepared" warning for prepared casters with 0 prepped spells */}
-          {(() => {
-            const preparedClasses = ['Cleric', 'Druid', 'Wizard', 'Paladin', 'Artificer'];
-            const isPrepared = canUseSpells && preparedClasses.includes(character.character_class);
-            const knownCount = (character.spells_known || character.spells_prepared || character.spells || []).length;
-            const preppedCount = (character.prepared_spell_names || []).length;
-            if (!isPrepared || knownCount === 0 || preppedCount > 0) return null;
-            return (
-              <button
-                data-testid="spells-not-prepared-warning"
-                onClick={() => setActiveTab('spells')}
-                title="Open Spells tab to prepare spells"
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '6px 10px', borderRadius: '10px', cursor: 'pointer',
-                  background: 'rgba(239, 68, 68, 0.12)',
-                  border: '1px solid rgba(239, 68, 68, 0.40)',
-                  color: '#F87171', fontSize: 11, fontWeight: 700, letterSpacing: 0.4,
-                }}>
-                <span style={{ fontSize: 13 }}>!</span> SPELLS NOT PREPARED
-              </button>
-            );
-          })()}
-          {/* Active Conditions chips — surfaces blinded/paralyzed/etc on the sheet */}
-          {(activeConditions.length > 0 || exhaustion > 0 || isIncapacitated) && (
-            <div data-testid="active-conditions-strip" style={{
-              display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap',
-              padding: '4px 8px', borderRadius: '10px',
-              background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)',
-              maxWidth: '320px'
-            }}>
-              {activeConditions.map(cond => {
-                const meta = CONDITION_EFFECTS[cond];
-                if (!meta) return null;
-                return (
-                  <span key={cond} title={meta.notes}
-                    data-testid={`active-condition-${cond}`}
-                    style={{
-                      fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px',
-                      background: `${meta.color}25`, color: meta.color,
-                      border: `1px solid ${meta.color}50`, letterSpacing: 0.4,
-                      textTransform: 'uppercase'
-                    }}>
-                    {meta.label}
-                  </span>
-                );
-              })}
-              {exhaustion > 0 && (
-                <span title={`Exhaustion ${exhaustion}/6 — ${exhaustion >= 6 ? 'Death' : 'Cumulative penalties'}`}
-                  data-testid="active-condition-exhaustion"
-                  style={{
-                    fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px',
-                    background: 'rgba(146, 64, 14, 0.25)', color: '#FBBF24',
-                    border: '1px solid rgba(146, 64, 14, 0.5)', letterSpacing: 0.4,
-                    textTransform: 'uppercase'
-                  }}>
-                  EXHAUSTION {exhaustion}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className="character-sheet-header-actions" style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-          {(character.level || 1) < 20 && (
-            <button 
-              onClick={() => setShowLevelUpWizard(true)} 
-              data-testid="level-up-btn"
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '6px', 
-                background: theme.accent.primary, 
-                border: `1px solid ${theme.accent.primary}`, 
-                borderRadius: '8px', 
-                padding: '8px 16px', 
-                color: theme.bg.primary, 
-                cursor: 'pointer',
-                fontWeight: '500',
-                fontSize: '14px'
-              }}
-            >
-              <ArrowUp size={16} /> Level Up
-            </button>
-          )}
-          <button onClick={() => navigate(`/characters/${characterId}/edit`)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(212, 160, 23, 0.2)', border: `1px solid ${theme.border}`, borderRadius: '10px', padding: '8px 16px', color: theme.text.primary, cursor: 'pointer' }}>
-            <Edit3 size={16} /> Edit
-          </button>
-        </div>
-      </div>
+      <CharacterHeader
+        character={character}
+        theme={theme}
+        navigate={navigate}
+        currentHp={currentHp}
+        maxHp={maxHp}
+        tempHp={tempHp}
+        handleHpChange={handleHpChange}
+        handleTempHpChange={handleTempHpChange}
+        initiative={initiative}
+        ac={ac}
+        speed={speed}
+        setShowLevelUpWizard={setShowLevelUpWizard}
+        rollDice={rollDice}
+        setActiveTab={setActiveTab}
+        canUseSpells={canUseSpells}
+        onToggleInspiration={(val) => handleUpdateCharacter({ inspiration: val })}
+      />
 
       {/* Level Up Wizard Modal */}
       <LevelUpWizard 
@@ -1050,192 +898,15 @@ export default function CharacterSheetFull() {
       {/* Main Content - Fills remaining space */}
       <div className="character-sheet-grid" style={{ flex: 1, display: 'grid', gridTemplateColumns: '168px 172px minmax(0, 1fr)', gap: '8px', overflow: 'hidden', minHeight: 0 }}>
         
-        {/* LEFT COLUMN: Abilities + Saving Throws */}
-        <div className="card-hover" style={{ ...panelStyle, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <h3 style={{ fontFamily: "'Montserrat', sans-serif", color: theme.accent.primary, marginBottom: '6px', fontSize: '0.85rem', flexShrink: 0 }}>Ability Scores</h3>
-          
-          <div style={{ ...scrollBoxStyle, flex: 1 }}>
-            {SAVING_THROWS.map((ability) => {
-              const score = abilities[ability];
-              const mod = getModifier(score);
-              const saveMod = mod + (character.saving_throw_proficiencies?.includes(ability) ? profBonus : 0);
-              const isProficient = character.saving_throw_proficiencies?.includes(ability);
-              const saveContext = `${ABILITY_SHORT[ability].toLowerCase()}_save`;
-              const condIndicator = getConditionIndicator(character?.conditions || [], saveContext, character?.exhaustion_level || 0);
-              const condEffect = getConditionRollEffect(character?.conditions || [], saveContext, 'normal', character?.exhaustion_level || 0);
-              const checkContext = `${ABILITY_SHORT[ability].toLowerCase()}_check`;
-              const checkIndicator = getConditionIndicator(character?.conditions || [], checkContext, character?.exhaustion_level || 0);
-              const checkEffect = getConditionRollEffect(character?.conditions || [], checkContext, 'normal', character?.exhaustion_level || 0);
-              
-              return (
-                <div key={ability} style={{ marginBottom: '4px', background: 'rgba(15, 10, 30, 0.5)', borderRadius: '8px', padding: '6px 8px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
-                    <span style={{ fontSize: '11px', color: theme.text.muted, letterSpacing: '1px', fontWeight: '600' }}>{ABILITY_SHORT[ability]}</span>
-                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: theme.text.primary }}>{score}</span>
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: theme.accent.highlight }}>{formatModifier(mod)}</span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      if (checkEffect.autoFail) {
-                        toast.error(`${ABILITY_SHORT[ability]} Check: AUTO-FAIL (${checkEffect.reason})`);
-                        return;
-                      }
-                      rollDice('1d20', mod, `${ABILITY_SHORT[ability]} Check`, checkEffect.mode);
-                    }}
-                    style={{
-                      width: '100%', padding: '4px 6px', marginBottom: '4px',
-                      background: checkIndicator ? `${checkIndicator.color}14` : 'rgba(212, 175, 55, 0.08)',
-                      border: `1px solid ${checkIndicator ? `${checkIndicator.color}66` : theme.border}`,
-                      borderRadius: '5px', color: theme.text.secondary,
-                      fontSize: '12px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    }}
-                  >
-                    <span>Check</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                      {checkIndicator && (
-                        <span title={checkIndicator.tooltip} style={{ fontSize: '10px', fontWeight: 800, color: checkIndicator.color }}>{checkIndicator.symbol}</span>
-                      )}
-                      <span style={{ fontWeight: '600' }}>{formatModifier(mod)}</span>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (condEffect.autoFail) {
-                        toast.error(`${ABILITY_SHORT[ability]} Save: AUTO-FAIL (${condEffect.reason})`);
-                        return;
-                      }
-                      rollDice('1d20', saveMod, `${ABILITY_SHORT[ability]} Save`, condEffect.mode);
-                    }}
-                    style={{
-                      width: '100%', padding: '4px 6px',
-                      background: isProficient ? 'rgba(245, 158, 11, 0.2)' : 'rgba(212, 175, 55, 0.12)',
-                      border: `1px solid ${isProficient ? 'rgba(245, 158, 11, 0.4)' : theme.border}`,
-                      borderRadius: '5px', color: isProficient ? theme.accent.highlight : theme.text.secondary,
-                      fontSize: '12px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    }}
-                  >
-                    <span>{isProficient && '● '}Save</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                      {condIndicator && (
-                        <span title={condIndicator.tooltip} style={{ fontSize: '10px', fontWeight: 800, color: condIndicator.color }}>{condIndicator.symbol}</span>
-                      )}
-                      <span style={{ fontWeight: '600' }}>{formatModifier(saveMod)}</span>
-                    </div>
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-          
-          {/* Proficiency Bonus - inline */}
-          <div style={{ textAlign: 'center', padding: '6px', background: 'rgba(236, 72, 153, 0.1)', borderRadius: '6px', marginTop: '4px', flexShrink: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '10px', color: theme.text.muted, fontWeight: '500' }}>PROF</span>
-            <span style={{ fontSize: '20px', fontWeight: 'bold', color: theme.accent.secondary }}>+{profBonus}</span>
-          </div>
-        </div>
-
-        {/* MIDDLE COLUMN: Skills */}
-        <div style={{ ...panelStyle, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <h3 style={{ fontFamily: "'Montserrat', sans-serif", color: theme.accent.secondary, marginBottom: '4px', fontSize: '0.85rem', flexShrink: 0 }}>Skills</h3>
-          
-          <div style={{ ...scrollBoxStyle, flex: 1 }}>
-            {SKILLS.map(skill => {
-              const mod = getModifier(abilities[skill.ability]);
-              const isProficient = character.skill_proficiencies?.includes(skill.name);
-              const isExpertise = character.skill_expertise?.includes(skill.name) || character.expertise?.includes(skill.name);
-              const profMultiplier = isExpertise ? 2 : isProficient ? 1 : 0;
-              const bonus = mod + (profBonus * profMultiplier);
-              const skillContext = `${skill.ability.substring(0, 3).toLowerCase()}_check`;
-              const condIndicator = getConditionIndicator(character?.conditions || [], skillContext, character?.exhaustion_level || 0);
-              const condEffect = getConditionRollEffect(character?.conditions || [], skillContext, 'normal', character?.exhaustion_level || 0);
-              const profIcon = isExpertise ? '★' : isProficient ? '●' : '○';
-              const profIconColor = isExpertise ? '#F5C542' : isProficient ? theme.accent.primary : theme.text.muted;
-              
-              return (
-                <button
-                  key={skill.name}
-                  onClick={() => rollDice('1d20', bonus, skill.name, condEffect.mode)}
-                  data-testid={`skill-${skill.name.toLowerCase().replace(' ', '-')}`}
-                  title={isExpertise ? 'Expertise (×2 proficiency)' : isProficient ? 'Proficient' : 'Not proficient'}
-                  style={{
-                    width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    padding: '5px 8px', marginBottom: '1px',
-                    background: isExpertise ? 'rgba(245, 197, 66, 0.15)' : isProficient ? 'rgba(212, 160, 23, 0.10)' : condIndicator ? `${condIndicator.color}08` : 'transparent',
-                    border: isExpertise ? '1px solid rgba(245, 197, 66, 0.45)' : isProficient ? '1px solid rgba(212, 160, 23, 0.30)' : '1px solid transparent',
-                    borderRadius: '4px', color: theme.text.secondary,
-                    fontSize: '12px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
-                  }}
-                >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ color: profIconColor, fontSize: '11px', fontWeight: 800, width: 12, textAlign: 'center' }}>{profIcon}</span>
-                    {skill.name}
-                    {condIndicator && <span title={condIndicator.tooltip} style={{ fontSize: '9px', fontWeight: 800, color: condIndicator.color }}>{condIndicator.symbol}</span>}
-                  </span>
-                  <span style={{ fontWeight: '700', color: isExpertise ? '#F5C542' : isProficient ? theme.accent.primary : theme.text.primary, fontSize: '13px' }}>{formatModifier(bonus)}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        {/* LEFT & MIDDLE: Extracted panels for readability and reuse */}
+        <CharacterLeftPanel character={character} theme={theme} abilities={abilities} profBonus={profBonus} rollDice={rollDice} handleUpdateCharacter={handleUpdateCharacter} />
+        <CharacterSkillsPanel character={character} theme={theme} abilities={abilities} profBonus={profBonus} rollDice={rollDice} />
 
         {/* RIGHT COLUMN: Combat Stats + Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'hidden' }}>
 
-          {/* Tabs */}
-          <div className="character-sheet-tabs" style={{
-            display: 'flex',
-            gap: '8px',
-            flexShrink: 0,
-            flexWrap: 'wrap',
-            padding: '10px',
-            background: 'linear-gradient(180deg, rgba(6, 13, 28, 0.98) 0%, rgba(10, 22, 40, 0.98) 100%)',
-            border: '2px solid rgba(245, 197, 66, 0.62)',
-            borderRadius: '10px',
-            boxShadow: '0 10px 26px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
-            position: 'relative',
-            zIndex: 4
-          }}>
-            {visibleTabs.map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-
-              return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                data-testid={`character-tab-${tab.id}`}
-                className={`tab-glow press-scale ${isActive ? 'tab-active' : ''}`}
-                style={{
-                  flex: '1 1 auto',
-                  minWidth: '112px',
-                  minHeight: '50px',
-                  padding: '10px 14px',
-                  background: isActive
-                    ? 'linear-gradient(135deg, #D4A017 0%, #F5C542 100%)'
-                    : 'linear-gradient(180deg, rgba(20, 48, 79, 0.98) 0%, rgba(15, 36, 64, 0.98) 100%)',
-                  color: isActive ? '#07111F' : '#F8FAFC',
-                  border: isActive ? '1px solid rgba(255, 236, 168, 0.95)' : '1px solid rgba(245, 197, 66, 0.42)',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  transition: 'all 0.3s ease',
-                  boxShadow: isActive
-                    ? '0 0 22px rgba(212, 160, 23, 0.35)'
-                    : '0 4px 12px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
-                  letterSpacing: '0px'
-                }}
-              >
-                <Icon size={17} strokeWidth={2.4} />
-                <span>{tab.label}</span>
-              </button>
-              );
-            })}
-          </div>
+          {/* Tabs (extracted) */}
+          <CharacterTabs visibleTabs={visibleTabs} activeTab={activeTab} setActiveTab={setActiveTab} theme={theme} />
 
           {/* ROOK Hints */}
           <RookHints character={character} theme={theme} activeTab={activeTab} />
@@ -1506,27 +1177,4 @@ function BackstoryTab({ character, characterId, theme, onUpdateCharacter }) {
 }
 
 
-function VitalChip({ icon: Icon, label, value, color, onClick, testId }) {
-  const interactive = typeof onClick === 'function';
-  const Tag = interactive ? 'button' : 'div';
-  return (
-    <Tag
-      onClick={onClick}
-      data-testid={testId}
-      type={interactive ? 'button' : undefined}
-      style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-        padding: '5px 9px', borderRadius: '8px',
-        background: `${color}15`, border: `1px solid ${color}40`,
-        cursor: interactive ? 'pointer' : 'default',
-        minWidth: '54px', transition: 'all 0.2s',
-        font: 'inherit', color: 'inherit'
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: '#9EB0D0', fontWeight: 600 }}>
-        <Icon size={11} color={color} /> {label}
-      </div>
-      <div style={{ fontSize: '14px', fontWeight: 700, color, marginTop: '1px' }}>{value}</div>
-    </Tag>
-  );
-}
+ 

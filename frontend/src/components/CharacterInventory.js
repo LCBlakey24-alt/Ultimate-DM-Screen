@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { ITEMS_DATABASE, ITEM_TYPES, RARITY_OPTIONS } from '@/data/itemsDatabase';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { theme as globalTheme } from '../../lib/theme';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -343,10 +344,10 @@ export default function CharacterInventory({ characterId, character, onUpdate })
           >
             <div style={{ fontSize: '10px', color: theme.muted, textTransform: 'uppercase', marginBottom: '4px' }}>Main Hand</div>
             {equippedItems.mainHand ? (
-              <div>
+                  <div>
                 <div style={{ color: theme.text, fontSize: '13px', fontWeight: '600' }}>{equippedItems.mainHand.name}</div>
                 {equippedItems.mainHand.damage && (
-                  <div style={{ color: '#ef4444', fontSize: '11px' }}>{equippedItems.mainHand.damage} {equippedItems.mainHand.damage_type}</div>
+                  <div style={{ color: globalTheme.accent.primary, fontSize: '11px' }}>{equippedItems.mainHand.damage} {equippedItems.mainHand.damage_type}</div>
                 )}
               </div>
             ) : (
@@ -367,10 +368,10 @@ export default function CharacterInventory({ characterId, character, onUpdate })
           >
             <div style={{ fontSize: '10px', color: theme.muted, textTransform: 'uppercase', marginBottom: '4px' }}>Off Hand</div>
             {equippedItems.offHand ? (
-              <div>
+                <div>
                 <div style={{ color: theme.text, fontSize: '13px', fontWeight: '600' }}>{equippedItems.offHand.name}</div>
                 {equippedItems.offHand.damage && (
-                  <div style={{ color: '#ef4444', fontSize: '11px' }}>{equippedItems.offHand.damage} {equippedItems.offHand.damage_type}</div>
+                  <div style={{ color: globalTheme.accent.primary, fontSize: '11px' }}>{equippedItems.offHand.damage} {equippedItems.offHand.damage_type}</div>
                 )}
               </div>
             ) : (
@@ -634,7 +635,7 @@ export default function CharacterInventory({ characterId, character, onUpdate })
             background: 'rgba(0,0,0,0.3)', borderRadius: '8px',
             border: `1px solid ${theme.border}`, display: 'flex', flexDirection: 'column', gap: 8,
           }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: theme.accent }}>Add Custom Item</div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: theme.accent }}>Add Custom Item</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <Input
                 value={customItem.name}
@@ -785,7 +786,7 @@ export default function CharacterInventory({ characterId, character, onUpdate })
                   <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #1f2937' }}>
                     <div style={{ color: theme.muted, fontSize: '11px', marginBottom: '4px' }}>{item.type}</div>
                     {item.damage && (
-                      <div style={{ color: '#ef4444', fontSize: '12px', marginBottom: '4px' }}>
+                      <div style={{ color: globalTheme.accent.primary, fontSize: '12px', marginBottom: '4px' }}>
                         Damage: {item.damage} {item.damage_type}
                       </div>
                     )}

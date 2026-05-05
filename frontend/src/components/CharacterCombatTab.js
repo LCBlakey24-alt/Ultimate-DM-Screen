@@ -4,7 +4,7 @@ import { CLASS_FEATURES } from '../data/classFeatures';
 import { ALL_WEAPONS, ARMOR } from '../data/equipmentDatabase';
 import { getCharacterSpellcastingInfo, getSpellSlotsForCaster } from '../data/spellDatabase';
 import { getConditionRollEffect, getConditionIndicator, CONDITION_EFFECTS } from '../data/conditionEffects';
-import { getClassAccent } from '../lib/theme';
+import { getClassAccent, theme as globalTheme } from '../lib/theme';
 
 // 5e SRD conditions
 const CONDITIONS = [
@@ -274,8 +274,9 @@ export default function CharacterCombatTab({
 
   const weaponAttacks = getWeaponAttacks();
   const ac = computeAC();
-  const accent = isGMMode ? '#B8941F' : '#D4AF37';
+  const accent = isGMMode ? theme.warning : theme.warning;
   const rulesEdition = character?.rules_edition || '2014';
+  const theme = globalTheme;
 
   // Attack roll handler - applies condition effects automatically
   const handleAttackRoll = (atk, type) => {
@@ -364,42 +365,52 @@ export default function CharacterCombatTab({
             padding: 7px 8px !important;
           }
         }
+        .combat-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        @media (min-width: 900px) {
+          .combat-grid { grid-template-columns: 1fr 1fr; }
+        }
       `}</style>
+      {/* Grid container splits desktop into left/right panels */}
+      <div className="combat-grid">
+        <div className="combat-left">
+          {/* ── Quick Stats + Inspiration ── */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            <StatPill label="AC" value={ac} color={accent} />
+            <StatPill label="Prof" value={`+${profBonus}`} color="#F59E0B" />
+                        <StatPill label="Prof" value={`+${profBonus}`} color={theme.warning} />
+            <button data-testid="roll-initiative" onClick={() => rollDice?.('1d20', dexMod, 'Initiative', rollMode)} style={{ background: 'none', border: 'none', padding: 0, cursor: rollDice ? 'pointer' : 'default' }}>
+              <StatPill label="Init" value={`${dexMod >= 0 ? '+' : ''}${dexMod}`} color="#8B5CF6" />
+            </button>
+            <StatPill label="Speed" value={character?.speed || 30} color="#6B7280" />
+                        <StatPill label="Speed" value={character?.speed || 30} color={theme.text.muted} />
+            {rulesEdition === '2024' && <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(236,72,153,0.15)', color: '#EC4899', fontWeight: 700 }}>2024</span>}
+            {rulesEdition === '2014' && <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(107,114,128,0.15)', color: theme.text.muted, fontWeight: 700 }}>2014</span>}
+            {/* Inspiration */}
+            <button
+              data-testid="inspiration-toggle"
+              onClick={() => { setInspiration(!inspiration); onUpdateCharacter?.({ inspiration: !inspiration }); }}
+              style={{
+                padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                background: inspiration ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.03)',
+              background: inspiration ? `rgba(245,158,11,0.18)` : 'rgba(255,255,255,0.03)',
+                border: `1px solid ${inspiration ? 'rgba(245,158,11,0.45)' : 'rgba(255,255,255,0.08)'}`,
+                color: inspiration ? theme.warning : theme.text.muted, cursor: 'pointer', transition: 'all 0.15s',
+              }}
+              title="Inspiration: advantage on one roll"
+            >
+              {inspiration ? '★' : '☆'} Insp
+            </button>
+          </div>
 
-      {/* ── Quick Stats + Inspiration ── */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <StatPill label="AC" value={ac} color={accent} />
-        <StatPill label="Prof" value={`+${profBonus}`} color="#F59E0B" />
-        <button data-testid="roll-initiative" onClick={() => rollDice?.('1d20', dexMod, 'Initiative', rollMode)} style={{ background: 'none', border: 'none', padding: 0, cursor: rollDice ? 'pointer' : 'default' }}>
-          <StatPill label="Init" value={`${dexMod >= 0 ? '+' : ''}${dexMod}`} color="#8B5CF6" />
-        </button>
-        <StatPill label="Speed" value={character?.speed || 30} color="#6B7280" />
-        {rulesEdition === '2024' && <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(236,72,153,0.15)', color: '#EC4899', fontWeight: 700 }}>2024</span>}
-        {rulesEdition === '2014' && <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(107,114,128,0.15)', color: '#9CA3AF', fontWeight: 700 }}>2014</span>}
-        {/* Inspiration */}
-        <button
-          data-testid="inspiration-toggle"
-          onClick={() => { setInspiration(!inspiration); onUpdateCharacter?.({ inspiration: !inspiration }); }}
-          style={{
-            padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
-            background: inspiration ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.03)',
-            border: `1px solid ${inspiration ? '#F59E0B' : 'rgba(255,255,255,0.08)'}`,
-            color: inspiration ? '#F59E0B' : '#6B7280', cursor: 'pointer', transition: 'all 0.15s',
-          }}
-          title="Inspiration: advantage on one roll"
-        >
-          {inspiration ? '★' : '☆'} Insp
-        </button>
-      </div>
-
-      {/* ── HP Controls ── */}
-      <div data-testid="hp-tracker" style={{
-        display: 'flex', flexDirection: 'column', gap: 8,
-        padding: '10px', borderRadius: 8,
-        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
-      }}>
+          {/* ── HP Controls ── */}
+          <div data-testid="hp-tracker" style={{
+            display: 'flex', flexDirection: 'column', gap: 8,
+            padding: '10px', borderRadius: 8,
+            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+          }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 800, letterSpacing: 1 }}>HP ADJUST</span>
+                    <span style={{ fontSize: 10, color: theme.text.muted, fontWeight: 800, letterSpacing: 1 }}>HP ADJUST</span>
           {tempHp > 0 && (
             <span style={{ fontSize: 10, color: '#3B82F6', fontWeight: 800 }}>TEMP +{tempHp}</span>
           )}
@@ -409,6 +420,7 @@ export default function CharacterCombatTab({
           <button data-testid="hp-damage-btn" onClick={() => handleHpInput('damage')} disabled={!hpInput} style={{
             padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: hpInput ? 'pointer' : 'not-allowed',
             background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.4)', color: '#EF4444',
+                        background: theme.accent.soft, border: `1px solid ${theme.accent.line}`, color: theme.accent.primary,
             opacity: hpInput ? 1 : 0.4, transition: 'all 0.15s',
           }}>DMG</button>
           <input
@@ -417,19 +429,21 @@ export default function CharacterCombatTab({
             placeholder="Amount"
             onKeyDown={e => { if (e.key === 'Enter') handleHpInput(e.shiftKey ? 'heal' : 'damage'); }}
             style={{
+            style={{
               flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 6, padding: '6px 10px', color: '#E5E7EB', fontSize: 13, textAlign: 'center', outline: 'none',
+              borderRadius: 6, padding: '6px 10px', color: theme.text.secondary, fontSize: 13, textAlign: 'center', outline: 'none',
             }}
           />
           <button data-testid="hp-heal-btn" onClick={() => handleHpInput('heal')} disabled={!hpInput} style={{
             padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: hpInput ? 'pointer' : 'not-allowed',
             background: 'rgba(34,197,94,0.2)', border: '1px solid rgba(34,197,94,0.4)', color: '#22C55E',
+                        background: `rgba(34,197,94,0.18)`, border: '1px solid rgba(34,197,94,0.35)', color: theme.success,
             opacity: hpInput ? 1 : 0.4, transition: 'all 0.15s',
           }}>HEAL</button>
         </div>
         {/* Temp HP */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '4px', background: 'rgba(59,130,246,0.06)', borderRadius: 6 }}>
-          <span style={{ fontSize: 10, color: '#3B82F6', fontWeight: 600 }}>TEMP HP</span>
+          <span style={{ fontSize: 10, color: theme.text.secondary, fontWeight: 600 }}>TEMP HP</span>
           <button onClick={() => handleTempHp(-1)} style={{ padding: '1px 6px', background: 'none', border: 'none', color: '#3B82F6', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}>-</button>
           <span style={{ fontSize: 14, fontWeight: 700, color: tempHp > 0 ? '#3B82F6' : '#6B7280', minWidth: 20, textAlign: 'center' }}>{tempHp}</span>
           <button onClick={() => handleTempHp(1)} style={{ padding: '1px 6px', background: 'none', border: 'none', color: '#3B82F6', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}>+</button>
@@ -438,26 +452,29 @@ export default function CharacterCombatTab({
 
       {/* ── Concentration Tracker ── */}
       <div data-testid="concentration-tracker" style={{
+      <div data-testid="concentration-tracker" style={{
         display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8,
-        background: concSpell ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.02)',
-        border: `1px solid ${concSpell ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.05)'}`,
+        background: concSpell ? 'rgba(59,130,246,0.08)' : 'rgba(255,255,255,0.02)',
+        border: `1px solid ${concSpell ? 'rgba(59,130,246,0.22)' : 'rgba(255,255,255,0.05)'}`,
       }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: concSpell ? '#3B82F6' : '#6B7280', letterSpacing: 1 }}>CONC</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: concSpell ? theme.text.secondary : theme.text.muted, letterSpacing: 1 }}>CONC</span>
         <input
           data-testid="conc-spell-input"
           type="text" value={concSpell}
           onChange={e => { setConcSpell(e.target.value); onUpdateCharacter?.({ concentrating_on: e.target.value }); }}
           placeholder="Spell name..."
           style={{
+          style={{
             flex: 1, background: 'rgba(0,0,0,0.2)', border: 'none', borderRadius: 4,
-            padding: '3px 6px', color: '#93C5FD', fontSize: 11, outline: 'none',
+            padding: '3px 6px', color: theme.text.secondary, fontSize: 11, outline: 'none',
           }}
         />
         {concSpell && (
+          {concSpell && (
           <button data-testid="drop-concentration" onClick={() => { setConcSpell(''); onUpdateCharacter?.({ concentrating_on: '' }); }} style={{
             padding: '2px 6px', borderRadius: 4, fontSize: 9, fontWeight: 700,
-            background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
-            color: '#EF4444', cursor: 'pointer',
+            background: theme.accent.soft, border: `1px solid ${theme.accent.line}`,
+            color: theme.accent.primary, cursor: 'pointer',
           }}>DROP</button>
         )}
       </div>
@@ -497,10 +514,11 @@ export default function CharacterCombatTab({
       {/* ── Exhaustion Tracker ── */}
       <div data-testid="exhaustion-tracker" style={{
         display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8,
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8,
         background: exhaustionLevel > 0 ? 'rgba(146,64,14,0.1)' : 'rgba(255,255,255,0.02)',
         border: `1px solid ${exhaustionLevel > 0 ? 'rgba(146,64,14,0.3)' : 'rgba(255,255,255,0.05)'}`,
       }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: exhaustionLevel > 0 ? '#D97706' : '#6B7280', letterSpacing: 1 }}>EXHAUST</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: exhaustionLevel > 0 ? theme.warning : theme.text.muted, letterSpacing: 1 }}>EXHAUST</span>
         <div style={{ display: 'flex', gap: 3 }}>
           {[1,2,3,4,5,6].map(lvl => (
             <button key={lvl} data-testid={`exhaust-${lvl}`}
@@ -513,10 +531,11 @@ export default function CharacterCombatTab({
                 width: 20, height: 20, borderRadius: '50%', cursor: 'pointer', fontSize: 10, fontWeight: 800,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: lvl <= exhaustionLevel
-                  ? lvl >= 5 ? '#991B1B' : lvl >= 3 ? '#D97706' : '#92400E'
-                  : 'rgba(255,255,255,0.05)',
-                border: `1.5px solid ${lvl <= exhaustionLevel ? (lvl >= 5 ? '#EF4444' : '#D97706') : 'rgba(255,255,255,0.1)'}`,
-                color: lvl <= exhaustionLevel ? '#fff' : '#6B7280',
+                background: lvl <= exhaustionLevel
+                  ? lvl >= 5 ? theme.accent.primary : lvl >= 3 ? theme.warning : '#92400E'
+                  : 'rgba(255,255,255,0.05) ',
+                border: `1.5px solid ${lvl <= exhaustionLevel ? (lvl >= 5 ? theme.accent.primary : theme.warning) : 'rgba(255,255,255,0.1)'}`,
+                color: lvl <= exhaustionLevel ? theme.text.primary : theme.text.muted,
                 transition: 'all 0.15s',
               }}
             >{lvl}</button>
@@ -752,6 +771,9 @@ export default function CharacterCombatTab({
         )}
       </div>
 
+      </div>
+
+        <div className="combat-right">
       {/* ── Weapon Attacks ── */}
       <Section title="Attacks" accent={accent}>
         {(() => {
@@ -784,20 +806,19 @@ export default function CharacterCombatTab({
           )}
           {weaponAttacks.map((atk, i) => (
             <div key={i} data-testid={`attack-${atk.slot}`} style={{
-              display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px', borderRadius: 8,
-              background: atk.isUnarmed ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.06)', opacity: atk.isUnarmed ? 0.7 : 1,
+              display: 'grid', gridTemplateColumns: '1fr auto auto auto auto', gap: 8, alignItems: 'center', padding: '8px 10px', borderRadius: 8,
+              background: atk.isUnarmed ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.03)',
+              border: `1px solid ${theme.border}`, opacity: atk.isUnarmed ? 0.7 : 1,
             }}>
-              <span style={{ fontSize: 13, fontWeight: 600, flex: 1, color: '#E5E7EB' }}>{atk.name}</span>
+              <div style={{ fontSize: 13, fontWeight: 600, color: theme.text.primary }}>{atk.name}</div>
               <button
                 data-testid={`attack-hit-${atk.slot}`}
                 onClick={() => handleAttackRoll(atk, 'hit')}
                 title="Roll to hit"
                 style={{
-                  padding: '3px 8px', borderRadius: 5, fontSize: 12, fontWeight: 700,
-                  background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
-                  color: '#EF4444', cursor: rollDice ? 'pointer' : 'default',
-                  transition: 'all 0.15s',
+                  padding: '6px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700,
+                  background: theme.accent.soft, border: `1px solid ${theme.accent.primary}`,
+                  color: theme.accent.primary, cursor: rollDice ? 'pointer' : 'default',
                 }}
               >{atk.toHit}</button>
               <button
@@ -805,14 +826,13 @@ export default function CharacterCombatTab({
                 onClick={() => handleAttackRoll(atk, 'damage')}
                 title="Roll damage"
                 style={{
-                  padding: '3px 8px', borderRadius: 5, fontSize: 12, fontWeight: 600,
-                  background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)',
-                  color: '#F59E0B', cursor: rollDice ? 'pointer' : 'default',
-                  transition: 'all 0.15s',
+                  padding: '6px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700,
+                  background: theme.accent.hover, border: `1px solid ${theme.accent.secondary}`,
+                  color: theme.text.primary, cursor: rollDice ? 'pointer' : 'default',
                 }}
               >{atk.damage} {atk.damageType}</button>
-              {atk.range && <span style={{ fontSize: 10, color: '#6B7280' }}>{atk.range}</span>}
-              {atk.versatileDamage && (
+              <div style={{ fontSize: 11, color: theme.text.muted }}>{atk.range || ''}</div>
+              {atk.versatileDamage ? (
                 <button
                   onClick={() => {
                     if (!rollDice) return;
@@ -821,12 +841,11 @@ export default function CharacterCombatTab({
                   }}
                   title="Roll versatile (two-handed) damage"
                   style={{
-                    padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 600,
-                    background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.3)',
-                    color: '#A855F7', cursor: rollDice ? 'pointer' : 'default',
+                    padding: '4px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                    background: theme.bg.elevated, border: `1px solid ${theme.border}`, color: theme.text.secondary, cursor: rollDice ? 'pointer' : 'default',
                   }}
                 >2H: {atk.versatileDamage}</button>
-              )}
+              ) : <div />}
             </div>
           ))}
         </div>
@@ -993,6 +1012,8 @@ export default function CharacterCombatTab({
           Long Rest
           <span style={{ display: 'block', fontSize: 9, fontWeight: 400, opacity: 0.7, marginTop: 1 }}>Full HP, slots, all resources</span>
         </button>
+      </div>
+        </div>
       </div>
     </div>
   );
