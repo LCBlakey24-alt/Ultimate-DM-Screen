@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd frontend && yarn install && CI=true yarn build",
+  "outputDirectory": "frontend/build",
+  "nodejs": "20.x",
+  "env": {
+    "NODE_OPTIONS": "--max-old-space-size=3072",
+    "DISABLE_ESLINT_PLUGIN": "true",
+    "CI": "true",
+    "VERCEL": "1",
+    "NODE_ENV": "production"
+  }
+}

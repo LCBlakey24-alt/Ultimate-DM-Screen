@@ -810,5 +810,5 @@ export const searchItems = (query) => {
     item.description.toLowerCase().includes(lowerQuery)
   );
 };
-export const POTIONS = getItemsByType('Potion');
+export const POTION_ITEMS = getItemsByType('Potion');
 export const MAGIC_ITEMS = ITEMS_DATABASE;
