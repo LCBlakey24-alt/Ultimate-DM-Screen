@@ -419,8 +419,7 @@ export default function CharacterCombatTab({
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <button data-testid="hp-damage-btn" onClick={() => handleHpInput('damage')} disabled={!hpInput} style={{
             padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: hpInput ? 'pointer' : 'not-allowed',
-            background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.4)', color: '#EF4444',
-                        background: theme.accent.soft, border: `1px solid ${theme.accent.line}`, color: theme.accent.primary,
+            background: theme.accent.soft, border: `1px solid ${theme.accent.line}`, color: theme.accent.primary,
             opacity: hpInput ? 1 : 0.4, transition: 'all 0.15s',
           }}>DMG</button>
           <input
@@ -429,15 +428,13 @@ export default function CharacterCombatTab({
             placeholder="Amount"
             onKeyDown={e => { if (e.key === 'Enter') handleHpInput(e.shiftKey ? 'heal' : 'damage'); }}
             style={{
-            style={{
-              flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
+              flex: 1, background: theme.bg.surface, border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: 6, padding: '6px 10px', color: theme.text.secondary, fontSize: 13, textAlign: 'center', outline: 'none',
             }}
           />
           <button data-testid="hp-heal-btn" onClick={() => handleHpInput('heal')} disabled={!hpInput} style={{
             padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: hpInput ? 'pointer' : 'not-allowed',
-            background: 'rgba(34,197,94,0.2)', border: '1px solid rgba(34,197,94,0.4)', color: '#22C55E',
-                        background: `rgba(34,197,94,0.18)`, border: '1px solid rgba(34,197,94,0.35)', color: theme.success,
+            background: 'rgba(34,197,94,0.18)', border: '1px solid rgba(34,197,94,0.35)', color: theme.success,
             opacity: hpInput ? 1 : 0.4, transition: 'all 0.15s',
           }}>HEAL</button>
         </div>
@@ -452,7 +449,6 @@ export default function CharacterCombatTab({
 
       {/* ── Concentration Tracker ── */}
       <div data-testid="concentration-tracker" style={{
-      <div data-testid="concentration-tracker" style={{
         display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8,
         background: concSpell ? 'rgba(59,130,246,0.08)' : 'rgba(255,255,255,0.02)',
         border: `1px solid ${concSpell ? 'rgba(59,130,246,0.22)' : 'rgba(255,255,255,0.05)'}`,
@@ -464,13 +460,11 @@ export default function CharacterCombatTab({
           onChange={e => { setConcSpell(e.target.value); onUpdateCharacter?.({ concentrating_on: e.target.value }); }}
           placeholder="Spell name..."
           style={{
-          style={{
-            flex: 1, background: 'rgba(0,0,0,0.2)', border: 'none', borderRadius: 4,
+            flex: 1, background: theme.bg.surface, border: 'none', borderRadius: 4,
             padding: '3px 6px', color: theme.text.secondary, fontSize: 11, outline: 'none',
           }}
         />
         {concSpell && (
-          {concSpell && (
           <button data-testid="drop-concentration" onClick={() => { setConcSpell(''); onUpdateCharacter?.({ concentrating_on: '' }); }} style={{
             padding: '2px 6px', borderRadius: 4, fontSize: 9, fontWeight: 700,
             background: theme.accent.soft, border: `1px solid ${theme.accent.line}`,
@@ -514,7 +508,6 @@ export default function CharacterCombatTab({
       {/* ── Exhaustion Tracker ── */}
       <div data-testid="exhaustion-tracker" style={{
         display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8,
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8,
         background: exhaustionLevel > 0 ? 'rgba(146,64,14,0.1)' : 'rgba(255,255,255,0.02)',
         border: `1px solid ${exhaustionLevel > 0 ? 'rgba(146,64,14,0.3)' : 'rgba(255,255,255,0.05)'}`,
       }}>

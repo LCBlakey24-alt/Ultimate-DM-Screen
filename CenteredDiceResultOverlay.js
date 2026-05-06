@@ -56,8 +56,8 @@ const CenteredDiceResultOverlay = ({ result, type, isVisible, onComplete, theme 
         >
           <div style={{
             textAlign: 'center',
-            background: 'rgba(10, 22, 40, 0.9)',
-            border: `2px solid ${theme.accent || '#D4A017'}`,
+            background: theme.bg.deep || 'rgba(10, 22, 40, 0.9)',
+            border: `2px solid ${theme.accent?.primary || theme.accent}`,
             borderRadius: '50%',
             width: '180px',
             height: '180px',
@@ -65,7 +65,7 @@ const CenteredDiceResultOverlay = ({ result, type, isVisible, onComplete, theme 
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: `0 0 60px ${theme.accent}88, inset 0 0 20px ${theme.accent}44`,
+            boxShadow: `${theme.accent.soft || '0 0 60px rgba(239,68,68,0.12)'}, inset 0 0 12px ${theme.accent.line || 'rgba(239,68,68,0.28)'}`,
           }}>
             <div style={{ 
               fontSize: '12px', 
@@ -83,7 +83,7 @@ const CenteredDiceResultOverlay = ({ result, type, isVisible, onComplete, theme 
                   key="result"
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  style={{ fontSize: '72px', fontWeight: '900', color: '#fff', lineHeight: 1 }}
+                    style={{ fontSize: '72px', fontWeight: '900', color: theme.text.primary, lineHeight: 1 }}
                 >
                   {result}
                 </motion.div>
@@ -92,7 +92,7 @@ const CenteredDiceResultOverlay = ({ result, type, isVisible, onComplete, theme 
                   key="loading"
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                  style={{ width: '40px', height: '40px', border: `4px solid ${theme.accent}`, borderTopColor: 'transparent', borderRadius: '50%' }}
+                  style={{ width: '40px', height: '40px', border: `4px solid ${theme.accent?.primary || theme.accent}`, borderTopColor: 'transparent', borderRadius: '50%' }}
                 />
               )}
             </AnimatePresence>

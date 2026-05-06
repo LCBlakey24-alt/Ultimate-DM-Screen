@@ -13,11 +13,11 @@ const HeaderProfileMenu = ({ user, theme, isAdmin }) => {
         onClick={() => setIsOpen(!isOpen)}
         style={{
           display: 'flex', alignItems: 'center', gap: '10px',
-          background: 'rgba(255,255,255,0.05)', border: `1px solid ${theme.border}`,
+          background: 'rgba(255,255,255,0.03)', border: `1px solid ${theme.border}`,
           padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', color: '#fff'
         }}
       >
-        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: theme.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0A1628', fontWeight: 'bold', fontSize: '12px' }}>
+        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: theme.accent?.primary || theme.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.text.primary, fontWeight: 'bold', fontSize: '12px' }}>
           {user.username?.[0].toUpperCase()}
         </div>
         <span style={{ fontSize: '13px', fontWeight: '600' }}>{user.username}</span>
@@ -34,25 +34,25 @@ const HeaderProfileMenu = ({ user, theme, isAdmin }) => {
           <div style={{ padding: '12px', borderBottom: `1px solid ${theme.border}`, fontSize: '11px', color: theme.text.muted, textTransform: 'uppercase' }}>
             Account Settings
           </div>
-          {[
+            {[
             { icon: User, label: 'My Profile' },
             { icon: Settings, label: 'Site Settings' },
             { icon: CloudUpload, label: 'Import JSON' },
           ].map((item) => (
-            <button key={item.label} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.target.style.background = 'none'}>
-              <item.icon size={16} color={theme.accent} />
+            <button key={item.label} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'none', border: 'none', color: theme.text.primary, cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e) => e.target.style.background = theme.accent?.soft} onMouseLeave={(e) => e.target.style.background = 'none'}>
+              <item.icon size={16} color={theme.accent?.primary || theme.accent} />
               <span style={{ fontSize: '13px' }}>{item.label}</span>
             </button>
           ))}
           
           {isAdmin && (
-            <button style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'rgba(212,160,23,0.1)', border: 'none', color: theme.accent, cursor: 'pointer' }}>
+            <button style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: theme.accent.soft, border: 'none', color: theme.accent?.primary || theme.accent, cursor: 'pointer' }}>
               <ShieldAlert size={16} />
               <span style={{ fontSize: '13px', fontWeight: 'bold' }}>ADMIN DASHBOARD</span>
             </button>
           )}
 
-          <button style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', borderTop: `1px solid ${theme.border}` }}>
+          <button style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'none', border: 'none', color: theme.danger, cursor: 'pointer', borderTop: `1px solid ${theme.border}` }}>
             <LogOut size={16} />
             <span style={{ fontSize: '13px' }}>Sign Out</span>
           </button>

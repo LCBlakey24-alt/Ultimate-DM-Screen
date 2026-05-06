@@ -1,21 +1,21 @@
 import React from 'react';
 import { Heart, Shield, Zap, Wind, Star, Coffee, Moon } from 'lucide-react';
 
-const StatCard = ({ label, value, icon: Icon, theme, color = '#D4A017', isPulsing = false }) => (
+const StatCard = ({ label, value, icon: Icon, theme, color, isPulsing = false }) => (
   <div style={{
     background: 'rgba(255, 255, 255, 0.03)',
-    border: isPulsing ? `2px solid ${color}` : `1px solid ${theme.border}`,
+    border: isPulsing ? `2px solid ${color || theme.accent?.primary || theme.accent}` : `1px solid ${theme.border}`,
     borderRadius: '8px',
     padding: '8px 16px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     minWidth: '80px',
-    boxShadow: isPulsing ? `0 0 15px ${color}44` : '0 2px 8px rgba(0,0,0,0.2)',
+    boxShadow: isPulsing ? `0 0 15px ${(color || theme.accent?.primary || theme.accent)}44` : '0 2px 8px rgba(0,0,0,0.2)',
     transition: 'all 0.3s ease'
   }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
-      <Icon size={12} color={color} />
+      <Icon size={12} color={color || theme.accent?.primary || theme.accent} />
       <span style={{ fontSize: '10px', fontWeight: '700', color: theme.text.muted, textTransform: 'uppercase' }}>{label}</span>
     </div>
     <div style={{ fontSize: '18px', fontWeight: '800', color: theme.text.primary }}>{value}</div>
@@ -44,18 +44,18 @@ const DesktopStatHeader = ({ character, theme, onRest }) => {
           width: '64px',
           height: '64px',
           borderRadius: '12px',
-          background: `linear-gradient(135deg, ${theme.accent || '#D4A017'} 0%, #F5C542 100%)`,
+          background: `linear-gradient(135deg, ${theme.accent?.primary || theme.accent} 0%, ${theme.accent?.highlight || theme.accent?.secondary || theme.accent} 100%)`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: `0 0 15px ${theme.accent}44`
+          boxShadow: `0 0 15px ${(theme.accent?.primary || theme.accent)}44`
         }}>
-          <span style={{ fontSize: '28px', fontWeight: '900', color: '#0A1628' }}>
+          <span style={{ fontSize: '28px', fontWeight: '900', color: theme.text.primary }}>
             {character.name?.charAt(0)}
           </span>
         </div>
         <div>
-          <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: theme.accent || '#D4A017' }}>
+          <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '800', color: theme.accent?.primary || theme.accent }}>
             {character.name}
           </h1>
           <div style={{ fontSize: '13px', color: theme.text.muted, marginTop: '2px' }}>
@@ -64,13 +64,13 @@ const DesktopStatHeader = ({ character, theme, onRest }) => {
           
           {/* Conditions & Edition Row */}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
-            <div style={{ padding: '2px 8px', borderRadius: '4px', border: `1px solid ${theme.accent}44`, fontSize: '10px', color: theme.accent, fontWeight: '800' }}>
+            <div style={{ padding: '2px 8px', borderRadius: '4px', border: `1px solid ${(theme.accent?.primary || theme.accent)}44`, fontSize: '10px', color: theme.accent?.primary || theme.accent, fontWeight: '800' }}>
               {editionLabel}
             </div>
             {conditions.map(c => (
               <div key={c} style={{ 
-                background: theme.accent, 
-                color: '#0A1628', 
+                background: theme.accent?.primary || theme.accent, 
+                color: theme.text.primary, 
                 fontSize: '9px', 
                 fontWeight: '900', 
                 padding: '2px 6px', 
@@ -91,7 +91,7 @@ const DesktopStatHeader = ({ character, theme, onRest }) => {
           value={`${character.current_hit_points}/${character.max_hit_points}`} 
           icon={Heart} 
           theme={theme} 
-          color={character.temporary_hit_points > 0 ? theme.accent : "#ef4444"}
+          color={character.temporary_hit_points > 0 ? (theme.accent?.primary || theme.accent) : theme.danger}
           isPulsing={character.temporary_hit_points > 0}
         />
         <StatCard label="Armor" value={character.armor_class} icon={Shield} theme={theme} 
@@ -155,9 +155,9 @@ const DesktopStatHeader = ({ character, theme, onRest }) => {
           </button>
         </div>
         <button style={{
-          background: theme.accent || '#D4A017',
+          background: theme.accent?.primary || theme.accent,
           border: 'none',
-          color: '#0A1628',
+          color: theme.text.primary,
           padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: '700',
           cursor: 'pointer'
         }}>LEVEL UP</button>

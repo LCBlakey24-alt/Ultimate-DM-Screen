@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { ITEMS_DATABASE, ITEM_TYPES, RARITY_OPTIONS } from '@/data/itemsDatabase';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { theme as globalTheme } from '../../lib/theme';
+import { theme as globalTheme } from '../lib/theme';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;

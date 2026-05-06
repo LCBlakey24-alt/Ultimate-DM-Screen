@@ -730,11 +730,11 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
       {/* Floating ASI picker (Half-Elf 2014: +1 to two abilities of your choice) */}
       {edition === '2014' && floatingAsiBudget > 0 && (
-        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(212, 160, 23, 0.08)', border: `1px solid ${theme.border}` }}>
+        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: theme.accent.soft, border: `1px solid ${theme.accent.line || theme.border}` }}>
           <label style={labelStyle}>
             Distribute {floatingAsiBudget} floating +1{floatingAsiBudget === 1 ? '' : 's'}
             {' — '}
-            <span style={{ color: totalFloatingSpent === floatingAsiBudget ? '#10B981' : theme.sunset.gold, textTransform: 'none' }}>
+            <span style={{ color: totalFloatingSpent === floatingAsiBudget ? theme.success : (theme.accent?.primary || theme.accent), textTransform: 'none' }}>
               {totalFloatingSpent}/{floatingAsiBudget} assigned
             </span>
           </label>
@@ -761,8 +761,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                   }}
                   style={{
                     padding: '8px 10px', borderRadius: 8,
-                    background: chosen ? 'rgba(16, 185, 129, 0.2)' : disabled ? 'rgba(212, 160, 23, 0.05)' : 'rgba(15, 10, 30, 0.5)',
-                    border: `1px solid ${chosen ? '#10B981' : disabled ? 'rgba(212, 160, 23, 0.15)' : theme.border}`,
+                    background: chosen ? 'rgba(16, 185, 129, 0.18)' : disabled ? theme.accent.soft : theme.bg.surface,
+                    border: `1px solid ${chosen ? theme.success : disabled ? theme.accent.line : theme.border}`,
                     color: disabled ? theme.text.muted : theme.text.primary,
                     cursor: disabled ? 'not-allowed' : 'pointer',
                     opacity: disabled ? 0.5 : 1, fontSize: 12, fontWeight: 600
@@ -778,11 +778,11 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
       {/* Language picker (for races with "One of choice") */}
       {languageBudget > 0 && (
-        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(212, 160, 23, 0.06)', border: `1px solid ${theme.border}` }}>
+        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: theme.accent.soft, border: `1px solid ${theme.accent.line || theme.border}` }}>
           <label style={labelStyle}>
             Choose {languageBudget} extra language{languageBudget === 1 ? '' : 's'}
             {' — '}
-            <span style={{ color: chosenLanguages.length === languageBudget ? '#10B981' : theme.sunset.gold, textTransform: 'none' }}>
+            <span style={{ color: chosenLanguages.length === languageBudget ? theme.success : (theme.accent?.primary || theme.accent), textTransform: 'none' }}>
               {chosenLanguages.length}/{languageBudget} picked
             </span>
           </label>
@@ -805,8 +805,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                   }}
                   style={{
                     padding: '5px 10px', borderRadius: 6, fontSize: 12,
-                    background: sel ? 'rgba(212, 160, 23, 0.2)' : 'rgba(15, 10, 30, 0.5)',
-                    border: `1px solid ${sel ? theme.sunset.pink : theme.border}`,
+                    background: sel ? theme.accent.soft : theme.bg.surface,
+                    border: `1px solid ${sel ? (theme.accent?.primary || theme.accent) : theme.border}`,
                     color: theme.text.primary, cursor: 'pointer'
                   }}>
                   {sel ? '✓ ' : ''}{lang}
@@ -896,10 +896,10 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
       {/* Fighting Style (Fighter L1, Paladin L2, Ranger L2) */}
       {FIGHTING_STYLE_CLASSES[className] && (
-        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.06)', border: `1px solid ${theme.border}` }}>
+        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: theme.accent.soft, border: `1px solid ${theme.accent.line || theme.border}` }}>
           <label style={labelStyle}>
             Fighting Style
-            <span style={{ color: className === 'Fighter' ? '#EF4444' : theme.text.muted, textTransform: 'none', marginLeft: 6 }}>
+            <span style={{ color: className === 'Fighter' ? theme.danger : theme.text.muted, textTransform: 'none', marginLeft: 6 }}>
               {className === 'Fighter' ? '(REQUIRED at Level 1)' : `(gained at Level ${FIGHTING_STYLE_CLASSES[className].level})`}
             </span>
           </label>
@@ -913,8 +913,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                   onClick={() => setFightingStyle(sel ? '' : style)}
                   style={{
                     padding: '8px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, textAlign: 'left',
-                    background: sel ? 'rgba(239, 68, 68, 0.2)' : 'rgba(15, 10, 30, 0.5)',
-                    border: `1px solid ${sel ? '#EF4444' : theme.border}`,
+                    background: sel ? 'rgba(239, 68, 68, 0.18)' : theme.bg.surface,
+                    border: `1px solid ${sel ? theme.danger : theme.border}`,
                     color: theme.text.primary, cursor: 'pointer'
                   }}>
                   {sel ? '✓ ' : ''}{style}

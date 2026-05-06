@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import axios from 'axios';
+import { theme } from '../lib/theme';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -8,7 +9,7 @@ const API = `${BACKEND_URL}/api`;
 const TIER_FEATURES = {
   free: {
     name: 'Free',
-    color: '#808080',
+    color: theme.text.muted,
     characters: 1,
     campaigns: 0,
     aiCallsPerMonth: 3,
@@ -20,7 +21,7 @@ const TIER_FEATURES = {
   },
   pro: {
     name: 'All Access',
-    color: '#F59E0B',
+    color: theme.warning,
     characters: -1,
     campaigns: -1,
     aiCallsPerMonth: -1,
@@ -45,7 +46,7 @@ const TIER_FEATURES = {
   },
   player: {
     name: 'Hero',
-    color: '#3B82F6',
+    color: theme.accent.primary,
     characters: -1, // Unlimited
     campaigns: 0,
     aiCallsPerMonth: 50,
@@ -62,7 +63,7 @@ const TIER_FEATURES = {
   },
   gm: {
     name: 'Quest Master',
-    color: '#E11D48',
+    color: theme.accent.primary,
     characters: 1,
     campaigns: -1, // Unlimited
     aiCallsPerMonth: -1, // Unlimited
@@ -80,7 +81,7 @@ const TIER_FEATURES = {
   },
   legendary: {
     name: 'Legendary',
-    color: '#F59E0B',
+    color: theme.warning,
     characters: -1, // Unlimited
     campaigns: -1, // Unlimited
     aiCallsPerMonth: -1, // Unlimited
@@ -107,7 +108,7 @@ const TIER_FEATURES = {
   // Legacy/Promo tier for early testers - full access
   adventurer: {
     name: 'Adventurer',
-    color: '#22C55E',
+    color: theme.success,
     characters: -1, // Unlimited
     campaigns: -1, // Unlimited
     aiCallsPerMonth: -1, // Unlimited
@@ -173,7 +174,7 @@ export function getFeatureRequirement(feature) {
       return { tier, tierName: config.name, color: config.color };
     }
   }
-  return { tier: 'pro', tierName: 'All Access', color: '#F59E0B' };
+  return { tier: 'pro', tierName: 'All Access', color: theme.warning };
 }
 
 // Subscription Context
@@ -272,25 +273,25 @@ export function FeatureGate({ feature, children, fallback = null, showUpgrade = 
     const requirement = getFeatureRequirement(feature);
     return (
       <div style={{
-        padding: '16px',
-        background: 'rgba(225, 29, 72, 0.1)',
-        border: '1px solid rgba(225, 29, 72, 0.3)',
-        textAlign: 'center'
-      }}>
-        <p style={{ color: '#B3B3B3', marginBottom: '8px', fontSize: '14px' }}>
-          This feature requires <span style={{ color: requirement.color, fontWeight: '600' }}>{requirement.tierName}</span> tier
-        </p>
-        <a 
-          href="/pricing" 
-          style={{ 
-            color: '#E11D48', 
-            textDecoration: 'underline',
-            fontSize: '13px'
-          }}
-        >
-          Upgrade your subscription
-        </a>
-      </div>
+          padding: '16px',
+          background: theme.accent.soft,
+          border: `1px solid ${theme.accent.line}`,
+          textAlign: 'center'
+        }}>
+          <p style={{ color: theme.text.muted, marginBottom: '8px', fontSize: '14px' }}>
+            This feature requires <span style={{ color: requirement.color, fontWeight: '600' }}>{requirement.tierName}</span> tier
+          </p>
+          <a 
+            href="/pricing" 
+            style={{ 
+              color: theme.accent.primary, 
+              textDecoration: 'underline',
+              fontSize: '13px'
+            }}
+          >
+            Upgrade your subscription
+          </a>
+        </div>
     );
   }
   

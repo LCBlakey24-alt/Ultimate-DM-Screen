@@ -5,6 +5,7 @@
  *
  * SRD 5.1 / Public Domain only.
  */
+import { theme } from '../lib/theme';
 
 // Resource pools by class. "maxByLevel" can be:
 //   - a number lookup { 1:2, 3:3, ... }
@@ -216,9 +217,9 @@ export const REST_EFFECTS = {
  * Feature type labels and their colors.
  */
 export const FEATURE_TYPE_CONFIG = {
-  action: { label: 'Action', short: 'A', color: '#EF4444', bg: 'rgba(239,68,68,0.15)' },
-  bonus_action: { label: 'Bonus', short: 'BA', color: '#F59E0B', bg: 'rgba(245,158,11,0.15)' },
-  reaction: { label: 'React', short: 'R', color: '#8B5CF6', bg: 'rgba(139,92,246,0.15)' },
-  action_modifier: { label: 'Mod', short: 'M', color: '#EC4899', bg: 'rgba(236,72,153,0.15)' },
-  passive: { label: 'Passive', short: 'P', color: '#6B7280', bg: 'rgba(107,114,128,0.1)' },
+  action: { label: 'Action', short: 'A', color: theme.danger, bg: theme.accent.soft },
+  bonus_action: { label: 'Bonus', short: 'BA', color: theme.warning, bg: theme.accent.soft },
+  reaction: { label: 'React', short: 'R', color: theme.accent.primary, bg: theme.accent.soft },
+  action_modifier: { label: 'Mod', short: 'M', color: theme.accent.primary, bg: theme.accent.soft },
+  passive: { label: 'Passive', short: 'P', color: theme.text.muted, bg: theme.bg.surface },
 };

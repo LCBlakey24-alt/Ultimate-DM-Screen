@@ -1,6 +1,6 @@
 import React from 'react';
 import { Heart, Shield, Zap, Wind, Sparkles, Coffee, Moon, ArrowUp, Edit3, User } from 'lucide-react';
-import { getClassAccent } from '../../lib/theme';
+import { getClassAccent } from '../lib/theme';
 
 const VitalChip = ({ icon: Icon, label, value, color, onClick, testId }) => {
   const interactive = typeof onClick === 'function';
