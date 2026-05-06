@@ -11,8 +11,8 @@ const ImpersonationBanner = ({ theme, impersonatedUser, onStopImpersonating }) =
     <div
       data-testid="impersonation-banner"
       style={{
-        background: '#D4A017', // Gold accent for high visibility
-        color: '#0A1628', // Dark text on gold
+        background: theme.accent?.primary || theme.accent, // Primary accent for visibility
+        color: theme.text.primary,
         padding: '10px 20px',
         textAlign: 'center',
         fontSize: '14px',
@@ -27,12 +27,12 @@ const ImpersonationBanner = ({ theme, impersonatedUser, onStopImpersonating }) =
         width: '100%'
       }}
     >
-      <UserCheck size={18} color="#0A1628" />
+      <UserCheck size={18} color={theme.text.primary} />
       <span>IMPERSONATING: {impersonatedUser.toUpperCase()}</span>
       <button
         onClick={onStopImpersonating}
         data-testid="stop-impersonating-btn"
-        style={{ background: 'none', border: 'none', color: '#0A1628', cursor: 'pointer', marginLeft: '15px', display: 'flex', alignItems: 'center' }}
+        style={{ background: 'none', border: 'none', color: theme.text.primary, cursor: 'pointer', marginLeft: '15px', display: 'flex', alignItems: 'center' }}
       >
         <X size={16} /> Stop
       </button>

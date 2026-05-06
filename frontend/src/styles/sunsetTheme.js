@@ -1,118 +1,111 @@
-// Fantasy Sunset Theme - Shared across all components
+// Sunset theme adapter — map legacy sunset tokens to centralized `theme` tokens.
+import { theme } from '../lib/theme';
+
+// Keep a lightweight compatibility layer so components that import
+// `sunsetTheme` don't break, but prefer the single `theme` source-of-truth.
 export const sunsetTheme = {
-  // Backgrounds
   bg: {
-    void: '#05030A',
-    primary: '#0F0A1E',
-    surface: '#1A112E',
-    elevated: '#2E1F45',
-    hover: '#3D2A5C'
+    void: theme.bg.deep || '#05030A',
+    primary: theme.bg.primary,
+    surface: theme.bg.surface,
+    elevated: theme.bg.elevated,
+    hover: theme.bg.elevated
   },
-  
-  // Sunset Colors
+
   sunset: {
-    purple: '#8B5CF6',
-    purpleGlow: 'rgba(139, 92, 246, 0.4)',
-    pink: '#EC4899',
-    pinkGlow: 'rgba(236, 72, 153, 0.4)',
-    gold: '#F59E0B',
-    goldGlow: 'rgba(245, 158, 11, 0.4)',
-    orange: '#F97316'
+    purple: theme.accent.primary,
+    purpleGlow: theme.accent.line,
+    pink: theme.accent.primary,
+    pinkGlow: theme.accent.line,
+    gold: theme.accent.primary,
+    goldGlow: theme.accent.line,
+    orange: theme.warning
   },
-  
-  // Role Colors
+
   gm: {
-    primary: '#F59E0B',
-    secondary: '#D97706',
-    glow: 'rgba(245, 158, 11, 0.4)',
-    subtle: 'rgba(245, 158, 11, 0.1)'
+    primary: theme.accent.primary,
+    secondary: theme.accent.secondary || theme.accent.primary,
+    glow: theme.accent.line,
+    subtle: theme.accent.soft
   },
   player: {
-    primary: '#8B5CF6',
-    secondary: '#7C3AED',
-    glow: 'rgba(139, 92, 246, 0.4)',
-    subtle: 'rgba(139, 92, 246, 0.1)'
+    primary: theme.accent.primary,
+    secondary: theme.accent.secondary || theme.accent.primary,
+    glow: theme.accent.line,
+    subtle: theme.accent.soft
   },
-  
-  // Text
+
   text: {
-    primary: '#F8FAFC',
-    secondary: '#94A3B8',
-    muted: '#64748B'
+    primary: theme.text.primary,
+    secondary: theme.text.secondary,
+    muted: theme.text.muted
   },
-  
-  // Borders
+
   border: {
-    subtle: 'rgba(139, 92, 246, 0.2)',
-    default: 'rgba(139, 92, 246, 0.3)',
-    strong: 'rgba(139, 92, 246, 0.5)'
+    subtle: theme.accent.line,
+    default: theme.border,
+    strong: theme.accent.line
   },
-  
-  // Status
+
   status: {
-    success: '#10B981',
-    danger: '#EF4444',
-    warning: '#F59E0B',
-    info: '#8B5CF6'
+    success: theme.success,
+    danger: theme.danger,
+    warning: theme.warning,
+    info: theme.accent.primary
   },
-  
-  // Gradients
+
   gradient: {
-    sunset: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)',
-    purple: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-    gold: 'linear-gradient(135deg, #F59E0B 0%, #F97316 100%)',
-    surface: 'linear-gradient(180deg, rgba(26, 17, 46, 0.9) 0%, rgba(15, 10, 30, 0.95) 100%)'
+    sunset: `linear-gradient(135deg, ${theme.accent.primary} 0%, ${theme.accent.primary} 50%, ${theme.warning} 100%)`,
+    purple: `linear-gradient(135deg, ${theme.accent.primary} 0%, ${theme.accent.primary} 100%)`,
+    gold: `linear-gradient(135deg, ${theme.warning} 0%, ${theme.warning} 100%)`,
+    surface: `linear-gradient(180deg, ${theme.bg.surface} 0%, ${theme.bg.primary} 100%)`
   }
 };
 
-// Glass panel styles
 export const glassPanel = {
-  background: 'rgba(15, 10, 30, 0.7)',
-  backdropFilter: 'blur(16px)',
-  WebkitBackdropFilter: 'blur(16px)',
-  border: '1px solid rgba(139, 92, 246, 0.3)',
+  background: theme.bg.surface,
+  backdropFilter: 'blur(12px)',
+  WebkitBackdropFilter: 'blur(12px)',
+  border: `1px solid ${theme.accent.line}`,
   borderRadius: '16px',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 40px rgba(139, 92, 246, 0.15)'
+  boxShadow: `0 8px 32px rgba(0,0,0,0.4), 0 0 24px ${theme.accent.line}`
 };
 
 export const glassPanelStrong = {
   ...glassPanel,
-  background: 'rgba(15, 10, 30, 0.85)',
-  backdropFilter: 'blur(20px)',
-  WebkitBackdropFilter: 'blur(20px)'
+  background: theme.bg.elevated,
+  backdropFilter: 'blur(18px)',
+  WebkitBackdropFilter: 'blur(18px)'
 };
 
-// Card styles
 export const card = {
-  background: 'rgba(26, 17, 46, 0.6)',
-  border: '1px solid rgba(139, 92, 246, 0.2)',
+  background: theme.bg.surface,
+  border: `1px solid ${theme.accent.line}`,
   borderRadius: '12px',
   transition: 'all 0.3s ease'
 };
 
 export const cardHover = {
-  border: '1px solid rgba(236, 72, 153, 0.4)',
-  boxShadow: '0 8px 32px rgba(139, 92, 246, 0.2)',
+  border: `1px solid ${theme.accent.line}`,
+  boxShadow: `0 8px 32px ${theme.accent.line}`,
   transform: 'translateY(-2px)'
 };
 
-// Button styles
 export const buttonPrimary = {
-  background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-  color: 'white',
+  background: theme.accent.primary,
+  color: theme.text.primary,
   border: 'none',
   borderRadius: '10px',
   padding: '12px 24px',
   fontWeight: '600',
   cursor: 'pointer',
-  transition: 'all 0.3s ease',
-  boxShadow: '0 4px 20px rgba(236, 72, 153, 0.3)'
+  transition: 'all 0.3s ease'
 };
 
 export const buttonSecondary = {
-  background: 'rgba(139, 92, 246, 0.1)',
-  color: '#F8FAFC',
-  border: '1px solid rgba(139, 92, 246, 0.3)',
+  background: theme.bg.surface,
+  color: theme.text.primary,
+  border: `1px solid ${theme.accent.line}`,
   borderRadius: '10px',
   padding: '12px 24px',
   fontWeight: '500',
@@ -121,48 +114,45 @@ export const buttonSecondary = {
 };
 
 export const buttonGold = {
-  background: 'linear-gradient(135deg, #F59E0B 0%, #F97316 100%)',
-  color: '#0F0A1E',
+  background: theme.warning,
+  color: theme.bg.primary,
   border: 'none',
   borderRadius: '10px',
   padding: '12px 24px',
   fontWeight: '600',
   cursor: 'pointer',
-  transition: 'all 0.3s ease',
-  boxShadow: '0 4px 20px rgba(245, 158, 11, 0.3)'
+  transition: 'all 0.3s ease'
 };
 
-// Input styles
 export const input = {
-  background: 'rgba(15, 10, 30, 0.6)',
-  border: '1px solid rgba(139, 92, 246, 0.3)',
+  background: theme.bg.primary,
+  border: `1px solid ${theme.accent.line}`,
   borderRadius: '10px',
   padding: '12px 16px',
-  color: '#F8FAFC',
+  color: theme.text.primary,
   fontSize: '15px',
   outline: 'none',
   transition: 'all 0.3s ease'
 };
 
 export const inputFocus = {
-  borderColor: 'rgba(236, 72, 153, 0.6)',
-  boxShadow: '0 0 0 2px rgba(236, 72, 153, 0.2)'
+  borderColor: theme.accent.primary,
+  boxShadow: `0 0 0 2px ${theme.accent.line}`
 };
 
-// Tab styles
 export const tab = {
   padding: '10px 20px',
   background: 'transparent',
   border: 'none',
-  color: '#94A3B8',
+  color: theme.text.secondary,
   cursor: 'pointer',
   transition: 'all 0.2s ease',
   borderBottom: '2px solid transparent'
 };
 
 export const tabActive = {
-  color: '#EC4899',
-  borderBottomColor: '#EC4899'
+  color: theme.accent.primary,
+  borderBottomColor: theme.accent.primary
 };
 
 export default sunsetTheme;

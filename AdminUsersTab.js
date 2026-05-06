@@ -69,7 +69,7 @@ const AdminUsersTab = ({ theme, user: currentUser }) => {
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
         <div style={{ position: 'relative', flexGrow: 1 }}>
           <Search size={16} color={theme.text.muted} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-          <input
+            <input
             type="text"
             placeholder="Search users by username or email..."
             value={searchTerm}
@@ -77,7 +77,7 @@ const AdminUsersTab = ({ theme, user: currentUser }) => {
             data-testid="admin-user-search"
             style={{
               width: '100%', padding: '8px 12px 8px 40px', borderRadius: '6px',
-              border: `1px solid ${theme.border}`, background: theme.bg.main,
+              border: `1px solid ${theme.border}`, background: theme.bg.surface,
               color: theme.text.primary, fontSize: '13px'
             }}
           />
@@ -91,12 +91,12 @@ const AdminUsersTab = ({ theme, user: currentUser }) => {
       </div>
 
       {loading && <p style={{ color: theme.text.muted }}>Loading users...</p>}
-      {error && <p style={{ color: '#ef4444' }}>Error: {error}</p>}
+      {error && <p style={{ color: theme.danger }}>Error: {error}</p>}
 
       {!loading && !error && (
         <div style={{ maxHeight: '400px', overflowY: 'auto', border: `1px solid ${theme.border}`, borderRadius: '8px' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ background: theme.bg.main, position: 'sticky', top: 0, zIndex: 1 }}>
+            <thead style={{ background: theme.bg.surface, position: 'sticky', top: 0, zIndex: 1 }}>
               <tr>
                 {['Username', 'Email', 'Tier', 'Status', 'AI Calls', 'Actions'].map(header => (
                   <th key={header} style={{ padding: '10px', textAlign: 'left', fontSize: '11px', color: theme.text.muted, textTransform: 'uppercase', borderBottom: `1px solid ${theme.border}` }}>{header}</th>
@@ -105,14 +105,14 @@ const AdminUsersTab = ({ theme, user: currentUser }) => {
             </thead>
             <tbody>
               {filteredUsers.map(user => (
-                <tr key={user.id} data-testid={`user-row-${user.username}`} style={{ borderBottom: `1px solid ${theme.border}44` }}>
+                <tr key={user.id} data-testid={`user-row-${user.username}`} style={{ borderBottom: `1px solid ${theme.border}` }}>
                   <td style={{ padding: '10px', fontSize: '13px', color: theme.text.primary }}>{user.username}</td>
                   <td style={{ padding: '10px', fontSize: '13px', color: theme.text.primary }}>{user.email}</td>
                   <td style={{ padding: '10px', fontSize: '13px', color: theme.text.primary }}>{user.tier}</td>
                   <td style={{ padding: '10px', fontSize: '13px', color: theme.text.primary }}>{user.subscription_status}</td>
                   <td style={{ padding: '10px', fontSize: '13px', color: theme.text.primary }}>{user.ai_calls_this_month}</td>
                   <td style={{ padding: '10px', fontSize: '13px' }}>
-                    <button onClick={() => handleImpersonate(user.username)} data-testid={`impersonate-${user.username}`} style={{ ...buttonStyle(theme), background: theme.accent, color: '#0A1628', padding: '4px 8px', fontSize: '11px' }}>
+                    <button onClick={() => handleImpersonate(user.username)} data-testid={`impersonate-${user.username}`} style={{ ...buttonStyle(theme), background: theme.accent?.primary || theme.accent, color: theme.text.primary, padding: '4px 8px', fontSize: '11px' }}>
                       <UserCheck size={12} /> Impersonate
                     </button>
                   </td>

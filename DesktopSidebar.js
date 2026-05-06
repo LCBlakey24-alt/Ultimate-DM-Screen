@@ -18,7 +18,7 @@ const AbilityBlock = ({ label, score, theme, skills = [], character }) => {
   return (
     <div style={{
       background: 'rgba(255, 255, 255, 0.03)',
-      border: `1px solid ${theme.border}44`,
+      border: `1px solid ${theme.border}`,
       borderRadius: '8px',
       padding: '12px',
       display: 'flex',
@@ -34,7 +34,7 @@ const AbilityBlock = ({ label, score, theme, skills = [], character }) => {
           <span style={{ fontSize: '10px', fontWeight: '800', color: theme.text.muted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
           <span style={{ fontSize: '11px', color: theme.text.primary, opacity: 0.8 }}>Score: {score}</span>
         </div>
-        <div style={{ fontSize: '24px', fontWeight: '900', color: theme.accent || '#D4A017' }}>{modStr}</div>
+        <div style={{ fontSize: '24px', fontWeight: '900', color: theme.accent?.primary || theme.accent }}>{modStr}</div>
       </div>
 
       {/* Nested Skills */}
@@ -51,17 +51,17 @@ const AbilityBlock = ({ label, score, theme, skills = [], character }) => {
                     width: '6px', 
                     height: '6px', 
                     borderRadius: '50%', 
-                    border: `1px solid ${theme.accent}`,
-                    background: isProficient ? theme.accent : 'transparent',
+                    border: `1px solid ${theme.accent?.primary || theme.accent}`,
+                    background: isProficient ? (theme.accent?.primary || theme.accent) : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
                   }}>
-                    {isExpert && <Star size={4} color="#0A1628" fill="#0A1628" />}
+                    {isExpert && <Star size={4} color={theme.text.primary} fill={theme.text.primary} />}
                   </div>
                   <span style={{ color: theme.text.primary, opacity: isProficient ? 1 : 0.6 }}>{skill}</span>
                 </div>
-                <span style={{ fontWeight: '700', color: isProficient ? theme.accent : theme.text.muted }}>
+                <span style={{ fontWeight: '700', color: isProficient ? (theme.accent?.primary || theme.accent) : theme.text.muted }}>
                   {getSkillMod(skill)}
                 </span>
               </div>
@@ -86,14 +86,14 @@ const DesktopSidebar = ({ character, theme }) => {
   return (
     <aside style={{
       width: '320px',
-      background: 'rgba(3, 0, 20, 0.5)',
+      background: theme.bg.surface,
       borderRight: `1px solid ${theme.border}`,
       padding: '32px 24px',
       height: '100%',
       overflowY: 'auto',
       scrollbarWidth: 'none'
     }}>
-      <h3 style={{ fontSize: '12px', fontWeight: '800', color: theme.accent, textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '0.1em' }}>
+      <h3 style={{ fontSize: '12px', fontWeight: '800', color: theme.accent?.primary || theme.accent, textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '0.1em' }}>
         Abilities & Skills
       </h3>
       
@@ -112,10 +112,10 @@ const DesktopSidebar = ({ character, theme }) => {
 
       {/* Passive Scores */}
       <div style={{ 
-        background: 'rgba(212,160,23,0.05)', 
+        background: theme.accent.soft, 
         borderRadius: '8px', 
         padding: '16px',
-        border: `1px solid ${theme.accent}33`
+        border: `1px solid ${theme.accent.line}`
       }}>
         {[
           { label: 'Passive Perception', val: 14 },
@@ -124,7 +124,7 @@ const DesktopSidebar = ({ character, theme }) => {
         ].map(p => (
           <div key={p.label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span style={{ fontSize: '11px', color: theme.text.muted }}>{p.label}</span>
-            <span style={{ fontSize: '13px', fontWeight: '800', color: theme.accent }}>{p.val}</span>
+            <span style={{ fontSize: '13px', fontWeight: '800', color: theme.accent?.primary || theme.accent }}>{p.val}</span>
           </div>
         ))}
       </div>

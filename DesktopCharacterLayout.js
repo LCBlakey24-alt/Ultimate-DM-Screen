@@ -14,7 +14,7 @@ const DesktopCharacterLayout = ({ character, theme, activeTab, onTabChange, chil
     'dungeon': 'radial-gradient(circle at 50% 50%, #0a0a0f 0%, #030014 100%)',
     'forest': 'linear-gradient(180deg, #030014 0%, #051405 100%)',
     'fire': 'linear-gradient(180deg, #030014 0%, #1a0505 100%)',
-    'default': theme.bg.main || '#030014'
+    'default': theme.bg.primary || '#030014'
   };
 
   return (
@@ -41,11 +41,11 @@ const DesktopCharacterLayout = ({ character, theme, activeTab, onTabChange, chil
             <button
               key={tab}
               onClick={() => onTabChange(tab.toLowerCase())}
-              style={{
+                style={{
                 padding: '14px 4px',
                 background: 'none',
                 border: 'none',
-                borderBottom: activeTab === tab.toLowerCase() ? `3px solid ${theme.accent || '#D4A017'}` : '3px solid transparent',
+                borderBottom: activeTab === tab.toLowerCase() ? `3px solid ${theme.accent?.primary || theme.accent || '#D4A017'}` : '3px solid transparent',
                 color: activeTab === tab.toLowerCase() ? theme.text.primary : theme.text.muted,
                 fontWeight: '600',
                 cursor: 'pointer',

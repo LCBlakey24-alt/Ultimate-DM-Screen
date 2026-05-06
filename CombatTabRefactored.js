@@ -11,14 +11,14 @@ const CombatCard = ({ title, icon: Icon, children, theme }) => (
   }}>
     <div style={{ 
       padding: '12px 16px', 
-      background: 'rgba(212,160,23,0.05)', 
+      background: theme.accent.soft, 
       borderBottom: `1px solid ${theme.border}`,
       display: 'flex',
       alignItems: 'center',
       gap: '10px'
     }}>
-      {Icon && <Icon size={16} color="#D4A017" />}
-      <span style={{ fontSize: '12px', fontWeight: '700', color: '#D4A017', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+      {Icon && <Icon size={16} color={theme.accent?.primary || theme.accent} />}
+      <span style={{ fontSize: '12px', fontWeight: '700', color: theme.accent?.primary || theme.accent, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         {title}
       </span>
     </div>

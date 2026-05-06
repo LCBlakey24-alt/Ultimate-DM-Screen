@@ -8,11 +8,13 @@
 // 'attack' = attack rolls, 'ability_check' = skill checks, 'saving_throw' = saving throws
 // Ability-specific: 'str_save', 'dex_save', 'str_check', 'dex_check', etc.
 
+import { theme } from '../lib/theme';
+
 export const CONDITION_EFFECTS = {
   blinded: {
     label: 'Blinded',
     icon: 'eye-off',
-    color: '#6B7280',
+    color: theme.text.muted,
     effects: {
       attack: 'disadvantage',       // Disadvantage on attack rolls
     },
@@ -21,21 +23,21 @@ export const CONDITION_EFFECTS = {
   charmed: {
     label: 'Charmed',
     icon: 'heart',
-    color: '#EC4899',
+    color: theme.accent?.primary || theme.accent,
     effects: {},
     notes: "Can't attack the charmer. Charmer has advantage on social checks against you.",
   },
   deafened: {
     label: 'Deafened',
     icon: 'ear-off',
-    color: '#9CA3AF',
+    color: theme.text.muted,
     effects: {},
     notes: 'Auto-fail hearing-based Perception checks',
   },
   frightened: {
     label: 'Frightened',
     icon: 'alert-triangle',
-    color: '#F59E0B',
+    color: theme.warning,
     effects: {
       attack: 'disadvantage',       // Disadvantage on attack rolls
       ability_check: 'disadvantage', // Disadvantage on ability checks
@@ -45,21 +47,21 @@ export const CONDITION_EFFECTS = {
   grappled: {
     label: 'Grappled',
     icon: 'grip-horizontal',
-    color: '#D97706',
+    color: theme.warning,
     effects: {},
     notes: 'Speed becomes 0',
   },
   incapacitated: {
     label: 'Incapacitated',
     icon: 'ban',
-    color: '#EF4444',
+    color: theme.danger,
     effects: {},
     notes: "Can't take actions or reactions",
   },
   invisible: {
     label: 'Invisible',
     icon: 'ghost',
-    color: '#8B5CF6',
+    color: theme.accent?.primary || theme.accent,
     effects: {
       attack: 'advantage',          // Advantage on attack rolls
     },
@@ -68,7 +70,7 @@ export const CONDITION_EFFECTS = {
   paralyzed: {
     label: 'Paralyzed',
     icon: 'lock',
-    color: '#DC2626',
+    color: theme.danger,
     effects: {
       str_save: 'auto_fail',        // Auto-fail STR saves
       dex_save: 'auto_fail',        // Auto-fail DEX saves
@@ -78,7 +80,7 @@ export const CONDITION_EFFECTS = {
   petrified: {
     label: 'Petrified',
     icon: 'mountain',
-    color: '#78716C',
+    color: theme.text.muted,
     effects: {
       str_save: 'auto_fail',
       dex_save: 'auto_fail',
@@ -88,7 +90,7 @@ export const CONDITION_EFFECTS = {
   poisoned: {
     label: 'Poisoned',
     icon: 'flask-round',
-    color: '#22C55E',
+    color: theme.success,
     effects: {
       attack: 'disadvantage',        // Disadvantage on attack rolls
       ability_check: 'disadvantage', // Disadvantage on all ability checks
@@ -98,7 +100,7 @@ export const CONDITION_EFFECTS = {
   prone: {
     label: 'Prone',
     icon: 'arrow-down',
-    color: '#D97706',
+    color: theme.warning,
     effects: {
       attack: 'disadvantage',        // Disadvantage on attack rolls
     },
@@ -107,7 +109,7 @@ export const CONDITION_EFFECTS = {
   restrained: {
     label: 'Restrained',
     icon: 'link',
-    color: '#B91C1C',
+    color: theme.accent?.secondary || theme.accent?.primary || theme.accent,
     effects: {
       attack: 'disadvantage',        // Disadvantage on attack rolls
       dex_save: 'disadvantage',      // Disadvantage on DEX saves
@@ -117,7 +119,7 @@ export const CONDITION_EFFECTS = {
   stunned: {
     label: 'Stunned',
     icon: 'zap-off',
-    color: '#FBBF24',
+    color: theme.warning,
     effects: {
       str_save: 'auto_fail',
       dex_save: 'auto_fail',
@@ -127,7 +129,7 @@ export const CONDITION_EFFECTS = {
   unconscious: {
     label: 'Unconscious',
     icon: 'moon',
-    color: '#1E3A5F',
+    color: theme.bg.surface,
     effects: {
       str_save: 'auto_fail',
       dex_save: 'auto_fail',
@@ -137,7 +139,7 @@ export const CONDITION_EFFECTS = {
   exhaustion: {
     label: 'Exhaustion',
     icon: 'battery-low',
-    color: '#92400E',
+    color: theme.warning,
     effects: {
       // Level 1+: disadvantage on ability checks
       ability_check: 'disadvantage',
@@ -148,7 +150,7 @@ export const CONDITION_EFFECTS = {
   concentrating: {
     label: 'Concentrating',
     icon: 'focus',
-    color: '#3B82F6',
+    color: theme.accent?.primary || theme.accent,
     effects: {},
     notes: 'Maintaining a spell. CON save on damage (DC = max of 10 or half damage).',
   },
@@ -262,8 +264,8 @@ export function getConditionRollEffect(conditions = [], context, userOverride = 
  */
 export function getConditionIndicator(conditions = [], context, exhaustionLevel = 0) {
   const { mode, autoFail, reason } = getConditionRollEffect(conditions, context, 'normal', exhaustionLevel);
-  if (autoFail) return { color: '#EF4444', symbol: '✕', tooltip: reason };
-  if (mode === 'advantage') return { color: '#22C55E', symbol: '▲', tooltip: reason };
-  if (mode === 'disadvantage') return { color: '#EF4444', symbol: '▼', tooltip: reason };
+  if (autoFail) return { color: theme.danger, symbol: '✕', tooltip: reason };
+  if (mode === 'advantage') return { color: theme.success, symbol: '▲', tooltip: reason };
+  if (mode === 'disadvantage') return { color: theme.danger, symbol: '▼', tooltip: reason };
   return null;
 }
