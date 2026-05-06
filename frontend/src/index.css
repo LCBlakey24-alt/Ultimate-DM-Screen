@@ -32,7 +32,7 @@ strong, b, h1, h2, h3, h4, h5, h6 {
 /* ===== CSS VARIABLES - DUAL THEME SYSTEM ===== */
 :root {
   /* === ROOK APP THEME === */
-  --background: #0A1628;
+  --background: #1F1F23;
   --foreground: #FFFFFF;
   --card: #27272B;
   --card-foreground: #FFFFFF;
@@ -54,8 +54,8 @@ strong, b, h1, h2, h3, h4, h5, h6 {
   --radius: 0.5rem;
   
   /* Theme-specific colors */
-  --theme-glow: rgba(212, 160, 23, 0.18);
-  --theme-glow-secondary: rgba(245, 197, 66, 0.18);
+  --theme-glow: rgba(239, 68, 68, 0.18);
+  --theme-glow-secondary: rgba(248, 113, 113, 0.18);
   
   /* Status Colors */
   --success: #10B981;
@@ -64,8 +64,8 @@ strong, b, h1, h2, h3, h4, h5, h6 {
   --info: #3B82F6;
   
   /* Glass Panel */
-  --glass-bg: rgba(15, 36, 64, 0.72);
-  --glass-border: rgba(212, 160, 23, 0.28);
+  --glass-bg: rgba(39, 39, 43, 0.72);
+  --glass-border: rgba(239, 68, 68, 0.28);
   --glass-blur: 16px;
   
   /* Shadows */
@@ -93,10 +93,10 @@ strong, b, h1, h2, h3, h4, h5, h6 {
   --input: #27272B;
   --ring: #EF4444;
   
-  --theme-glow: rgba(212, 160, 23, 0.18);
-  --theme-glow-secondary: rgba(245, 197, 66, 0.18);
-  --glass-bg: rgba(15, 36, 64, 0.78);
-  --glass-border: rgba(212, 160, 23, 0.32);
+  --theme-glow: rgba(239, 68, 68, 0.12);
+  --theme-glow-secondary: rgba(248, 113, 113, 0.12);
+  --glass-bg: rgba(39, 39, 43, 0.86);
+  --glass-border: rgba(239, 68, 68, 0.28);
 }
 
 /* === PLAYER MODE THEME (Electric Tundra) === */
@@ -119,10 +119,10 @@ strong, b, h1, h2, h3, h4, h5, h6 {
   --input: #27272B;
   --ring: #EF4444;
   
-  --theme-glow: rgba(212, 160, 23, 0.18);
-  --theme-glow-secondary: rgba(245, 197, 66, 0.18);
-  --glass-bg: rgba(15, 36, 64, 0.78);
-  --glass-border: rgba(212, 160, 23, 0.32);
+  --theme-glow: rgba(239, 68, 68, 0.12);
+  --theme-glow-secondary: rgba(248, 113, 113, 0.12);
+  --glass-bg: rgba(39, 39, 43, 0.86);
+  --glass-border: rgba(239, 68, 68, 0.28);
 }
 
 /* ===== BASE STYLES ===== */
@@ -229,26 +229,26 @@ p, span, div, label, button, input, textarea, select {
 
 /* ===== GRADIENT UTILITIES ===== */
 .gradient-gm {
-  background: linear-gradient(135deg, #D4A017 0%, #F5C542 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
 }
 
 .gradient-player {
-  background: linear-gradient(135deg, #D4A017 0%, #F5C542 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
 }
 
 .gradient-landing {
-  background: linear-gradient(135deg, #D4A017 0%, #F5C542 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
 }
 
 .text-gradient-gm {
-  background: linear-gradient(135deg, #D4A017 0%, #F5C542 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-player {
-  background: linear-gradient(135deg, #D4A017 0%, #F5C542 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -256,11 +256,11 @@ p, span, div, label, button, input, textarea, select {
 
 /* ===== GLOW EFFECTS ===== */
 .glow-gm {
-  box-shadow: 0 0 20px rgba(212, 160, 23, 0.18);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.18);
 }
 
 .glow-player {
-  box-shadow: 0 0 20px rgba(212, 160, 23, 0.18);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.18);
 }
 
 .glow-success {
@@ -279,9 +279,9 @@ p, span, div, label, button, input, textarea, select {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(ellipse at 20% 20%, rgba(212, 160, 23, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(245, 197, 66, 0.08) 0%, transparent 50%),
-    #0A1628;
+    radial-gradient(ellipse at 20% 20%, rgba(239, 68, 68, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(248, 113, 113, 0.08) 0%, transparent 50%),
+    #1F1F23;
   z-index: 0;
 }
 
@@ -293,9 +293,9 @@ p, span, div, label, button, input, textarea, select {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(ellipse at 0% 0%, rgba(212, 160, 23, 0.10) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, rgba(245, 197, 66, 0.06) 0%, transparent 50%),
-    #0A1628;
+    radial-gradient(ellipse at 0% 0%, rgba(239, 68, 68, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(248, 113, 113, 0.06) 0%, transparent 50%),
+    #1F1F23;
   z-index: 0;
 }
 
@@ -307,9 +307,9 @@ p, span, div, label, button, input, textarea, select {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(ellipse at 0% 100%, rgba(212, 160, 23, 0.10) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, rgba(245, 197, 66, 0.06) 0%, transparent 50%),
-    #0A1628;
+    radial-gradient(ellipse at 0% 100%, rgba(239, 68, 68, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(248, 113, 113, 0.06) 0%, transparent 50%),
+    #1F1F23;
   z-index: 0;
 }
 
@@ -330,37 +330,32 @@ p, span, div, label, button, input, textarea, select {
 /* ===== SHADCN/TAILWIND OVERRIDES ===== */
 @layer base {
   :root {
-    --background: 216 60% 10%;
-    --foreground: 210 40% 98%;
-    --card: 213 62% 15%;
-    --card-foreground: 210 40% 98%;
-    --popover: 213 62% 15%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 43 78% 46%;
-    --primary-foreground: 216 60% 10%;
-    --secondary: 45 91% 61%;
-    --secondary-foreground: 216 60% 10%;
-    --muted: 212 60% 19%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 43 78% 46%;
-    --accent-foreground: 216 60% 10%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 43 78% 46%;
-    --input: 212 60% 19%;
-    --ring: 43 78% 46%;
-    --radius: 0.5rem;
+    --background: hsl(240 6% 13%);
+    --foreground: hsl(210 40% 98%);
+    --card: hsl(240 5% 16%);
+    --card-foreground: hsl(210 40% 98%);
+    --popover: hsl(240 5% 16%);
+    --popover-foreground: hsl(210 40% 98%);
+    --primary: hsl(0 84% 60%);
+    --primary-foreground: hsl(210 40% 98%);
+    --secondary: hsl(0 91% 71%);
+    --secondary-foreground: hsl(210 40% 98%);
+    --muted: hsl(240 5% 16%);
+    --muted-foreground: hsl(215 20% 65%);
+    --accent: hsl(0 84% 60%);
+    --accent-foreground: hsl(210 40% 98%);
+    --destructive: hsl(0 84% 60%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --border: hsl(0 84% 60%);
+    --input: hsl(240 5% 16%);
+    --ring: hsl(0 84% 60%);
+    --radius: 0;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+/* Tailwind @apply removed — prefer explicit CSS variables and utility usage.
+   If you rely on Tailwind utility composition for these, re-add valid
+   utility classes here (ensure they exist in your Tailwind config). */
 
 /* ===== SCROLLBAR STYLING ===== */
 ::-webkit-scrollbar {
@@ -487,28 +482,28 @@ select:focus {
 }
 
 /* ===== UTILITY CLASSES ===== */
-.text-gm-primary { color: #D4A017; }
-.text-gm-secondary { color: #F5C542; }
-.text-player-primary { color: #D4A017; }
-.text-player-secondary { color: #F5C542; }
+.text-gm-primary { color: #EF4444; }
+.text-gm-secondary { color: #F87171; }
+.text-player-primary { color: #EF4444; }
+.text-player-secondary { color: #F87171; }
 .text-success { color: var(--success); }
 .text-warning { color: var(--warning); }
 .text-danger { color: var(--danger); }
 
-.bg-gm-primary { background-color: #D4A017; }
-.bg-gm-secondary { background-color: #F5C542; }
-.bg-player-primary { background-color: #D4A017; }
-.bg-player-secondary { background-color: #F5C542; }
+.bg-gm-primary { background-color: #EF4444; }
+.bg-gm-secondary { background-color: #F87171; }
+.bg-player-primary { background-color: #EF4444; }
+.bg-player-secondary { background-color: #F87171; }
 
-.border-gm { border-color: rgba(212, 160, 23, 0.35); }
-.border-player { border-color: rgba(212, 160, 23, 0.35); }
+.border-gm { border-color: rgba(239, 68, 68, 0.35); }
+.border-player { border-color: rgba(239, 68, 68, 0.35); }
 
 /* ===== LEGACY COMPATIBILITY ===== */
 /* These maintain compatibility with existing components during transition */
 .sunset-bg { display: none; } /* Deprecated */
 .btn-sunset { 
-  background: linear-gradient(135deg, #D4A017 0%, #F5C542 100%);
-  color: #0A1628;
+  background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+  color: #1F1F23;
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
   padding: 12px 28px;
@@ -516,15 +511,15 @@ select:focus {
   border-radius: 12px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 20px rgba(212, 160, 23, 0.18);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.18);
 }
 .btn-sunset:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(212, 160, 23, 0.22);
+  box-shadow: 0 8px 30px rgba(239, 68, 68, 0.22);
 }
 
 .text-gradient-sunset {
-  background: linear-gradient(135deg, #D4A017 0%, #F5C542 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -609,15 +604,15 @@ select:focus {
 }
 
 .badge-gm {
-  background: rgba(212, 160, 23, 0.16);
-  color: #F5C542;
-  border: 1px solid rgba(212, 160, 23, 0.35);
+  background: rgba(239, 68, 68, 0.16);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
 .badge-player {
-  background: rgba(212, 160, 23, 0.16);
-  color: #F5C542;
-  border: 1px solid rgba(212, 160, 23, 0.35);
+  background: rgba(239, 68, 68, 0.16);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
 .badge-success {
@@ -652,11 +647,11 @@ select:focus {
 }
 
 .progress-fill-gm {
-  background: linear-gradient(90deg, #D4A017, #F5C542);
+  background: linear-gradient(90deg, #EF4444, #F87171);
 }
 
 .progress-fill-player {
-  background: linear-gradient(90deg, #D4A017, #F5C542);
+  background: linear-gradient(90deg, #EF4444, #F87171);
 }
 
 .progress-fill-hp {
@@ -768,4 +763,106 @@ select:focus {
 .map-tool.active {
   color: var(--primary);
   background: var(--muted);
+}
+
+/* ===== MINIMALIST RED-LINED THEME OVERRIDES ===== */
+:root,
+[data-theme="gm"],
+[data-theme="player"] {
+  --background: #1F1F23;
+  --foreground: #FFFFFF;
+  --card: #27272B;
+  --popover: #27272B;
+  --muted: #27272B;
+  --input: #27272B;
+  --primary: #EF4444;
+  --secondary: #F87171;
+  --border: rgba(239, 68, 68, 0.28);
+  --ring: #EF4444;
+  --radius: 0;
+  --glass-bg: rgba(39, 39, 43, 0.88);
+  --glass-border: rgba(239, 68, 68, 0.28);
+  --theme-glow: transparent;
+  --theme-glow-secondary: transparent;
+}
+
+body,
+.App,
+.landing-bg,
+.gm-bg,
+.player-bg {
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+}
+
+.panel,
+.card,
+.card-hover,
+.card-hover-gm,
+.glass,
+.glass-panel,
+.glass-panel-strong,
+.modal,
+.modal-content,
+.stat-block,
+.initiative-item,
+.reference-card,
+.map-toolbar,
+.rq-panel,
+.rq-card {
+  border-radius: 0 !important;
+  border: 1px solid var(--primary) !important;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  box-shadow: none !important;
+}
+
+button,
+input,
+select,
+textarea,
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-danger,
+.btn-icon,
+.rq-button-primary,
+.rq-button-secondary {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+button:not(:disabled),
+input,
+select,
+textarea {
+  border-color: var(--primary) !important;
+}
+
+.card-hover,
+.card-hover-gm,
+.panel-player,
+.panel-gm,
+.initiative-entry.active,
+.sidebar-item.active {
+  border-left: 3px solid var(--primary) !important;
+}
+
+.gradient-gm,
+.gradient-player,
+.gradient-landing,
+.btn-sunset,
+.progress-fill-gm,
+.progress-fill-player {
+  background: var(--primary) !important;
+}
+
+.text-gradient-gm,
+.text-gradient-player,
+.text-gradient-sunset,
+.gradient-text {
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  color: var(--primary) !important;
 }

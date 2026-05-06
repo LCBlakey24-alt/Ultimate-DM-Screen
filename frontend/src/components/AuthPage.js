@@ -3,9 +3,9 @@ import axios from 'axios';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Mail, Lock, User, ArrowLeft, Sparkles } from 'lucide-react';
+import { API_BASE } from '@/lib/api';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE;
 
 export default function AuthPage({ onLogin }) {
   const [searchParams] = useSearchParams();

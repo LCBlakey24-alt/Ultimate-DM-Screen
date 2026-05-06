@@ -2,10 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Users, Zap, Wand2, Baby } from 'lucide-react';
 
-const NAVY = '#0A1628';
-const PANEL = '#0F2440';
-const GOLD = '#D4A017';
-const GOLD_BRIGHT = '#F5C542';
+const NAVY = '#1F1F23';
+const PANEL = '#27272B';
+const GOLD = '#EF4444';
+const GOLD_BRIGHT = '#F87171';
 const TEXT = '#F8FAFC';
 const TEXT_MUTED = '#94A3B8';
 
@@ -56,7 +56,7 @@ export default function CharacterCreationModePicker() {
                 key={mode.key}
                 data-testid={`mode-${mode.key}`}
                 onClick={() => navigate(`/characters/new/${mode.key}`)}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = GOLD_BRIGHT; e.currentTarget.style.background = '#14304F'; }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = GOLD_BRIGHT; e.currentTarget.style.background = '#323235'; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = GOLD; e.currentTarget.style.background = PANEL; }}
                 style={{
                   textAlign: 'left', padding: '20px 18px',

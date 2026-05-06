@@ -21,13 +21,13 @@ import DiceRollFlicker from './DiceRollFlicker';
 import DiceRollHistory from './DiceRollHistory';
 import { getConditionRollEffect, getConditionIndicator, CONDITION_EFFECTS } from '../data/conditionEffects';
 import { getClassAccent, theme as globalTheme } from '../lib/theme';
+import { API_BASE } from '../lib/api';
 import CharacterHeader from './CharacterHeader';
 import CharacterLeftPanel from './CharacterLeftPanel';
 import CharacterSkillsPanel from './CharacterSkillsPanel';
 import CharacterTabs from './CharacterTabs';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE;
 
 // Use global theme from lib/theme.js so theme changes cascade
 const theme = globalTheme;
@@ -743,6 +743,23 @@ export default function CharacterSheetFull() {
 
   return (
     <div data-testid="character-sheet-full" className="character-sheet-shell" style={pageStyle}>
+      {/* Left sidebar navigation for player pages (minimalist sharp design) */}
+      <aside className="character-sidebar" style={{
+        position: 'absolute', left: 12, top: 12, bottom: 12,
+        width: 220, padding: 12, zIndex: 6, overflowY: 'auto'
+      }}>
+        <div style={{ fontSize: 12, fontWeight: 800, color: theme.text.primary, marginBottom: 8 }}>CHARACTER</div>
+        {['overview','combat','spells','inventory','backstory','journal','notes'].map(id => (
+          <button key={id} onClick={() => setActiveTab(id)} style={{
+            display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+            padding: '10px 12px', marginBottom: 6, textAlign: 'left',
+            background: activeTab === id ? theme.bg.surface : 'transparent',
+            color: activeTab === id ? theme.text.primary : theme.text.muted,
+            border: activeTab === id ? `2px solid ${theme.accent.primary}` : `1px solid ${theme.border}`,
+            borderRadius: 0, cursor: 'pointer', fontWeight: 800
+          }}>{id.toUpperCase()}</button>
+        ))}
+      </aside>
       <style>{`
         .character-sheet-shell {
           --sheet-panel-gap: 8px;
@@ -1104,7 +1121,6 @@ function BackstoryTab({ character, characterId, theme, onUpdateCharacter }) {
   const [editing, setEditing] = useState(null);
   const [editVal, setEditVal] = useState('');
   const backstory = character?.backstory || {};
-  const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
   const fields = [
     { key: 'personality_traits', label: 'Personality Traits', placeholder: 'I always have a plan. I am slow to trust but fiercely loyal.' },
