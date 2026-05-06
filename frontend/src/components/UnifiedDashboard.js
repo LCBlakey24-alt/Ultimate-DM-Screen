@@ -3,45 +3,54 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { API_BASE } from '@/lib/api';
+import {
+  DND_5E_SOURCES,
+  SOURCE_CONTENT_LABELS,
+  SOURCE_LEGAL_NOTICE,
+  getReleasedSources,
+  getSourcesByCategory
+} from '@/data/dndSources5e';
 import { 
   User, Crown, Plus, ChevronRight, Star, Link2, Settings,
   Users, MapPin, LogOut, Shield, Sword, Trash2, Upload, BookOpen, FileJson, Sparkles
 } from 'lucide-react';
 import TronBackground from '@/components/TronBackground';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE;
 
-// Block A design reset — dark navy + gold outline, flat (no gradients)
+// Minimalist dark grey + red linework.
 const theme = {
   bg: {
-    primary: '#0A1628',
-    surface: '#0F2440',
-    surfaceHover: '#14304F',
-    card: '#0F2440',
-    hover: 'rgba(212, 160, 23, 0.08)'
+    primary: '#1F1F23',
+    surface: '#27272B',
+    surfaceHover: '#323235',
+    card: '#27272B',
+    hover: 'rgba(239, 68, 68, 0.08)'
   },
   sunset: {
-    purple: '#D4A017',
-    pink: '#D4A017'
+    purple: '#EF4444',
+    pink: '#EF4444'
   },
   gm: {
-    primary: '#D4A017',
-    secondary: '#D4A017',
-    hover: '#F5C542',
+    primary: '#EF4444',
+    secondary: '#B91C1C',
+    hover: '#F87171',
     glow: 'transparent',
-    subtle: 'rgba(212, 160, 23, 0.08)',
-    border: 'rgba(212, 160, 23, 0.35)'
+    subtle: 'rgba(239, 68, 68, 0.08)',
+    border: 'rgba(239, 68, 68, 0.35)'
   },
   player: {
-    primary: '#D4A017',
-    secondary: '#F5C542',
+    primary: '#EF4444',
+    secondary: '#B91C1C',
     glow: 'transparent',
-    subtle: 'rgba(212, 160, 23, 0.08)',
-    border: 'rgba(212, 160, 23, 0.35)'
+    subtle: 'rgba(239, 68, 68, 0.08)',
+    border: 'rgba(239, 68, 68, 0.35)'
   },
   accent: {
-    pink: '#D4A017',
+    primary: '#EF4444',
+    line: 'rgba(239, 68, 68, 0.28)',
+    pink: '#EF4444',
     pinkGlow: 'transparent'
   },
   text: {
@@ -49,8 +58,8 @@ const theme = {
     secondary: '#94A3B8',
     muted: '#64748B'
   },
-  border: 'rgba(212, 160, 23, 0.35)',
-  gradient: '#D4A017'
+  border: 'rgba(239, 68, 68, 0.35)',
+  gradient: '#EF4444'
 };
 
 // Ember Particles Component
@@ -345,6 +354,21 @@ function UnifiedDashboard({ username, onLogout }) {
     return filtered;
   }, [campaigns, campaignSearch, campaignSort]);
 
+  const sourceStats = useMemo(() => {
+    const released = getReleasedSources();
+    const categories = ['core', 'rules-expansion', 'setting', 'adventure', 'anthology', 'starter', 'digital', 'organized-play'];
+    const categoryCounts = categories
+      .map(category => ({ category, count: getSourcesByCategory(category).length }))
+      .filter(item => item.count > 0);
+    return {
+      total: DND_5E_SOURCES.length,
+      released: released.length,
+      announced: DND_5E_SOURCES.length - released.length,
+      years: `${Math.min(...DND_5E_SOURCES.map(s => s.year))}-${Math.max(...DND_5E_SOURCES.map(s => s.year))}`,
+      categoryCounts,
+    };
+  }, []);
+
   if (loading) {
     return (
       <div style={{ 
@@ -370,7 +394,7 @@ function UnifiedDashboard({ username, onLogout }) {
       
       {/* Header */}
       <header style={{
-        background: 'rgba(15, 36, 64, 0.95)',
+        background: 'rgba(39, 39, 43, 0.95)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
         borderBottom: `1px solid ${theme.border}`,
@@ -388,7 +412,7 @@ function UnifiedDashboard({ username, onLogout }) {
             src="/images/logo-mini.png" 
             alt="ROOK" 
             className="icon-float"
-            style={{ height: '40px', width: 'auto', filter: 'drop-shadow(0 0 12px rgba(212, 160, 23, 0.5))' }}
+            style={{ height: '40px', width: 'auto', filter: 'drop-shadow(0 0 12px rgba(239, 68, 68, 0.5))' }}
           />
           <h1 className="mobile-hide" style={{
             fontWeight: '800',
@@ -454,9 +478,9 @@ function UnifiedDashboard({ username, onLogout }) {
           <label
             data-testid="upload-json-btn"
             style={{
-              background: 'linear-gradient(135deg, #D4A017, #A87912)',
+              background: 'linear-gradient(135deg, #EF4444, #B91C1C)',
               border: 'none',
-              color: '#0A1628',
+              color: '#1F1F23',
               padding: '8px 16px',
               display: 'flex',
               alignItems: 'center',
@@ -564,7 +588,7 @@ function UnifiedDashboard({ username, onLogout }) {
         <div style={{
           width: '100%',
           padding: '10px 12px',
-          background: 'rgba(212, 160, 23, 0.12)',
+          background: 'rgba(239, 68, 68, 0.12)',
           border: `1px solid ${theme.border}`,
           borderRadius: 8,
           color: theme.player.primary,
@@ -582,6 +606,96 @@ function UnifiedDashboard({ username, onLogout }) {
         </div>
       </div>
 
+      <section
+        data-testid="sourcebook-library"
+        style={{
+          padding: '14px 18px',
+          background: theme.bg.primary,
+          borderBottom: `1px solid ${theme.border}`,
+          color: theme.text.primary,
+          position: 'relative',
+          zIndex: 2
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
+          <div style={{ minWidth: 240, flex: '1 1 360px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: theme.accent.primary, fontSize: 12, fontWeight: 800, textTransform: 'uppercase' }}>
+              <BookOpen size={16} />
+              D&D 5e Source Index
+            </div>
+            <div style={{ color: theme.text.secondary, fontSize: 12, marginTop: 4, lineHeight: 1.45 }}>
+              {sourceStats.total} official first-party entries tracked across {sourceStats.years}; {sourceStats.released} released, {sourceStats.announced} announced.
+            </div>
+            <div style={{ color: theme.text.muted, fontSize: 11, marginTop: 4, lineHeight: 1.45 }}>
+              {SOURCE_LEGAL_NOTICE}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end', flex: '1 1 320px' }}>
+            {sourceStats.categoryCounts.map(({ category, count }) => (
+              <span
+                key={category}
+                style={{
+                  border: `1px solid ${theme.border}`,
+                  color: theme.text.secondary,
+                  background: theme.bg.surface,
+                  padding: '5px 8px',
+                  fontSize: 10,
+                  textTransform: 'uppercase'
+                }}
+              >
+                {category.replace('-', ' ')}: {count}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <details style={{ marginTop: 10 }}>
+          <summary style={{ cursor: 'pointer', color: theme.accent.primary, fontSize: 11, fontWeight: 800, textTransform: 'uppercase' }}>
+            View source coverage by year and content type
+          </summary>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 8, marginTop: 10 }}>
+            {DND_5E_SOURCES.map(source => (
+              <div
+                key={source.id}
+                style={{
+                  background: theme.bg.surface,
+                  border: `1px solid ${theme.border}`,
+                  borderLeft: `3px solid ${theme.accent.primary}`,
+                  padding: 10
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
+                  <strong style={{ color: theme.text.primary, fontSize: 12 }}>{source.title}</strong>
+                  <span style={{ color: theme.accent.primary, fontSize: 11 }}>{source.year}</span>
+                </div>
+                <div style={{ color: theme.text.muted, fontSize: 10, textTransform: 'uppercase', marginBottom: 6 }}>
+                  {source.rulesEra} rules / {source.category.replace('-', ' ')} / {source.status}
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                  {source.content.slice(0, 6).map(content => (
+                    <span
+                      key={content}
+                      style={{
+                        border: `1px solid ${theme.border}`,
+                        color: theme.text.secondary,
+                        padding: '2px 5px',
+                        fontSize: 10
+                      }}
+                    >
+                      {SOURCE_CONTENT_LABELS[content] || content}
+                    </span>
+                  ))}
+                  {source.content.length > 6 && (
+                    <span style={{ color: theme.text.muted, fontSize: 10 }}>+{source.content.length - 6}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </details>
+      </section>
+
       {/* Main Content - Split Design */}
       <div style={{
         flex: 1,
@@ -595,7 +709,7 @@ function UnifiedDashboard({ username, onLogout }) {
           id="player-section"
           className="animate-fade-in-left"
           style={{ 
-            background: 'rgba(15, 36, 64, 0.72)',
+            background: 'rgba(39, 39, 43, 0.72)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
             borderRight: `1px solid ${theme.border}`,
@@ -614,7 +728,7 @@ function UnifiedDashboard({ username, onLogout }) {
             left: 0,
             right: 0,
             height: '150px',
-            background: 'linear-gradient(180deg, rgba(212, 160, 23, 0.15) 0%, transparent 100%)',
+            background: 'linear-gradient(180deg, rgba(239, 68, 68, 0.15) 0%, transparent 100%)',
             pointerEvents: 'none'
           }} />
           
@@ -669,7 +783,7 @@ function UnifiedDashboard({ username, onLogout }) {
                 style={{
                   background: `linear-gradient(135deg, ${theme.player.primary}, ${theme.player.primary})`,
                   border: 'none',
-                  color: '#0A1628',
+                  color: '#1F1F23',
                   padding: '9px 16px',
                   fontWeight: '800',
                   display: 'flex',
@@ -686,8 +800,8 @@ function UnifiedDashboard({ username, onLogout }) {
                 data-testid="homebrew-workshop-btn"
                 style={{
                   background: 'transparent',
-                  border: '1px solid #D4A017',
-                  color: '#D4A017',
+                  border: '1px solid #EF4444',
+                  color: '#EF4444',
                   padding: '9px 14px',
                   fontWeight: '700',
                   display: 'flex',
@@ -757,7 +871,7 @@ function UnifiedDashboard({ username, onLogout }) {
                       background: theme.player.primary,
                       border: 'none',
                       padding: '14px 28px',
-                      color: '#0A1628',
+                      color: '#1F1F23',
                       fontWeight: '800'
                     }}
                   >
@@ -772,7 +886,7 @@ function UnifiedDashboard({ username, onLogout }) {
                     data-testid={`character-${char.id}`}
                     className="card-hover"
                     style={{
-                      background: 'rgba(15, 36, 64, 0.92)',
+                      background: 'rgba(39, 39, 43, 0.92)',
                       border: `1px solid ${theme.border}`,
                       borderLeft: `3px solid ${theme.player.primary}`,
                       borderRadius: '8px',
@@ -843,7 +957,7 @@ function UnifiedDashboard({ username, onLogout }) {
           id="gm-section"
           className="animate-fade-in-right"
           style={{ 
-            background: 'rgba(15, 36, 64, 0.72)',
+            background: 'rgba(39, 39, 43, 0.72)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
             padding: '18px',
@@ -859,7 +973,7 @@ function UnifiedDashboard({ username, onLogout }) {
             left: 0,
             right: 0,
             height: '150px',
-            background: 'linear-gradient(180deg, rgba(212, 160, 23, 0.15) 0%, transparent 100%)',
+            background: 'linear-gradient(180deg, rgba(239, 68, 68, 0.15) 0%, transparent 100%)',
             pointerEvents: 'none'
           }} />
           
@@ -913,7 +1027,7 @@ function UnifiedDashboard({ username, onLogout }) {
                     fontSize: '11px',
                     padding: '4px 10px',
                     borderRadius: '4px',
-                    background: 'rgba(212, 160, 23, 0.15)',
+                    background: 'rgba(239, 68, 68, 0.15)',
                     color: theme.gm.primary,
                     fontWeight: '800',
                     marginTop: '4px'
@@ -943,7 +1057,7 @@ function UnifiedDashboard({ username, onLogout }) {
                 style={{
                   background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
                   border: 'none',
-                  color: '#0A1628',
+                  color: '#1F1F23',
                   padding: '9px 16px',
                   fontWeight: '800',
                   display: 'flex',
@@ -1013,7 +1127,7 @@ function UnifiedDashboard({ username, onLogout }) {
                           background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
                           border: 'none',
                           padding: '14px 28px',
-                          color: '#0A1628',
+                          color: '#1F1F23',
                           fontWeight: '800',
                           boxShadow: `0 4px 15px ${theme.gm.glow}`
                         }}
@@ -1032,7 +1146,7 @@ function UnifiedDashboard({ username, onLogout }) {
                           background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
                           border: 'none',
                           padding: '14px 28px',
-                          color: '#0A1628',
+                          color: '#1F1F23',
                           fontWeight: '800',
                           boxShadow: `0 4px 15px ${theme.gm.glow}`
                         }}
@@ -1090,9 +1204,9 @@ function UnifiedDashboard({ username, onLogout }) {
                           display: 'inline-flex', alignItems: 'center', gap: 3,
                           padding: '2px 8px', borderRadius: 10,
                           fontSize: 10, fontWeight: 800, letterSpacing: 0.5,
-                          background: 'rgba(212, 160, 23, 0.15)',
-                          border: '1px solid rgba(212, 160, 23, 0.4)',
-                          color: '#D4A017',
+                          background: 'rgba(239, 68, 68, 0.15)',
+                          border: '1px solid rgba(239, 68, 68, 0.4)',
+                          color: '#EF4444',
                         }}>
                           {(campaign.rules_edition === '2014' ? '2014' : '2024')} RULES
                         </span>
@@ -1229,7 +1343,7 @@ function UnifiedDashboard({ username, onLogout }) {
                   flex: 1,
                   background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
                   border: 'none',
-                  color: '#0A1628',
+                  color: '#1F1F23',
                   padding: '12px',
                   fontWeight: '800'
                 }}
@@ -1301,7 +1415,7 @@ function UnifiedDashboard({ username, onLogout }) {
                 width: '100%',
                 background: `linear-gradient(135deg, ${theme.gm.primary}, ${theme.gm.hover})`,
                 border: 'none',
-                color: '#0A1628',
+                color: '#1F1F23',
                 padding: '14px',
                 fontWeight: '800',
                 display: 'flex',
@@ -1411,7 +1525,7 @@ function UnifiedDashboard({ username, onLogout }) {
                     border: 'none',
                     padding: '14px',
                     borderRadius: '10px',
-                    color: '#0A1628',
+                    color: '#1F1F23',
                     fontWeight: '800',
                     fontSize: '15px'
                   }}

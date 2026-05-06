@@ -18,6 +18,7 @@ import {
 } from "../lib/characterRules";
 import { RACES, CLASSES, BACKGROUNDS, EDITIONS } from "../data/characterRules5e";
 import { getFeatsByEdition } from "../data/levelUpData";
+import { SOURCE_CONTENT_LABELS, SOURCE_LEGAL_NOTICE, getSourcesByContent } from "../data/dndSources5e";
 import { API_BASE } from "../lib/api";
 import AbilitiesStep from "./builder/AbilitiesStep";
 import PortraitGenerator from "./builder/PortraitGenerator";
@@ -26,11 +27,13 @@ const DRAFT_KEY = "rq_character_builder_draft_v2";
 
 // Theme
 const theme = {
-  bg: { primary: '#0A1628', surface: '#0F2440', elevated: '#14304F' },
-  sunset: { purple: '#D4A017', pink: '#D4A017', gold: '#D4A017' },
-  text: { primary: '#F8FAFC', secondary: '#94A3B8', muted: '#64748B' },
-  border: 'rgba(212, 160, 23, 0.35)',
-  borderActive: '#D4A017'
+  bg: { primary: '#1F1F23', surface: '#27272B', elevated: '#323235' },
+  sunset: { purple: '#EF4444', pink: '#EF4444', gold: '#EF4444' },
+  text: { primary: '#FFFFFF', secondary: '#D1D5DB', muted: '#9CA3AF' },
+  border: 'rgba(239, 68, 68, 0.35)',
+  borderActive: '#EF4444',
+  accent: { primary: '#EF4444', soft: 'rgba(239, 68, 68, 0.12)', line: 'rgba(239, 68, 68, 0.28)' },
+  success: '#10B981'
 };
 
 // All 18 skills mapped to their governing ability
@@ -657,6 +660,28 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       <InfoBanner>
         {edition === '2014' ? 'Ability bonuses come from your Race.' : 'Ability bonuses come from your Background (Origin).'}
       </InfoBanner>
+      <div style={{
+        marginTop: 12,
+        padding: 12,
+        background: theme.bg.surface,
+        border: `1px solid ${theme.border}`,
+        color: theme.text.secondary,
+        fontSize: 12
+      }}>
+        <div style={{ color: theme.sunset.gold, fontWeight: 800, textTransform: 'uppercase', marginBottom: 8 }}>
+          Source coverage map
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+          {['classes', 'subclasses', 'species', 'backgrounds', 'feats', 'spells', 'equipment'].map(key => (
+            <span key={key} style={{ border: `1px solid ${theme.border}`, padding: '3px 6px' }}>
+              {SOURCE_CONTENT_LABELS[key]}: {getSourcesByContent(key).length}
+            </span>
+          ))}
+        </div>
+        <div style={{ color: theme.text.muted, lineHeight: 1.45 }}>
+          {SOURCE_LEGAL_NOTICE}
+        </div>
+      </div>
     </div>
   );
 
@@ -1014,7 +1039,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                   title={feat.description}
                   style={{
                     padding: '8px 10px', borderRadius: 8, fontSize: 12, textAlign: 'left',
-                    background: sel ? 'rgba(212, 160, 23, 0.18)' : theme.bg.primary,
+                    background: sel ? 'rgba(239, 68, 68, 0.18)' : theme.bg.primary,
                     border: `1px solid ${sel ? theme.sunset.gold : theme.border}`,
                     color: theme.text.primary, cursor: 'pointer'
                   }}>
@@ -1064,7 +1089,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
               style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '10px 12px', borderRadius: '8px',
-                background: fromBg ? 'rgba(245, 158, 11, 0.12)' : selected ? 'rgba(212, 160, 23, 0.15)' : 'rgba(15, 10, 30, 0.5)',
+                background: fromBg ? 'rgba(245, 158, 11, 0.12)' : selected ? 'rgba(239, 68, 68, 0.15)' : 'rgba(31, 31, 35, 0.5)',
                 border: `1px solid ${fromBg ? 'rgba(245, 158, 11, 0.3)' : selected ? theme.borderActive : theme.border}`,
                 color: disabled && !fromBg ? theme.text.muted : theme.text.primary,
                 cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled && !fromBg ? 0.45 : 1,
@@ -1085,7 +1110,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
 
       {/* Half-Elf Skill Versatility - pick 2 extra skills */}
       {hasHalfElfVersatility && (
-        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(212, 160, 23, 0.06)', border: `1px solid ${theme.border}` }}>
+        <div style={{ marginTop: '20px', padding: '14px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.06)', border: `1px solid ${theme.border}` }}>
           <label style={labelStyle}>
             Half-Elf: Skill Versatility — pick 2 extra skills
             {' — '}
@@ -1114,7 +1139,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                   }}
                   style={{
                     padding: '7px 10px', borderRadius: 6, fontSize: 12, textAlign: 'left',
-                    background: sel ? 'rgba(212, 160, 23, 0.2)' : disabled ? 'rgba(212, 160, 23, 0.05)' : 'rgba(15, 10, 30, 0.5)',
+                    background: sel ? 'rgba(239, 68, 68, 0.2)' : disabled ? 'rgba(239, 68, 68, 0.05)' : 'rgba(31, 31, 35, 0.5)',
                     border: `1px solid ${sel ? theme.sunset.pink : theme.border}`,
                     color: disabled ? theme.text.muted : theme.text.primary,
                     cursor: disabled ? 'not-allowed' : 'pointer',
@@ -1159,7 +1184,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
         data-testid={`spell-${spell.name.toLowerCase().replace(/ /g, '-')}`}
         style={{
           textAlign: 'left', padding: '10px 12px', borderRadius: 10,
-          background: picked ? 'rgba(212, 160, 23, 0.18)' : 'rgba(15, 10, 30, 0.5)',
+          background: picked ? 'rgba(239, 68, 68, 0.18)' : 'rgba(31, 31, 35, 0.5)',
           border: `1px solid ${picked ? theme.borderActive : theme.border}`,
           color: theme.text.primary, cursor: 'pointer', fontSize: 12
         }}
@@ -1228,7 +1253,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                 data-testid={`equipment-${choice}`}
                 style={{
                   textAlign: 'left', padding: 14, borderRadius: 12,
-                  background: active ? 'rgba(245, 158, 11, 0.12)' : 'rgba(15, 10, 30, 0.5)',
+                  background: active ? 'rgba(245, 158, 11, 0.12)' : 'rgba(31, 31, 35, 0.5)',
                   border: `2px solid ${active ? theme.sunset.gold : theme.border}`,
                   color: theme.text.primary, cursor: 'pointer'
                 }}>
@@ -1245,7 +1270,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
           })}
         </div>
 
-        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(15, 10, 30, 0.5)', border: `1px solid ${theme.border}` }}>
+        <div style={{ padding: 14, borderRadius: 12, background: 'rgba(31, 31, 35, 0.5)', border: `1px solid ${theme.border}` }}>
           <div style={detailHeaderStyle}>Your gear</div>
           {equipmentChoice === 'A' ? (
             <div style={{ fontSize: 12, color: theme.text.secondary, lineHeight: 1.8 }}>
@@ -1304,8 +1329,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       {/* Personality prompts — optional but encouraged. Helps GMs & AI co-GM give richer RP. */}
       <div style={{ ...panelStyle, padding: '16px', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-          <Sparkles size={14} color="#D4A017" />
-          <div style={{ fontSize: 12, fontWeight: 800, color: '#D4A017', letterSpacing: 1 }}>
+          <Sparkles size={14} color="#EF4444" />
+          <div style={{ fontSize: 12, fontWeight: 800, color: '#EF4444', letterSpacing: 1 }}>
             PERSONALITY & ROLEPLAY
           </div>
           <span style={{ fontSize: 10, color: theme.text.muted, fontStyle: 'italic' }}>
@@ -1362,7 +1387,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
       </div>
 
       {/* Summary card */}
-      <div style={{ ...panelStyle, padding: '20px', background: 'rgba(15, 10, 30, 0.7)' }}>
+      <div style={{ ...panelStyle, padding: '20px', background: 'rgba(31, 31, 35, 0.7)' }}>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '16px' }}>
           {portrait ? (
             <img src={portrait} alt="" style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${theme.sunset.purple}` }}
@@ -1386,7 +1411,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             const final = Number(stats[a]) + (asiBonus[a] || 0);
             const mod = Math.floor((final - 10) / 2);
             return (
-              <div key={a} style={{ textAlign: 'center', padding: '10px', borderRadius: '8px', background: 'rgba(212, 160, 23, 0.08)' }}>
+              <div key={a} style={{ textAlign: 'center', padding: '10px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.08)' }}>
                 <div style={{ fontSize: '10px', color: theme.text.muted, fontWeight: 600 }}>{formatAbility(a)}</div>
                 <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{final}</div>
                 <div style={{ fontSize: '12px', color: theme.sunset.gold, fontWeight: 600 }}>{formatModifier(mod)}</div>
@@ -1461,17 +1486,17 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
           <span>STEP {step + 1} OF {STEPS.length}</span>
           <div style={{
             flex: 1, height: 6, borderRadius: 3,
-            background: 'rgba(212, 160, 23, 0.10)',
-            border: '1px solid rgba(212, 160, 23, 0.20)', overflow: 'hidden',
+            background: 'rgba(239, 68, 68, 0.10)',
+            border: '1px solid rgba(239, 68, 68, 0.20)', overflow: 'hidden',
           }}>
             <div style={{
               height: '100%',
               width: `${Math.round(((step + 1) / STEPS.length) * 100)}%`,
-              background: '#D4A017',
+              background: '#EF4444',
               transition: 'width 0.3s ease',
             }} />
           </div>
-          <span style={{ color: '#D4A017', minWidth: 36, textAlign: 'right' }}>
+          <span style={{ color: '#EF4444', minWidth: 36, textAlign: 'right' }}>
             {Math.round(((step + 1) / STEPS.length) * 100)}%
           </span>
         </div>
@@ -1511,12 +1536,12 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
           <div data-testid="builder-live-preview" style={{
             position: 'sticky', top: 16,
             background: theme.bg.surface,
-            border: '1px solid rgba(212, 160, 23, 0.35)',
+            border: '1px solid rgba(239, 68, 68, 0.35)',
             borderRadius: 12,
             padding: 16,
             display: 'flex', flexDirection: 'column', gap: 10,
           }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: '#D4A017', letterSpacing: 1 }}>
+            <div style={{ fontSize: 10, fontWeight: 800, color: '#EF4444', letterSpacing: 1 }}>
               LIVE PREVIEW
             </div>
             <div style={{ fontSize: 18, fontWeight: 800, color: theme.text.primary }}>
@@ -1532,8 +1557,8 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             <div style={{
               display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4,
               padding: 8, borderRadius: 6,
-              background: 'rgba(212, 160, 23, 0.06)',
-              border: '1px solid rgba(212, 160, 23, 0.20)',
+              background: 'rgba(239, 68, 68, 0.06)',
+              border: '1px solid rgba(239, 68, 68, 0.20)',
             }}>
               {['STR','DEX','CON','INT','WIS','CHA'].map((ab, i) => {
                 const key = ['strength','dexterity','constitution','intelligence','wisdom','charisma'][i];
@@ -1543,24 +1568,24 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
                   <div key={ab} style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: 9, color: theme.text.muted, fontWeight: 700 }}>{ab}</div>
                     <div style={{ fontSize: 14, color: theme.text.primary, fontWeight: 800 }}>{score}</div>
-                    <div style={{ fontSize: 10, color: '#D4A017', fontWeight: 700 }}>{mod >= 0 ? `+${mod}` : mod}</div>
+                    <div style={{ fontSize: 10, color: '#EF4444', fontWeight: 700 }}>{mod >= 0 ? `+${mod}` : mod}</div>
                   </div>
                 );
               })}
             </div>
             {/* Skills count */}
             <div style={{ fontSize: 11, color: theme.text.secondary }}>
-              <strong style={{ color: '#D4A017' }}>{(selectedSkills || []).length}</strong> skill{(selectedSkills || []).length === 1 ? '' : 's'} chosen
+              <strong style={{ color: '#EF4444' }}>{(selectedSkills || []).length}</strong> skill{(selectedSkills || []).length === 1 ? '' : 's'} chosen
               {(selectedCantrips || []).length > 0 && (
-                <> · <strong style={{ color: '#D4A017' }}>{selectedCantrips.length}</strong> cantrip{selectedCantrips.length === 1 ? '' : 's'}</>
+                <> · <strong style={{ color: '#EF4444' }}>{selectedCantrips.length}</strong> cantrip{selectedCantrips.length === 1 ? '' : 's'}</>
               )}
               {(selectedSpells || []).length > 0 && (
-                <> · <strong style={{ color: '#D4A017' }}>{selectedSpells.length}</strong> spell{selectedSpells.length === 1 ? '' : 's'}</>
+                <> · <strong style={{ color: '#EF4444' }}>{selectedSpells.length}</strong> spell{selectedSpells.length === 1 ? '' : 's'}</>
               )}
             </div>
             {originFeat && (
               <div style={{ fontSize: 11, color: theme.text.secondary }}>
-                <span style={{ color: theme.text.muted }}>Origin Feat:</span> <strong style={{ color: '#D4A017' }}>{originFeat}</strong>
+                <span style={{ color: theme.text.muted }}>Origin Feat:</span> <strong style={{ color: '#EF4444' }}>{originFeat}</strong>
               </div>
             )}
           </div>
@@ -1573,7 +1598,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
             data-testid="builder-prev-btn"
             style={{
               padding: '12px 20px', borderRadius: '12px', cursor: step === 0 ? 'not-allowed' : 'pointer',
-              background: 'rgba(212, 160, 23, 0.15)', border: `1px solid ${theme.border}`,
+              background: 'rgba(239, 68, 68, 0.15)', border: `1px solid ${theme.border}`,
               color: theme.text.primary, opacity: step === 0 ? 0.4 : 1,
               display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px'
             }}>
@@ -1587,7 +1612,7 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
               style={{
                 padding: '12px 24px', borderRadius: '12px',
                 cursor: canAdvance() ? 'pointer' : 'not-allowed',
-                background: canAdvance() ? theme.sunset.gold : 'rgba(212, 160, 23, 0.15)',
+                background: canAdvance() ? theme.sunset.gold : 'rgba(239, 68, 68, 0.15)',
                 border: canAdvance() ? `1px solid ${theme.sunset.gold}` : `1px solid ${theme.border}`,
                 color: canAdvance() ? theme.bg.primary : theme.text.muted,
                 display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: 600,
@@ -1693,7 +1718,7 @@ function DetailPanel({ title, color, children }) {
   return (
     <div style={{
       marginTop: '16px', padding: '14px 16px', borderRadius: '12px',
-      background: 'rgba(15, 10, 30, 0.65)', border: `1px solid ${theme.border}`,
+      background: 'rgba(31, 31, 35, 0.65)', border: `1px solid ${theme.border}`,
       borderLeft: `3px solid ${color}`
     }}>
       <div style={{ fontFamily: "'Cinzel', serif", fontSize: '0.95rem', color, marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -1706,7 +1731,7 @@ function DetailPanel({ title, color, children }) {
 
 function InfoBanner({ children }) {
   return (
-    <div style={{ marginTop: '16px', padding: '10px 14px', borderRadius: '10px', background: 'rgba(212, 160, 23, 0.08)', border: '1px solid rgba(212, 160, 23, 0.2)', color: theme.text.secondary, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <div style={{ marginTop: '16px', padding: '10px 14px', borderRadius: '10px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)', color: theme.text.secondary, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
       <Info size={14} color={theme.sunset.pink} />
       {children}
     </div>
@@ -1715,7 +1740,7 @@ function InfoBanner({ children }) {
 
 function Pill({ icon, children }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '6px', background: 'rgba(212, 160, 23, 0.15)', fontSize: '10px', color: theme.text.secondary, fontWeight: 500 }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '2px 6px', borderRadius: '6px', background: 'rgba(239, 68, 68, 0.15)', fontSize: '10px', color: theme.text.secondary, fontWeight: 500 }}>
       <span>{icon}</span>{children}
     </span>
   );
@@ -1723,7 +1748,7 @@ function Pill({ icon, children }) {
 
 function PreviewStat({ icon: Icon, label, value, color }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px 10px', borderRadius: '8px', background: 'rgba(212, 160, 23, 0.08)', border: `1px solid ${color}30` }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px 10px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.08)', border: `1px solid ${color}30` }}>
       <Icon size={14} color={color} />
       <div style={{ fontSize: '11px', color: theme.text.muted, fontWeight: 500 }}>{label}</div>
       <div style={{ fontSize: '15px', color, fontWeight: 700 }}>{value}</div>
@@ -1734,7 +1759,7 @@ function PreviewStat({ icon: Icon, label, value, color }) {
 const traitChipStyle = {
   display: 'inline-flex', alignItems: 'center', gap: '4px',
   padding: '4px 8px', borderRadius: '6px',
-  background: 'rgba(212, 160, 23, 0.12)', border: '1px solid rgba(212, 160, 23, 0.25)',
+  background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.25)',
   fontSize: '11px', color: theme.text.secondary
 };
 const detailHeaderStyle = {

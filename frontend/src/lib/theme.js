@@ -1,7 +1,7 @@
 /**
- * ROOK — Shared design theme.
- * Block A design reset: dark navy background + gold outlines. No gradients, no glow.
- * Import via:  import { theme } from '@/lib/theme';
+ * ROOK shared design theme.
+ * Minimalist dark surface, red linework, square corners.
+ * Import via: import { theme } from '@/lib/theme';
  */
 
 export const theme = {
@@ -20,7 +20,7 @@ export const theme = {
     muted: '#9CA3AF',
     accent: '#EF4444'
   },
-  // Accents — gold-only palette
+  // Accents - red-only linework
   accent: {
     primary: '#EF4444',     // main red accent
     hover: '#F87171',       // lighter red hover
@@ -37,15 +37,15 @@ export const theme = {
   success: '#10B981',
   danger: '#EF4444',
   warning: '#F59E0B',
-  // Legacy compatibility shims (so existing `theme.sunset.xxx` lookups don't explode)
-  sunset: { purple: '#D4A017', pink: '#D4A017', gold: '#D4A017' },
+  // Legacy compatibility shims (so existing `theme.sunset.xxx` lookups keep rendering)
+  sunset: { purple: '#EF4444', pink: '#EF4444', gold: '#EF4444' },
   gradient: '#EF4444',
   glow: 'none',         // Disable glows
   player:  { primary: '#EF4444', hover: '#F87171', secondary: '#B91C1C' },
   gm:      { primary: '#EF4444', hover: '#F87171', secondary: '#B91C1C' },
 };
 
-/** Common panel style: navy surface + gold 1px outline. */
+/** Common panel style: dark surface + red 1px outline. */
 export const panelStyle = {
   background: theme.bg.surface,
   border: `1px solid ${theme.accent.line}`,
@@ -64,8 +64,8 @@ export const buttonStyle = {
 };
 
 /**
- * Per-class accent palette — subtle border / icon tint within the Navy/Gold theme.
- * Keep saturation LOW so it never overpowers the gold outline.
+ * Per-class accent palette - subtle border / icon tint within the red-line theme.
+ * Keep saturation low so it never overpowers the primary red outline.
  * `tint` = used as a soft border-shadow / left-border accent
  * `icon` = used for the class crest dot next to character name + section headers
  */

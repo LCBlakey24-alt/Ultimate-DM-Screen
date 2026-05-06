@@ -8,11 +8,12 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional
 import asyncio
+import base64
 import uuid
 
 from utils.auth import get_current_user
 from config import logger
-from utils.llm_provider import LlmChat, UserMessage, get_llm_api_key
+from utils.llm_provider import LlmChat, OpenAIImageGeneration, UserMessage, get_llm_api_key
 
 router = APIRouter()
 
@@ -78,79 +79,93 @@ def _build_prompt(req: PortraitRequest) -> str:
     )
 
 
+async def _generate_with_gemini(req: PortraitRequest, username: str) -> dict:
+    prompt = _build_prompt(req)
+    session_id = f"portrait-{username}-{req.style}-{uuid.uuid4().hex[:8]}"
+    chat = LlmChat(
+        api_key=get_llm_api_key("gemini"),
+        session_id=session_id,
+        system_message="You are an expert fantasy portrait artist."
+    )
+    chat.with_model("gemini", "gemini-3.1-flash-image-preview").with_params(modalities=["image", "text"])
+    _text, images = await chat.send_message_multimodal_response(UserMessage(text=prompt))
+    if not images:
+        raise RuntimeError("no_image")
+    first = images[0]
+    return {
+        "image_base64": first.get("data", ""),
+        "mime_type": first.get("mime_type", "image/png"),
+        "style": req.style,
+        "prompt": prompt,
+        "provider": "gemini"
+    }
+
+
+async def _generate_with_openai(req: PortraitRequest) -> dict:
+    prompt = _build_prompt(req)
+    generator = OpenAIImageGeneration(api_key=get_llm_api_key("openai"))
+    images = await generator.generate_images(prompt=prompt, number_of_images=1)
+    if not images:
+        raise RuntimeError("no_image")
+    return {
+        "image_base64": base64.b64encode(images[0]).decode("utf-8"),
+        "mime_type": "image/png",
+        "style": req.style,
+        "prompt": prompt,
+        "provider": "openai"
+    }
+
+
+async def _generate_portrait_option(req: PortraitRequest, username: str) -> dict:
+    if req.style not in STYLE_PROMPTS:
+        req.style = "photoreal"
+
+    if LlmChat is not None and UserMessage is not None and get_llm_api_key("gemini"):
+        return await _generate_with_gemini(req, username)
+
+    if get_llm_api_key("openai"):
+        return await _generate_with_openai(req)
+
+    raise HTTPException(
+        status_code=503,
+        detail="Image generation is not configured. Set GEMINI_API_KEY/GOOGLE_API_KEY or OPENAI_API_KEY."
+    )
+
+
 @router.post("/ai/portrait")
 async def generate_portrait(req: PortraitRequest, username: str = Depends(get_current_user)):
     """Generate a single fantasy-style character portrait via Gemini Nano Banana.
 
     Returns: { image_base64: str, mime_type: str, prompt: str, style: str }
     """
-    if LlmChat is None or UserMessage is None or not get_llm_api_key("gemini"):
-        raise HTTPException(status_code=503, detail="Image generation is not configured on this server.")
-
-    if req.style not in STYLE_PROMPTS:
-        req.style = "photoreal"
-
-    prompt = _build_prompt(req)
-    session_id = f"portrait-{username}-{uuid.uuid4().hex[:8]}"
-
     try:
-        chat = LlmChat(
-            api_key=get_llm_api_key("gemini"),
-            session_id=session_id,
-            system_message="You are an expert fantasy portrait artist."
-        )
-        chat.with_model("gemini", "gemini-3.1-flash-image-preview").with_params(modalities=["image", "text"])
-        msg = UserMessage(text=prompt)
-        _text, images = await chat.send_message_multimodal_response(msg)
+        return await _generate_portrait_option(req, username)
+    except HTTPException:
+        raise
     except Exception as e:
         logger.exception("Portrait generation failed")
         raise HTTPException(status_code=500, detail=f"Portrait generation failed: {type(e).__name__}")
-
-    if not images:
-        raise HTTPException(status_code=502, detail="No image returned from the model.")
-
-    first = images[0]
-    return {
-        "image_base64": first.get("data", ""),
-        "mime_type": first.get("mime_type", "image/png"),
-        "style": req.style,
-        "prompt": prompt
-    }
 
 
 @router.post("/ai/portrait/batch")
 async def generate_portrait_batch(req: PortraitRequest, username: str = Depends(get_current_user)):
     """Generate 3 portraits (photoreal, painterly, stylized) in parallel so the
     player can pick their favorite at the end of the builder."""
-    if LlmChat is None or UserMessage is None or not get_llm_api_key("gemini"):
-        raise HTTPException(status_code=503, detail="Image generation is not configured on this server.")
-
     styles = ["photoreal", "painterly", "stylized"]
 
     async def one(style: str):
         copy = req.model_copy(update={"style": style})
-        prompt = _build_prompt(copy)
-        session_id = f"portrait-{username}-{style}-{uuid.uuid4().hex[:6]}"
         try:
-            chat = LlmChat(
-                api_key=get_llm_api_key("gemini"),
-                session_id=session_id,
-                system_message="You are an expert fantasy portrait artist."
-            )
-            chat.with_model("gemini", "gemini-3.1-flash-image-preview").with_params(modalities=["image", "text"])
-            _text, images = await chat.send_message_multimodal_response(UserMessage(text=prompt))
-            if not images:
-                return {"style": style, "error": "no_image", "prompt": prompt}
-            first = images[0]
-            return {
-                "style": style,
-                "image_base64": first.get("data", ""),
-                "mime_type": first.get("mime_type", "image/png"),
-                "prompt": prompt
-            }
+            return await _generate_portrait_option(copy, username)
+        except HTTPException:
+            raise
         except Exception as e:
             logger.exception(f"Portrait ({style}) failed")
+            prompt = _build_prompt(copy)
             return {"style": style, "error": type(e).__name__, "prompt": prompt}
 
-    results = await asyncio.gather(*[one(s) for s in styles])
+    try:
+        results = await asyncio.gather(*[one(s) for s in styles])
+    except HTTPException:
+        raise
     return {"portraits": results}

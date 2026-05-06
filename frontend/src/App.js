@@ -28,6 +28,7 @@ import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 import { usePlayerOnlyDevice } from '@/hooks/useResponsiveMode';
 import { SubscriptionProvider } from '@/hooks/useSubscription';
 import { ThemeProvider, useTheme, THEMES } from '@/contexts/ThemeContext';
+import { API_BASE } from '@/lib/api';
 
 // Component to automatically set theme based on route
 function ThemeRouter() {
@@ -56,8 +57,7 @@ function ThemeRouter() {
   return null;
 }
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE;
 
 // Setup axios interceptor for auth
 axios.interceptors.request.use((config) => {

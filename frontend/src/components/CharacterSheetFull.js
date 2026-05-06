@@ -21,13 +21,13 @@ import DiceRollFlicker from './DiceRollFlicker';
 import DiceRollHistory from './DiceRollHistory';
 import { getConditionRollEffect, getConditionIndicator, CONDITION_EFFECTS } from '../data/conditionEffects';
 import { getClassAccent, theme as globalTheme } from '../lib/theme';
+import { API_BASE } from '../lib/api';
 import CharacterHeader from './CharacterHeader';
 import CharacterLeftPanel from './CharacterLeftPanel';
 import CharacterSkillsPanel from './CharacterSkillsPanel';
 import CharacterTabs from './CharacterTabs';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = API_BASE;
 
 // Use global theme from lib/theme.js so theme changes cascade
 const theme = globalTheme;
@@ -1121,7 +1121,6 @@ function BackstoryTab({ character, characterId, theme, onUpdateCharacter }) {
   const [editing, setEditing] = useState(null);
   const [editVal, setEditVal] = useState('');
   const backstory = character?.backstory || {};
-  const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
   const fields = [
     { key: 'personality_traits', label: 'Personality Traits', placeholder: 'I always have a plan. I am slow to trust but fiercely loyal.' },
