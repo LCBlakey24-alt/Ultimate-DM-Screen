@@ -5,7 +5,7 @@ import { Sparkles, Wand2, Loader2, Check, RefreshCw, Upload } from "lucide-react
 import { API_BASE } from "@/lib/api";
 
 const API = API_BASE;
-const BACKEND_AVAILABLE = Boolean(BACKEND_URL && BACKEND_URL.length > 0);
+const BACKEND_AVAILABLE = Boolean(API && API.length > 0);
 
 const theme = {
   gold: "#EF4444",
@@ -52,7 +52,6 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
         gender,
         description
       };
-      if (!BACKEND_AVAILABLE) throw new Error('AI backend not configured');
       const { data } = await axios.post(`${API}/ai/portrait/batch`, payload);
       setOptions(data.portraits || []);
       const good = (data.portraits || []).filter(p => p.image_base64).length;
@@ -108,8 +107,8 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
     <div
       data-testid="portrait-generator"
       style={{
-        padding: 16, borderRadius: 12,
-        background: "rgba(15, 36, 64, 0.6)",
+        padding: 16, borderRadius: 0,
+        background: "rgba(39, 39, 43, 0.86)",
         border: `1px solid ${theme.border}`,
         marginBottom: 20
       }}>
@@ -137,7 +136,7 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
             style={{
               width: "100%", padding: "8px 10px",
               background: theme.bg.primary, color: theme.text.primary,
-              border: `1px solid ${theme.border}`, borderRadius: 8,
+              border: `1px solid ${theme.border}`, borderRadius: 0,
               fontSize: 13, outline: "none"
             }}
           />
@@ -155,7 +154,7 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
             style={{
               width: "100%", padding: "8px 10px",
               background: theme.bg.primary, color: theme.text.primary,
-              border: `1px solid ${theme.border}`, borderRadius: 8,
+              border: `1px solid ${theme.border}`, borderRadius: 0,
               fontSize: 13, outline: "none"
             }}
           />
@@ -171,8 +170,8 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
           style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "10px 16px",
-            background: loading ? "rgba(212,160,23,0.1)" : "rgba(212,160,23,0.2)",
-            border: `1px solid ${theme.gold}`, borderRadius: 10,
+            background: loading ? "rgba(239, 68, 68, 0.1)" : "rgba(239, 68, 68, 0.16)",
+            border: `1px solid ${theme.gold}`, borderRadius: 0,
             color: theme.gold, cursor: loading ? "not-allowed" : "pointer",
             fontSize: 13, fontWeight: 800, letterSpacing: 0.5
           }}>
@@ -181,7 +180,7 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
         </button>
         {!BACKEND_AVAILABLE && (
           <div style={{ color: '#EF4444', fontSize: 12, marginLeft: 8 }}>
-            AI backend not configured. Set REACT_APP_BACKEND_URL to enable portrait generation.
+            AI backend URL is not configured.
           </div>
         )}
 
@@ -192,7 +191,7 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "10px 14px",
             background: "transparent",
-            border: `1px solid ${theme.border}`, borderRadius: 10,
+            border: `1px solid ${theme.border}`, borderRadius: 0,
             color: theme.text.secondary, cursor: "pointer",
             fontSize: 12, fontWeight: 600
           }}>
@@ -230,7 +229,7 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
                 data-testid={`portrait-option-${opt.style}`}
                 style={{
                   padding: 0, overflow: "hidden",
-                  borderRadius: 10,
+                  borderRadius: 0,
                   background: theme.bg.primary,
                   border: selected ? `3px solid ${theme.gold}` : `1px solid ${theme.border}`,
                   cursor: hasImage ? "pointer" : "not-allowed",
@@ -254,7 +253,7 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
                 <div style={{
                   padding: "8px 10px",
                   display: "flex", justifyContent: "space-between", alignItems: "center",
-                  background: selected ? "rgba(212,160,23,0.25)" : "rgba(15, 36, 64, 0.8)",
+                  background: selected ? "rgba(239, 68, 68, 0.18)" : "rgba(39, 39, 43, 0.9)",
                   fontSize: 11, fontWeight: 700, letterSpacing: 0.5, color: theme.text.primary
                 }}>
                   <span>{(STYLE_LABELS[opt.style] || opt.style).toUpperCase()}</span>
@@ -271,7 +270,7 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
           <img
             src={portrait}
             alt=""
-            style={{ width: 48, height: 48, borderRadius: 8, objectFit: "cover", border: `1px solid ${theme.border}` }}
+            style={{ width: 48, height: 48, borderRadius: 0, objectFit: "cover", border: `1px solid ${theme.border}` }}
             onError={e => { e.currentTarget.style.display = "none"; }}
           />
           <span>Current portrait chosen — will save with your character.</span>
@@ -283,7 +282,7 @@ export default function PortraitGenerator({ character = {}, portrait = "", onCha
               marginLeft: "auto",
               display: "inline-flex", alignItems: "center", gap: 4,
               background: "transparent", border: `1px solid ${theme.border}`,
-              color: theme.text.muted, padding: "4px 10px", borderRadius: 6,
+              color: theme.text.muted, padding: "4px 10px", borderRadius: 0,
               fontSize: 11, cursor: "pointer"
             }}>
             <RefreshCw size={11} /> Clear
