@@ -151,6 +151,10 @@ export default function CleanCharacterSheet() {
     setRollBurst({ label, ...result, id: `${Date.now()}-${Math.random()}` });
   };
 
+  const updateCharacterLocal = (updates) => {
+    setCharacter(prev => (prev ? { ...prev, ...updates } : prev));
+  };
+
   if (loading) {
     return (
       <div className="clean-sheet-page clean-sheet-loading">
@@ -305,7 +309,7 @@ export default function CleanCharacterSheet() {
 
         {activeTab === 'combat' && <CleanCombatTab character={character} ac={ac} speed={speed} proficiencyBonus={proficiencyBonus} onRoll={makeRoll} />}
         {activeTab === 'spells' && <EmptyState title="Spells" text="Spell display will be rebuilt here with known, prepared, cantrips and slots separated clearly." />}
-        {activeTab === 'inventory' && <CleanInventoryTab character={character} />}
+        {activeTab === 'inventory' && <CleanInventoryTab character={character} onCharacterUpdate={updateCharacterLocal} />}
         {activeTab === 'notes' && <EmptyState title="Notes" text="Notes and journal entries will be rebuilt here in the next pass." />}
       </main>
     </div>
