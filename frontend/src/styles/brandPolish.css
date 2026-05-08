@@ -12,7 +12,7 @@
   --rook-muted: #9CA3AF;
 }
 
-/* Loading screen: use logo instead of plain spinner ring. */
+/* Loading screen: black/red branded background. The logo image is rendered by React, not CSS. */
 .loading-screen {
   background: radial-gradient(circle at 50% 38%, rgba(239, 68, 68, 0.16), transparent 32%), var(--rook-black) !important;
 }
@@ -22,9 +22,16 @@
   height: 78px !important;
   border: none !important;
   border-radius: 0 !important;
-  background: url('/images/logo-mini.png') center / contain no-repeat !important;
+  background: transparent !important;
   filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.55));
   animation: rookLogoPulse 1.25s ease-in-out infinite !important;
+}
+
+.loading-logo {
+  width: 78px;
+  height: 78px;
+  object-fit: contain;
+  display: block;
 }
 
 @keyframes rookLogoPulse {
