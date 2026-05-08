@@ -1,5 +1,5 @@
 /* Professional dashboard redesign layer
-   Gives the signed-in home page a cleaner command-centre feel without changing dashboard logic. */
+   Scoped, conservative styling for the signed-in home page. */
 
 #player-section,
 #gm-section,
@@ -7,9 +7,7 @@
   --dash-black: #0B0B0C;
   --dash-panel: #141414;
   --dash-card: #1F1F23;
-  --dash-elevated: #27272B;
   --dash-red: #EF4444;
-  --dash-red-soft: rgba(239, 68, 68, 0.10);
   --dash-red-border: rgba(239, 68, 68, 0.32);
   --dash-border: rgba(255, 255, 255, 0.10);
   --dash-white: #FFFFFF;
@@ -17,98 +15,118 @@
   --dash-muted: #9CA3AF;
 }
 
-/* Overall dashboard shell */
-.App > div[style*="min-height: 100vh"],
-.App > div[style*="minHeight: 100vh"] {
-  background: radial-gradient(circle at 15% 0%, rgba(239, 68, 68, 0.10), transparent 30%), #0B0B0C !important;
-}
-
-/* Dashboard header */
-.App header {
+/* Dashboard header only: avoid styling every header in the app. */
+.App:has(#player-section) header {
   background: rgba(11, 11, 12, 0.9) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-bottom: 1px solid var(--dash-border) !important;
   backdrop-filter: blur(16px) !important;
   padding: 14px clamp(14px, 3vw, 28px) !important;
 }
 
-.App header h1,
-.App header span,
-.App header div {
-  color: #FFFFFF !important;
-}
-
-.App header h1 {
+.App:has(#player-section) header h1 {
   background: none !important;
-  -webkit-text-fill-color: #FFFFFF !important;
+  -webkit-text-fill-color: var(--dash-white) !important;
+  color: var(--dash-white) !important;
   letter-spacing: 0.12em !important;
 }
 
-.App header img[src="/images/logo-mini.png"] {
+.App:has(#player-section) header img[src="/images/logo-mini.png"] {
   filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.38)) !important;
 }
 
-.App header button,
-.App header label {
+.App:has(#player-section) header button,
+.App:has(#player-section) header label {
   border-radius: 10px !important;
   box-shadow: none !important;
 }
 
-.App header label[data-testid="upload-json-btn"] {
-  background: #EF4444 !important;
-  color: #FFFFFF !important;
+.App:has(#player-section) header label[data-testid="upload-json-btn"] {
+  background: var(--dash-red) !important;
+  color: var(--dash-white) !important;
 }
 
-/* Sourcebook strip should become a quiet info panel, not visual noise. */
+/* Sourcebook strip: keep compact; do not globally restyle all spans as large badges. */
 [data-testid="sourcebook-library"] {
-  background: #0B0B0C !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
-  color: #FFFFFF !important;
+  background: var(--dash-black) !important;
+  border-bottom: 1px solid var(--dash-border) !important;
+  color: var(--dash-white) !important;
   padding: 16px clamp(14px, 3vw, 28px) !important;
 }
 
 [data-testid="sourcebook-library"] strong,
-[data-testid="sourcebook-library"] summary,
-[data-testid="sourcebook-library"] div {
-  color: #FFFFFF !important;
+[data-testid="sourcebook-library"] summary {
+  color: var(--dash-white) !important;
 }
 
-[data-testid="sourcebook-library"] span,
 [data-testid="sourcebook-library"] p {
-  color: #D1D5DB !important;
+  color: var(--dash-soft) !important;
+  line-height: 1.45 !important;
 }
 
-[data-testid="sourcebook-library"] span {
-  background: #141414 !important;
-  border-color: rgba(255, 255, 255, 0.10) !important;
+[data-testid="sourcebook-library"] svg {
+  color: var(--dash-red) !important;
+}
+
+[data-testid="sourcebook-library"] > div:first-child > div:last-child {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  align-items: flex-start !important;
+}
+
+[data-testid="sourcebook-library"] > div:first-child > div:last-child > span {
+  display: inline-flex !important;
+  width: auto !important;
+  min-width: auto !important;
+  min-height: auto !important;
+  height: auto !important;
   border-radius: 999px !important;
+  background: var(--dash-panel) !important;
+  border: 1px solid var(--dash-border) !important;
+  color: var(--dash-soft) !important;
+  padding: 5px 8px !important;
+  font-size: 10px !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
 }
 
-/* Main split: make both halves feel like cards within a product workspace. */
+[data-testid="sourcebook-library"] details span {
+  display: inline-flex !important;
+  width: auto !important;
+  min-width: auto !important;
+  min-height: auto !important;
+  height: auto !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  padding: 2px 5px !important;
+  font-size: 10px !important;
+  line-height: 1.1 !important;
+}
+
+/* Main split */
 #player-section,
 #gm-section {
   background: transparent !important;
-  border-color: rgba(255, 255, 255, 0.10) !important;
+  border-color: var(--dash-border) !important;
   padding: clamp(16px, 3vw, 28px) !important;
   overflow: visible !important;
 }
 
 #player-section::before,
-#gm-section::before,
-#player-section > div:first-child,
-#gm-section > div:first-child {
+#gm-section::before {
   opacity: 0 !important;
 }
 
 #player-section h2,
 #gm-section h2 {
-  color: #EF4444 !important;
+  color: var(--dash-red) !important;
   letter-spacing: 0.12em !important;
   font-size: 12px !important;
 }
 
 #player-section h3,
 #gm-section h3 {
-  color: #FFFFFF !important;
+  color: var(--dash-white) !important;
   font-size: clamp(24px, 3vw, 34px) !important;
   letter-spacing: -0.04em !important;
 }
@@ -117,9 +135,9 @@
 #gm-section input,
 #player-section select,
 #gm-section select {
-  background: #141414 !important;
-  border: 1px solid rgba(255, 255, 255, 0.10) !important;
-  color: #FFFFFF !important;
+  background: var(--dash-panel) !important;
+  border: 1px solid var(--dash-border) !important;
+  color: var(--dash-white) !important;
   border-radius: 10px !important;
 }
 
@@ -127,13 +145,8 @@
 #gm-section input:focus,
 #player-section select:focus,
 #gm-section select:focus {
-  border-color: #EF4444 !important;
+  border-color: var(--dash-red) !important;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
-}
-
-#player-section input::placeholder,
-#gm-section input::placeholder {
-  color: #9CA3AF !important;
 }
 
 /* Primary actions */
@@ -141,91 +154,58 @@
 button[data-testid*="new-campaign"],
 button[data-testid*="create-campaign"],
 button[data-testid*="campaign-create"] {
-  background: #EF4444 !important;
-  color: #FFFFFF !important;
-  border: 1px solid #EF4444 !important;
+  background: var(--dash-red) !important;
+  color: var(--dash-white) !important;
+  border: 1px solid var(--dash-red) !important;
   border-radius: 10px !important;
   box-shadow: none !important;
 }
 
 [data-testid="homebrew-workshop-btn"] {
   background: transparent !important;
-  color: #FFFFFF !important;
+  color: var(--dash-white) !important;
   border-color: rgba(255, 255, 255, 0.14) !important;
   border-radius: 10px !important;
 }
 
-[data-testid="homebrew-workshop-btn"]:hover {
-  border-color: rgba(239, 68, 68, 0.42) !important;
-  background: rgba(239, 68, 68, 0.08) !important;
-}
-
-/* Cards: character/campaign cards tend to be inline-styled divs/buttons. This targets the repeated clickable dashboard cards. */
-#player-section [data-testid^="character-"],
-#gm-section [data-testid^="campaign-"],
-#player-section .card,
-#gm-section .card,
-#player-section .glow-card,
-#gm-section .glow-card {
-  background: #141414 !important;
-  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+/* Character/campaign cards only. */
+#player-section [data-testid^="character-"] {
+  background: var(--dash-panel) !important;
+  border: 1px solid var(--dash-border) !important;
   border-radius: 14px !important;
   box-shadow: none !important;
-  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease !important;
+}
+
+#gm-section [data-testid^="campaign-"] {
+  background: var(--dash-panel) !important;
+  border: 1px solid var(--dash-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
 }
 
 #player-section [data-testid^="character-"]:hover,
-#gm-section [data-testid^="campaign-"]:hover,
-#player-section .card:hover,
-#gm-section .card:hover,
-#player-section .glow-card:hover,
-#gm-section .glow-card:hover {
+#gm-section [data-testid^="campaign-"]:hover {
   background: #181818 !important;
-  border-color: rgba(239, 68, 68, 0.35) !important;
-  transform: translateY(-1px);
+  border-color: var(--dash-red-border) !important;
 }
 
 #player-section [data-testid^="character-"] h3,
 #gm-section [data-testid^="campaign-"] h3,
 #player-section [data-testid^="character-"] strong,
 #gm-section [data-testid^="campaign-"] strong {
-  color: #FFFFFF !important;
+  color: var(--dash-white) !important;
 }
 
 #player-section [data-testid^="character-"] p,
 #gm-section [data-testid^="campaign-"] p,
 #player-section [data-testid^="character-"] span,
 #gm-section [data-testid^="campaign-"] span {
-  color: #D1D5DB !important;
-}
-
-/* Muted labels and metadata */
-#player-section p,
-#gm-section p,
-#player-section span,
-#gm-section span {
-  color: #D1D5DB !important;
+  color: var(--dash-soft) !important;
 }
 
 #player-section svg,
-#gm-section svg,
-[data-testid="sourcebook-library"] svg {
-  color: #EF4444 !important;
-}
-
-/* Modal polish */
-.App [role="dialog"],
-.App .modal {
-  background: #141414 !important;
-  border: 1px solid rgba(239, 68, 68, 0.28) !important;
-  color: #FFFFFF !important;
-  border-radius: 16px !important;
-}
-
-/* Remove excessive gradient/glow remnants in dashboard area. */
-#player-section [style*="linear-gradient"],
-#gm-section [style*="linear-gradient"] {
-  box-shadow: none !important;
+#gm-section svg {
+  color: var(--dash-red) !important;
 }
 
 @media (max-width: 1024px) {
@@ -235,14 +215,14 @@ button[data-testid*="campaign-create"] {
     min-height: auto !important;
   }
 
-  .App header {
+  .App:has(#player-section) header {
     align-items: flex-start !important;
   }
 }
 
 @media (max-width: 720px) {
-  .App header h1,
-  .App header .mobile-hide {
+  .App:has(#player-section) header h1,
+  .App:has(#player-section) header .mobile-hide {
     display: none !important;
   }
 
