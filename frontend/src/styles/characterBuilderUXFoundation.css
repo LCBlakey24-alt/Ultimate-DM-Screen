@@ -103,6 +103,41 @@
   button {
     overflow-wrap: anywhere;
   }
+
+  /* Character builder stepper/progress rescue.
+     The builder uses inline styles, so this targets the visual step row without
+     crushing every step button to full width. */
+  div[style*="overflow-x: auto"],
+  div[style*="overflowX: auto"],
+  div[style*="overflow: auto"] {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  div[style*="overflow-x: auto"] button,
+  div[style*="overflowX: auto"] button,
+  div[style*="overflow: auto"] button {
+    width: auto !important;
+    min-width: 150px !important;
+    flex: 0 0 auto !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
+  div[style*="overflow-x: auto"]::-webkit-scrollbar,
+  div[style*="overflowX: auto"]::-webkit-scrollbar,
+  div[style*="overflow: auto"]::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  div[style*="overflow-x: auto"]::-webkit-scrollbar-thumb,
+  div[style*="overflowX: auto"]::-webkit-scrollbar-thumb,
+  div[style*="overflow: auto"]::-webkit-scrollbar-thumb {
+    background: rgba(239, 68, 68, 0.45);
+    border-radius: 999px;
+  }
 }
 
 @media (max-width: 520px) {
@@ -128,5 +163,12 @@
   .wizard-option,
   .item-box {
     padding: 12px !important;
+  }
+
+  div[style*="overflow-x: auto"] button,
+  div[style*="overflowX: auto"] button,
+  div[style*="overflow: auto"] button {
+    min-width: 136px !important;
+    font-size: 13px !important;
   }
 }
