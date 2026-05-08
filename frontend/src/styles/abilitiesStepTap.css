@@ -1,0 +1,284 @@
+.ability-step-tap {
+  color: #FFFFFF;
+}
+
+.ability-step-header {
+  margin-bottom: 18px;
+}
+
+.ability-step-header > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.ability-step-header strong {
+  color: #FFFFFF;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.ability-step-header p {
+  margin: 0;
+  color: #D1D5DB;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.ability-method-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.ability-method-grid button {
+  min-height: 76px;
+  text-align: left;
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.ability-method-grid button.active {
+  border-color: #EF4444;
+  background: rgba(239, 68, 68, 0.10);
+}
+
+.ability-method-grid strong {
+  display: block;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+
+.ability-method-grid span,
+.ability-budget,
+.ability-pool-header span,
+.ability-score-pool p,
+.ability-preview > span {
+  color: #D1D5DB;
+  font-size: 13px;
+}
+
+.ability-budget {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+.ability-pool-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 10px;
+  flex-wrap: wrap;
+}
+
+.ability-pool-header button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.ability-score-pool {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+}
+
+.ability-score-pool button {
+  min-height: 58px;
+  background: #0B0B0C;
+  color: #FFFFFF;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  font-size: 22px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.ability-score-pool button.selected {
+  border-color: #EF4444;
+  background: rgba(239, 68, 68, 0.14);
+  transform: translateY(-1px);
+}
+
+.ability-score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.ability-score-card {
+  min-height: 150px;
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ability-score-card.primary {
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+.ability-score-card > span {
+  color: #9CA3AF;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.ability-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ability-stepper button,
+.ability-assignment {
+  min-height: 42px;
+  min-width: 42px;
+  background: rgba(239, 68, 68, 0.10);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: #FFFFFF;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+.ability-stepper button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ability-stepper strong,
+.ability-assignment {
+  color: #FFFFFF;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.ability-assignment {
+  min-width: 76px;
+  padding: 0 12px;
+}
+
+.ability-assignment.filled {
+  border-color: #EF4444;
+  background: rgba(239, 68, 68, 0.14);
+}
+
+.ability-score-card input {
+  width: 76px;
+  min-height: 44px;
+  background: #0B0B0C;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.ability-score-card em {
+  color: #22C55E;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.ability-modifier {
+  color: #EF4444;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.ability-preview {
+  margin-top: 18px;
+  padding: 14px;
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+}
+
+.ability-preview > span {
+  display: block;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+
+.ability-preview > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.ability-preview-stat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 8px;
+  align-items: center;
+  background: #0B0B0C;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.ability-preview-stat svg {
+  color: #EF4444;
+}
+
+.ability-preview-stat span {
+  color: #9CA3AF;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.ability-preview-stat strong {
+  grid-column: 2;
+  color: #FFFFFF;
+  font-weight: 950;
+}
+
+@media (max-width: 520px) {
+  .ability-score-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ability-score-pool {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
