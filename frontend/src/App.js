@@ -8,6 +8,7 @@ import '@/styles/characterBuilderUXFoundation.css';
 import '@/styles/builderUI.css';
 import '@/styles/brandPolish.css';
 import '@/styles/authBrandOverrides.css';
+import '@/styles/professionalLanding.css';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import AuthPage from '@/components/AuthPage';
