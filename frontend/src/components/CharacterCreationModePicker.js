@@ -14,19 +14,6 @@ import {
   Zap,
 } from 'lucide-react';
 
-const COLORS = {
-  page: '#1F1F23',
-  panel: '#27272B',
-  panelAlt: '#323235',
-  accent: '#EF4444',
-  accentBright: '#F87171',
-  text: '#F8FAFC',
-  muted: '#94A3B8',
-  soft: '#64748B',
-  border: 'rgba(239, 68, 68, 0.35)',
-  borderStrong: 'rgba(239, 68, 68, 0.62)',
-};
-
 const modes = [
   {
     key: 'kids',
@@ -83,54 +70,55 @@ export default function CharacterCreationModePicker() {
   const navigate = useNavigate();
 
   return (
-    <main style={styles.page}>
-      <div style={styles.shell}>
+    <main className="character-mode-page">
+      <style>{pageCss}</style>
+      <div className="character-mode-shell">
         <button
           onClick={() => navigate('/home')}
           data-testid="mode-picker-back"
-          style={styles.backButton}
+          className="character-mode-back"
         >
           <ChevronLeft size={17} /> Dashboard
         </button>
 
-        <section style={styles.hero}>
-          <div style={styles.heroCopy}>
-            <div style={styles.kicker}>
+        <section className="character-mode-hero">
+          <div className="character-mode-hero-copy">
+            <div className="character-mode-kicker">
               <Sparkles size={16} /> New Character
             </div>
-            <h1 style={styles.title}>How do you want to build your hero?</h1>
-            <p style={styles.subtitle}>
+            <h1>How do you want to build your hero?</h1>
+            <p>
               Choose the creation style that matches your table, your confidence, and how much control you want. You can edit the character later, so this choice is not a trapdoor into doom.
             </p>
           </div>
 
-          <aside style={styles.tipCard} data-testid="mode-picker-help-card">
-            <div style={styles.tipIcon}><HelpCircle size={20} /></div>
+          <aside className="character-mode-tip" data-testid="mode-picker-help-card">
+            <div className="character-mode-tip-icon"><HelpCircle size={20} /></div>
             <div>
-              <h2 style={styles.tipTitle}>Not sure?</h2>
-              <p style={styles.tipText}>
+              <h2>Not sure?</h2>
+              <p>
                 Start with <strong>Basic Build</strong>. It gives you the important choices without making character creation feel like tax paperwork with goblins.
               </p>
             </div>
           </aside>
         </section>
 
-        <section style={styles.modeGrid} aria-label="Character creation modes">
+        <section className="character-mode-grid" aria-label="Character creation modes">
           {modes.map((mode) => (
             <ModeCard key={mode.key} mode={mode} onChoose={() => navigate(mode.route)} />
           ))}
         </section>
 
-        <section style={styles.footerPanel} data-testid="mode-picker-summary">
-          <div style={styles.summaryItem}>
+        <section className="character-mode-summary" data-testid="mode-picker-summary">
+          <div>
             <ShieldCheck size={18} />
             <span>All modes create a saved character sheet.</span>
           </div>
-          <div style={styles.summaryItem}>
+          <div>
             <Crown size={18} />
             <span>You can edit and improve characters after creation.</span>
           </div>
-          <div style={styles.summaryItem}>
+          <div>
             <Clock size={18} />
             <span>Short on time? Pick Premade or Basic.</span>
           </div>
@@ -148,49 +136,36 @@ function ModeCard({ mode, onChoose }) {
       type="button"
       data-testid={`mode-${mode.key}`}
       onClick={onChoose}
-      style={{
-        ...styles.card,
-        ...(mode.featured ? styles.featuredCard : null),
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-3px)';
-        e.currentTarget.style.borderColor = COLORS.accentBright;
-        e.currentTarget.style.background = COLORS.panelAlt;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.borderColor = mode.featured ? COLORS.accentBright : COLORS.border;
-        e.currentTarget.style.background = COLORS.panel;
-      }}
+      className={`character-mode-card${mode.featured ? ' is-featured' : ''}`}
     >
-      <div style={styles.cardTopline}>
-        <span style={styles.eyebrow}>{mode.eyebrow}</span>
-        <span style={{ ...styles.badge, ...(mode.featured ? styles.featuredBadge : null) }}>{mode.badge}</span>
+      <div className="character-mode-card-topline">
+        <span>{mode.eyebrow}</span>
+        <em>{mode.badge}</em>
       </div>
 
-      <div style={styles.cardHeader}>
-        <div style={{ ...styles.iconBox, ...(mode.featured ? styles.featuredIconBox : null) }}>
+      <div className="character-mode-card-header">
+        <div className="character-mode-icon-box">
           <Icon size={22} />
         </div>
-        <div style={{ minWidth: 0 }}>
-          <h2 style={styles.cardTitle}>{mode.title}</h2>
-          <div style={styles.timeRow}><Clock size={13} /> {mode.time}</div>
+        <div>
+          <h2>{mode.title}</h2>
+          <div className="character-mode-time"><Clock size={13} /> {mode.time}</div>
         </div>
       </div>
 
-      <p style={styles.description}>{mode.description}</p>
+      <p className="character-mode-description">{mode.description}</p>
 
-      <div style={styles.bestForBox}>
+      <div className="character-mode-best-for">
         <strong>Best for:</strong> {mode.bestFor}
       </div>
 
-      <ul style={styles.includesList}>
+      <ul className="character-mode-includes">
         {mode.includes.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ul>
 
-      <div style={styles.chooseRow}>
+      <div className="character-mode-choose">
         <span>Choose this mode</span>
         <ChevronRight size={18} />
       </div>
@@ -198,249 +173,298 @@ function ModeCard({ mode, onChoose }) {
   );
 }
 
-const styles = {
-  page: {
-    minHeight: '100vh',
-    background: `radial-gradient(circle at top left, rgba(239,68,68,0.16), transparent 34%), ${COLORS.page}`,
-    color: COLORS.text,
-    fontFamily: "'Montserrat', system-ui, sans-serif",
-    padding: '28px 18px 44px',
-  },
-  shell: {
-    width: 'min(1120px, 100%)',
-    margin: '0 auto',
-  },
-  backButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 7,
-    background: 'transparent',
-    border: `1px solid ${COLORS.border}`,
-    color: COLORS.muted,
-    cursor: 'pointer',
-    fontSize: 13,
-    fontWeight: 800,
-    marginBottom: 18,
-    padding: '8px 11px',
-    borderRadius: 10,
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
-  hero: {
-    display: 'grid',
-    gridTemplateColumns: 'minmax(0, 1fr) minmax(280px, 360px)',
-    gap: 18,
-    alignItems: 'stretch',
-    marginBottom: 20,
-  },
-  heroCopy: {
-    background: 'rgba(39,39,43,0.72)',
-    border: `1px solid ${COLORS.border}`,
-    padding: '24px 22px',
-    borderRadius: 18,
-  },
-  kicker: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 8,
-    color: COLORS.accentBright,
-    fontSize: 12,
-    fontWeight: 900,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 10,
-  },
-  title: {
-    margin: 0,
-    color: COLORS.text,
-    fontSize: 'clamp(30px, 5vw, 52px)',
-    lineHeight: 0.96,
-    fontWeight: 900,
-    letterSpacing: -1.4,
-  },
-  subtitle: {
-    color: COLORS.muted,
-    margin: '14px 0 0',
-    maxWidth: 760,
-    fontSize: 15,
-    lineHeight: 1.65,
-  },
-  tipCard: {
-    background: 'rgba(239,68,68,0.10)',
-    border: `1px solid ${COLORS.borderStrong}`,
-    borderRadius: 18,
-    padding: 18,
-    display: 'flex',
-    gap: 14,
-    alignItems: 'flex-start',
-  },
-  tipIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    border: `1px solid ${COLORS.borderStrong}`,
-    color: COLORS.accentBright,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: '0 0 auto',
-  },
-  tipTitle: {
-    margin: '0 0 6px',
-    fontSize: 18,
-    fontWeight: 900,
-    color: COLORS.text,
-  },
-  tipText: {
-    margin: 0,
-    color: COLORS.muted,
-    fontSize: 13,
-    lineHeight: 1.6,
-  },
-  modeGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(245px, 1fr))',
-    gap: 16,
-  },
-  card: {
-    appearance: 'none',
-    WebkitAppearance: 'none',
-    border: `1px solid ${COLORS.border}`,
-    background: COLORS.panel,
-    color: COLORS.text,
-    borderRadius: 18,
-    padding: 18,
-    textAlign: 'left',
-    cursor: 'pointer',
-    minHeight: 360,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 13,
-    transition: 'transform 160ms ease, border-color 160ms ease, background 160ms ease',
-    boxShadow: '0 18px 38px rgba(0,0,0,0.18)',
-  },
-  featuredCard: {
-    borderColor: COLORS.accentBright,
-    boxShadow: '0 22px 48px rgba(239,68,68,0.16)',
-  },
-  cardTopline: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  eyebrow: {
-    color: COLORS.soft,
-    fontSize: 10,
-    fontWeight: 900,
-    textTransform: 'uppercase',
-    letterSpacing: 0.9,
-  },
-  badge: {
-    color: COLORS.muted,
-    border: '1px solid rgba(255,255,255,0.09)',
-    background: 'rgba(255,255,255,0.04)',
-    padding: '4px 7px',
-    borderRadius: 999,
-    fontSize: 10,
-    fontWeight: 900,
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
-  featuredBadge: {
-    color: COLORS.page,
-    borderColor: COLORS.accentBright,
-    background: COLORS.accentBright,
-  },
-  cardHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-  },
-  iconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    border: `1px solid ${COLORS.borderStrong}`,
-    color: COLORS.accentBright,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: '0 0 auto',
-    background: 'rgba(239,68,68,0.07)',
-  },
-  featuredIconBox: {
-    background: 'rgba(239,68,68,0.16)',
-  },
-  cardTitle: {
-    margin: 0,
-    color: COLORS.text,
-    fontSize: 20,
-    fontWeight: 900,
-    letterSpacing: -0.4,
-  },
-  timeRow: {
-    marginTop: 5,
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 5,
-    color: COLORS.muted,
-    fontSize: 12,
-    fontWeight: 800,
-  },
-  description: {
-    margin: 0,
-    color: COLORS.muted,
-    fontSize: 13,
-    lineHeight: 1.6,
-  },
-  bestForBox: {
-    border: '1px solid rgba(255,255,255,0.08)',
-    background: 'rgba(0,0,0,0.12)',
-    borderRadius: 12,
-    padding: '10px 11px',
-    color: COLORS.muted,
-    fontSize: 12,
-    lineHeight: 1.5,
-  },
-  includesList: {
-    margin: 0,
-    paddingLeft: 18,
-    color: COLORS.muted,
-    fontSize: 12,
-    lineHeight: 1.75,
-  },
-  chooseRow: {
-    marginTop: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-    borderTop: '1px solid rgba(255,255,255,0.08)',
-    paddingTop: 13,
-    color: COLORS.accentBright,
-    fontSize: 12,
-    fontWeight: 900,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  footerPanel: {
-    marginTop: 16,
-    border: `1px solid ${COLORS.border}`,
-    background: 'rgba(39,39,43,0.72)',
-    borderRadius: 16,
-    padding: 14,
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-    gap: 10,
-  },
-  summaryItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 9,
-    color: COLORS.muted,
-    fontSize: 12,
-    fontWeight: 800,
-    lineHeight: 1.35,
-  },
-};
+const pageCss = `
+.character-mode-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(212,160,23,0.15), transparent 34%),
+    linear-gradient(180deg, rgba(10,22,40,0.98), rgba(10,22,40,1));
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  padding: 28px 18px 44px;
+}
+
+.character-mode-shell {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.character-mode-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  padding: 8px 11px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.character-mode-back:hover {
+  border-color: var(--rq-gold-bright);
+  color: var(--rq-gold-bright);
+  background: var(--rq-gold-soft);
+}
+
+.character-mode-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 18px;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+
+.character-mode-hero-copy,
+.character-mode-tip,
+.character-mode-summary {
+  background: rgba(16, 33, 58, 0.76);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-lg);
+}
+
+.character-mode-hero-copy {
+  padding: 24px 22px;
+}
+
+.character-mode-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--rq-gold-bright);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.character-mode-hero h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(30px, 5vw, 52px);
+  line-height: 0.96;
+  font-weight: 900;
+  letter-spacing: -1.4px;
+}
+
+.character-mode-hero p {
+  color: var(--text-secondary);
+  margin: 14px 0 0;
+  max-width: 760px;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.character-mode-tip {
+  background: rgba(212,160,23,0.10);
+  border-color: var(--rq-gold-border);
+  padding: 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.character-mode-tip-icon {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--rq-gold-border-strong);
+  color: var(--rq-gold-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.character-mode-tip h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.character-mode-tip p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.character-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+  gap: 16px;
+}
+
+.character-mode-card {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--border-default);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-radius: var(--radius-none);
+  padding: 18px;
+  text-align: left;
+  cursor: pointer;
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+  box-shadow: var(--shadow-md);
+}
+
+.character-mode-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--rq-gold-bright);
+  background: var(--bg-elevated);
+  box-shadow: 0 22px 52px rgba(0,0,0,0.38);
+}
+
+.character-mode-card.is-featured {
+  border-color: var(--rq-gold-bright);
+  box-shadow: 0 22px 48px rgba(212,160,23,0.16);
+}
+
+.character-mode-card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.character-mode-card-topline span {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+}
+
+.character-mode-card-topline em {
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  background: rgba(255,255,255,0.04);
+  padding: 4px 7px;
+  border-radius: var(--radius-none);
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.character-mode-card.is-featured .character-mode-card-topline em {
+  color: var(--rq-navy);
+  border-color: var(--rq-gold-bright);
+  background: var(--rq-gold-bright);
+}
+
+.character-mode-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.character-mode-icon-box {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--rq-gold-border-strong);
+  color: var(--rq-gold-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  background: var(--rq-gold-soft);
+}
+
+.character-mode-card h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+}
+
+.character-mode-time {
+  margin-top: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.character-mode-description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.character-mode-best-for {
+  border: 1px solid var(--border-subtle);
+  background: rgba(0,0,0,0.12);
+  padding: 10px 11px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.character-mode-includes {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.character-mode-choose {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 13px;
+  color: var(--rq-gold-bright);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.character-mode-summary {
+  margin-top: 16px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.character-mode-summary div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.character-mode-summary svg {
+  color: var(--rq-gold-bright);
+}
+
+@media (max-width: 820px) {
+  .character-mode-hero {
+    grid-template-columns: 1fr;
+  }
+}
+`;
