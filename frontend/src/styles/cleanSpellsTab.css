@@ -1,0 +1,89 @@
+.clean-sheet-spell-summary,
+.clean-sheet-slot-grid,
+.clean-sheet-spell-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.clean-sheet-spell-summary {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.clean-sheet-spell-summary div,
+.clean-sheet-slot-card,
+.clean-sheet-spell-card {
+  background: #0B0B0C;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.clean-sheet-spell-summary span,
+.clean-sheet-slot-card span,
+.clean-sheet-spell-level {
+  display: block;
+  color: #9CA3AF;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.clean-sheet-spell-summary strong,
+.clean-sheet-slot-card strong,
+.clean-sheet-spell-card strong {
+  color: #FFFFFF;
+  font-weight: 950;
+}
+
+.clean-sheet-slot-grid {
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+}
+
+.clean-sheet-slot-card {
+  text-align: center;
+}
+
+.clean-sheet-slot-card strong {
+  display: block;
+  font-size: 1.7rem;
+}
+
+.clean-sheet-spell-grid {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.clean-sheet-spell-card {
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clean-sheet-spell-card em {
+  color: #EF4444;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.clean-sheet-spell-card p {
+  color: #D1D5DB;
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 2px 0 0;
+}
+
+@media (max-width: 520px) {
+  .clean-sheet-spell-summary,
+  .clean-sheet-spell-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .clean-sheet-slot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
