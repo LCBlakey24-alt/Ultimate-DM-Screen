@@ -214,7 +214,8 @@
 }
 
 .clean-sheet-hp-bulk-row input,
-.clean-sheet-temp-hp-bulk-row input {
+.clean-sheet-temp-hp-bulk-row input,
+.clean-sheet-roll-controls input {
   width: 100%;
   min-height: 42px;
   border: 1px solid rgba(255,255,255,0.12);
@@ -227,7 +228,9 @@
 
 .clean-sheet-hp-actions button,
 .clean-sheet-hp-bulk-row button,
-.clean-sheet-temp-hp-bulk-row button {
+.clean-sheet-temp-hp-bulk-row button,
+.clean-sheet-hitdice-row button,
+.clean-sheet-slot-actions button {
   min-height: 42px;
   border: 1px solid rgba(239, 68, 68, 0.28);
   background: rgba(239, 68, 68, 0.10);
@@ -240,7 +243,8 @@
 .clean-sheet-hp-actions button:disabled,
 .clean-sheet-hp-bulk-row button:disabled,
 .clean-sheet-temp-hp-bulk-row button:disabled,
-.clean-sheet-mobile-tools button:disabled {
+.clean-sheet-mobile-tools button:disabled,
+.clean-sheet-slot-actions button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -284,10 +288,53 @@
   gap: 10px;
 }
 
-.clean-sheet-status-row {
+.clean-sheet-status-row,
+.clean-sheet-roll-controls {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
+}
+
+.clean-sheet-roll-controls {
+  grid-template-columns: 1.4fr minmax(92px, 0.6fr);
+  background: #0B0B0C;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.clean-sheet-roll-mode-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.clean-sheet-roll-mode-group button {
+  min-height: 38px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: transparent;
+  color: #D1D5DB;
+  border-radius: 9px;
+  font-weight: 900;
+}
+
+.clean-sheet-roll-mode-group button.active {
+  background: rgba(239,68,68,0.16);
+  border-color: #EF4444;
+  color: #FFFFFF;
+}
+
+.clean-sheet-roll-controls label {
+  display: grid;
+  gap: 3px;
+}
+
+.clean-sheet-roll-controls label span {
+  color: #9CA3AF;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .clean-sheet-inspiration,
@@ -357,9 +404,9 @@
 .clean-sheet-hitdice-row {
   min-height: 42px;
   padding: 10px 12px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
 }
 
@@ -378,6 +425,11 @@
 .clean-sheet-hitdice-row strong {
   color: #FFFFFF;
   font-weight: 950;
+}
+
+.clean-sheet-hitdice-row button {
+  min-height: 34px;
+  padding: 6px 12px;
 }
 
 .clean-sheet-condition-panel {
@@ -605,7 +657,9 @@
 
 .clean-sheet-abilities,
 .clean-sheet-save-grid,
-.clean-sheet-skill-grid {
+.clean-sheet-skill-grid,
+.clean-sheet-spell-grid,
+.clean-sheet-slot-grid {
   display: grid;
   gap: 10px;
 }
@@ -615,19 +669,93 @@
 }
 
 .clean-sheet-save-grid,
-.clean-sheet-skill-grid {
+.clean-sheet-skill-grid,
+.clean-sheet-spell-grid,
+.clean-sheet-slot-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .clean-sheet-ability,
 .clean-sheet-save-card,
-.clean-sheet-skill-card {
+.clean-sheet-skill-card,
+.clean-sheet-spell-card,
+.clean-sheet-slot-card {
   background: #0B0B0C;
   border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 12px;
   padding: 14px;
   text-align: center;
   color: #FFFFFF;
+}
+
+.clean-sheet-spell-card {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.clean-sheet-spell-card p {
+  color: #D1D5DB;
+  margin: 8px 0 0;
+  line-height: 1.45;
+  font-size: 12px;
+}
+
+.clean-sheet-spell-card small {
+  display: block;
+  color: #EF4444;
+  margin-top: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.clean-sheet-spell-level {
+  display: inline-flex;
+  min-height: 24px;
+  padding: 4px 7px;
+  border: 1px solid rgba(239,68,68,0.28);
+  background: rgba(239,68,68,0.10);
+  color: #EF4444 !important;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.clean-sheet-slot-card {
+  display: grid;
+  gap: 8px;
+}
+
+.clean-sheet-slot-pips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.clean-sheet-slot-pips i {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(239,68,68,0.35);
+  transform: rotate(45deg);
+  background: transparent;
+}
+
+.clean-sheet-slot-pips i.filled {
+  background: #EF4444;
+  border-color: #F87171;
+}
+
+.clean-sheet-slot-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.clean-sheet-slot-actions button {
+  min-height: 36px;
+  border-radius: 9px;
 }
 
 .clean-sheet-clickable,
@@ -638,7 +766,9 @@
 
 .clean-sheet-clickable:hover,
 .clean-sheet-save-card:hover,
-.clean-sheet-skill-card:hover {
+.clean-sheet-skill-card:hover,
+.clean-sheet-spell-card:hover,
+.clean-sheet-slot-card:hover {
   border-color: rgba(239,68,68,0.42);
   background: rgba(239,68,68,0.08);
 }
@@ -647,7 +777,9 @@
 .clean-sheet-list span,
 .clean-sheet-skills span,
 .clean-sheet-save-card span,
-.clean-sheet-skill-card span {
+.clean-sheet-skill-card span,
+.clean-sheet-slot-card span,
+.clean-sheet-spell-summary span {
   color: #9CA3AF;
   font-size: 12px;
   text-transform: uppercase;
@@ -657,12 +789,34 @@
 
 .clean-sheet-ability strong,
 .clean-sheet-save-card strong,
-.clean-sheet-skill-card strong {
+.clean-sheet-skill-card strong,
+.clean-sheet-slot-card strong,
+.clean-sheet-spell-card strong,
+.clean-sheet-spell-summary strong {
   display: block;
   color: #FFFFFF;
   font-size: 1.5rem;
   font-weight: 950;
   margin: 6px 0;
+}
+
+.clean-sheet-spell-card strong {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.clean-sheet-spell-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.clean-sheet-spell-summary div {
+  background: #0B0B0C;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
 }
 
 .clean-sheet-ability strong {
@@ -673,7 +827,8 @@
 .clean-sheet-skills em,
 .clean-sheet-save-card em,
 .clean-sheet-skill-card em,
-.clean-sheet-skill-card small {
+.clean-sheet-skill-card small,
+.clean-sheet-spell-card em {
   color: #EF4444;
   font-style: normal;
   font-weight: 900;
@@ -707,7 +862,6 @@
   font-weight: 950;
 }
 
-/* Desktop/tablet sheet page navigation */
 @media (min-width: 901px) {
   .clean-sheet-page {
     display: grid;
@@ -800,7 +954,10 @@
 @media (max-width: 620px) {
   .clean-sheet-status-row,
   .clean-sheet-passives,
-  .clean-sheet-death-actions {
+  .clean-sheet-death-actions,
+  .clean-sheet-roll-controls,
+  .clean-sheet-spell-summary,
+  .clean-sheet-slot-grid {
     grid-template-columns: 1fr;
   }
 
@@ -814,7 +971,8 @@
   }
 
   .clean-sheet-save-grid,
-  .clean-sheet-skill-grid {
+  .clean-sheet-skill-grid,
+  .clean-sheet-spell-grid {
     grid-template-columns: 1fr;
   }
 }
