@@ -1,6 +1,6 @@
 """Authentication routes: register, login, password reset, account management."""
 from fastapi import APIRouter, HTTPException, Depends, status
-from config import db, RESEND_API_KEY, SENDER_EMAIL, APP_URL, ADMIN_USERNAMES, logger
+from config import db, RESEND_API_KEY, SENDER_EMAIL, APP_URL, RESERVED_USERNAMES, logger
 from utils.auth import (
     get_current_user, hash_password, verify_password, create_token,
     generate_referral_code
@@ -10,6 +10,7 @@ from models import (
     ResetPasswordRequest, ChangePasswordRequest, UpdateAccountRequest,
     SubscriptionTier
 )
+import re
 import uuid
 import secrets
 from datetime import datetime, timezone, timedelta
@@ -20,27 +21,56 @@ if RESEND_API_KEY and RESEND_API_KEY != 'your_resend_api_key_here':
 
 router = APIRouter()
 
+USERNAME_RE = re.compile(r"^[a-zA-Z0-9_-]{3,24}$")
+
+
+def validate_username(username: str) -> str:
+    username = (username or "").strip()
+    username_lower = username.lower()
+    if not USERNAME_RE.fullmatch(username):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username must be 3-24 characters and can only use letters, numbers, underscores, or hyphens"
+        )
+    if username_lower in RESERVED_USERNAMES:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="That username is reserved")
+    return username
+
+
+def validate_password(password: str) -> None:
+    if not password or len(password) < 8:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Password must be at least 8 characters long")
+    if len(password) > 128:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Password is too long")
+    if password.strip() != password:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Password cannot start or end with spaces")
+
+
 def generate_referral_code(username: str) -> str:
     """Generate a unique referral code for a user"""
-    import hashlib
-    # Create a short, memorable code based on username + random
     base = f"{username}-{uuid.uuid4().hex[:4]}"
     return base.upper()[:12]
 
 @router.post("/auth/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserRegister):
+    username = validate_username(user_data.username)
+    username_lower = username.lower()
+    validate_password(user_data.password)
+
     # Check if email already exists
     existing_email = await db.users.find_one({'email': user_data.email.lower()})
     if existing_email:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
     
-    # Check if username already exists
-    existing_user = await db.users.find_one({'username': user_data.username})
+    # Check if username already exists, case-insensitively
+    existing_user = await db.users.find_one({
+        'username': {'$regex': f"^{re.escape(username)}$", '$options': 'i'}
+    })
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken")
     
     # Generate unique referral code for new user
-    referral_code = generate_referral_code(user_data.username)
+    referral_code = generate_referral_code(username)
     
     # Check if they were referred by someone
     referred_by = None
@@ -49,18 +79,14 @@ async def register(user_data: UserRegister):
         if referrer:
             referred_by = referrer['username']
     
-    # Create subscription with referral code
+    # Create subscription with referral code. Admin/premium access must be granted separately, not by registering a reserved username.
     subscription = SubscriptionTier(referral_code=referral_code, referred_by=referred_by)
-    
-    # Auto-upgrade admin user to premium
-    if user_data.username.lower() in ADMIN_USERNAMES:
-        subscription.tier = "legendary"
-        subscription.premium_expires_at = None  # Never expires for admin
     
     user_doc = {
         'id': str(uuid.uuid4()),
         'email': user_data.email.lower(),
-        'username': user_data.username,
+        'username': username,
+        'username_lower': username_lower,
         'password_hash': hash_password(user_data.password),
         'created_at': datetime.now(timezone.utc).isoformat(),
         'subscription': subscription.model_dump()
@@ -100,9 +126,9 @@ async def register(user_data: UserRegister):
             }
         )
     
-    token = create_token(user_data.username)
+    token = create_token(username)
     
-    return TokenResponse(token=token, username=user_data.username, email=user_data.email.lower())
+    return TokenResponse(token=token, username=username, email=user_data.email.lower())
 
 @router.post("/auth/login", response_model=TokenResponse)
 async def login(user_data: UserLogin):
@@ -148,10 +174,10 @@ async def forgot_password(request: ForgotPasswordRequest):
                 "subject": "Reset Your Rookie Quest Keeper Password",
                 "html": f"""
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <h1 style="color: #14b8a6;">Rookie Quest Keeper</h1>
+                    <h1 style="color: #DC2626;">Rookie Quest Keeper</h1>
                     <h2>Password Reset Request</h2>
                     <p>You requested to reset your password. Click the button below to set a new password:</p>
-                    <a href="{reset_link}" style="display: inline-block; background: linear-gradient(135deg, #14b8a6, #0d9488); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 20px 0;">
+                    <a href="{reset_link}" style="display: inline-block; background: #DC2626; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 20px 0;">
                         Reset Password
                     </a>
                     <p style="color: #666; font-size: 14px;">This link will expire in 1 hour.</p>
@@ -166,13 +192,14 @@ async def forgot_password(request: ForgotPasswordRequest):
             logger.error(f"Failed to send email: {e}")
             # Still return success to prevent enumeration
     else:
-        logger.warning(f"Resend not configured. Reset token: {reset_token}")
+        logger.warning("Resend not configured; password reset email was not sent")
     
     return {"message": "If an account exists with this email, a reset link has been sent"}
 
 @router.post("/auth/reset-password")
 async def reset_password(request: ResetPasswordRequest):
     """Reset password using token"""
+    validate_password(request.new_password)
     reset_record = await db.password_resets.find_one({'token': request.token})
     
     if not reset_record:
@@ -200,6 +227,7 @@ async def reset_password(request: ResetPasswordRequest):
 @router.post("/account/change-password")
 async def change_password(request: ChangePasswordRequest, username: str = Depends(get_current_user)):
     """Change password for logged-in user"""
+    validate_password(request.new_password)
     user = await db.users.find_one({'username': username})
     
     if not verify_password(request.current_password, user['password_hash']):
@@ -218,16 +246,20 @@ async def update_account(request: UpdateAccountRequest, username: str = Depends(
     updates = {}
     
     if request.username and request.username != username:
+        new_username = validate_username(request.username)
         # Check if new username is taken
-        existing = await db.users.find_one({'username': request.username})
+        existing = await db.users.find_one({
+            'username': {'$regex': f"^{re.escape(new_username)}$", '$options': 'i'}
+        })
         if existing:
             raise HTTPException(status_code=400, detail="Username already taken")
-        updates['username'] = request.username
+        updates['username'] = new_username
+        updates['username_lower'] = new_username.lower()
         
         # Also update username in campaigns
         await db.campaigns.update_many(
             {'user_id': username},
-            {'$set': {'user_id': request.username}}
+            {'$set': {'user_id': new_username}}
         )
     
     if request.email:
