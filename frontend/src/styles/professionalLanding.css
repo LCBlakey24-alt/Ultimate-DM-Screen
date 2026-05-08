@@ -1,0 +1,246 @@
+/* Professional minimalist landing page redesign layer
+   Keeps existing LandingPage logic intact while upgrading the visual hierarchy. */
+
+[data-testid="landing-page"] {
+  --landing-black: #0B0B0C;
+  --landing-panel: #141414;
+  --landing-card: #1F1F23;
+  --landing-elevated: #27272B;
+  --landing-red: #EF4444;
+  --landing-red-soft: rgba(239, 68, 68, 0.10);
+  --landing-red-border: rgba(239, 68, 68, 0.32);
+  --landing-border: rgba(255, 255, 255, 0.10);
+  --landing-white: #FFFFFF;
+  --landing-soft: #D1D5DB;
+  --landing-muted: #9CA3AF;
+
+  background:
+    radial-gradient(circle at 18% 10%, rgba(239, 68, 68, 0.12), transparent 32%),
+    radial-gradient(circle at 82% 0%, rgba(127, 29, 29, 0.14), transparent 34%),
+    var(--landing-black) !important;
+  color: var(--landing-white) !important;
+}
+
+/* Navigation */
+[data-testid="landing-page"] > nav {
+  background: rgba(11, 11, 12, 0.9) !important;
+  backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid var(--landing-border) !important;
+  padding: 16px clamp(18px, 4vw, 44px) !important;
+}
+
+[data-testid="landing-page"] > nav span {
+  color: var(--landing-white) !important;
+  letter-spacing: 0.18em !important;
+}
+
+[data-testid="landing-page"] > nav svg {
+  color: var(--landing-red) !important;
+}
+
+[data-testid="landing-page"] button {
+  border-radius: 10px !important;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease !important;
+}
+
+[data-testid="landing-page"] button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+[data-testid="landing-getstarted-btn"],
+[data-testid="landing-cta-btn"] {
+  background: var(--landing-red) !important;
+  border-color: var(--landing-red) !important;
+  color: var(--landing-white) !important;
+}
+
+[data-testid="landing-signin-btn"] {
+  background: transparent !important;
+  border-color: var(--landing-border) !important;
+  color: var(--landing-white) !important;
+}
+
+/* Hero */
+[data-testid="landing-page"] > section:first-of-type {
+  max-width: 1180px !important;
+  padding: clamp(54px, 8vw, 92px) clamp(18px, 4vw, 44px) 44px !important;
+  text-align: left !important;
+}
+
+[data-testid="landing-page"] > section:first-of-type > div {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr) !important;
+  gap: clamp(28px, 5vw, 58px) !important;
+  align-items: center !important;
+}
+
+[data-testid="landing-page"] > section:first-of-type > div::after {
+  content: "CURRENT CAMPAIGN\A The Ash Road\A \A Party: 4 players\A Combat: Ready\A Notes: Auto-saved\A Next beat: Ambush at dusk";
+  white-space: pre-line;
+  display: block;
+  min-height: 300px;
+  background:
+    linear-gradient(180deg, rgba(239, 68, 68, 0.10), transparent 42%),
+    var(--landing-panel);
+  border: 1px solid var(--landing-border);
+  border-top: 3px solid var(--landing-red);
+  color: var(--landing-soft);
+  padding: 28px;
+  font-size: 15px;
+  line-height: 1.8;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+}
+
+[data-testid="landing-page"] h1 {
+  color: var(--landing-white) !important;
+  font-size: clamp(44px, 7vw, 76px) !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.055em !important;
+  font-weight: 950 !important;
+  max-width: 680px !important;
+  text-align: left !important;
+}
+
+[data-testid="landing-page"] h1::after {
+  content: "Build faster.";
+  color: var(--landing-red);
+  display: block;
+}
+
+[data-testid="landing-page"] > section:first-of-type p {
+  max-width: 620px !important;
+  margin: 24px 0 30px !important;
+  color: var(--landing-soft) !important;
+  font-size: clamp(16px, 2vw, 18px) !important;
+  line-height: 1.7 !important;
+  text-align: left !important;
+}
+
+[data-testid="landing-cta-btn"] {
+  padding: 14px 24px !important;
+}
+
+/* Feature section */
+[data-testid="landing-page"] > section:nth-of-type(2) {
+  max-width: 1180px !important;
+  padding: 28px clamp(18px, 4vw, 44px) 64px !important;
+}
+
+[data-testid^="feature-card-"] {
+  background: var(--landing-panel) !important;
+  border: 1px solid var(--landing-border) !important;
+  padding: 24px !important;
+  text-align: left !important;
+  border-radius: 14px !important;
+}
+
+[data-testid^="feature-card-"]:hover {
+  border-color: var(--landing-red-border) !important;
+  background: #181818 !important;
+}
+
+[data-testid^="feature-card-"] svg {
+  color: var(--landing-red) !important;
+  margin: 0 0 16px 0 !important;
+}
+
+[data-testid^="feature-card-"] h3 {
+  color: var(--landing-white) !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  margin: 0 0 8px !important;
+}
+
+[data-testid^="feature-card-"] p {
+  color: var(--landing-soft) !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  text-align: left !important;
+}
+
+/* Pricing */
+[data-testid="landing-page"] > section:nth-of-type(3) {
+  max-width: 1180px !important;
+  padding: 24px clamp(18px, 4vw, 44px) 76px !important;
+}
+
+[data-testid="landing-page"] > section:nth-of-type(3) > h2 {
+  color: var(--landing-white) !important;
+  font-size: clamp(28px, 4vw, 42px) !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.04em !important;
+}
+
+[data-testid^="pricing-tier-"] {
+  background: var(--landing-panel) !important;
+  border: 1px solid var(--landing-border) !important;
+  padding: 26px !important;
+  border-radius: 14px !important;
+}
+
+[data-testid^="pricing-tier-"]:hover {
+  border-color: var(--landing-red-border) !important;
+}
+
+[data-testid="pricing-tier-game master"] {
+  border-color: var(--landing-red-border) !important;
+}
+
+[data-testid^="pricing-tier-"] h3,
+[data-testid^="pricing-tier-"] span {
+  color: var(--landing-white) !important;
+}
+
+[data-testid^="pricing-tier-"] li,
+[data-testid^="pricing-tier-"] li span,
+[data-testid^="pricing-tier-"] p {
+  color: var(--landing-soft) !important;
+}
+
+[data-testid^="pricing-tier-"] button {
+  background: transparent !important;
+  border-color: var(--landing-border) !important;
+  color: var(--landing-white) !important;
+}
+
+[data-testid="pricing-btn-game master"] {
+  background: var(--landing-red) !important;
+  border-color: var(--landing-red) !important;
+}
+
+/* Footer */
+[data-testid="landing-page"] footer {
+  background: var(--landing-panel) !important;
+  border-top: 1px solid var(--landing-border) !important;
+}
+
+[data-testid="landing-page"] footer span {
+  color: var(--landing-white) !important;
+}
+
+[data-testid="landing-page"] footer p {
+  color: var(--landing-muted) !important;
+}
+
+@media (max-width: 760px) {
+  [data-testid="landing-page"] > nav {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+
+  [data-testid="landing-page"] > section:first-of-type > div {
+    grid-template-columns: 1fr !important;
+  }
+
+  [data-testid="landing-page"] h1,
+  [data-testid="landing-page"] > section:first-of-type p {
+    text-align: left !important;
+  }
+
+  [data-testid="landing-page"] > section:first-of-type > div::after {
+    min-height: 220px;
+  }
+}
