@@ -1,0 +1,254 @@
+/* Professional dashboard redesign layer
+   Gives the signed-in home page a cleaner command-centre feel without changing dashboard logic. */
+
+#player-section,
+#gm-section,
+[data-testid="sourcebook-library"] {
+  --dash-black: #0B0B0C;
+  --dash-panel: #141414;
+  --dash-card: #1F1F23;
+  --dash-elevated: #27272B;
+  --dash-red: #EF4444;
+  --dash-red-soft: rgba(239, 68, 68, 0.10);
+  --dash-red-border: rgba(239, 68, 68, 0.32);
+  --dash-border: rgba(255, 255, 255, 0.10);
+  --dash-white: #FFFFFF;
+  --dash-soft: #D1D5DB;
+  --dash-muted: #9CA3AF;
+}
+
+/* Overall dashboard shell */
+.App > div[style*="min-height: 100vh"],
+.App > div[style*="minHeight: 100vh"] {
+  background: radial-gradient(circle at 15% 0%, rgba(239, 68, 68, 0.10), transparent 30%), #0B0B0C !important;
+}
+
+/* Dashboard header */
+.App header {
+  background: rgba(11, 11, 12, 0.9) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(16px) !important;
+  padding: 14px clamp(14px, 3vw, 28px) !important;
+}
+
+.App header h1,
+.App header span,
+.App header div {
+  color: #FFFFFF !important;
+}
+
+.App header h1 {
+  background: none !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  letter-spacing: 0.12em !important;
+}
+
+.App header img[src="/images/logo-mini.png"] {
+  filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.38)) !important;
+}
+
+.App header button,
+.App header label {
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+.App header label[data-testid="upload-json-btn"] {
+  background: #EF4444 !important;
+  color: #FFFFFF !important;
+}
+
+/* Sourcebook strip should become a quiet info panel, not visual noise. */
+[data-testid="sourcebook-library"] {
+  background: #0B0B0C !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+  color: #FFFFFF !important;
+  padding: 16px clamp(14px, 3vw, 28px) !important;
+}
+
+[data-testid="sourcebook-library"] strong,
+[data-testid="sourcebook-library"] summary,
+[data-testid="sourcebook-library"] div {
+  color: #FFFFFF !important;
+}
+
+[data-testid="sourcebook-library"] span,
+[data-testid="sourcebook-library"] p {
+  color: #D1D5DB !important;
+}
+
+[data-testid="sourcebook-library"] span {
+  background: #141414 !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  border-radius: 999px !important;
+}
+
+/* Main split: make both halves feel like cards within a product workspace. */
+#player-section,
+#gm-section {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  padding: clamp(16px, 3vw, 28px) !important;
+  overflow: visible !important;
+}
+
+#player-section::before,
+#gm-section::before,
+#player-section > div:first-child,
+#gm-section > div:first-child {
+  opacity: 0 !important;
+}
+
+#player-section h2,
+#gm-section h2 {
+  color: #EF4444 !important;
+  letter-spacing: 0.12em !important;
+  font-size: 12px !important;
+}
+
+#player-section h3,
+#gm-section h3 {
+  color: #FFFFFF !important;
+  font-size: clamp(24px, 3vw, 34px) !important;
+  letter-spacing: -0.04em !important;
+}
+
+#player-section input,
+#gm-section input,
+#player-section select,
+#gm-section select {
+  background: #141414 !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  color: #FFFFFF !important;
+  border-radius: 10px !important;
+}
+
+#player-section input:focus,
+#gm-section input:focus,
+#player-section select:focus,
+#gm-section select:focus {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+}
+
+#player-section input::placeholder,
+#gm-section input::placeholder {
+  color: #9CA3AF !important;
+}
+
+/* Primary actions */
+[data-testid="new-character-btn"],
+button[data-testid*="new-campaign"],
+button[data-testid*="create-campaign"],
+button[data-testid*="campaign-create"] {
+  background: #EF4444 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #EF4444 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+[data-testid="homebrew-workshop-btn"] {
+  background: transparent !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  border-radius: 10px !important;
+}
+
+[data-testid="homebrew-workshop-btn"]:hover {
+  border-color: rgba(239, 68, 68, 0.42) !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+/* Cards: character/campaign cards tend to be inline-styled divs/buttons. This targets the repeated clickable dashboard cards. */
+#player-section [data-testid^="character-"],
+#gm-section [data-testid^="campaign-"],
+#player-section .card,
+#gm-section .card,
+#player-section .glow-card,
+#gm-section .glow-card {
+  background: #141414 !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease !important;
+}
+
+#player-section [data-testid^="character-"]:hover,
+#gm-section [data-testid^="campaign-"]:hover,
+#player-section .card:hover,
+#gm-section .card:hover,
+#player-section .glow-card:hover,
+#gm-section .glow-card:hover {
+  background: #181818 !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+#player-section [data-testid^="character-"] h3,
+#gm-section [data-testid^="campaign-"] h3,
+#player-section [data-testid^="character-"] strong,
+#gm-section [data-testid^="campaign-"] strong {
+  color: #FFFFFF !important;
+}
+
+#player-section [data-testid^="character-"] p,
+#gm-section [data-testid^="campaign-"] p,
+#player-section [data-testid^="character-"] span,
+#gm-section [data-testid^="campaign-"] span {
+  color: #D1D5DB !important;
+}
+
+/* Muted labels and metadata */
+#player-section p,
+#gm-section p,
+#player-section span,
+#gm-section span {
+  color: #D1D5DB !important;
+}
+
+#player-section svg,
+#gm-section svg,
+[data-testid="sourcebook-library"] svg {
+  color: #EF4444 !important;
+}
+
+/* Modal polish */
+.App [role="dialog"],
+.App .modal {
+  background: #141414 !important;
+  border: 1px solid rgba(239, 68, 68, 0.28) !important;
+  color: #FFFFFF !important;
+  border-radius: 16px !important;
+}
+
+/* Remove excessive gradient/glow remnants in dashboard area. */
+#player-section [style*="linear-gradient"],
+#gm-section [style*="linear-gradient"] {
+  box-shadow: none !important;
+}
+
+@media (max-width: 1024px) {
+  #player-section,
+  #gm-section {
+    border-right: none !important;
+    min-height: auto !important;
+  }
+
+  .App header {
+    align-items: flex-start !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .App header h1,
+  .App header .mobile-hide {
+    display: none !important;
+  }
+
+  #player-section,
+  #gm-section,
+  [data-testid="sourcebook-library"] {
+    padding: 14px !important;
+  }
+}
