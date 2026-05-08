@@ -4,12 +4,11 @@ Thin entry point that assembles all modular routers.
 """
 from fastapi import FastAPI, APIRouter, WebSocket, WebSocketDisconnect
 from starlette.middleware.cors import CORSMiddleware
-import os
 import logging
 
-from config import db, client, STRIPE_ENABLED, STRIPE_API_KEY, logger
+from config import client, STRIPE_ENABLED, STRIPE_API_KEY, logger, CORS_ORIGIN_LIST
 from utils.ws_manager import ws_manager
-from utils.auth import verify_token
+from utils.auth import verify_token, verify_campaign_membership
 from routes import all_routers
 from routes.rule_systems import initialize_rule_systems
 
@@ -32,7 +31,7 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=CORS_ORIGIN_LIST,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -56,8 +55,9 @@ async def websocket_campaign_sync(websocket: WebSocket, campaign_id: str):
 
     try:
         username = verify_token(token)
+        await verify_campaign_membership(campaign_id, username)
     except Exception:
-        await websocket.close(code=4001, reason="Invalid token")
+        await websocket.close(code=4001, reason="Invalid token or campaign access denied")
         return
 
     await ws_manager.connect(websocket, username, campaign_id)
