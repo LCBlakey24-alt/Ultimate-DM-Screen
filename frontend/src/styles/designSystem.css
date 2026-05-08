@@ -1,39 +1,49 @@
 /* ============================================
-   ROOKIE QUEST KEEPER - DESIGN SYSTEM v2.0
-   Clean, Modern, Square Corners
-   Unified Navy + Gold Theme
+   ROOKIE QUEST KEEPER - DESIGN SYSTEM v3.0
+   Current app-wide direction: Deep Navy + Antique Gold
+   Clean surfaces, sharp corners, Montserrat typography
    ============================================ */
 
 :root {
   /* ============ BASE COLORS ============ */
-  --bg-primary: #1F1F23;
-  --bg-secondary: #27272B;
-  --bg-card: #27272B;
-  --bg-elevated: #323235;
-  --bg-hover: #323235;
-  
+  --bg-primary: #0A1628;
+  --bg-secondary: #10213A;
+  --bg-card: #10213A;
+  --bg-elevated: #162B49;
+  --bg-hover: #1C3658;
+  --bg-overlay: rgba(10, 22, 40, 0.88);
+
   /* ============ TEXT ============ */
   --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --text-disabled: #475569;
-  
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-disabled: #64748B;
+
+  /* ============ BRAND / GOLD ============ */
+  --rq-gold: #D4A017;
+  --rq-gold-bright: #F2C94C;
+  --rq-gold-soft: rgba(212, 160, 23, 0.12);
+  --rq-gold-border: rgba(212, 160, 23, 0.36);
+  --rq-gold-border-strong: rgba(242, 201, 76, 0.62);
+  --rq-navy: #0A1628;
+  --rq-navy-soft: #10213A;
+
   /* ============ GM THEME ============ */
-  --gm-primary: #EF4444;
-  --gm-hover: #F87171;
-  --gm-active: #B91C1C;
-  --gm-subtle: rgba(239,68,68,0.12);
-  --gm-border: rgba(239,68,68,0.28);
-  --gm-glow: rgba(239,68,68,0.18);
-  
+  --gm-primary: var(--rq-gold);
+  --gm-hover: var(--rq-gold-bright);
+  --gm-active: #A9790F;
+  --gm-subtle: var(--rq-gold-soft);
+  --gm-border: var(--rq-gold-border);
+  --gm-glow: rgba(212, 160, 23, 0.18);
+
   /* ============ PLAYER THEME ============ */
-  --player-primary: #EF4444;
-  --player-hover: #F87171;
-  --player-active: #B91C1C;
-  --player-subtle: rgba(239,68,68,0.12);
-  --player-border: rgba(239,68,68,0.28);
-  --player-glow: rgba(239,68,68,0.18);
-  
+  --player-primary: var(--rq-gold);
+  --player-hover: var(--rq-gold-bright);
+  --player-active: #A9790F;
+  --player-subtle: var(--rq-gold-soft);
+  --player-border: var(--rq-gold-border);
+  --player-glow: rgba(212, 160, 23, 0.18);
+
   /* ============ STATUS COLORS ============ */
   --success: #10B981;
   --success-subtle: rgba(16,185,129,0.15);
@@ -41,25 +51,35 @@
   --warning-subtle: rgba(245,158,11,0.15);
   --danger: #EF4444;
   --danger-subtle: rgba(239,68,68,0.15);
-  --info: #EF4444;
-  --info-subtle: rgba(239,68,68,0.12);
-  
+  --info: #38BDF8;
+  --info-subtle: rgba(56,189,248,0.12);
+
   /* ============ BORDERS & SHADOWS ============ */
-  --border-subtle: rgba(239,68,68,0.12);
-  --border-default: rgba(239,68,68,0.18);
+  --border-subtle: rgba(212,160,23,0.14);
+  --border-default: rgba(212,160,23,0.24);
+  --border-strong: rgba(212,160,23,0.42);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-  
-  /* ============ SPACING ============ */
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.38);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.48);
+
+  /* ============ SHAPE ============ */
   --radius-none: 0;
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 6px;
-  
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+
   /* ============ TYPOGRAPHY ============ */
   --font-sans: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-display: 'Montserrat', var(--font-sans);
+
+  /* ============ RQ ALIASES ============ */
+  --rq-bg-main: var(--bg-primary);
+  --rq-bg-panel: var(--bg-card);
+  --rq-bg-panel-soft: var(--bg-secondary);
+  --rq-text-main: var(--text-primary);
+  --rq-text-soft: var(--text-secondary);
+  --rq-text-muted: var(--text-muted);
+  --rq-border: var(--border-subtle);
 }
 
 /* ============ GLOBAL RESETS ============ */
@@ -75,31 +95,35 @@ body {
   padding: 0;
 }
 
+button,
+input,
+textarea,
+select {
+  font-family: var(--font-sans);
+}
+
 /* ============ CARD STYLES ============ */
-.card {
+.card,
+.card-gm,
+.card-player,
+.rq-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
 
-.card-gm {
-  background: var(--bg-card);
-  border: 1px solid var(--gm-border);
-  border-radius: var(--radius-md);
-}
-
+.card-gm,
 .card-player {
-  background: var(--bg-card);
-  border: 1px solid var(--player-border);
-  border-radius: var(--radius-md);
+  border-color: var(--rq-gold-border);
 }
 
 /* ============ BUTTON STYLES ============ */
-.btn {
+.btn,
+.rq-button-primary,
+.rq-button-secondary {
   padding: 10px 20px;
-  border: none;
   border-radius: var(--radius-sm);
-  font-weight: 600;
+  font-weight: 800;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -107,70 +131,64 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  letter-spacing: 0.2px;
 }
 
-.btn-gm {
-  background: var(--gm-primary);
-  color: var(--text-primary);
+.btn-gm,
+.btn-player,
+.rq-button-primary {
+  background: var(--rq-gold);
+  color: var(--rq-navy);
+  border: 1px solid var(--rq-gold);
 }
 
-.btn-gm:hover {
-  background: var(--gm-hover);
+.btn-gm:hover,
+.btn-player:hover,
+.rq-button-primary:hover {
+  background: var(--rq-gold-bright);
+  border-color: var(--rq-gold-bright);
 }
 
-.btn-player {
-  background: var(--player-primary);
-  color: var(--text-primary);
-}
-
-.btn-player:hover {
-  background: var(--player-hover);
-}
-
-.btn-outline-gm {
+.btn-outline-gm,
+.btn-outline-player,
+.rq-button-secondary {
   background: transparent;
-  border: 1px solid var(--gm-primary);
-  color: var(--gm-primary);
+  border: 1px solid var(--rq-gold-border);
+  color: var(--rq-gold-bright);
 }
 
-.btn-outline-gm:hover {
-  background: var(--gm-subtle);
+.btn-outline-gm:hover,
+.btn-outline-player:hover,
+.rq-button-secondary:hover {
+  background: var(--rq-gold-soft);
+  border-color: var(--rq-gold-bright);
 }
 
-.btn-outline-player {
-  background: transparent;
-  border: 1px solid var(--player-primary);
-  color: var(--player-primary);
+.rq-button-primary:disabled,
+.rq-button-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.btn-outline-player:hover {
-  background: var(--player-subtle);
-}
-
-/* ============ TAB STYLES (SQUARE) ============ */
+/* ============ TAB STYLES ============ */
 .tab {
   padding: 12px 20px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-none);
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 700;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .tab-gm.active,
-.tab-gm:hover {
-  background: var(--gm-subtle);
-  border-color: var(--gm-primary);
-  color: var(--text-primary);
-}
-
+.tab-gm:hover,
 .tab-player.active,
 .tab-player:hover {
-  background: var(--player-subtle);
-  border-color: var(--player-primary);
+  background: var(--rq-gold-soft);
+  border-color: var(--rq-gold-bright);
   color: var(--text-primary);
 }
 
@@ -182,56 +200,54 @@ body {
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-size: 14px;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
-.input:focus {
-  outline: none;
-  border-color: var(--player-primary);
-}
-
+.input:focus,
 .input-gm:focus {
-  border-color: var(--gm-primary);
+  outline: none;
+  border-color: var(--rq-gold-bright);
+  background: var(--bg-elevated);
 }
 
 /* ============ PANEL STYLES ============ */
-.panel {
+.panel,
+.rq-panel {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 20px;
 }
 
-.panel-gm {
-  border-left: 3px solid var(--gm-primary);
+.rq-panel {
+  padding: 24px;
 }
 
+.panel-gm,
 .panel-player {
-  border-left: 3px solid var(--player-primary);
+  border-left: 3px solid var(--rq-gold);
 }
 
-/* ============ GLASS MORPHISM (SQUARE) ============ */
-.glass {
-  background: rgba(30, 30, 34, 0.8);
+/* ============ GLASS MORPHISM ============ */
+.glass,
+.glass-gm,
+.glass-player {
+  background: rgba(10, 22, 40, 0.82);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
 
-.glass-gm {
-  background: rgba(164, 36, 59, 0.08);
-  border-color: var(--gm-border);
-}
-
+.glass-gm,
 .glass-player {
-  background: rgba(37, 99, 235, 0.08);
-  border-color: var(--player-border);
+  border-color: var(--rq-gold-border);
 }
 
 /* ============ SECTION HEADERS ============ */
-.section-header {
+.section-header,
+.rq-title {
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 900;
   font-size: 20px;
   color: var(--text-primary);
   margin-bottom: 16px;
@@ -240,12 +256,14 @@ body {
   gap: 10px;
 }
 
-.section-header-gm {
-  color: var(--gm-primary);
+.rq-title {
+  font-size: 24px;
+  margin: 0 0 8px 0;
 }
 
+.section-header-gm,
 .section-header-player {
-  color: var(--player-primary);
+  color: var(--rq-gold-bright);
 }
 
 /* ============ DIVIDER ============ */
@@ -262,29 +280,27 @@ body {
 }
 
 /* ============ BADGES ============ */
-.badge {
+.badge,
+.badge-gm,
+.badge-player {
   padding: 4px 10px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 800;
   border-radius: var(--radius-sm);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.badge-gm {
-  background: var(--gm-subtle);
-  color: var(--gm-primary);
-  border: 1px solid var(--gm-border);
-}
-
+.badge-gm,
 .badge-player {
-  background: var(--player-subtle);
-  color: var(--player-primary);
-  border: 1px solid var(--player-border);
+  background: var(--rq-gold-soft);
+  color: var(--rq-gold-bright);
+  border: 1px solid var(--rq-gold-border);
 }
 
 /* ============ STAT BLOCKS ============ */
-.stat-block {
+.stat-block,
+.rq-stat {
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
@@ -294,18 +310,24 @@ body {
 
 .stat-value {
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 900;
   font-family: var(--font-display);
   color: var(--text-primary);
 }
 
 .stat-label {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 4px;
+}
+
+/* ============ RQ HELPERS ============ */
+.rq-muted {
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 /* ============ ANIMATIONS ============ */
@@ -317,106 +339,3 @@ body {
 .animate-in {
   animation: fadeIn 0.3s ease-out;
 }
-
-/* ============ ROOKIE QUEST (RQ) CLASSES ============ */
-/* These classes are used by the GitHub uploaded components */
-
-/* RQ Colors */
-:root {
-  --rq-bg-main: var(--bg-primary);
-  --rq-bg-panel: var(--bg-card);
-  --rq-bg-panel-soft: var(--bg-secondary);
-  --rq-text-main: var(--text-primary);
-  --rq-text-soft: var(--text-secondary);
-  --rq-text-muted: var(--text-muted);
-  --rq-gold: #E7B94C;
-  --rq-border: var(--border-subtle);
-}
-
-/* RQ Panels */
-.rq-panel {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 24px;
-}
-
-/* RQ Cards */
-.rq-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 16px;
-}
-
-/* RQ Titles */
-.rq-title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 24px;
-  color: var(--text-primary);
-  margin: 0 0 8px 0;
-}
-
-/* RQ Muted text */
-.rq-muted {
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-/* RQ Stats */
-.rq-stat {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  text-align: center;
-}
-
-/* RQ Buttons */
-.rq-button-primary {
-  padding: 10px 20px;
-  background: var(--player-primary);
-  color: var(--text-primary);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.rq-button-primary:hover {
-  background: var(--player-hover);
-}
-
-.rq-button-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.rq-button-secondary {
-  padding: 10px 20px;
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.rq-button-secondary:hover {
-  background: var(--bg-hover);
-  border-color: var(--text-muted);
-}
-
