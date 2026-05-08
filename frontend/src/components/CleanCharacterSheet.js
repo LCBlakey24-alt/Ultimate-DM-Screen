@@ -40,6 +40,11 @@ const getMaxHp = (c) => Number(c?.max_hit_points ?? c?.max_hp ?? 10) || 10;
 const getCurrentHp = (c) => Number(c?.current_hit_points ?? c?.hp ?? getMaxHp(c)) || getMaxHp(c);
 const getTempHp = (c) => Number(c?.temporary_hit_points ?? c?.temp_hp ?? 0) || 0;
 
+function rollD20(modifier = 0) {
+  const d20 = Math.floor(Math.random() * 20) + 1;
+  return { d20, modifier, total: d20 + modifier };
+}
+
 function StatCard({ icon: Icon, label, value, sub }) {
   return (
     <div className="clean-sheet-stat-card">
@@ -68,6 +73,7 @@ export default function CleanCharacterSheet() {
   const [savingHp, setSavingHp] = useState(false);
   const [savingTempHp, setSavingTempHp] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [rollBurst, setRollBurst] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -86,6 +92,12 @@ export default function CleanCharacterSheet() {
     loadCharacter();
     return () => { cancelled = true; };
   }, [characterId]);
+
+  useEffect(() => {
+    if (!rollBurst) return undefined;
+    const timeout = setTimeout(() => setRollBurst(null), 1800);
+    return () => clearTimeout(timeout);
+  }, [rollBurst]);
 
   const maxHp = getMaxHp(character);
   const currentHp = Math.min(getCurrentHp(character), maxHp);
@@ -132,6 +144,11 @@ export default function CleanCharacterSheet() {
     }
   };
 
+  const makeRoll = (label, modifier) => {
+    const result = rollD20(modifier);
+    setRollBurst({ label, ...result, id: `${Date.now()}-${Math.random()}` });
+  };
+
   if (loading) {
     return (
       <div className="clean-sheet-page clean-sheet-loading">
@@ -160,6 +177,14 @@ export default function CleanCharacterSheet() {
 
   return (
     <div className="clean-sheet-page">
+      {rollBurst && (
+        <div key={rollBurst.id} className="clean-sheet-roll-burst" aria-live="polite">
+          <span>{rollBurst.label}</span>
+          <strong>{rollBurst.total}</strong>
+          <em>d20 {rollBurst.d20} {fmt(rollBurst.modifier)}</em>
+        </div>
+      )}
+
       <header className="clean-sheet-header">
         <button className="clean-sheet-back" onClick={() => navigate('/home')}>
           <ArrowLeft size={18} /> Dashboard
@@ -221,13 +246,16 @@ export default function CleanCharacterSheet() {
             <section className="clean-sheet-panel">
               <h2>Ability Scores</h2>
               <div className="clean-sheet-abilities">
-                {ABILITIES.map(([key, short]) => (
-                  <div key={key} className="clean-sheet-ability">
-                    <span>{short}</span>
-                    <strong>{character[key] ?? 10}</strong>
-                    <em>{fmt(mod(character[key]))}</em>
-                  </div>
-                ))}
+                {ABILITIES.map(([key, short]) => {
+                  const abilityMod = mod(character[key]);
+                  return (
+                    <button key={key} type="button" className="clean-sheet-ability clean-sheet-clickable" onClick={() => makeRoll(`${short} Check`, abilityMod)}>
+                      <span>{short}</span>
+                      <strong>{character[key] ?? 10}</strong>
+                      <em>{fmt(abilityMod)}</em>
+                    </button>
+                  );
+                })}
               </div>
             </section>
 
@@ -236,7 +264,12 @@ export default function CleanCharacterSheet() {
               <div className="clean-sheet-list">
                 {ABILITIES.map(([key, short]) => {
                   const proficient = saveProficiencies.includes(key) || saveProficiencies.includes(short.toLowerCase());
-                  return <div key={key}><span>{short}</span><strong>{fmt(mod(character[key]) + (proficient ? proficiencyBonus : 0))}</strong></div>;
+                  const saveMod = mod(character[key]) + (proficient ? proficiencyBonus : 0);
+                  return (
+                    <button key={key} type="button" className="clean-sheet-row-button" onClick={() => makeRoll(`${short} Save`, saveMod)}>
+                      <span>{short}</span><strong>{fmt(saveMod)}</strong>
+                    </button>
+                  );
                 })}
               </div>
             </section>
@@ -246,14 +279,19 @@ export default function CleanCharacterSheet() {
               <div className="clean-sheet-skills">
                 {SKILLS.map(([skill, ability]) => {
                   const proficient = skillProficiencies.includes(skill) || skillProficiencies.includes(skill.toLowerCase());
-                  return <div key={skill}><span>{skill}</span><em>{ability.slice(0, 3).toUpperCase()}</em><strong>{fmt(mod(character[ability]) + (proficient ? proficiencyBonus : 0))}</strong></div>;
+                  const skillMod = mod(character[ability]) + (proficient ? proficiencyBonus : 0);
+                  return (
+                    <button key={skill} type="button" className="clean-sheet-skill-button" onClick={() => makeRoll(skill, skillMod)}>
+                      <span>{skill}</span><em>{ability.slice(0, 3).toUpperCase()}</em><strong>{fmt(skillMod)}</strong>
+                    </button>
+                  );
                 })}
               </div>
             </section>
           </div>
         )}
 
-        {activeTab === 'combat' && <CleanCombatTab character={character} ac={ac} speed={speed} proficiencyBonus={proficiencyBonus} />}
+        {activeTab === 'combat' && <CleanCombatTab character={character} ac={ac} speed={speed} proficiencyBonus={proficiencyBonus} onRoll={makeRoll} />}
         {activeTab === 'spells' && <EmptyState title="Spells" text="Spell display will be rebuilt here with known, prepared, cantrips and slots separated clearly." />}
         {activeTab === 'inventory' && <EmptyState title="Inventory" text="Inventory will be rebuilt here with equipment, currency and carried items." />}
         {activeTab === 'notes' && <EmptyState title="Notes" text="Notes and journal entries will be rebuilt here in the next pass." />}
