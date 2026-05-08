@@ -16,6 +16,7 @@ import '@/styles/cleanCombatTab.css';
 import '@/styles/cleanSheetInteractions.css';
 import '@/styles/cleanInventoryTab.css';
 import '@/styles/cleanSpellsTab.css';
+import '@/styles/cleanNotesTab.css';
 import '@/styles/levelUpCleanStyle.css';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
