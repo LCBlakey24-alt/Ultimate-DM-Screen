@@ -87,9 +87,25 @@ const getCurrentHp = (c) => Number(c?.current_hit_points ?? c?.hp ?? getMaxHp(c)
 const getTempHp = (c) => Number(c?.temporary_hit_points ?? c?.temp_hp ?? 0) || 0;
 const clampDeathCount = (value) => Math.max(0, Math.min(3, Number(value) || 0));
 
-function rollD20(modifier = 0) {
-  const d20 = Math.floor(Math.random() * 20) + 1;
-  return { d20, modifier, total: d20 + modifier };
+function parseHitDie(hitDice = '1d8') {
+  const match = String(hitDice).match(/(\d+)d(\d+)/i);
+  if (!match) return { total: 1, sides: 8 };
+  return { total: Number(match[1]) || 1, sides: Number(match[2]) || 8 };
+}
+
+function rollD20(modifier = 0, rollMode = 'normal') {
+  const first = Math.floor(Math.random() * 20) + 1;
+  if (rollMode !== 'advantage' && rollMode !== 'disadvantage') {
+    return { d20: first, modifier, total: first + modifier, mode: 'normal', allRolls: [first] };
+  }
+  const second = Math.floor(Math.random() * 20) + 1;
+  const kept = rollMode === 'advantage' ? Math.max(first, second) : Math.min(first, second);
+  return { d20: kept, modifier, total: kept + modifier, mode: rollMode, allRolls: [first, second] };
+}
+
+function rollHitDie(sides = 8, modifier = 0) {
+  const die = Math.floor(Math.random() * sides) + 1;
+  return { die, total: Math.max(1, die + modifier) };
 }
 
 function StatCard({ icon: Icon, label, value, sub, onClick }) {
@@ -101,15 +117,6 @@ function StatCard({ icon: Icon, label, value, sub, onClick }) {
       <div className="clean-sheet-stat-label">{label}</div>
       {sub && <div className="clean-sheet-stat-sub">{sub}</div>}
     </Tag>
-  );
-}
-
-function EmptyState({ title, text }) {
-  return (
-    <div className="clean-sheet-empty">
-      <h3>{title}</h3>
-      <p>{text}</p>
-    </div>
   );
 }
 
@@ -128,6 +135,8 @@ export default function CleanCharacterSheet() {
   const [rollHistory, setRollHistory] = useState([]);
   const [showRollHistory, setShowRollHistory] = useState(false);
   const [showConditionPicker, setShowConditionPicker] = useState(false);
+  const [rollMode, setRollMode] = useState('normal');
+  const [rollBonus, setRollBonus] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -157,6 +166,7 @@ export default function CleanCharacterSheet() {
   const currentHp = Math.min(getCurrentHp(character), maxHp);
   const tempHp = getTempHp(character);
   const dexMod = mod(character?.dexterity);
+  const conMod = mod(character?.constitution);
   const proficiencyBonus = Number(character?.proficiency_bonus) || 2 + Math.floor(((Number(character?.level) || 1) - 1) / 4);
   const ac = Number(character?.armor_class ?? character?.ac ?? (10 + dexMod));
   const speed = Number(character?.speed ?? 30);
@@ -168,7 +178,8 @@ export default function CleanCharacterSheet() {
   const deathSaveFailures = clampDeathCount(character?.death_saves_failures);
   const hasInspiration = Boolean(character?.inspiration || character?.has_inspiration);
   const hitDice = character?.hit_dice || `${character?.level || 1}d8`;
-  const hitDiceRemaining = Number(character?.hit_dice_remaining ?? character?.level ?? 1) || 0;
+  const hitDieInfo = parseHitDie(hitDice);
+  const hitDiceRemaining = Number(character?.hit_dice_remaining ?? character?.level ?? hitDieInfo.total) || 0;
 
   const hpPercent = useMemo(() => {
     if (!maxHp) return 0;
@@ -183,6 +194,7 @@ export default function CleanCharacterSheet() {
   }, [character, proficiencyBonus, skillProficiencies]);
 
   const getSafeAmount = (value) => Math.max(1, Math.min(999, Number(value) || 1));
+  const getRollBonus = () => Number(rollBonus) || 0;
 
   const patchCharacter = async (updates, options = {}) => {
     const previous = character;
@@ -226,11 +238,14 @@ export default function CleanCharacterSheet() {
   };
 
   const makeRoll = (label, modifier) => {
-    const result = rollD20(modifier);
+    const totalModifier = (Number(modifier) || 0) + getRollBonus();
+    const result = rollD20(totalModifier, rollMode);
     const entry = {
       id: `${Date.now()}-${Math.random()}`,
       label,
       ...result,
+      baseModifier: Number(modifier) || 0,
+      customModifier: getRollBonus(),
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
     setRollBurst(entry);
@@ -288,6 +303,8 @@ export default function CleanCharacterSheet() {
       d20: roll,
       modifier: 0,
       total: roll,
+      mode: 'normal',
+      allRolls: [roll],
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
     setRollBurst(entry);
@@ -322,6 +339,39 @@ export default function CleanCharacterSheet() {
     }
   };
 
+  const spendHitDie = async () => {
+    if (!character || savingQuickState) return;
+    if (hitDiceRemaining <= 0) {
+      toast.error('No hit dice remaining');
+      return;
+    }
+    if (currentHp >= maxHp) {
+      toast.info('Already at full HP');
+      return;
+    }
+
+    const result = rollHitDie(hitDieInfo.sides, conMod);
+    const nextHp = Math.min(maxHp, currentHp + result.total);
+    const entry = {
+      id: `${Date.now()}-hit-die`,
+      label: `Hit Die d${hitDieInfo.sides}`,
+      d20: result.die,
+      modifier: conMod,
+      total: result.total,
+      mode: 'hit-die',
+      allRolls: [result.die],
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+    setRollBurst(entry);
+    setRollHistory(prev => [entry, ...prev].slice(0, 12));
+    setSavingQuickState(true);
+    await patchCharacter(
+      { current_hit_points: nextHp, hit_dice_remaining: Math.max(0, hitDiceRemaining - 1) },
+      { success: `Recovered ${nextHp - currentHp} HP`, error: 'Could not spend hit die' }
+    );
+    setSavingQuickState(false);
+  };
+
   const handleRest = async (restType) => {
     if (!character || savingQuickState) return;
     setSavingQuickState(true);
@@ -341,12 +391,12 @@ export default function CleanCharacterSheet() {
             death_saves_successes: 0,
             death_saves_failures: 0,
             spell_slots_remaining: character?.spell_slots || {},
-            hit_dice_remaining: Number(character?.level || 1),
+            hit_dice_remaining: Number(character?.level || hitDieInfo.total),
           },
           { success: 'Long rest applied', error: 'Could not apply long rest' }
         );
       } else {
-        toast.info('Short rest noted. Hit dice spending is coming next.');
+        toast.success('Short rest started — spend hit dice if needed.');
       }
     } finally {
       setSavingQuickState(false);
@@ -387,7 +437,11 @@ export default function CleanCharacterSheet() {
         <div key={rollBurst.id} className="clean-sheet-roll-burst" aria-live="polite">
           <span>{rollBurst.label}</span>
           <strong>{rollBurst.total}</strong>
-          <em>d20 {rollBurst.d20} {fmt(rollBurst.modifier)}</em>
+          <em>
+            {rollBurst.mode === 'hit-die'
+              ? `d${hitDieInfo.sides} ${rollBurst.d20} ${fmt(rollBurst.modifier)}`
+              : `d20 ${rollBurst.d20} ${fmt(rollBurst.modifier)}${rollBurst.mode && rollBurst.mode !== 'normal' ? ` • ${rollBurst.mode}` : ''}`}
+          </em>
         </div>
       )}
 
@@ -468,6 +522,20 @@ export default function CleanCharacterSheet() {
           </button>
         </div>
 
+        <div className="clean-sheet-roll-controls" data-testid="roll-controls">
+          <div className="clean-sheet-roll-mode-group" aria-label="Roll mode">
+            {['normal', 'advantage', 'disadvantage'].map(mode => (
+              <button key={mode} type="button" className={rollMode === mode ? 'active' : ''} onClick={() => setRollMode(mode)}>
+                {mode === 'normal' ? 'Normal' : mode === 'advantage' ? 'Adv' : 'Dis'}
+              </button>
+            ))}
+          </div>
+          <label>
+            <span>Bonus</span>
+            <input type="number" value={rollBonus} onChange={(event) => setRollBonus(event.target.value)} aria-label="Custom roll bonus" />
+          </label>
+        </div>
+
         <div className="clean-sheet-passives" data-testid="passive-scores-strip">
           {passiveScores.map(([label, value]) => (
             <div key={label}><span>Passive {label}</span><strong>{value}</strong></div>
@@ -477,6 +545,7 @@ export default function CleanCharacterSheet() {
         <div className="clean-sheet-hitdice-row" data-testid="hit-dice-row">
           <span><Activity size={15} /> Hit Dice</span>
           <strong>{hitDiceRemaining} / {hitDice}</strong>
+          <button type="button" onClick={spendHitDie} disabled={savingQuickState || hitDiceRemaining <= 0 || currentHp >= maxHp}>Spend</button>
         </div>
 
         <div className="clean-sheet-condition-panel" data-testid="conditions-strip">
@@ -531,7 +600,7 @@ export default function CleanCharacterSheet() {
                   <div key={entry.id}>
                     <span>{entry.label}</span>
                     <strong>{entry.total}</strong>
-                    <em>{entry.time} • d20 {entry.d20} {fmt(entry.modifier)}</em>
+                    <em>{entry.time} • {entry.mode === 'hit-die' ? `die ${entry.d20}` : `d20 ${entry.d20}`} {fmt(entry.modifier)}{entry.mode && entry.mode !== 'normal' && entry.mode !== 'hit-die' ? ` • ${entry.mode}` : ''}</em>
                   </div>
                 ))
               )}
@@ -609,7 +678,7 @@ export default function CleanCharacterSheet() {
         )}
 
         {activeTab === 'combat' && <CleanCombatTab character={character} ac={ac} speed={speed} proficiencyBonus={proficiencyBonus} onRoll={makeRoll} />}
-        {activeTab === 'spells' && <CleanSpellsTab character={character} />}
+        {activeTab === 'spells' && <CleanSpellsTab character={character} onCharacterUpdate={patchCharacter} />}
         {activeTab === 'inventory' && <CleanInventoryTab character={character} onCharacterUpdate={updateCharacterLocal} />}
         {activeTab === 'notes' && <CleanNotesTab character={character} onCharacterUpdate={updateCharacterLocal} />}
       </main>
