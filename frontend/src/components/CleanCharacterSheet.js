@@ -38,6 +38,7 @@ const mod = (score = 10) => Math.floor((Number(score || 10) - 10) / 2);
 const fmt = (value) => (value >= 0 ? `+${value}` : `${value}`);
 const getMaxHp = (c) => Number(c?.max_hit_points ?? c?.max_hp ?? 10) || 10;
 const getCurrentHp = (c) => Number(c?.current_hit_points ?? c?.hp ?? getMaxHp(c)) || getMaxHp(c);
+const getTempHp = (c) => Number(c?.temporary_hit_points ?? c?.temp_hp ?? 0) || 0;
 
 function StatCard({ icon: Icon, label, value, sub }) {
   return (
@@ -65,6 +66,7 @@ export default function CleanCharacterSheet() {
   const [character, setCharacter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [savingHp, setSavingHp] = useState(false);
+  const [savingTempHp, setSavingTempHp] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
@@ -87,7 +89,7 @@ export default function CleanCharacterSheet() {
 
   const maxHp = getMaxHp(character);
   const currentHp = Math.min(getCurrentHp(character), maxHp);
-  const tempHp = Number(character?.temporary_hit_points ?? character?.temp_hp ?? 0) || 0;
+  const tempHp = getTempHp(character);
   const dexMod = mod(character?.dexterity);
   const proficiencyBonus = 2 + Math.floor(((Number(character?.level) || 1) - 1) / 4);
   const ac = Number(character?.armor_class ?? character?.ac ?? (10 + dexMod));
@@ -112,6 +114,21 @@ export default function CleanCharacterSheet() {
       setCharacter(prev => ({ ...prev, current_hit_points: currentHp }));
     } finally {
       setSavingHp(false);
+    }
+  };
+
+  const updateTempHp = async (delta) => {
+    if (!character || savingTempHp) return;
+    const nextTempHp = Math.max(0, tempHp + delta);
+    setCharacter(prev => ({ ...prev, temporary_hit_points: nextTempHp, temp_hp: nextTempHp }));
+    setSavingTempHp(true);
+    try {
+      await axios.patch(`${API}/characters/${characterId}`, { temporary_hit_points: nextTempHp });
+    } catch (error) {
+      toast.error('Could not save temporary HP');
+      setCharacter(prev => ({ ...prev, temporary_hit_points: tempHp, temp_hp: tempHp }));
+    } finally {
+      setSavingTempHp(false);
     }
   };
 
@@ -166,12 +183,18 @@ export default function CleanCharacterSheet() {
         <div className="clean-sheet-hp-card">
           <div className="clean-sheet-hp-top">
             <span><Heart size={18} /> HP</span>
-            <strong>{currentHp}/{maxHp}{tempHp > 0 ? ` +${tempHp}` : ''}</strong>
+            <strong>{currentHp}/{maxHp}</strong>
           </div>
           <div className="clean-sheet-hp-bar"><div style={{ width: `${hpPercent}%` }} /></div>
           <div className="clean-sheet-hp-actions">
             <button onClick={() => updateHp(-1)} disabled={savingHp}>-</button>
             <button onClick={() => updateHp(1)} disabled={savingHp}>+</button>
+          </div>
+          <div className="clean-sheet-temp-hp-row">
+            <span>Temp HP</span>
+            <strong>{tempHp}</strong>
+            <button onClick={() => updateTempHp(-1)} disabled={savingTempHp || tempHp <= 0}>-</button>
+            <button onClick={() => updateTempHp(1)} disabled={savingTempHp}>+</button>
           </div>
         </div>
         <StatCard icon={Shield} label="AC" value={ac} />
