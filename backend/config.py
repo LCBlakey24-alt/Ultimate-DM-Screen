@@ -16,6 +16,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger('rook')
 
+
 def require_env(name: str) -> str:
     """Return a required environment variable or fail loudly on startup."""
     value = os.environ.get(name)
@@ -39,6 +40,9 @@ security = HTTPBearer()
 # App / CORS
 APP_URL = require_env('APP_URL')
 CORS_ORIGINS = require_env('CORS_ORIGINS')
+CORS_ORIGIN_LIST = [origin.strip() for origin in CORS_ORIGINS.split(',') if origin.strip()]
+if not CORS_ORIGIN_LIST or '*' in CORS_ORIGIN_LIST:
+    raise RuntimeError("CORS_ORIGINS must list explicit trusted origins; wildcard origins are not allowed.")
 
 # Email
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
@@ -49,7 +53,13 @@ STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
 STRIPE_ENABLED = bool(STRIPE_API_KEY)
 
 # Admin
-ADMIN_USERNAMES = ["lcblakey24"]
+ADMIN_USERNAMES = [name.strip().lower() for name in os.environ.get('ADMIN_USERNAMES', 'lcblakey24').split(',') if name.strip()]
+RESERVED_USERNAMES = sorted(set(ADMIN_USERNAMES + [
+    'admin',
+    'administrator',
+    'rookiequestadmin',
+    'criticalfusion',
+]))
 
 # D&D Constants
 SUBCLASS_LEVELS_2014 = {
@@ -67,6 +77,7 @@ HIT_DICE = {
     'Bard': 8, 'Cleric': 8, 'Druid': 8, 'Monk': 8, 'Rogue': 8, 'Warlock': 8,
     'Sorcerer': 6, 'Wizard': 6
 }
+
 
 def get_subclass_unlock_level(class_name: str, edition: str = "2014") -> int:
     if edition == "2024":
