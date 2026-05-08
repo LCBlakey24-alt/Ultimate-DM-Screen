@@ -1,0 +1,108 @@
+.clean-sheet-action-grid,
+.clean-sheet-combat-summary {
+  display: grid;
+  gap: 8px;
+}
+
+.clean-sheet-action-grid {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.clean-sheet-action-card {
+  text-align: left;
+  min-height: 92px;
+  background: #0B0B0C;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
+  padding: 14px;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font: inherit;
+}
+
+.clean-sheet-action-card:hover {
+  border-color: rgba(239, 68, 68, 0.42);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.clean-sheet-action-card strong {
+  color: #FFFFFF;
+  font-weight: 950;
+}
+
+.clean-sheet-action-card span {
+  color: #D1D5DB;
+  line-height: 1.45;
+  font-size: 13px;
+}
+
+.clean-sheet-roll-result {
+  min-height: 180px;
+  background: #0B0B0C;
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.clean-sheet-roll-result span,
+.clean-sheet-combat-summary span {
+  color: #9CA3AF;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.clean-sheet-roll-result strong {
+  color: #FFFFFF;
+  font-size: 4rem;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.clean-sheet-roll-result em {
+  color: #EF4444;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.clean-sheet-muted {
+  color: #D1D5DB;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.clean-sheet-combat-summary div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  background: #0B0B0C;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.clean-sheet-combat-summary strong {
+  color: #FFFFFF;
+  font-weight: 950;
+}
+
+@media (max-width: 520px) {
+  .clean-sheet-action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .clean-sheet-roll-result strong {
+    font-size: 3rem;
+  }
+}
