@@ -186,7 +186,9 @@ function App() {
   if (loading) {
     return (
       <div className="loading-screen">
-        <div className="loading-spinner"></div>
+        <div className="loading-spinner">
+          <img className="loading-logo" src="/images/logo-mini.png" alt="ROOK loading" />
+        </div>
       </div>
     );
   }
