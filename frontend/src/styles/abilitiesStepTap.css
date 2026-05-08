@@ -1,5 +1,7 @@
 .ability-step-tap {
   color: #FFFFFF;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .ability-step-header {
@@ -10,50 +12,56 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .ability-step-header strong {
   color: #FFFFFF;
   font-size: 22px;
   font-weight: 900;
+  line-height: 1.1;
 }
 
 .ability-step-header p {
   margin: 0;
   color: #D1D5DB;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.55;
 }
 
 .ability-method-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 10px;
   margin-bottom: 18px;
 }
 
 .ability-method-grid button {
-  min-height: 76px;
+  min-height: 86px;
   text-align: left;
   background: #141414;
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #FFFFFF;
   border-radius: 12px;
-  padding: 12px;
+  padding: 14px;
   cursor: pointer;
   font: inherit;
+  display: grid;
+  gap: 6px;
+  align-content: start;
 }
 
 .ability-method-grid button.active {
   border-color: #EF4444;
-  background: rgba(239, 68, 68, 0.10);
+  background: rgba(239, 68, 68, 0.12);
+  box-shadow: 0 0 0 1px rgba(239,68,68,0.10);
 }
 
 .ability-method-grid strong {
   display: block;
-  font-weight: 900;
-  margin-bottom: 4px;
+  font-weight: 950;
+  font-size: 15px;
+  line-height: 1.15;
 }
 
 .ability-method-grid span,
@@ -63,6 +71,7 @@
 .ability-preview > span {
   color: #D1D5DB;
   font-size: 13px;
+  line-height: 1.35;
 }
 
 .ability-budget {
@@ -86,8 +95,9 @@
 .ability-pool-header button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  min-height: 36px;
+  min-height: 38px;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #FFFFFF;
@@ -133,16 +143,16 @@
 }
 
 .ability-score-card {
-  min-height: 150px;
+  min-height: 158px;
   background: #141414;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
   padding: 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  align-content: center;
+  justify-items: center;
   gap: 8px;
+  text-align: center;
 }
 
 .ability-score-card.primary {
@@ -157,15 +167,17 @@
 }
 
 .ability-stepper {
-  display: flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
   align-items: center;
   gap: 8px;
 }
 
 .ability-stepper button,
 .ability-assignment {
-  min-height: 42px;
-  min-width: 42px;
+  min-height: 44px;
+  min-width: 44px;
   background: rgba(239, 68, 68, 0.10);
   border: 1px solid rgba(239, 68, 68, 0.28);
   color: #FFFFFF;
@@ -185,10 +197,11 @@
   color: #FFFFFF;
   font-size: 24px;
   font-weight: 950;
+  text-align: center;
 }
 
 .ability-assignment {
-  min-width: 76px;
+  min-width: 96px;
   padding: 0 12px;
 }
 
@@ -198,15 +211,16 @@
 }
 
 .ability-score-card input {
-  width: 76px;
-  min-height: 44px;
+  width: 100%;
+  min-height: 50px;
   background: #0B0B0C;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
   color: #FFFFFF;
   border-radius: 10px;
   text-align: center;
   font-size: 22px;
   font-weight: 900;
+  padding: 8px;
 }
 
 .ability-score-card em {
@@ -273,12 +287,46 @@
   font-weight: 950;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 700px) {
+  .ability-method-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ability-method-grid button {
+    min-height: auto;
+  }
+
   .ability-score-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+  }
+
+  .ability-score-card {
+    min-height: auto;
+    justify-items: stretch;
+    text-align: left;
+  }
+
+  .ability-score-card > span,
+  .ability-score-card em,
+  .ability-modifier {
+    text-align: left;
+  }
+
+  .ability-assignment {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .ability-step-header strong {
+    font-size: 20px;
   }
 
   .ability-score-pool {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ability-preview > div {
+    grid-template-columns: 1fr 1fr;
   }
 }
