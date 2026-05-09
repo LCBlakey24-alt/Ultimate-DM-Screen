@@ -7,10 +7,28 @@ const colors = {
   panel: '#27272B',
   border: 'rgba(239,68,68,0.42)',
   red: '#EF4444',
-  redSoft: 'rgba(239,68,68,0.14)',
   text: '#FFFFFF',
   muted: '#D1D5DB',
 };
+
+function cleanTitle(title) {
+  if (!title) return 'Upload Image';
+  return String(title)
+    .replace(/AI\s*/gi, '')
+    .replace(/Generated\s*/gi, '')
+    .replace(/Artwork/gi, 'Artwork Upload')
+    .replace(/Images/gi, 'Image')
+    .trim() || 'Upload Image';
+}
+
+function cleanSubtitle(subtitle) {
+  if (!subtitle) return 'AI image generation is disabled for now to keep site costs controlled. Upload an image instead.';
+  const text = String(subtitle);
+  if (/generate|ai|image option/i.test(text)) {
+    return `${text.replace(/AI generated|AI|generate(d)? options?|generate(d)? images?/gi, '').trim()} Upload an image instead; paid image generation is disabled for now.`.trim();
+  }
+  return text;
+}
 
 export default function AIImageGeneratorPanel({
   title,
@@ -22,6 +40,8 @@ export default function AIImageGeneratorPanel({
   uploadLabel = 'Upload image',
 }) {
   const inputId = React.useId?.() || `image-upload-${Math.random().toString(36).slice(2)}`;
+  const safeTitle = cleanTitle(title);
+  const safeSubtitle = cleanSubtitle(subtitle);
 
   const handleUpload = (event) => {
     const file = event.target.files?.[0];
@@ -39,10 +59,10 @@ export default function AIImageGeneratorPanel({
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
         <div>
           <h4 style={{ margin: 0, color: colors.text, fontSize: 13, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0 }}>
-            {title || 'Image'}
+            {safeTitle}
           </h4>
           <p style={{ margin: '4px 0 0', color: colors.muted, fontSize: 11, lineHeight: 1.45 }}>
-            {subtitle || 'AI image generation is disabled for now to keep site costs controlled. Upload an image instead.'}
+            {safeSubtitle}
           </p>
         </div>
         <label htmlFor={inputId} style={{ cursor: disabled ? 'not-allowed' : 'pointer' }}>
