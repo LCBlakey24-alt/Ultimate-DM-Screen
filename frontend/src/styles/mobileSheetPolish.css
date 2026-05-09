@@ -71,6 +71,29 @@
   overflow-wrap: anywhere;
 }
 
+.clean-sheet-roll-burst strong {
+  animation: rqDiceFlicker 3s steps(12, end), rqDiceHold 3s linear 3s;
+}
+
+@keyframes rqDiceFlicker {
+  0% { opacity: 0.35; transform: scale(0.92); filter: blur(1px); }
+  10% { opacity: 1; transform: scale(1.08); filter: blur(0); }
+  20% { opacity: 0.45; transform: scale(0.96); }
+  30% { opacity: 1; transform: scale(1.12); }
+  40% { opacity: 0.5; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.10); }
+  60% { opacity: 0.55; transform: scale(0.98); }
+  70% { opacity: 1; transform: scale(1.12); }
+  80% { opacity: 0.65; transform: scale(1); }
+  90% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+@keyframes rqDiceHold {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @media (max-width: 380px) {
   .clean-sheet-hp-bulk-row {
     grid-template-columns: 52px 1fr 1fr !important;
