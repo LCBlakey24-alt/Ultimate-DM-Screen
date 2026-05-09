@@ -14,6 +14,7 @@ import '@/styles/professionalLanding.css';
 import '@/styles/professionalDashboard.css';
 import '@/styles/cleanCharacterSheet.css';
 import '@/styles/cleanCombatTab.css';
+import '@/styles/mobileSheetPolish.css';
 import '@/styles/cleanSheetInteractions.css';
 import '@/styles/cleanInventoryTab.css';
 import '@/styles/cleanSpellsTab.css';
