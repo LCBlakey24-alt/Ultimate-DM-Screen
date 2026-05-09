@@ -62,9 +62,7 @@ export default function EnvironmentControl({ campaignId, campaign, onEnvironment
     setDraft({ ...DEFAULT_ENVIRONMENT, ...(campaign?.campaign_environment || {}) });
   }, [campaign?.campaign_environment]);
 
-  const updateDraft = (key, value) => {
-    setDraft(prev => ({ ...prev, [key]: value }));
-  };
+  const updateDraft = (key, value) => setDraft(prev => ({ ...prev, [key]: value }));
 
   const saveEnvironment = async () => {
     setSaving(true);
@@ -103,25 +101,14 @@ export default function EnvironmentControl({ campaignId, campaign, onEnvironment
             <label style={labelStyle}>Location</label>
             <div style={{ position: 'relative' }}>
               <MapPin size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: colors.red }} />
-              <input
-                value={draft.location}
-                onChange={event => updateDraft('location', event.target.value)}
-                placeholder="Ruined keep, forest road, city docks..."
-                style={{ ...inputStyle, paddingLeft: 30 }}
-              />
+              <input value={draft.location} onChange={event => updateDraft('location', event.target.value)} placeholder="Ruined keep, forest road, city docks..." style={{ ...inputStyle, paddingLeft: 30 }} />
             </div>
           </div>
         </div>
 
         <div style={{ marginTop: 12 }}>
           <label style={labelStyle}>Notes</label>
-          <textarea
-            value={draft.notes}
-            onChange={event => updateDraft('notes', event.target.value)}
-            rows={3}
-            placeholder="Cold wind, flooded streets, red moon, distant bells..."
-            style={{ ...inputStyle, resize: 'vertical', minHeight: 82 }}
-          />
+          <textarea value={draft.notes} onChange={event => updateDraft('notes', event.target.value)} rows={3} placeholder="Cold wind, flooded streets, red moon, distant bells..." style={{ ...inputStyle, resize: 'vertical', minHeight: 82 }} />
         </div>
       </section>
 
@@ -134,12 +121,7 @@ export default function EnvironmentControl({ campaignId, campaign, onEnvironment
             {draft.background_image ? (
               <>
                 <img src={draft.background_image} alt="Current environment" style={previewImageStyle} />
-                <button
-                  type="button"
-                  onClick={() => setDraft(prev => ({ ...prev, background_image: '', background_prompt: '' }))}
-                  aria-label="Clear environment image"
-                  style={clearButtonStyle}
-                >
+                <button type="button" onClick={() => setDraft(prev => ({ ...prev, background_image: '', background_prompt: '' }))} aria-label="Clear environment image" style={clearButtonStyle}>
                   <X size={16} />
                 </button>
               </>
@@ -156,26 +138,12 @@ export default function EnvironmentControl({ campaignId, campaign, onEnvironment
         </section>
 
         <AIImageGeneratorPanel
-          title="AI Environment Images"
-          subtitle="Wide scene backgrounds for the live table."
-          buttonLabel="Generate 3 Backgrounds"
+          title="Environment Backdrop"
+          subtitle="Upload a scene background for the live player view. AI image generation is disabled for now."
+          uploadLabel="Upload backdrop"
           selectedImage={draft.background_image}
-          onSelectImage={(src, image) => setDraft(prev => ({
-            ...prev,
-            background_image: src,
-            background_prompt: image?.prompt || prev.background_prompt,
-          }))}
+          onSelectImage={(src) => setDraft(prev => ({ ...prev, background_image: src, background_prompt: '' }))}
           onClearImage={() => setDraft(prev => ({ ...prev, background_image: '', background_prompt: '' }))}
-          payload={{
-            subject_type: 'environment',
-            weather: optionLabel(WEATHER_OPTIONS, draft.weather),
-            lighting: optionLabel(LIGHTING_OPTIONS, draft.lighting),
-            mood: optionLabel(MOOD_OPTIONS, draft.mood),
-            location: draft.location,
-            notes: draft.notes,
-            campaign_name: campaign?.name || '',
-            campaign_notes: campaign?.world_setting_notes || campaign?.description || '',
-          }}
         />
       </div>
     </div>
@@ -190,21 +158,7 @@ function ControlGroup({ label, options, value, onChange }) {
         {options.map(option => {
           const active = option.id === value;
           return (
-            <button
-              key={option.id}
-              type="button"
-              onClick={() => onChange(option.id)}
-              style={{
-                border: `1px solid ${active ? colors.red : colors.border}`,
-                borderRadius: 0,
-                background: active ? colors.redSoft : colors.bg,
-                color: active ? colors.text : colors.muted,
-                padding: '8px 10px',
-                fontSize: 11,
-                fontWeight: 800,
-                cursor: 'pointer',
-              }}
-            >
+            <button key={option.id} type="button" onClick={() => onChange(option.id)} style={{ border: `1px solid ${active ? colors.red : colors.border}`, borderRadius: 0, background: active ? colors.redSoft : colors.bg, color: active ? colors.text : colors.muted, padding: '8px 10px', fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>
               {option.label}
             </button>
           );
@@ -223,83 +177,11 @@ function Summary({ label, value }) {
   );
 }
 
-const panelStyle = {
-  background: colors.panel,
-  border: `1px solid ${colors.border}`,
-  borderRadius: 0,
-  padding: 14,
-};
-
-const primaryButtonStyle = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 8,
-  border: `1px solid ${colors.red}`,
-  borderRadius: 0,
-  background: colors.red,
-  color: colors.text,
-  padding: '9px 14px',
-  fontSize: 12,
-  fontWeight: 800,
-};
-
-const labelStyle = {
-  display: 'block',
-  color: colors.red,
-  fontSize: 11,
-  textTransform: 'uppercase',
-  marginBottom: 6,
-  fontWeight: 800,
-};
-
-const inputStyle = {
-  width: '100%',
-  border: `1px solid ${colors.border}`,
-  borderRadius: 0,
-  background: colors.bg,
-  color: colors.text,
-  outline: 'none',
-  padding: '10px 11px',
-  fontSize: 12,
-};
-
-const previewStyle = {
-  position: 'relative',
-  aspectRatio: '16 / 9',
-  border: `1px solid ${colors.border}`,
-  background: colors.bg,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  overflow: 'hidden',
-  marginBottom: 12,
-};
-
-const previewImageStyle = {
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover',
-  display: 'block',
-};
-
-const clearButtonStyle = {
-  position: 'absolute',
-  top: 8,
-  right: 8,
-  width: 32,
-  height: 32,
-  border: `1px solid ${colors.border}`,
-  borderRadius: 0,
-  background: 'rgba(31,31,35,0.86)',
-  color: colors.text,
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-};
-
-const summaryGridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-  gap: 8,
-};
+const panelStyle = { background: colors.panel, border: `1px solid ${colors.border}`, borderRadius: 0, padding: 14 };
+const primaryButtonStyle = { display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid ${colors.red}`, borderRadius: 0, background: colors.red, color: colors.text, padding: '9px 14px', fontSize: 12, fontWeight: 800 };
+const labelStyle = { display: 'block', color: colors.red, fontSize: 11, textTransform: 'uppercase', marginBottom: 6, fontWeight: 800 };
+const inputStyle = { width: '100%', border: `1px solid ${colors.border}`, borderRadius: 0, background: colors.bg, color: colors.text, outline: 'none', padding: '10px 11px', fontSize: 12 };
+const previewStyle = { position: 'relative', aspectRatio: '16 / 9', border: `1px solid ${colors.border}`, background: colors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginBottom: 12 };
+const previewImageStyle = { width: '100%', height: '100%', objectFit: 'cover', display: 'block' };
+const clearButtonStyle = { position: 'absolute', top: 8, right: 8, width: 32, height: 32, border: `1px solid ${colors.border}`, borderRadius: 0, background: 'rgba(31,31,35,0.86)', color: colors.text, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' };
+const summaryGridStyle = { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 };
