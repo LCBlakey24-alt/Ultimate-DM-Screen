@@ -20,6 +20,7 @@ import '@/styles/cleanSpellsTab.css';
 import '@/styles/cleanNotesTab.css';
 import '@/styles/levelUpCleanStyle.css';
 import '@/data/applyTestBackgrounds';
+import '@/data/sanitizeCharacterBuilderDraft';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import AuthPage from '@/components/AuthPage';
