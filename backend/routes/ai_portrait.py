@@ -1,8 +1,8 @@
-"""AI portrait generation — Gemini Nano Banana via the configured AI provider.
+"""AI portrait and image generation routes.
 
-Single endpoint POST /api/ai/portrait accepts a character sketch plus a style
-and returns a base64-encoded PNG so the frontend can render inline + save to
-the character record's portrait field.
+Portrait/image generation is optional. When no provider key is configured, these
+routes return a clean 503 payload so the frontend can recover and still allow
+character creation without an AI portrait.
 """
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
@@ -17,21 +17,18 @@ from utils.llm_provider import LlmChat, OpenAIImageGeneration, UserMessage, get_
 
 router = APIRouter()
 
-# Style presets — frontend sends one of these 3 keys
 STYLE_PROMPTS = {
-    "photoreal": (
-        "photorealistic high-fantasy portrait, cinematic lighting, dramatic rim light, "
-        "rich detail, D&D character art style, painterly realism"
-    ),
-    "painterly": (
-        "painterly fantasy illustration, oil painting style, soft brushwork, "
-        "original pen-and-ink watercolor feel, tabletop RPG art, not in the style of any specific show, brand, or living artist"
-    ),
-    "stylized": (
-        "stylized fantasy portrait, bold line art, vibrant saturated colors, "
-        "anime-influenced illustration, clean shading, collectible card game style"
-    ),
+    "photoreal": "photorealistic high-fantasy tabletop RPG character portrait, cinematic lighting, rich detail",
+    "painterly": "painterly fantasy illustration, oil painting feel, soft brushwork, tabletop RPG character art",
+    "stylized": "stylized fantasy portrait, bold clean shapes, vibrant colour accents, illustrated tabletop RPG hero art",
 }
+
+SAFE_PORTRAIT_FRAMING = (
+    "Portrait orientation, 3:4 aspect ratio. Single character only. Upper torso / bust portrait. "
+    "Entire head fully visible including hair, hood, hat, horns, ears, helmet, or accessories. "
+    "Small empty space above the head, face centered, shoulders visible, not cropped, not an extreme close-up, "
+    "not full-body, clean character-sheet avatar composition. No text, no watermark, no logo."
+)
 
 
 class PortraitRequest(BaseModel):
@@ -43,11 +40,12 @@ class PortraitRequest(BaseModel):
     alignment: Optional[str] = ""
     gender: Optional[str] = ""
     description: Optional[str] = ""
-    style: str = "photoreal"  # photoreal | painterly | stylized
+    style: str = "photoreal"
+    portrait_framing: Optional[str] = ""
 
 
 class ImageBatchRequest(BaseModel):
-    subject_type: str = "item"  # item | environment
+    subject_type: str = "item"
     name: Optional[str] = ""
     item_type: Optional[str] = ""
     rarity: Optional[str] = ""
@@ -63,37 +61,49 @@ class ImageBatchRequest(BaseModel):
     style: str = "concept"
 
 
+def _provider_status() -> dict:
+    gemini_ready = bool(LlmChat is not None and UserMessage is not None and get_llm_api_key("gemini"))
+    openai_ready = bool(OpenAIImageGeneration is not None and get_llm_api_key("openai"))
+    return {"available": gemini_ready or openai_ready, "gemini": gemini_ready, "openai": openai_ready}
+
+
+def _not_configured_error() -> HTTPException:
+    return HTTPException(
+        status_code=503,
+        detail={
+            "code": "IMAGE_GENERATION_NOT_CONFIGURED",
+            "message": "AI image generation is not configured. You can still create characters without an AI portrait or upload your own image.",
+        },
+    )
+
+
 def _build_prompt(req: PortraitRequest) -> str:
     style = STYLE_PROMPTS.get(req.style, STYLE_PROMPTS["photoreal"])
     parts = []
     if req.gender:
-        parts.append(req.gender)
+        parts.append(req.gender.strip()[:80])
     if req.subrace:
-        parts.append(req.subrace)
+        parts.append(req.subrace.strip()[:80])
     elif req.race:
-        parts.append(req.race)
+        parts.append(req.race.strip()[:80])
     if req.character_class:
-        cls_part = req.character_class
+        class_part = req.character_class.strip()[:80]
         if req.subclass:
-            cls_part = f"{req.subclass} {req.character_class}"
-        parts.append(cls_part)
+            class_part = f"{req.subclass.strip()[:80]} {class_part}"
+        parts.append(class_part)
     subject = " ".join(parts) if parts else "fantasy adventurer"
 
     extras = []
     if req.background:
-        extras.append(f"{req.background} background")
+        extras.append(f"{req.background.strip()[:100]} background")
     if req.alignment:
-        extras.append(req.alignment.lower())
+        extras.append(req.alignment.strip()[:60].lower())
     if req.description:
-        # Trim so we don't blow past model limits
-        extras.append(req.description.strip()[:400])
+        extras.append(req.description.strip()[:420])
+    extras_text = ", ".join(extras) if extras else "simple heroic fantasy details"
+    framing = req.portrait_framing or SAFE_PORTRAIT_FRAMING
 
-    extras_str = ", ".join(extras) if extras else ""
-    return (
-        f"Portrait of a {subject}. {extras_str}. "
-        f"{style}. Head and shoulders composition, centered, neutral background, "
-        f"no text, no watermark, no logo."
-    )
+    return f"Create a fantasy tabletop RPG character portrait of a {subject}. Character details: {extras_text}. {style}. {framing}"
 
 
 def _build_image_prompt(req: ImageBatchRequest, variant: str) -> str:
@@ -109,62 +119,26 @@ def _build_image_prompt(req: ImageBatchRequest, variant: str) -> str:
     variant_text = variant_notes.get(variant, variant_notes["studio"])
 
     if subject_type == "environment":
-        weather = req.weather or "clear weather"
-        lighting = req.lighting or "daylight"
-        mood = req.mood or "neutral fantasy atmosphere"
         location = req.location or req.campaign_name or "fantasy adventuring location"
-        details = ", ".join(
-            part for part in [
-                f"weather: {weather}",
-                f"lighting: {lighting}",
-                f"mood: {mood}",
-                req.notes,
-                req.campaign_notes[:300] if req.campaign_notes else "",
-            ]
-            if part
-        )
-        return (
-            f"Fantasy tabletop RPG environment background for {location}. {details}. "
-            f"{variant_text}. Dark grey and red-accented cinematic palette where appropriate. "
-            f"No characters in the foreground, no text, no watermark, no logo."
-        )
+        details = ", ".join(part for part in [req.weather, req.lighting, req.mood, req.notes, req.campaign_notes[:300] if req.campaign_notes else ""] if part)
+        return f"Fantasy tabletop RPG environment background for {location}. {details}. {variant_text}. No foreground characters, no text, no watermark, no logo."
 
     item_name = req.name or "custom fantasy item"
     item_type = req.item_type or "equipment"
     rarity = req.rarity or "common"
-    details = ", ".join(
-        part for part in [
-            req.description[:450] if req.description else "",
-            req.properties[:300] if req.properties else "",
-        ]
-        if part
-    )
-    return (
-        f"Fantasy tabletop RPG item concept art of a {rarity} {item_type} named {item_name}. "
-        f"{details}. {variant_text}. The image should show one item only on a neutral dark grey background, "
-        f"with red accent lighting if it fits the object. No hands, no character wearing it, no text, no watermark, no logo."
-    )
+    details = ", ".join(part for part in [req.description[:450] if req.description else "", req.properties[:300] if req.properties else ""] if part)
+    return f"Fantasy tabletop RPG item concept art of a {rarity} {item_type} named {item_name}. {details}. {variant_text}. One item only on a neutral dark grey background, no text, no watermark, no logo."
 
 
 async def _generate_prompt_with_gemini(prompt: str, username: str, style: str, subject_type: str) -> dict:
     session_id = f"image-{subject_type}-{username}-{style}-{uuid.uuid4().hex[:8]}"
-    chat = LlmChat(
-        api_key=get_llm_api_key("gemini"),
-        session_id=session_id,
-        system_message="You are an expert fantasy concept artist for tabletop RPG tools."
-    )
+    chat = LlmChat(api_key=get_llm_api_key("gemini"), session_id=session_id, system_message="You are an expert fantasy concept artist for tabletop RPG tools.")
     chat.with_model("gemini", "gemini-3.1-flash-image-preview").with_params(modalities=["image", "text"])
     _text, images = await chat.send_message_multimodal_response(UserMessage(text=prompt))
     if not images:
         raise RuntimeError("no_image")
     first = images[0]
-    return {
-        "image_base64": first.get("data", ""),
-        "mime_type": first.get("mime_type", "image/png"),
-        "style": style,
-        "prompt": prompt,
-        "provider": "gemini"
-    }
+    return {"image_base64": first.get("data", ""), "mime_type": first.get("mime_type", "image/png"), "style": style, "prompt": prompt, "provider": "gemini"}
 
 
 async def _generate_prompt_with_openai(prompt: str, style: str) -> dict:
@@ -172,90 +146,43 @@ async def _generate_prompt_with_openai(prompt: str, style: str) -> dict:
     images = await generator.generate_images(prompt=prompt, number_of_images=1)
     if not images:
         raise RuntimeError("no_image")
-    return {
-        "image_base64": base64.b64encode(images[0]).decode("utf-8"),
-        "mime_type": "image/png",
-        "style": style,
-        "prompt": prompt,
-        "provider": "openai"
-    }
+    return {"image_base64": base64.b64encode(images[0]).decode("utf-8"), "mime_type": "image/png", "style": style, "prompt": prompt, "provider": "openai"}
 
 
 async def _generate_image_option(req: ImageBatchRequest, username: str, variant: str) -> dict:
-    subject_type = (req.subject_type or "item").lower()
+    status = _provider_status()
+    if not status["available"]:
+        raise _not_configured_error()
     prompt = _build_image_prompt(req, variant)
-
-    if LlmChat is not None and UserMessage is not None and get_llm_api_key("gemini"):
-        return await _generate_prompt_with_gemini(prompt, username, variant, subject_type)
-
-    if get_llm_api_key("openai"):
-        return await _generate_prompt_with_openai(prompt, variant)
-
-    raise HTTPException(
-        status_code=503,
-        detail="Image generation is not configured. Set GEMINI_API_KEY/GOOGLE_API_KEY or OPENAI_API_KEY."
-    )
-
-
-async def _generate_with_gemini(req: PortraitRequest, username: str) -> dict:
-    prompt = _build_prompt(req)
-    session_id = f"portrait-{username}-{req.style}-{uuid.uuid4().hex[:8]}"
-    chat = LlmChat(
-        api_key=get_llm_api_key("gemini"),
-        session_id=session_id,
-        system_message="You are an expert fantasy portrait artist."
-    )
-    chat.with_model("gemini", "gemini-3.1-flash-image-preview").with_params(modalities=["image", "text"])
-    _text, images = await chat.send_message_multimodal_response(UserMessage(text=prompt))
-    if not images:
-        raise RuntimeError("no_image")
-    first = images[0]
-    return {
-        "image_base64": first.get("data", ""),
-        "mime_type": first.get("mime_type", "image/png"),
-        "style": req.style,
-        "prompt": prompt,
-        "provider": "gemini"
-    }
-
-
-async def _generate_with_openai(req: PortraitRequest) -> dict:
-    prompt = _build_prompt(req)
-    generator = OpenAIImageGeneration(api_key=get_llm_api_key("openai"))
-    images = await generator.generate_images(prompt=prompt, number_of_images=1)
-    if not images:
-        raise RuntimeError("no_image")
-    return {
-        "image_base64": base64.b64encode(images[0]).decode("utf-8"),
-        "mime_type": "image/png",
-        "style": req.style,
-        "prompt": prompt,
-        "provider": "openai"
-    }
+    if status["gemini"]:
+        return await _generate_prompt_with_gemini(prompt, username, variant, (req.subject_type or "item").lower())
+    return await _generate_prompt_with_openai(prompt, variant)
 
 
 async def _generate_portrait_option(req: PortraitRequest, username: str) -> dict:
+    status = _provider_status()
+    if not status["available"]:
+        raise _not_configured_error()
     if req.style not in STYLE_PROMPTS:
         req.style = "photoreal"
+    prompt = _build_prompt(req)
+    if status["gemini"]:
+        return await _generate_prompt_with_gemini(prompt, username, req.style, "portrait")
+    return await _generate_prompt_with_openai(prompt, req.style)
 
-    if LlmChat is not None and UserMessage is not None and get_llm_api_key("gemini"):
-        return await _generate_with_gemini(req, username)
 
-    if get_llm_api_key("openai"):
-        return await _generate_with_openai(req)
-
-    raise HTTPException(
-        status_code=503,
-        detail="Image generation is not configured. Set GEMINI_API_KEY/GOOGLE_API_KEY or OPENAI_API_KEY."
-    )
+@router.get("/ai/portrait/status")
+async def portrait_status(_username: str = Depends(get_current_user)):
+    status = _provider_status()
+    return {
+        "available": status["available"],
+        "providers": {"gemini": status["gemini"], "openai": status["openai"]},
+        "message": "AI portrait generation is available." if status["available"] else "AI portrait generation is not configured. Character creation can continue without it.",
+    }
 
 
 @router.post("/ai/portrait")
 async def generate_portrait(req: PortraitRequest, username: str = Depends(get_current_user)):
-    """Generate a single fantasy-style character portrait via Gemini Nano Banana.
-
-    Returns: { image_base64: str, mime_type: str, prompt: str, style: str }
-    """
     try:
         return await _generate_portrait_option(req, username)
     except HTTPException:
@@ -267,49 +194,33 @@ async def generate_portrait(req: PortraitRequest, username: str = Depends(get_cu
 
 @router.post("/ai/portrait/batch")
 async def generate_portrait_batch(req: PortraitRequest, username: str = Depends(get_current_user)):
-    """Generate 3 portraits (photoreal, painterly, stylized) in parallel so the
-    player can pick their favorite at the end of the builder."""
+    if not _provider_status()["available"]:
+        raise _not_configured_error()
     styles = ["photoreal", "painterly", "stylized"]
 
     async def one(style: str):
         copy = req.model_copy(update={"style": style})
         try:
             return await _generate_portrait_option(copy, username)
-        except HTTPException:
-            raise
         except Exception as e:
             logger.exception(f"Portrait ({style}) failed")
-            prompt = _build_prompt(copy)
-            return {"style": style, "error": type(e).__name__, "prompt": prompt}
+            return {"style": style, "error": type(e).__name__, "prompt": _build_prompt(copy)}
 
-    try:
-        results = await asyncio.gather(*[one(s) for s in styles])
-    except HTTPException:
-        raise
-    return {"portraits": results}
+    return {"portraits": await asyncio.gather(*[one(style) for style in styles])}
 
 
 @router.post("/ai/image/batch")
 async def generate_image_batch(req: ImageBatchRequest, username: str = Depends(get_current_user)):
-    """Generate 3 image options for item/equipment art or a shared environment background."""
+    if not _provider_status()["available"]:
+        raise _not_configured_error()
     subject_type = (req.subject_type or "item").lower()
     variants = ["wide", "immersive", "moody"] if subject_type == "environment" else ["studio", "dramatic", "arcane"]
 
     async def one(variant: str):
         try:
             return await _generate_image_option(req, username, variant)
-        except HTTPException:
-            raise
         except Exception as e:
             logger.exception(f"Image generation ({subject_type}:{variant}) failed")
-            return {
-                "style": variant,
-                "error": type(e).__name__,
-                "prompt": _build_image_prompt(req, variant),
-            }
+            return {"style": variant, "error": type(e).__name__, "prompt": _build_image_prompt(req, variant)}
 
-    try:
-        results = await asyncio.gather(*[one(variant) for variant in variants])
-    except HTTPException:
-        raise
-    return {"images": results}
+    return {"images": await asyncio.gather(*[one(variant) for variant in variants])}
