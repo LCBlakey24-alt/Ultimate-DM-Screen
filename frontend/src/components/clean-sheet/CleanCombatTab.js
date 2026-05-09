@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { getClassResourceRules } from '@/data/classResourceRules';
 
 const mod = (score = 10) => Math.floor((Number(score || 10) - 10) / 2);
 const fmt = (value) => (value >= 0 ? `+${value}` : `${value}`);
@@ -24,21 +25,6 @@ const WEAPON_FALLBACKS = {
   greataxe: { count: 1, sides: 12, ability: 'strength' },
   glaive: { count: 1, sides: 10, ability: 'strength' },
   halberd: { count: 1, sides: 10, ability: 'strength' },
-};
-
-const RESOURCE_CONFIG = {
-  Barbarian: [{ key: 'rage', label: 'Rage', minLevel: 1, fallbackMax: c => c?.level >= 17 ? 6 : c?.level >= 12 ? 5 : c?.level >= 6 ? 4 : c?.level >= 3 ? 3 : 2 }],
-  Bard: [{ key: 'bardic_inspiration', label: 'Bardic Inspiration', minLevel: 1, fallbackMax: c => Math.max(1, mod(c?.charisma)) }],
-  Cleric: [{ key: 'channel_divinity', label: 'Channel Divinity', minLevel: 2, fallbackMax: c => c?.level >= 18 ? 3 : c?.level >= 6 ? 2 : 1 }],
-  Druid: [{ key: 'wild_shape', label: 'Wild Shape', minLevel: 2, fallbackMax: () => 2 }],
-  Fighter: [
-    { key: 'second_wind', label: 'Second Wind', minLevel: 1, fallbackMax: () => 1 },
-    { key: 'action_surge', label: 'Action Surge', minLevel: 2, fallbackMax: c => c?.level >= 17 ? 2 : 1 },
-  ],
-  Monk: [{ key: 'ki', label: 'Ki', minLevel: 2, fallbackMax: c => Math.max(0, Number(c?.level || 1)) }],
-  Paladin: [{ key: 'lay_on_hands', label: 'Lay on Hands', minLevel: 1, fallbackMax: c => Math.max(0, Number(c?.level || 1) * 5) }],
-  Sorcerer: [{ key: 'sorcery_points', label: 'Sorcery Points', minLevel: 2, fallbackMax: c => Math.max(0, Number(c?.level || 1)) }],
-  Warlock: [{ key: 'pact_magic', label: 'Pact Magic', minLevel: 1, fallbackMax: c => (Number(c?.level || 1) >= 2 ? 2 : 1) }],
 };
 
 function hasSaveProficiency(character, ability) {
@@ -184,7 +170,6 @@ export default function CleanCombatTab({ character, ac, speed, proficiencyBonus,
   const bestAttackMod = proficiencyBonus + bestAbilityMod;
   const unarmedDamageMod = Math.max(0, strengthMod);
   const className = character?.character_class || 'Adventurer';
-  const characterLevel = Number(character?.level || 1);
   const concentratingOn = character?.concentrating_on || character?.concentration || '';
 
   const equippedWeaponAttacks = useMemo(
@@ -216,18 +201,14 @@ export default function CleanCombatTab({ character, ac, speed, proficiencyBonus,
   ]), [bestAbilityMod, bestAttackMod, equippedWeaponAttacks, proficiencyBonus, strengthMod, unarmedDamageMod]);
 
   const classResources = useMemo(() => {
-    const configs = RESOURCE_CONFIG[className] || [];
     const resources = character?.resources || {};
-    return configs
-      .filter(config => characterLevel >= (config.minLevel || 1))
-      .map(config => {
-        const raw = resources[config.key] || {};
-        const max = Number(raw.max ?? raw.total ?? config.fallbackMax?.(character) ?? 0) || 0;
-        const current = Number(resourceDrafts[config.key] ?? raw.current ?? raw.remaining ?? max) || 0;
-        return { ...config, current: Math.max(0, Math.min(max, current)), max };
-      })
-      .filter(resource => resource.max > 0);
-  }, [character, characterLevel, className, resourceDrafts]);
+    return getClassResourceRules(character).map(rule => {
+      const raw = resources[rule.key] || {};
+      const max = Number(raw.max ?? raw.total ?? rule.maxValue ?? 0) || 0;
+      const current = Number(resourceDrafts[rule.key] ?? raw.current ?? raw.remaining ?? max) || 0;
+      return { key: rule.key, label: rule.label, current: Math.max(0, Math.min(max, current)), max };
+    }).filter(resource => resource.max > 0);
+  }, [character, resourceDrafts]);
 
   const rollAttack = (attack) => {
     onRoll(attack.attackLabel, attack.attackMod ?? bestAttackMod);
