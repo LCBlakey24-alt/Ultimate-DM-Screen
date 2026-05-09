@@ -6,25 +6,25 @@ const mod = (score = 10) => Math.floor((Number(score || 10) - 10) / 2);
 const fmt = (value) => (value >= 0 ? `+${value}` : `${value}`);
 
 const WEAPON_FALLBACKS = {
-  dagger: { count: 1, sides: 4, ability: 'dexterity' },
-  club: { count: 1, sides: 4, ability: 'strength' },
-  mace: { count: 1, sides: 6, ability: 'strength' },
-  shortsword: { count: 1, sides: 6, ability: 'dexterity' },
-  scimitar: { count: 1, sides: 6, ability: 'dexterity' },
-  handaxe: { count: 1, sides: 6, ability: 'strength' },
-  spear: { count: 1, sides: 6, ability: 'strength' },
-  quarterstaff: { count: 1, sides: 6, ability: 'strength' },
-  longsword: { count: 1, sides: 8, ability: 'strength' },
-  rapier: { count: 1, sides: 8, ability: 'dexterity' },
-  warhammer: { count: 1, sides: 8, ability: 'strength' },
-  battleaxe: { count: 1, sides: 8, ability: 'strength' },
-  longbow: { count: 1, sides: 8, ability: 'dexterity' },
-  shortbow: { count: 1, sides: 6, ability: 'dexterity' },
-  crossbow: { count: 1, sides: 8, ability: 'dexterity' },
-  greatsword: { count: 2, sides: 6, ability: 'strength' },
-  greataxe: { count: 1, sides: 12, ability: 'strength' },
-  glaive: { count: 1, sides: 10, ability: 'strength' },
-  halberd: { count: 1, sides: 10, ability: 'strength' },
+  dagger: { count: 1, sides: 4, ability: 'dexterity', damageType: 'piercing', range: 'Melee / thrown' },
+  club: { count: 1, sides: 4, ability: 'strength', damageType: 'bludgeoning', range: 'Melee' },
+  mace: { count: 1, sides: 6, ability: 'strength', damageType: 'bludgeoning', range: 'Melee' },
+  shortsword: { count: 1, sides: 6, ability: 'dexterity', damageType: 'piercing', range: 'Melee' },
+  scimitar: { count: 1, sides: 6, ability: 'dexterity', damageType: 'slashing', range: 'Melee' },
+  handaxe: { count: 1, sides: 6, ability: 'strength', damageType: 'slashing', range: 'Melee / thrown' },
+  spear: { count: 1, sides: 6, ability: 'strength', damageType: 'piercing', range: 'Melee / thrown' },
+  quarterstaff: { count: 1, sides: 6, ability: 'strength', damageType: 'bludgeoning', range: 'Melee' },
+  longsword: { count: 1, sides: 8, ability: 'strength', damageType: 'slashing', range: 'Melee' },
+  rapier: { count: 1, sides: 8, ability: 'dexterity', damageType: 'piercing', range: 'Melee' },
+  warhammer: { count: 1, sides: 8, ability: 'strength', damageType: 'bludgeoning', range: 'Melee' },
+  battleaxe: { count: 1, sides: 8, ability: 'strength', damageType: 'slashing', range: 'Melee' },
+  longbow: { count: 1, sides: 8, ability: 'dexterity', damageType: 'piercing', range: '150/600 ft' },
+  shortbow: { count: 1, sides: 6, ability: 'dexterity', damageType: 'piercing', range: '80/320 ft' },
+  crossbow: { count: 1, sides: 8, ability: 'dexterity', damageType: 'piercing', range: '80/320 ft' },
+  greatsword: { count: 2, sides: 6, ability: 'strength', damageType: 'slashing', range: 'Melee' },
+  greataxe: { count: 1, sides: 12, ability: 'strength', damageType: 'slashing', range: 'Melee' },
+  glaive: { count: 1, sides: 10, ability: 'strength', damageType: 'slashing', range: 'Reach' },
+  halberd: { count: 1, sides: 10, ability: 'strength', damageType: 'slashing', range: 'Reach' },
 };
 
 function hasSaveProficiency(character, ability) {
@@ -76,9 +76,9 @@ function isConsumableLike(item) {
 
 function getPotionHealing(item) {
   const text = `${getItemName(item)} ${item?.description || ''} ${item?.effect || ''}`.toLowerCase();
+  if (text.includes('supreme')) return { count: 10, sides: 4, modifier: 20 };
   if (text.includes('superior')) return { count: 8, sides: 4, modifier: 8 };
   if (text.includes('greater')) return { count: 4, sides: 4, modifier: 4 };
-  if (text.includes('supreme')) return { count: 10, sides: 4, modifier: 20 };
   return { count: 2, sides: 4, modifier: 2 };
 }
 
@@ -89,35 +89,30 @@ function getWeaponProfile(item, strengthMod, dexterityMod, bestAbilityMod, profi
   const fallback = fallbackKey ? WEAPON_FALLBACKS[fallbackKey] : null;
   const dice = parseDamageDice(item?.damage || item?.damage_dice || item?.dice || item?.damageDice) || fallback || { count: 1, sides: 8 };
   const ability = item?.ability || item?.attack_ability || fallback?.ability || 'best';
-  const abilityMod = ability === 'strength'
-    ? strengthMod
-    : ability === 'dexterity'
-      ? dexterityMod
-      : bestAbilityMod;
+  const abilityMod = ability === 'strength' ? strengthMod : ability === 'dexterity' ? dexterityMod : bestAbilityMod;
+  const damageType = item?.damage_type || item?.damageType || fallback?.damageType || 'weapon';
+  const range = item?.range || fallback?.range || 'Melee or ranged';
+  const properties = item?.properties || item?.property || item?.notes || '';
 
   return {
     id: `weapon-${normalised || Math.random()}`,
     title: name,
     type: 'Action',
     attackLabel: `${name} Attack`,
-    description: `Tap attack first, then damage if it hits. To-hit ${fmt(proficiencyBonus + abilityMod)}. Damage ${dice.count}d${dice.sides} ${fmt(abilityMod)}.`,
+    details: properties ? `${range} • ${properties}` : range,
     attackMod: proficiencyBonus + abilityMod,
-    damage: { label: `${name} Damage`, count: dice.count, sides: dice.sides, modifier: abilityMod }
+    saveText: null,
+    damageText: `${dice.count}d${dice.sides}${abilityMod ? ` ${fmt(abilityMod)}` : ''}`,
+    damageType,
+    damage: { label: `${name} Damage`, count: dice.count, sides: dice.sides, modifier: abilityMod, damageType }
   };
 }
 
 function gatherEquippedWeapons(character, strengthMod, dexterityMod, bestAbilityMod, proficiencyBonus) {
   const candidates = [];
   const equipped = character?.equipped || {};
-
-  ['mainHand', 'main_hand', 'weapon', 'offHand', 'off_hand'].forEach(key => {
-    if (equipped?.[key]) candidates.push(equipped[key]);
-  });
-
-  [...(character?.equipment || []), ...(character?.inventory || [])].forEach(item => {
-    if (item?.equipped || item?.is_equipped) candidates.push(item);
-  });
-
+  ['mainHand', 'main_hand', 'weapon', 'offHand', 'off_hand'].forEach(key => { if (equipped?.[key]) candidates.push(equipped[key]); });
+  [...(character?.equipment || []), ...(character?.inventory || [])].forEach(item => { if (item?.equipped || item?.is_equipped) candidates.push(item); });
   const weapons = candidates.filter(isWeaponLike).map(item => getWeaponProfile(item, strengthMod, dexterityMod, bestAbilityMod, proficiencyBonus));
   const seen = new Set();
   return weapons.filter(weapon => {
@@ -129,20 +124,37 @@ function gatherEquippedWeapons(character, strengthMod, dexterityMod, bestAbility
 }
 
 function gatherConsumables(character) {
-  return [...(character?.equipment || []), ...(character?.inventory || [])]
-    .filter(isConsumableLike)
-    .slice(0, 6);
+  return [...(character?.equipment || []), ...(character?.inventory || [])].filter(isConsumableLike).slice(0, 6);
 }
 
-function CombatActionCard({ title, description, type = 'Action', onClick, children, active }) {
+function AttackCard({ action, onClick, children, active }) {
   return (
     <div className={`clean-sheet-action-card-shell ${active ? 'active' : ''}`}>
+      <button type="button" className="clean-sheet-action-card clean-sheet-attack-card" onClick={onClick}>
+        <div className="clean-sheet-attack-card-top">
+          <span className="clean-sheet-action-type">{action.type || 'Action'}</span>
+          <strong>{action.title}</strong>
+          {action.details && <span className="clean-sheet-attack-details">{action.details}</span>}
+        </div>
+        <div className="clean-sheet-attack-stat-row">
+          <div><span>{action.saveText ? 'Save' : 'To Hit'}</span><strong>{action.saveText || fmt(action.attackMod || 0)}</strong></div>
+          <div><span>Damage</span><strong>{action.damageText || '—'}</strong></div>
+          <div><span>Type</span><strong>{action.damageType || '—'}</strong></div>
+        </div>
+      </button>
+      {children}
+    </div>
+  );
+}
+
+function SimpleActionCard({ title, description, type = 'Action', onClick }) {
+  return (
+    <div className="clean-sheet-action-card-shell">
       <button type="button" className="clean-sheet-action-card" onClick={onClick}>
         <span className="clean-sheet-action-type">{type}</span>
         <strong>{title}</strong>
         <span>{description}</span>
       </button>
-      {children}
     </div>
   );
 }
@@ -151,9 +163,7 @@ function ActionSection({ title, children }) {
   return (
     <section className="clean-sheet-panel clean-sheet-wide">
       <h2>{title}</h2>
-      <div className="clean-sheet-action-grid">
-        {children}
-      </div>
+      <div className="clean-sheet-action-grid">{children}</div>
     </section>
   );
 }
@@ -172,31 +182,19 @@ export default function CleanCombatTab({ character, ac, speed, proficiencyBonus,
   const className = character?.character_class || 'Adventurer';
   const concentratingOn = character?.concentrating_on || character?.concentration || '';
 
-  const equippedWeaponAttacks = useMemo(
-    () => gatherEquippedWeapons(character, strengthMod, dexterityMod, bestAbilityMod, proficiencyBonus),
-    [character, strengthMod, dexterityMod, bestAbilityMod, proficiencyBonus]
-  );
-
+  const equippedWeaponAttacks = useMemo(() => gatherEquippedWeapons(character, strengthMod, dexterityMod, bestAbilityMod, proficiencyBonus), [character, strengthMod, dexterityMod, bestAbilityMod, proficiencyBonus]);
   const consumables = useMemo(() => gatherConsumables(character), [character]);
 
   const attackOptions = useMemo(() => ([
     ...(equippedWeaponAttacks.length > 0 ? equippedWeaponAttacks : [{
-      id: 'main-attack',
-      title: 'Weapon Attack',
-      type: 'Action',
-      attackLabel: 'Weapon Attack',
-      description: `Fallback weapon attack. To-hit ${fmt(bestAttackMod)}.`,
-      attackMod: bestAttackMod,
-      damage: { label: 'Weapon Damage', count: 1, sides: 8, modifier: bestAbilityMod }
+      id: 'main-attack', title: 'Weapon Attack', type: 'Action', attackLabel: 'Weapon Attack', details: 'Fallback weapon attack',
+      attackMod: bestAttackMod, saveText: null, damageText: `1d8 ${fmt(bestAbilityMod)}`, damageType: 'weapon',
+      damage: { label: 'Weapon Damage', count: 1, sides: 8, modifier: bestAbilityMod, damageType: 'weapon' }
     }]),
     {
-      id: 'unarmed-strike',
-      title: 'Unarmed Strike',
-      type: 'Action',
-      attackLabel: 'Unarmed Strike',
-      description: `Punch, kick, headbutt or similar. To-hit ${fmt(proficiencyBonus + strengthMod)}.`,
-      attackMod: proficiencyBonus + strengthMod,
-      damage: { label: 'Unarmed Damage', count: 1, sides: 1, modifier: unarmedDamageMod }
+      id: 'unarmed-strike', title: 'Unarmed Strike', type: 'Action', attackLabel: 'Unarmed Strike', details: 'Punch, kick, headbutt, or similar',
+      attackMod: proficiencyBonus + strengthMod, saveText: null, damageText: `1 ${unarmedDamageMod ? fmt(unarmedDamageMod) : ''}`.trim(), damageType: 'bludgeoning',
+      damage: { label: 'Unarmed Damage', count: 1, sides: 1, modifier: unarmedDamageMod, damageType: 'bludgeoning' }
     }
   ]), [bestAbilityMod, bestAttackMod, equippedWeaponAttacks, proficiencyBonus, strengthMod, unarmedDamageMod]);
 
@@ -222,9 +220,7 @@ export default function CleanCombatTab({ character, ac, speed, proficiencyBonus,
     setPendingDamage(null);
   };
 
-  const rollConcentrationSave = () => {
-    onRoll('Concentration Save', concentrationMod);
-  };
+  const rollConcentrationSave = () => onRoll('Concentration Save', concentrationMod);
 
   const saveConcentration = async (value) => {
     if (!onCharacterUpdate) return;
@@ -235,15 +231,7 @@ export default function CleanCombatTab({ character, ac, speed, proficiencyBonus,
     const next = Math.max(0, Math.min(resource.max, resource.current + delta));
     setResourceDrafts(prev => ({ ...prev, [resource.key]: next }));
     if (!onCharacterUpdate) return;
-    const nextResources = {
-      ...(character?.resources || {}),
-      [resource.key]: {
-        ...(character?.resources?.[resource.key] || {}),
-        current: next,
-        remaining: next,
-        max: resource.max,
-      }
-    };
+    const nextResources = { ...(character?.resources || {}), [resource.key]: { ...(character?.resources?.[resource.key] || {}), current: next, remaining: next, max: resource.max } };
     const ok = await onCharacterUpdate({ resources: nextResources }, { error: `Could not update ${resource.label}` });
     if (ok !== false) toast.success(`${resource.label}: ${next}/${resource.max}`);
   };
@@ -262,122 +250,22 @@ export default function CleanCombatTab({ character, ac, speed, proficiencyBonus,
       if (qty && qty > 1) source[sourceIndex] = { ...source[sourceIndex], quantity: qty - 1, qty: qty - 1 };
       else source.splice(sourceIndex, 1);
     }
-    await onCharacterUpdate({
-      current_hit_points: Math.min(Number(character?.max_hit_points || 10), Number(character?.current_hit_points || 0) + result.total),
-      inventory,
-      equipment,
-    }, { error: 'Could not use consumable' });
+    await onCharacterUpdate({ current_hit_points: Math.min(Number(character?.max_hit_points || 10), Number(character?.current_hit_points || 0) + result.total), inventory, equipment }, { error: 'Could not use consumable' });
   };
 
   return (
-    <div className="clean-sheet-combat-wrap">
-      <div className="clean-sheet-grid">
-        <section className="clean-sheet-panel clean-sheet-wide">
-          <h2>Combat Quick Tools</h2>
-          <div className="clean-sheet-combat-tools">
-            <div className="clean-sheet-concentration-box">
-              <span>Concentration</span>
-              <input
-                value={concentratingOn}
-                onChange={(event) => saveConcentration(event.target.value)}
-                placeholder="Spell or effect…"
-                aria-label="Concentration spell or effect"
-              />
-              <button type="button" onClick={rollConcentrationSave}>Roll Save {fmt(concentrationMod)}</button>
-              {concentratingOn && <button type="button" onClick={() => saveConcentration('')}>Clear</button>}
-            </div>
+    <div className="clean-sheet-combat-wrap"><div className="clean-sheet-grid">
+      <section className="clean-sheet-panel clean-sheet-wide"><h2>Combat Quick Tools</h2><div className="clean-sheet-combat-tools">
+        <div className="clean-sheet-concentration-box"><span>Concentration</span><input value={concentratingOn} onChange={(event) => saveConcentration(event.target.value)} placeholder="Spell or effect…" aria-label="Concentration spell or effect" /><button type="button" onClick={rollConcentrationSave}>Roll Save {fmt(concentrationMod)}</button>{concentratingOn && <button type="button" onClick={() => saveConcentration('')}>Clear</button>}</div>
+        {classResources.length > 0 && <div className="clean-sheet-resource-grid">{classResources.map(resource => <div key={resource.key} className="clean-sheet-resource-card"><span>{resource.label}</span><strong>{resource.current}/{resource.max}</strong><div><button type="button" onClick={() => updateResource(resource, -1)} disabled={resource.current <= 0}>Use</button><button type="button" onClick={() => updateResource(resource, 1)} disabled={resource.current >= resource.max}>Restore</button></div></div>)}</div>}
+        {consumables.length > 0 && <div className="clean-sheet-consumable-strip"><span>Quick Consumables</span>{consumables.map((item, index) => <button key={`${getItemName(item)}-${index}`} type="button" onClick={() => useConsumable(item)}>{getItemName(item)}{getItemQuantity(item) ? ` x${getItemQuantity(item)}` : ''}</button>)}</div>}
+      </div></section>
 
-            {classResources.length > 0 && (
-              <div className="clean-sheet-resource-grid">
-                {classResources.map(resource => (
-                  <div key={resource.key} className="clean-sheet-resource-card">
-                    <span>{resource.label}</span>
-                    <strong>{resource.current}/{resource.max}</strong>
-                    <div>
-                      <button type="button" onClick={() => updateResource(resource, -1)} disabled={resource.current <= 0}>Use</button>
-                      <button type="button" onClick={() => updateResource(resource, 1)} disabled={resource.current >= resource.max}>Restore</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {consumables.length > 0 && (
-              <div className="clean-sheet-consumable-strip">
-                <span>Quick Consumables</span>
-                {consumables.map((item, index) => (
-                  <button key={`${getItemName(item)}-${index}`} type="button" onClick={() => useConsumable(item)}>
-                    {getItemName(item)}{getItemQuantity(item) ? ` x${getItemQuantity(item)}` : ''}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-
-        <ActionSection title="Attacks">
-          {attackOptions.map(attack => (
-            <CombatActionCard
-              key={attack.id}
-              title={attack.title}
-              type={attack.type}
-              description={attack.description}
-              onClick={() => rollAttack(attack)}
-              active={pendingDamage?.label === attack.damage.label}
-            >
-              {pendingDamage?.label === attack.damage.label && (
-                <div className="clean-sheet-pending-damage">
-                  <span>Attack rolled. If it hits:</span>
-                  <button type="button" className="clean-sheet-damage-button" onClick={() => rollDamage(attack.damage)}>
-                    Roll Damage
-                  </button>
-                  <button type="button" onClick={() => setPendingDamage(null)}>Cancel</button>
-                </div>
-              )}
-            </CombatActionCard>
-          ))}
-        </ActionSection>
-
-        <ActionSection title="Actions">
-          <CombatActionCard title="Dash" type="Action" description="Gain extra movement equal to your speed this turn." />
-          <CombatActionCard title="Disengage" type="Action" description="Your movement does not provoke opportunity attacks this turn." />
-          <CombatActionCard title="Dodge" type="Action" description="Attack rolls against you have disadvantage until your next turn." />
-          <CombatActionCard title="Help" type="Action" description="Give an ally advantage on a relevant check or attack." />
-          <CombatActionCard title="Ready" type="Action" description="Prepare an action to trigger later this round." />
-        </ActionSection>
-
-        <ActionSection title="Bonus Actions">
-          <CombatActionCard title="Off-hand Attack" type="Bonus" description="Use when dual-wielding after taking the Attack action." onClick={() => onRoll('Off-hand Attack', bestAttackMod)} />
-          {className === 'Rogue' && <CombatActionCard title="Cunning Action" type="Bonus" description="Dash, Disengage, or Hide as a bonus action." />}
-          {className === 'Monk' && <CombatActionCard title="Martial Arts" type="Bonus" description="Make one unarmed strike after attacking with a monk weapon or unarmed strike." onClick={() => onRoll('Martial Arts', bestAttackMod)} />}
-          {className === 'Barbarian' && <CombatActionCard title="Rage" type="Bonus" description="Enter a rage if you have uses remaining." />}
-          {className === 'Fighter' && <CombatActionCard title="Second Wind" type="Bonus" description="Regain hit points once per rest if available." />}
-          <CombatActionCard title="Use Class Feature" type="Bonus" description="Use any bonus action feature granted by class, race, feat, or spell." />
-        </ActionSection>
-
-        <ActionSection title="Reactions">
-          <CombatActionCard title="Opportunity Attack" type="Reaction" description="Attack a creature that leaves your reach." onClick={() => onRoll('Opportunity Attack', bestAttackMod)} />
-          <CombatActionCard title="Readied Action" type="Reaction" description="Use your reaction to trigger a previously readied action." />
-          <CombatActionCard title="Use Reaction Feature" type="Reaction" description="Use a reaction from a class feature, race, feat, spell, or item." />
-        </ActionSection>
-
-        <section className="clean-sheet-panel clean-sheet-wide">
-          <h2>Combat Summary</h2>
-          <div className="clean-sheet-combat-summary">
-            <div><span>Armor Class</span><strong>{ac}</strong></div>
-            <div><span>Speed</span><strong>{speed}ft</strong></div>
-            <div><span>Proficiency</span><strong>{fmt(proficiencyBonus)}</strong></div>
-            <div><span>Best Attack</span><strong>{fmt(bestAttackMod)}</strong></div>
-          </div>
-          {lastDamage && (
-            <div className="clean-sheet-damage-result">
-              <span>{lastDamage.label}</span>
-              <strong>{lastDamage.total}</strong>
-              <em>{lastDamage.notation} ({lastDamage.rolls.join(' + ')})</em>
-            </div>
-          )}
-        </section>
-      </div>
-    </div>
+      <ActionSection title="Attacks / Spells">{attackOptions.map(attack => <AttackCard key={attack.id} action={attack} onClick={() => rollAttack(attack)} active={pendingDamage?.label === attack.damage.label}>{pendingDamage?.label === attack.damage.label && <div className="clean-sheet-pending-damage"><span>Attack rolled. If it hits:</span><button type="button" className="clean-sheet-damage-button" onClick={() => rollDamage(attack.damage)}>Roll Damage</button><button type="button" onClick={() => setPendingDamage(null)}>Cancel</button></div>}</AttackCard>)}</ActionSection>
+      <ActionSection title="Actions"><SimpleActionCard title="Dash" description="Gain extra movement equal to your speed this turn." /><SimpleActionCard title="Disengage" description="Your movement does not provoke opportunity attacks this turn." /><SimpleActionCard title="Dodge" description="Attack rolls against you have disadvantage until your next turn." /><SimpleActionCard title="Help" description="Give an ally advantage on a relevant check or attack." /><SimpleActionCard title="Ready" description="Prepare an action to trigger later this round." /></ActionSection>
+      <ActionSection title="Bonus Actions"><SimpleActionCard title="Off-hand Attack" type="Bonus" description="Use when dual-wielding after taking the Attack action." onClick={() => onRoll('Off-hand Attack', bestAttackMod)} />{className === 'Rogue' && <SimpleActionCard title="Cunning Action" type="Bonus" description="Dash, Disengage, or Hide as a bonus action." />}{className === 'Monk' && <SimpleActionCard title="Martial Arts" type="Bonus" description="Make one unarmed strike after attacking with a monk weapon or unarmed strike." onClick={() => onRoll('Martial Arts', bestAttackMod)} />}{className === 'Barbarian' && <SimpleActionCard title="Rage" type="Bonus" description="Enter a rage if you have uses remaining." />}{className === 'Fighter' && <SimpleActionCard title="Second Wind" type="Bonus" description="Regain hit points once per rest if available." />}<SimpleActionCard title="Use Class Feature" type="Bonus" description="Use any bonus action feature granted by class, race, feat, spell, or item." /></ActionSection>
+      <ActionSection title="Reactions"><SimpleActionCard title="Opportunity Attack" type="Reaction" description="Attack a creature that leaves your reach." onClick={() => onRoll('Opportunity Attack', bestAttackMod)} /><SimpleActionCard title="Readied Action" type="Reaction" description="Use your reaction to trigger a previously readied action." /><SimpleActionCard title="Use Reaction Feature" type="Reaction" description="Use a reaction from a class feature, race, feat, spell, or item." /></ActionSection>
+      <section className="clean-sheet-panel clean-sheet-wide"><h2>Combat Summary</h2><div className="clean-sheet-combat-summary"><div><span>Armor Class</span><strong>{ac}</strong></div><div><span>Speed</span><strong>{speed}ft</strong></div><div><span>Proficiency</span><strong>{fmt(proficiencyBonus)}</strong></div><div><span>Best Attack</span><strong>{fmt(bestAttackMod)}</strong></div></div>{lastDamage && <div className="clean-sheet-damage-result"><span>{lastDamage.label}</span><strong>{lastDamage.total}</strong><em>{lastDamage.notation} ({lastDamage.rolls.join(' + ')}) {lastDamage.damageType || ''}</em></div>}</section>
+    </div></div>
   );
 }
