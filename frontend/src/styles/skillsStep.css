@@ -1,0 +1,159 @@
+.skills-step {
+  display: grid;
+  gap: 16px;
+  color: #FFFFFF;
+}
+
+.skills-step-header {
+  display: grid;
+  gap: 6px;
+}
+
+.skills-step-header > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #EF4444;
+}
+
+.skills-step-header strong {
+  color: #FFFFFF;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.skills-step-header p {
+  margin: 0;
+  color: #D1D5DB;
+  line-height: 1.5;
+  font-size: 13px;
+}
+
+.skills-step-panel {
+  background: #141414;
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.skills-step-counter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: #0B0B0C;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.skills-step-counter-row span,
+.skills-step-granted-row span {
+  color: #9CA3AF;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.skills-step-counter-row strong {
+  color: #EF4444;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.skills-step-granted-row {
+  display: grid;
+  gap: 7px;
+}
+
+.skills-step-granted-row div {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.skills-step-granted-row em {
+  font-style: normal;
+  color: #FFFFFF;
+  border: 1px solid rgba(34,197,94,0.35);
+  background: rgba(34,197,94,0.10);
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.skills-step-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.skills-step-card {
+  min-height: 88px;
+  background: #0B0B0C;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  color: #FFFFFF;
+  padding: 12px;
+  text-align: left;
+  display: grid;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.skills-step-card:hover:not(:disabled) {
+  border-color: rgba(239,68,68,0.45);
+  background: rgba(239,68,68,0.08);
+}
+
+.skills-step-card.selected {
+  border-color: #EF4444;
+  background: rgba(239,68,68,0.14);
+}
+
+.skills-step-card.granted {
+  border-color: rgba(34,197,94,0.35);
+  background: rgba(34,197,94,0.08);
+}
+
+.skills-step-card:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.skills-step-card span {
+  color: #9CA3AF;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.skills-step-card strong {
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.skills-step-card em {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #EF4444;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.skills-step-card.granted em {
+  color: #22C55E;
+}
+
+@media (max-width: 560px) {
+  .skills-step-grid {
+    grid-template-columns: 1fr;
+  }
+}
