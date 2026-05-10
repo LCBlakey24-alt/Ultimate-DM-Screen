@@ -1,31 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { getClassResourceRules } from '@/data/classResourceRules';
+import { findWeaponRule, getWeaponAbilityMod } from '@/data/equipmentRules5e';
 
 const mod = (score = 10) => Math.floor((Number(score || 10) - 10) / 2);
 const fmt = (value) => (value >= 0 ? `+${value}` : `${value}`);
-
-const WEAPON_FALLBACKS = {
-  dagger: { count: 1, sides: 4, ability: 'dexterity', damageType: 'piercing', range: 'Melee / thrown' },
-  club: { count: 1, sides: 4, ability: 'strength', damageType: 'bludgeoning', range: 'Melee' },
-  mace: { count: 1, sides: 6, ability: 'strength', damageType: 'bludgeoning', range: 'Melee' },
-  shortsword: { count: 1, sides: 6, ability: 'dexterity', damageType: 'piercing', range: 'Melee' },
-  scimitar: { count: 1, sides: 6, ability: 'dexterity', damageType: 'slashing', range: 'Melee' },
-  handaxe: { count: 1, sides: 6, ability: 'strength', damageType: 'slashing', range: 'Melee / thrown' },
-  spear: { count: 1, sides: 6, ability: 'strength', damageType: 'piercing', range: 'Melee / thrown' },
-  quarterstaff: { count: 1, sides: 6, ability: 'strength', damageType: 'bludgeoning', range: 'Melee' },
-  longsword: { count: 1, sides: 8, ability: 'strength', damageType: 'slashing', range: 'Melee' },
-  rapier: { count: 1, sides: 8, ability: 'dexterity', damageType: 'piercing', range: 'Melee' },
-  warhammer: { count: 1, sides: 8, ability: 'strength', damageType: 'bludgeoning', range: 'Melee' },
-  battleaxe: { count: 1, sides: 8, ability: 'strength', damageType: 'slashing', range: 'Melee' },
-  longbow: { count: 1, sides: 8, ability: 'dexterity', damageType: 'piercing', range: '150/600 ft' },
-  shortbow: { count: 1, sides: 6, ability: 'dexterity', damageType: 'piercing', range: '80/320 ft' },
-  crossbow: { count: 1, sides: 8, ability: 'dexterity', damageType: 'piercing', range: '80/320 ft' },
-  greatsword: { count: 2, sides: 6, ability: 'strength', damageType: 'slashing', range: 'Melee' },
-  greataxe: { count: 1, sides: 12, ability: 'strength', damageType: 'slashing', range: 'Melee' },
-  glaive: { count: 1, sides: 10, ability: 'strength', damageType: 'slashing', range: 'Reach' },
-  halberd: { count: 1, sides: 10, ability: 'strength', damageType: 'slashing', range: 'Reach' },
-};
 
 function hasSaveProficiency(character, ability) {
   const saves = character?.saving_throw_proficiencies || [];
@@ -41,9 +20,12 @@ function rollDice(count = 1, sides = 8, modifier = 0) {
 
 function parseDamageDice(value) {
   if (!value) return null;
-  const text = typeof value === 'string' ? value : String(value);
+  const text = String(value);
   const match = text.match(/(\d+)d(\d+)/i);
-  if (!match) return null;
+  if (!match) {
+    const flat = Number(text);
+    return flat > 0 ? { count: flat, sides: 1 } : null;
+  }
   return { count: Number(match[1]), sides: Number(match[2]) };
 }
 
@@ -65,7 +47,7 @@ function getItemQuantity(item) {
 function isWeaponLike(item) {
   const name = normaliseName(getItemName(item));
   const type = normaliseName(item?.type || item?.category || item?.item_type || '');
-  return type.includes('weapon') || Boolean(WEAPON_FALLBACKS[name]) || Object.keys(WEAPON_FALLBACKS).some(key => name.includes(key));
+  return type.includes('weapon') || Boolean(findWeaponRule(item)) || Boolean(name);
 }
 
 function isConsumableLike(item) {
@@ -83,26 +65,34 @@ function getPotionHealing(item) {
 }
 
 function getWeaponProfile(item, strengthMod, dexterityMod, bestAbilityMod, proficiencyBonus) {
-  const name = getItemName(item) || 'Weapon Attack';
-  const normalised = normaliseName(name);
-  const fallbackKey = Object.keys(WEAPON_FALLBACKS).find(key => normalised.includes(key));
-  const fallback = fallbackKey ? WEAPON_FALLBACKS[fallbackKey] : null;
-  const dice = parseDamageDice(item?.damage || item?.damage_dice || item?.dice || item?.damageDice) || fallback || { count: 1, sides: 8 };
-  const ability = item?.ability || item?.attack_ability || fallback?.ability || 'best';
-  const abilityMod = ability === 'strength' ? strengthMod : ability === 'dexterity' ? dexterityMod : bestAbilityMod;
-  const damageType = item?.damage_type || item?.damageType || fallback?.damageType || 'weapon';
-  const range = item?.range || fallback?.range || 'Melee or ranged';
-  const properties = item?.properties || item?.property || item?.notes || '';
+  const rule = findWeaponRule(item);
+  const name = rule?.name || getItemName(item) || 'Weapon Attack';
+  const explicitDice = parseDamageDice(item?.damage || item?.damage_dice || item?.dice || item?.damageDice);
+  const ruleDice = parseDamageDice(rule?.damage);
+  const dice = explicitDice || ruleDice || { count: 1, sides: 8 };
+  const explicitAbility = String(item?.ability || item?.attack_ability || '').toLowerCase();
+  const abilityMod = explicitAbility.includes('dex')
+    ? dexterityMod
+    : explicitAbility.includes('str')
+      ? strengthMod
+      : getWeaponAbilityMod(rule, strengthMod, dexterityMod);
+  const damageType = item?.damage_type || item?.damageType || rule?.damageType || 'weapon';
+  const range = item?.range || rule?.range || 'Melee or ranged';
+  const properties = item?.properties || item?.property || item?.notes || (rule?.properties || []).join(', ');
+  const attackMod = proficiencyBonus + abilityMod;
+  const damageText = dice.sides === 1
+    ? `${dice.count}${abilityMod ? ` ${fmt(abilityMod)}` : ''}`
+    : `${dice.count}d${dice.sides}${abilityMod ? ` ${fmt(abilityMod)}` : ''}`;
 
   return {
-    id: `weapon-${normalised || Math.random()}`,
+    id: `weapon-${String(name).toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
     title: name,
     type: 'Action',
     attackLabel: `${name} Attack`,
     details: properties ? `${range} • ${properties}` : range,
-    attackMod: proficiencyBonus + abilityMod,
+    attackMod,
     saveText: null,
-    damageText: `${dice.count}d${dice.sides}${abilityMod ? ` ${fmt(abilityMod)}` : ''}`,
+    damageText,
     damageType,
     damage: { label: `${name} Damage`, count: dice.count, sides: dice.sides, modifier: abilityMod, damageType }
   };
