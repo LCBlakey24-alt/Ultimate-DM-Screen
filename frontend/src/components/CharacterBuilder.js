@@ -205,7 +205,10 @@ export default function CharacterBuilder({ onCreateCharacter, editMode = false }
         constitution: char.constitution || 10, intelligence: char.intelligence || 10,
         wisdom: char.wisdom || 10, charisma: char.charisma || 10
       });
-      setSelectedSkills(char.skill_proficiencies || []);
+      // When loading for edit, exclude background skills from selectedSkills (show only class-selected)
+      const bgSkills = backgroundData?.skillProficiencies || [];
+      const editedSkills = (char.skill_proficiencies || []).filter(s => !bgSkills.includes(s));
+      setSelectedSkills(editedSkills);
       setMethod("manual");
     } catch (error) {
       toast.error("Failed to load character for editing");

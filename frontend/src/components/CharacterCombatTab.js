@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { CLASS_RESOURCES, getResourceMax, getRestoreType, FEATURE_COSTS, FEATURE_TYPE_CONFIG } from '../data/classResources';
 import { CLASS_FEATURES } from '../data/classFeatures';
 import { ALL_WEAPONS, ARMOR } from '../data/equipmentDatabase';
+import { findWeaponRule, getWeaponAbilityMod } from '../data/equipmentRules5e';
 import { getCharacterSpellcastingInfo, getSpellSlotsForCaster } from '../data/spellDatabase';
 import { getConditionRollEffect, getConditionIndicator, CONDITION_EFFECTS } from '../data/conditionEffects';
 import { getClassAccent, theme as globalTheme } from '../lib/theme';
@@ -146,16 +147,16 @@ export default function CharacterCombatTab({
     for (const slot of ['mainHand', 'offHand']) {
       const item = equipped[slot];
       if (!item) continue;
-      const wpn = ALL_WEAPONS.find(w => w.name.toLowerCase() === (item.name || '').toLowerCase() || w.id === (item.id || '').toLowerCase());
-      if (wpn) {
-        const isRanged = wpn.category?.includes('ranged');
-        const isFinesse = wpn.properties?.includes('finesse');
-        const aMod = isRanged ? dexMod : (isFinesse ? Math.max(strMod, dexMod) : strMod);
+      // Use the new equipmentRules5e helpers for better weapon matching
+      const rule = findWeaponRule(item);
+      if (rule) {
+        const isRanged = rule.category?.includes('ranged');
+        const isFinesse = rule.ability === 'finesse';
+        const aMod = getWeaponAbilityMod(rule, strMod, dexMod);
         attacks.push({
-          name: wpn.name, slot, toHit: `${aMod + profBonus >= 0 ? '+' : ''}${aMod + profBonus}`,
-          damage: `${wpn.damage}${aMod >= 0 ? '+' : ''}${aMod}`, damageType: wpn.damageType,
-          properties: wpn.properties || [], range: wpn.range,
-          versatileDamage: wpn.versatileDamage ? `${wpn.versatileDamage}${aMod >= 0 ? '+' : ''}${aMod}` : null,
+          name: rule.name, slot, toHit: `${aMod + profBonus >= 0 ? '+' : ''}${aMod + profBonus}`,
+          damage: `${rule.damage}${aMod >= 0 ? '+' : ''}${aMod}`, damageType: rule.damageType,
+          properties: rule.properties || [], range: rule.range,
         });
       } else if (item.name) {
         attacks.push({ name: item.name, slot, toHit: `+${strMod + profBonus}`, damage: item.damage || '1d4', damageType: item.damageType || '—', properties: [] });
@@ -166,7 +167,7 @@ export default function CharacterCombatTab({
     attacks.push({
       name: 'Unarmed Strike', slot: 'unarmed',
       toHit: `+${strMod + profBonus}`,
-      damage: monkDie ? `${monkDie}${dexMod >= 0 ? '+' : ''}${dexMod}` : `1${strMod >= 0 ? '+' : ''}${strMod}`,
+      damage: monkDie ? `${monkDie}${dexMod >= 0 ? '+' : ''}${dexMod}` : `1d4${strMod >= 0 ? '+' : ''}${strMod}`,
       damageType: 'bludgeoning', properties: [], isUnarmed: true,
     });
     return attacks;

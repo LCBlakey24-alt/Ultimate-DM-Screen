@@ -28,6 +28,7 @@ import CleanCombatTab from '@/components/clean-sheet/CleanCombatTab';
 import CleanInventoryTab from '@/components/clean-sheet/CleanInventoryTab';
 import CleanSpellsTab from '@/components/clean-sheet/CleanSpellsTab';
 import CleanNotesTab from '@/components/clean-sheet/CleanNotesTab';
+import LevelUpWizard from '@/components/LevelUpWizard';
 
 const API = API_BASE;
 
@@ -132,6 +133,7 @@ export default function CleanCharacterSheet() {
   const [tempHpAmount, setTempHpAmount] = useState(1);
   const [activeTab, setActiveTab] = useState('overview');
   const [rollBurst, setRollBurst] = useState(null);
+  const [showLevelUpWizard, setShowLevelUpWizard] = useState(false);
   const [rollHistory, setRollHistory] = useState([]);
   const [showRollHistory, setShowRollHistory] = useState(false);
   const [showConditionPicker, setShowConditionPicker] = useState(false);
@@ -158,7 +160,7 @@ export default function CleanCharacterSheet() {
 
   useEffect(() => {
     if (!rollBurst) return undefined;
-    const timeout = setTimeout(() => setRollBurst(null), 1800);
+    const timeout = setTimeout(() => setRollBurst(null), 6000);
     return () => clearTimeout(timeout);
   }, [rollBurst]);
 
@@ -433,6 +435,18 @@ export default function CleanCharacterSheet() {
 
   return (
     <div className="clean-sheet-page character-page-v2">
+      {showLevelUpWizard && character && (
+        <LevelUpWizard
+          character={character}
+          isOpen={showLevelUpWizard}
+          onClose={() => setShowLevelUpWizard(false)}
+          onLevelUp={() => {
+            setShowLevelUpWizard(false);
+            setTimeout(() => window.location.reload(), 500);
+          }}
+        />
+      )}
+
       {rollBurst && (
         <div key={rollBurst.id} className="clean-sheet-roll-burst" aria-live="polite">
           <span>{rollBurst.label}</span>
@@ -460,7 +474,7 @@ export default function CleanCharacterSheet() {
           </div>
         </div>
         <div className="clean-sheet-header-actions">
-          <button className="clean-sheet-level" onClick={() => toast.info('Level Up is coming back in the next pass.')}>
+          <button className="clean-sheet-level" onClick={() => setShowLevelUpWizard(true)}>
             <TrendingUp size={18} /> Level Up
           </button>
           <button className="clean-sheet-edit" onClick={() => navigate(`/characters/${character.id}/edit`)}>
