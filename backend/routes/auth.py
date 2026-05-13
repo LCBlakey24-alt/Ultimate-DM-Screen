@@ -18,6 +18,119 @@ if RESEND_API_KEY and RESEND_API_KEY != 'your_resend_api_key_here':
 
 router = APIRouter()
 
+
+async def cleanup_user_account(username: str) -> dict:
+    """Delete user-owned and campaign-owned records for account deletion.
+
+    This intentionally covers the common ownership field names used across the
+    app. Missing collections are harmless in MongoDB; this keeps the cleanup
+    future-friendly as features are added.
+    """
+    user = await db.users.find_one({'username': username}, {'_id': 0})
+    email = (user or {}).get('email', '').lower()
+
+    owned_campaigns = await db.campaigns.find({
+        '$or': [
+            {'dm_user_id': username},
+            {'user_id': username},
+            {'created_by': username},
+        ]
+    }, {'_id': 0, 'id': 1}).to_list(None)
+    campaign_ids = [c.get('id') for c in owned_campaigns if c.get('id')]
+
+    deleted = {}
+
+    async def delete_many(collection_name: str, query: dict):
+        result = await getattr(db, collection_name).delete_many(query)
+        deleted[collection_name] = deleted.get(collection_name, 0) + result.deleted_count
+
+    # User-owned records.
+    user_owned_collections = [
+        'player_characters',
+        'custom_creatures',
+        'reviews',
+        'user_rulesets',
+        'user_races',
+        'user_classes',
+        'user_subclasses',
+        'user_backgrounds',
+        'user_feats',
+        'user_magic_items',
+        'homebrew_items',
+        'character_templates',
+        'campaign_invites',
+    ]
+    user_query = {
+        '$or': [
+            {'user_id': username},
+            {'username': username},
+            {'created_by': username},
+            {'owner_id': username},
+            {'dm_user_id': username},
+        ]
+    }
+    for collection in user_owned_collections:
+        await delete_many(collection, user_query)
+
+    # Password reset records can be keyed by email rather than username.
+    if email:
+        await delete_many('password_resets', {'email': email})
+
+    # Campaign-owned records for campaigns created by this user.
+    if campaign_ids:
+        campaign_query = {'campaign_id': {'$in': campaign_ids}}
+        campaign_owned_collections = [
+            'campaigns',
+            'campaign_settings',
+            'locations',
+            'gods',
+            'calendars',
+            'calendar_events',
+            'npcs',
+            'notes',
+            'combat_encounters',
+            'combat_sessions',
+            'maps',
+            'world_maps',
+            'local_maps',
+            'campaign_maps',
+            'campaign_uploads',
+            'campaign_races',
+            'campaign_classes',
+            'campaign_subclasses',
+            'campaign_backgrounds',
+            'campaign_feats',
+            'campaign_rulesets',
+            'campaign_items',
+            'inventory_items',
+            'events',
+            'event_results',
+            'session_recaps',
+            'campaign_tokens',
+            'handouts',
+        ]
+        for collection in campaign_owned_collections:
+            if collection == 'campaigns':
+                await delete_many(collection, {'id': {'$in': campaign_ids}})
+            else:
+                await delete_many(collection, campaign_query)
+
+        # Unlink any remaining player characters from deleted campaigns.
+        await db.player_characters.update_many(
+            {'campaign_id': {'$in': campaign_ids}},
+            {'$set': {'campaign_id': None, 'updated_at': datetime.now(timezone.utc).isoformat()}}
+        )
+
+    # Finally delete the user record.
+    await delete_many('users', {'username': username})
+
+    return {
+        'username': username,
+        'campaign_ids': campaign_ids,
+        'deleted': deleted,
+    }
+
+
 @router.post("/auth/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserRegister):
     # Check if email already exists
@@ -169,6 +282,10 @@ async def update_account(request: UpdateAccountRequest, username: str = Depends(
             {'user_id': username},
             {'$set': {'user_id': request.username}}
         )
+        await db.campaigns.update_many(
+            {'dm_user_id': username},
+            {'$set': {'dm_user_id': request.username}}
+        )
     
     if request.email:
         # Check if new email is taken
@@ -204,19 +321,9 @@ async def get_account_profile(username: str = Depends(get_current_user)):
 
 @router.delete("/account/delete")
 async def delete_account(username: str = Depends(get_current_user)):
-    """Delete user account and all associated data"""
-    # Delete user's campaigns
-    await db.campaigns.delete_many({'user_id': username})
-    
-    # Delete user's custom creatures
-    await db.custom_creatures.delete_many({'created_by': username})
-    
-    # Delete user's reviews
-    await db.reviews.delete_many({'username': username})
-    
-    # Delete the user
-    await db.users.delete_one({'username': username})
-    
+    """Delete user account and associated owned data."""
+    summary = await cleanup_user_account(username)
+    logger.info(f"Deleted account {username}: {summary}")
     return {"message": "Account deleted successfully"}
 
 @router.get("/auth/me")
