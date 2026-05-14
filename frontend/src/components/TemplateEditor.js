@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { getAuthToken } from '@/lib/auth';
 import { Copy, Eye, EyeOff, Trash2, RefreshCw } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -19,7 +20,7 @@ export default function TemplateEditor() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('auth_token');
+      const token = getAuthToken();
       const res = await axios.get(`${API}/admin/character-templates`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -35,7 +36,7 @@ export default function TemplateEditor() {
 
   const patch = async (id, payload) => {
     try {
-      const token = localStorage.getItem('auth_token');
+      const token = getAuthToken();
       const res = await axios.patch(`${API}/admin/character-templates/${id}`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -48,7 +49,7 @@ export default function TemplateEditor() {
 
   const clone = async (id) => {
     try {
-      const token = localStorage.getItem('auth_token');
+      const token = getAuthToken();
       const res = await axios.post(`${API}/admin/character-templates/${id}/clone`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -66,7 +67,7 @@ export default function TemplateEditor() {
     }
     if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
     try {
-      const token = localStorage.getItem('auth_token');
+      const token = getAuthToken();
       await axios.delete(`${API}/admin/character-templates/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
