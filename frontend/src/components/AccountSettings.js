@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { API_BASE } from '@/lib/api';
+import { AUTH_USERNAME_KEY, setAuthToken } from '@/lib/auth';
 import { 
   User, Mail, Lock, ArrowLeft, Save, Trash2, Shield, 
   AlertTriangle, CheckCircle, Eye, EyeOff
@@ -65,8 +66,8 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
       
       // Update local storage and state if username changed
       if (response.data.username !== username) {
-        localStorage.setItem('dm_username', response.data.username);
-        localStorage.setItem('dm_token', response.data.token);
+        localStorage.setItem(AUTH_USERNAME_KEY, response.data.username);
+        setAuthToken(response.data.token);
         onUsernameChange(response.data.username);
       }
       

@@ -1,6 +1,7 @@
 import React from 'react';
 import { toast } from 'sonner';
 import { AlertTriangle, LogOut } from 'lucide-react';
+import { AUTH_USERNAME_KEY, setAuthToken } from '@/lib/auth';
 
 /**
  * ImpersonationBanner
@@ -17,15 +18,15 @@ export default function ImpersonationBanner() {
     ? sessionStorage.getItem('rq_admin_username_stash')
     : null;
   const current = typeof window !== 'undefined'
-    ? localStorage.getItem('dm_username')
+    ? localStorage.getItem(AUTH_USERNAME_KEY)
     : null;
 
   if (!stashedToken) return null;
 
   const restore = () => {
     try {
-      localStorage.setItem('dm_token', stashedToken);
-      if (stashedUsername) localStorage.setItem('dm_username', stashedUsername);
+      setAuthToken(stashedToken);
+      if (stashedUsername) localStorage.setItem(AUTH_USERNAME_KEY, stashedUsername);
       sessionStorage.removeItem('rq_admin_token_stash');
       sessionStorage.removeItem('rq_admin_username_stash');
       toast.success('Admin session restored');
