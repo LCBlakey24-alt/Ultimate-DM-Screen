@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { getAuthToken } from '@/lib/auth';
 import { Sparkles, Send, X, Loader, Minimize2, Maximize2, Copy, Trash2 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -99,7 +100,7 @@ export default function AICoGM({ theme, campaignId, activeTab }) {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
       const response = await axios.post(`${API}/rook/chat`, {
         message: msg,
         campaign_id: campaignId,
