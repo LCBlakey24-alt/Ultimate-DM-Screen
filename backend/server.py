@@ -9,6 +9,7 @@ import logging
 from config import client, logger, CORS_ORIGIN_LIST
 from utils.ws_manager import ws_manager
 from utils.auth import verify_token, verify_campaign_membership
+from utils.rate_limit import RateLimitMiddleware
 from routes import all_routers
 from routes.rule_systems import initialize_rule_systems
 
@@ -16,6 +17,9 @@ from datetime import datetime, timezone
 
 # Create the main app
 app = FastAPI()
+
+# Lightweight route-based protection for auth, AI, and parsing endpoints.
+app.add_middleware(RateLimitMiddleware)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
