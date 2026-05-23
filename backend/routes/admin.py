@@ -235,7 +235,7 @@ async def admin_overview(username: str = Depends(get_current_user)):
     await verify_admin(username)
     users_count = await db.users.count_documents({})
     campaigns_count = await db.campaigns.count_documents({})
-    characters_count = await db.characters.count_documents({})
+    characters_count = await db.player_characters.count_documents({})
     reviews_count = await db.reviews.count_documents({})
     approved_reviews_count = await db.reviews.count_documents({'is_approved': True})
     return {
