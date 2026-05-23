@@ -1,11 +1,26 @@
 import React, { useState, useRef } from 'react';
-import { 
-  Upload, Image, FileText, Music, Map, Users, Folder, 
-  ChevronRight, Check, AlertCircle, X, Loader, Download
+import {
+  Upload, FileText, Music, Map, Users, Folder,
+  Check, AlertCircle, X
 } from 'lucide-react';
-import axios from 'axios';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const rq = {
+  bg: 'var(--rq-bg-main, #1A1A1A)',
+  panel: 'var(--rq-bg-panel, #242424)',
+  elevated: 'var(--rq-bg-elevated, #323232)',
+  border: 'var(--rq-accent-border, rgba(193,18,31,0.35))',
+  borderDefault: 'var(--rq-border-default, #3A3A3A)',
+  accent: 'var(--rq-accent-primary, #C1121F)',
+  accentHover: 'var(--rq-accent-hover, #D62839)',
+  accentSoft: 'var(--rq-accent-soft, rgba(193,18,31,0.12))',
+  text: 'var(--rq-text-primary, #FFFFFF)',
+  textSecondary: 'var(--rq-text-secondary, #D6D6D6)',
+  muted: 'var(--rq-text-muted, #A0A0A0)',
+  success: 'var(--rq-success, #2E8B57)',
+  danger: 'var(--rq-danger, #C1121F)',
+  radius: 'var(--rq-radius-md, 6px)',
+  radiusSm: 'var(--rq-radius-sm, 4px)',
+};
 
 const UPLOAD_TYPES = [
   {
@@ -14,53 +29,57 @@ const UPLOAD_TYPES = [
     icon: Map,
     accept: 'image/*',
     description: 'Upload world maps, dungeon maps, city layouts',
-    endpoint: '/campaigns/{id}/maps',
-    color: '#D4A017'
+    color: rq.accent
   },
   {
     id: 'character',
     title: 'Character Portraits',
     icon: Users,
     accept: 'image/*',
-    description: 'NPC portraits, player character art',
-    endpoint: '/campaigns/{id}/portraits',
-    color: '#D4A017'
+    description: 'Upload NPC portraits and player character art',
+    color: rq.accentHover
   },
   {
     id: 'document',
     title: 'Documents & PDFs',
     icon: FileText,
     accept: '.pdf,.doc,.docx,.txt,.md',
-    description: 'Rulebooks, lore documents, handouts',
-    endpoint: '/campaigns/{id}/documents',
-    color: '#D4A017'
+    description: 'Upload rules notes, lore documents, and handouts',
+    color: rq.textSecondary
   },
   {
     id: 'audio',
     title: 'Audio & Music',
     icon: Music,
     accept: 'audio/*',
-    description: 'Background music, sound effects, ambient audio',
-    endpoint: '/campaigns/{id}/audio',
-    color: '#D4A017'
+    description: 'Upload background music, sound effects, and ambience',
+    color: rq.textSecondary
   },
   {
     id: 'misc',
     title: 'Other Files',
     icon: Folder,
     accept: '*',
-    description: 'Any other campaign assets',
-    endpoint: '/campaigns/{id}/files',
-    color: '#D4A017'
+    description: 'Upload any other campaign assets',
+    color: rq.muted
   }
 ];
 
-export default function UploadTab({ theme, campaignId }) {
-  const [uploads, setUploads] = useState({});
+export default function UploadTab({ theme }) {
   const [uploadProgress, setUploadProgress] = useState({});
   const [uploadErrors, setUploadErrors] = useState({});
   const [recentUploads, setRecentUploads] = useState([]);
   const fileInputRefs = useRef({});
+
+  const ui = {
+    panel: theme?.bg?.card || rq.panel,
+    elevated: theme?.bg?.elevated || rq.elevated,
+    border: theme?.border || rq.border,
+    accent: theme?.accent?.primary || rq.accent,
+    text: theme?.text?.primary || rq.text,
+    textSecondary: theme?.text?.secondary || rq.textSecondary,
+    muted: theme?.text?.muted || rq.muted,
+  };
 
   const handleFileSelect = async (type, files) => {
     if (!files || files.length === 0) return;
@@ -70,22 +89,14 @@ export default function UploadTab({ theme, campaignId }) {
 
     for (const file of files) {
       const uploadId = `${type}-${Date.now()}-${file.name}`;
-      
-      // Set initial progress
+
       setUploadProgress(prev => ({ ...prev, [uploadId]: 0 }));
       setUploadErrors(prev => ({ ...prev, [uploadId]: null }));
-      
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('type', type);
-        formData.append('name', file.name);
 
-        // Simulated upload for now - replace with actual API call
-        // In production, you'd use the actual endpoint
-        await simulateUpload(uploadId, file);
-        
-        // Add to recent uploads
+      try {
+        // Placeholder client-side upload simulation until persistent asset storage is connected.
+        await simulateUpload(uploadId);
+
         setRecentUploads(prev => [{
           id: uploadId,
           name: file.name,
@@ -94,10 +105,9 @@ export default function UploadTab({ theme, campaignId }) {
           uploadedAt: new Date().toISOString(),
           status: 'success'
         }, ...prev.slice(0, 9)]);
-        
+
         setUploadProgress(prev => ({ ...prev, [uploadId]: 100 }));
-        
-        // Clear progress after delay
+
         setTimeout(() => {
           setUploadProgress(prev => {
             const next = { ...prev };
@@ -105,9 +115,7 @@ export default function UploadTab({ theme, campaignId }) {
             return next;
           });
         }, 2000);
-        
       } catch (error) {
-        console.error('Upload failed:', error);
         setUploadErrors(prev => ({ ...prev, [uploadId]: error.message || 'Upload failed' }));
         setUploadProgress(prev => {
           const next = { ...prev };
@@ -118,8 +126,8 @@ export default function UploadTab({ theme, campaignId }) {
     }
   };
 
-  const simulateUpload = (uploadId, file) => {
-    return new Promise((resolve, reject) => {
+  const simulateUpload = (uploadId) => {
+    return new Promise((resolve) => {
       let progress = 0;
       const interval = setInterval(() => {
         progress += Math.random() * 30;
@@ -138,7 +146,7 @@ export default function UploadTab({ theme, campaignId }) {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
   const clearError = (uploadId) => {
@@ -151,108 +159,55 @@ export default function UploadTab({ theme, campaignId }) {
 
   return (
     <div style={{ padding: '20px' }}>
-      {/* Header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        marginBottom: '24px'
-      }}>
-        <Upload size={24} style={{ color: theme.accent.primary }} />
-        <h3 style={{ fontFamily: "'Outfit', sans-serif", color: theme.text.primary, margin: 0 }}>
-          Campaign Uploads
-        </h3>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+        <Upload size={24} style={{ color: ui.accent }} />
+        <div>
+          <h3 style={{ fontFamily: "'Outfit', sans-serif", color: ui.text, margin: 0, fontWeight: 900 }}>
+            Campaign Uploads
+          </h3>
+          <p style={{ color: ui.muted, fontSize: 12, margin: '4px 0 0' }}>
+            Manual uploads only. AI image generation is not available.
+          </p>
+        </div>
       </div>
 
-      {/* Upload Types Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-        gap: '16px',
-        marginBottom: '32px'
-      }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', marginBottom: '32px' }}>
         {UPLOAD_TYPES.map(type => {
           const IconComponent = type.icon;
           const activeUploads = Object.entries(uploadProgress).filter(([key]) => key.startsWith(type.id));
-          const hasErrors = Object.entries(uploadErrors).some(([key, err]) => key.startsWith(type.id) && err);
-          
+
           return (
-            <div
-              key={type.id}
-              style={{
-                padding: '20px',
-                background: theme.bg.card,
-                borderRadius: '12px',
-                border: `1px solid ${theme.border}`,
-                transition: 'all 0.2s'
-              }}
-            >
+            <div key={type.id} style={{ padding: '20px', background: ui.panel, borderRadius: rq.radius, border: `1px solid ${ui.border}`, transition: 'all 0.2s' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '16px' }}>
-                <div style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  background: `${type.color}20`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0
-                }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: rq.radiusSm, background: rq.accentSoft, border: `1px solid ${rq.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <IconComponent size={24} style={{ color: type.color }} />
                 </div>
                 <div>
-                  <h4 style={{ 
-                    fontFamily: "'Outfit', sans-serif", 
-                    color: theme.text.primary, 
-                    margin: 0,
-                    fontSize: '16px',
-                    fontWeight: '600'
-                  }}>
+                  <h4 style={{ fontFamily: "'Outfit', sans-serif", color: ui.text, margin: 0, fontSize: '16px', fontWeight: 900 }}>
                     {type.title}
                   </h4>
-                  <p style={{ 
-                    color: theme.text.muted, 
-                    fontSize: '13px', 
-                    margin: '4px 0 0 0' 
-                  }}>
+                  <p style={{ color: ui.muted, fontSize: '13px', margin: '4px 0 0 0' }}>
                     {type.description}
                   </p>
                 </div>
               </div>
-              
-              {/* Upload Progress */}
+
               {activeUploads.length > 0 && (
                 <div style={{ marginBottom: '12px' }}>
                   {activeUploads.map(([uploadId, progress]) => (
                     <div key={uploadId} style={{ marginBottom: '8px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <span style={{ fontSize: '12px', color: theme.text.secondary }}>
-                          Uploading...
-                        </span>
-                        <span style={{ fontSize: '12px', color: type.color }}>
-                          {Math.round(progress)}%
-                        </span>
+                        <span style={{ fontSize: '12px', color: ui.textSecondary }}>Uploading...</span>
+                        <span style={{ fontSize: '12px', color: type.color }}>{Math.round(progress)}%</span>
                       </div>
-                      <div style={{
-                        height: '4px',
-                        background: theme.bg.elevated,
-                        borderRadius: '2px',
-                        overflow: 'hidden'
-                      }}>
-                        <div style={{
-                          height: '100%',
-                          width: `${progress}%`,
-                          background: type.color,
-                          borderRadius: '2px',
-                          transition: 'width 0.3s'
-                        }} />
+                      <div style={{ height: '4px', background: ui.elevated, borderRadius: 0, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${progress}%`, background: type.color, borderRadius: 0, transition: 'width 0.3s' }} />
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-              
-              {/* Upload Button */}
+
               <input
                 ref={el => fileInputRefs.current[type.id] = el}
                 type="file"
@@ -261,71 +216,24 @@ export default function UploadTab({ theme, campaignId }) {
                 onChange={(e) => handleFileSelect(type.id, e.target.files)}
                 style={{ display: 'none' }}
               />
-              <button
-                onClick={() => fileInputRefs.current[type.id]?.click()}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  background: `${type.color}15`,
-                  border: `2px dashed ${type.color}50`,
-                  borderRadius: '8px',
-                  color: type.color,
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  transition: 'all 0.2s'
-                }}
-              >
+              <button onClick={() => fileInputRefs.current[type.id]?.click()} style={{ width: '100%', padding: '12px', background: rq.accentSoft, border: `1px dashed ${rq.border}`, borderRadius: rq.radiusSm, color: ui.text, cursor: 'pointer', fontSize: '13px', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.2s' }}>
                 <Upload size={16} />
-                Click to Upload
+                Upload File
               </button>
             </div>
           );
         })}
       </div>
 
-      {/* Upload Errors */}
       {Object.entries(uploadErrors).filter(([_, err]) => err).length > 0 && (
         <div style={{ marginBottom: '24px' }}>
-          <h4 style={{ 
-            color: '#ef4444', 
-            fontSize: '14px', 
-            marginBottom: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
+          <h4 style={{ color: rq.danger, fontSize: '14px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 900 }}>
             <AlertCircle size={16} /> Upload Errors
           </h4>
           {Object.entries(uploadErrors).filter(([_, err]) => err).map(([uploadId, error]) => (
-            <div
-              key={uploadId}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '12px',
-                background: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                borderRadius: '8px',
-                marginBottom: '8px'
-              }}
-            >
-              <span style={{ color: '#ef4444', fontSize: '13px' }}>{error}</span>
-              <button
-                onClick={() => clearError(uploadId)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: '#ef4444',
-                  padding: '4px'
-                }}
-              >
+            <div key={uploadId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', background: rq.accentSoft, border: `1px solid ${rq.border}`, borderRadius: rq.radiusSm, marginBottom: '8px' }}>
+              <span style={{ color: rq.danger, fontSize: '13px' }}>{error}</span>
+              <button onClick={() => clearError(uploadId)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: rq.danger, padding: '4px' }}>
                 <X size={16} />
               </button>
             </div>
@@ -333,83 +241,38 @@ export default function UploadTab({ theme, campaignId }) {
         </div>
       )}
 
-      {/* Recent Uploads */}
       <div>
-        <h4 style={{ 
-          fontFamily: "'Outfit', sans-serif",
-          color: theme.text.primary, 
-          fontSize: '16px', 
-          marginBottom: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <Check size={16} style={{ color: '#10B981' }} /> Recent Uploads
+        <h4 style={{ fontFamily: "'Outfit', sans-serif", color: ui.text, fontSize: '16px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 900 }}>
+          <Check size={16} style={{ color: rq.success }} /> Recent Uploads
         </h4>
-        
+
         {recentUploads.length === 0 ? (
-          <div style={{
-            padding: '40px 20px',
-            textAlign: 'center',
-            color: theme.text.muted,
-            background: theme.bg.card,
-            borderRadius: '12px',
-            border: `1px solid ${theme.border}`
-          }}>
+          <div style={{ padding: '40px 20px', textAlign: 'center', color: ui.muted, background: ui.panel, borderRadius: rq.radius, border: `1px solid ${ui.border}` }}>
             <Folder size={48} style={{ marginBottom: '12px', opacity: 0.5 }} />
             <p>No recent uploads</p>
           </div>
         ) : (
-          <div style={{
-            background: theme.bg.card,
-            borderRadius: '12px',
-            border: `1px solid ${theme.border}`,
-            overflow: 'hidden'
-          }}>
+          <div style={{ background: ui.panel, borderRadius: rq.radius, border: `1px solid ${ui.border}`, overflow: 'hidden' }}>
             {recentUploads.map((upload, index) => {
               const uploadType = UPLOAD_TYPES.find(t => t.id === upload.type);
               const IconComponent = uploadType?.icon || Folder;
-              
+
               return (
-                <div
-                  key={upload.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '12px 16px',
-                    borderBottom: index < recentUploads.length - 1 ? `1px solid ${theme.border}` : 'none'
-                  }}
-                >
-                  <div style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '8px',
-                    background: `${uploadType?.color || '#888'}20`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <IconComponent size={18} style={{ color: uploadType?.color || '#888' }} />
+                <div key={upload.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: index < recentUploads.length - 1 ? `1px solid ${ui.border}` : 'none' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: rq.radiusSm, background: rq.accentSoft, border: `1px solid ${rq.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <IconComponent size={18} style={{ color: uploadType?.color || rq.muted }} />
                   </div>
-                  
+
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ 
-                      color: theme.text.primary, 
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
+                    <div style={{ color: ui.text, fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {upload.name}
                     </div>
-                    <div style={{ fontSize: '12px', color: theme.text.muted }}>
+                    <div style={{ fontSize: '12px', color: ui.muted }}>
                       {upload.size} • {new Date(upload.uploadedAt).toLocaleTimeString()}
                     </div>
                   </div>
-                  
-                  <Check size={16} style={{ color: '#10B981' }} />
+
+                  <Check size={16} style={{ color: rq.success }} />
                 </div>
               );
             })}
