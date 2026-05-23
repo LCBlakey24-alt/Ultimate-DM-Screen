@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { API_BASE } from '@/lib/api';
+import apiClient from '@/lib/apiClient';
 import { AUTH_USERNAME_KEY, setAuthToken } from '@/lib/auth';
-import { 
-  User, Mail, Lock, ArrowLeft, Save, Trash2, Shield, 
+import {
+  User, Mail, Lock, ArrowLeft, Save, Trash2, Shield,
   AlertTriangle, CheckCircle, Eye, EyeOff
 } from 'lucide-react';
-
-const API = API_BASE;
 
 function AccountSettings({ username, onLogout, onUsernameChange }) {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  
-  // Form states
+
   const [newUsername, setNewUsername] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
@@ -36,12 +32,12 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get(`${API}/account/profile`);
+      const response = await apiClient.get('/account/profile');
       setProfile(response.data);
       setNewUsername(response.data.username);
       setNewEmail(response.data.email);
     } catch (error) {
-      toast.error('Failed to load profile');
+      toast.error(error?.response?.data?.detail || 'Failed to load profile');
     } finally {
       setLoading(false);
     }
@@ -50,36 +46,35 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setSaving(true);
-    
+
     try {
       const updates = {};
       if (newUsername !== profile.username) updates.username = newUsername;
       if (newEmail !== profile.email) updates.email = newEmail;
-      
+
       if (Object.keys(updates).length === 0) {
         toast.info('No changes to save');
         setSaving(false);
         return;
       }
-      
-      const response = await axios.put(`${API}/account/update`, updates);
-      
-      // Update local storage and state if username changed
+
+      const response = await apiClient.put('/account/update', updates);
+
       if (response.data.username !== username) {
         localStorage.setItem(AUTH_USERNAME_KEY, response.data.username);
         setAuthToken(response.data.token);
         onUsernameChange(response.data.username);
       }
-      
+
       setProfile({
         ...profile,
         username: response.data.username,
-        email: response.data.email
+        email: response.data.email,
       });
-      
+
       toast.success('Profile updated successfully!');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to update profile');
+      toast.error(error?.response?.data?.detail || 'Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -87,35 +82,35 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
-    
+
     if (!currentPassword || !newPassword) {
       toast.error('Please fill in all password fields');
       return;
     }
-    
+
     if (newPassword !== confirmPassword) {
       toast.error('New passwords do not match');
       return;
     }
-    
+
     if (newPassword.length < 6) {
       toast.error('Password must be at least 6 characters');
       return;
     }
-    
+
     setSaving(true);
     try {
-      await axios.post(`${API}/account/change-password`, {
+      await apiClient.post('/account/change-password', {
         current_password: currentPassword,
-        new_password: newPassword
+        new_password: newPassword,
       });
-      
+
       toast.success('Password changed successfully!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to change password');
+      toast.error(error?.response?.data?.detail || 'Failed to change password');
     } finally {
       setSaving(false);
     }
@@ -126,15 +121,15 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
       toast.error('Please type DELETE to confirm');
       return;
     }
-    
+
     setSaving(true);
     try {
-      await axios.delete(`${API}/account/delete`);
+      await apiClient.delete('/account/delete');
       toast.success('Account deleted. Farewell, adventurer!');
       onLogout();
       navigate('/');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to delete account');
+      toast.error(error?.response?.data?.detail || 'Failed to delete account');
     } finally {
       setSaving(false);
     }
@@ -149,349 +144,146 @@ function AccountSettings({ username, onLogout, onUsernameChange }) {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(180deg, #030014 0%, #0a0a2e 50%, #030014 100%)',
-      padding: '20px'
-    }}>
-      <div style={{
-        maxWidth: '800px',
-        margin: '0 auto'
-      }}>
-        {/* Header */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          marginBottom: '32px'
-        }}>
-          <Button
-            onClick={() => navigate('/home')}
-            className="btn-outline"
-            style={{ padding: '8px 16px' }}
-            data-testid="back-btn"
-          >
+    <div style={pageStyle}>
+      <div style={containerStyle}>
+        <div style={headerStyle}>
+          <Button onClick={() => navigate('/home')} className="btn-outline" style={backButtonStyle} data-testid="back-btn">
             <ArrowLeft size={18} />
           </Button>
-          <h1 style={{
-            fontSize: '28px',
-            fontWeight: '800',
-            color: '#ffffff',
-            fontFamily: "'Montserrat', sans-serif"
-          }}>
-            Account Settings
-          </h1>
+          <div>
+            <h1 style={pageTitleStyle}>Account Settings</h1>
+            <p style={pageSubtitleStyle}>Manage your profile, password, and account safety.</p>
+          </div>
         </div>
 
-        {/* Profile Section */}
-        <div className="glow-panel" style={{ padding: '24px', marginBottom: '24px' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '24px'
-          }}>
-            <User size={24} className="text-teal-400" />
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: '400',
-              color: '#ffffff',
-              fontFamily: "'Montserrat', sans-serif"
-            }}>
-              Profile Information
-            </h2>
-          </div>
-
+        <section style={panelStyle}>
+          <SectionHeader icon={User} title="Profile Information" />
           <form onSubmit={handleUpdateProfile}>
             <div style={{ display: 'grid', gap: '20px' }}>
-              <div>
-                <label style={{ 
-                  color: '#94a3b8', 
-                  fontSize: '13px', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '6px',
-                  marginBottom: '8px' 
-                }}>
-                  <User size={14} />
-                  Display Name
-                </label>
-                <Input
-                  type="text"
-                  value={newUsername}
-                  onChange={(e) => setNewUsername(e.target.value)}
-                  placeholder="Your display name"
-                  data-testid="profile-username"
-                />
-              </div>
+              <FieldLabel icon={User} text="Display Name" />
+              <Input type="text" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} placeholder="Your display name" data-testid="profile-username" />
 
-              <div>
-                <label style={{ 
-                  color: '#94a3b8', 
-                  fontSize: '13px', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '6px',
-                  marginBottom: '8px' 
-                }}>
-                  <Mail size={14} />
-                  Email Address
-                </label>
-                <Input
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  data-testid="profile-email"
-                />
-              </div>
+              <FieldLabel icon={Mail} text="Email Address" />
+              <Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="your@email.com" data-testid="profile-email" />
 
-              <Button
-                type="submit"
-                disabled={saving}
-                className="btn-primary"
-                style={{ width: 'fit-content' }}
-                data-testid="save-profile-btn"
-              >
+              <Button type="submit" disabled={saving} className="btn-primary" style={buttonFitStyle} data-testid="save-profile-btn">
                 <Save size={16} style={{ marginRight: '8px' }} />
                 {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </form>
-        </div>
+        </section>
 
-        {/* Password Section */}
-        <div className="glow-panel" style={{ padding: '24px', marginBottom: '24px' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '24px'
-          }}>
-            <Shield size={24} className="text-teal-400" />
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: '400',
-              color: '#ffffff',
-              fontFamily: "'Montserrat', sans-serif"
-            }}>
-              Change Password
-            </h2>
-          </div>
-
+        <section style={panelStyle}>
+          <SectionHeader icon={Shield} title="Change Password" />
           <form onSubmit={handleChangePassword}>
             <div style={{ display: 'grid', gap: '20px' }}>
               <div>
-                <label style={{ 
-                  color: '#94a3b8', 
-                  fontSize: '13px', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '6px',
-                  marginBottom: '8px' 
-                }}>
-                  <Lock size={14} />
-                  Current Password
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <Input
-                    type={showCurrentPassword ? 'text' : 'password'}
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    placeholder="Enter current password"
-                    data-testid="current-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    style={{
-                      position: 'absolute',
-                      right: '12px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'none',
-                      border: 'none',
-                      color: '#64748b',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
+                <FieldLabel icon={Lock} text="Current Password" />
+                <PasswordInput value={currentPassword} setValue={setCurrentPassword} show={showCurrentPassword} setShow={setShowCurrentPassword} placeholder="Enter current password" testId="current-password" />
               </div>
 
               <div>
-                <label style={{ 
-                  color: '#94a3b8', 
-                  fontSize: '13px', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '6px',
-                  marginBottom: '8px' 
-                }}>
-                  <Lock size={14} />
-                  New Password
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <Input
-                    type={showNewPassword ? 'text' : 'password'}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Enter new password (min. 6 characters)"
-                    data-testid="new-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    style={{
-                      position: 'absolute',
-                      right: '12px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'none',
-                      border: 'none',
-                      color: '#64748b',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
+                <FieldLabel icon={Lock} text="New Password" />
+                <PasswordInput value={newPassword} setValue={setNewPassword} show={showNewPassword} setShow={setShowNewPassword} placeholder="Enter new password (min. 6 characters)" testId="new-password" />
               </div>
 
               <div>
-                <label style={{ 
-                  color: '#94a3b8', 
-                  fontSize: '13px', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '6px',
-                  marginBottom: '8px' 
-                }}>
-                  <CheckCircle size={14} />
-                  Confirm New Password
-                </label>
-                <Input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
-                  data-testid="confirm-password"
-                />
+                <FieldLabel icon={CheckCircle} text="Confirm New Password" />
+                <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm new password" data-testid="confirm-password" />
                 {newPassword && confirmPassword && (
-                  <div style={{
-                    marginTop: '8px',
-                    fontSize: '12px',
-                    color: newPassword === confirmPassword ? '#F59E0B' : '#ef4444'
-                  }}>
+                  <div style={{ marginTop: '8px', fontSize: '12px', color: newPassword === confirmPassword ? 'var(--rq-success, #2E8B57)' : 'var(--rq-danger, #C1121F)', fontWeight: 800 }}>
                     {newPassword === confirmPassword ? '✓ Passwords match' : '✗ Passwords do not match'}
                   </div>
                 )}
               </div>
 
-              <Button
-                type="submit"
-                disabled={saving || !currentPassword || !newPassword || newPassword !== confirmPassword}
-                className="btn-primary"
-                style={{ width: 'fit-content' }}
-                data-testid="change-password-btn"
-              >
+              <Button type="submit" disabled={saving || !currentPassword || !newPassword || newPassword !== confirmPassword} className="btn-primary" style={buttonFitStyle} data-testid="change-password-btn">
                 <Lock size={16} style={{ marginRight: '8px' }} />
                 {saving ? 'Changing...' : 'Change Password'}
               </Button>
             </div>
           </form>
-        </div>
+        </section>
 
-        {/* Danger Zone */}
-        <div style={{
-          background: 'rgba(239, 68, 68, 0.1)',
-          border: '1px solid rgba(239, 68, 68, 0.3)',
-          borderRadius: '12px',
-          padding: '24px'
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '16px'
-          }}>
-            <AlertTriangle size={24} color="#ef4444" />
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: '400',
-              color: '#ef4444',
-              fontFamily: "'Montserrat', sans-serif"
-            }}>
-              Danger Zone
-            </h2>
-          </div>
-
-          <p style={{ color: '#94a3b8', marginBottom: '16px', fontSize: '14px' }}>
-            Once you delete your account, there is no going back. All your campaigns, 
-            characters, and data will be permanently removed. Please be certain.
+        <section style={dangerPanelStyle}>
+          <SectionHeader icon={AlertTriangle} title="Danger Zone" danger />
+          <p style={dangerTextStyle}>
+            Once you delete your account, there is no going back. All your campaigns, characters, and data will be permanently removed. Please be certain.
           </p>
 
           {!showDeleteConfirm ? (
-            <Button
-              onClick={() => setShowDeleteConfirm(true)}
-              style={{
-                background: 'rgba(239, 68, 68, 0.2)',
-                border: '1px solid #ef4444',
-                color: '#ef4444'
-              }}
-              data-testid="delete-account-btn"
-            >
+            <Button onClick={() => setShowDeleteConfirm(true)} style={dangerButtonStyle} data-testid="delete-account-btn">
               <Trash2 size={16} style={{ marginRight: '8px' }} />
               Delete Account
             </Button>
           ) : (
-            <div style={{
-              background: 'rgba(0, 0, 0, 0.3)',
-              padding: '20px',
-              borderRadius: '8px'
-            }}>
-              <p style={{ color: '#ef4444', marginBottom: '12px', fontWeight: '400' }}>
+            <div style={confirmBoxStyle}>
+              <p style={{ color: 'var(--rq-danger, #C1121F)', marginBottom: '12px', fontWeight: 900 }}>
                 Type "DELETE" to confirm:
               </p>
-              <Input
-                type="text"
-                value={deleteConfirmText}
-                onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
-                placeholder="Type DELETE"
-                style={{ marginBottom: '12px' }}
-                data-testid="delete-confirm-input"
-              />
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <Button
-                  onClick={handleDeleteAccount}
-                  disabled={saving || deleteConfirmText !== 'DELETE'}
-                  style={{
-                    background: '#ef4444',
-                    border: 'none',
-                    color: 'white'
-                  }}
-                  data-testid="confirm-delete-btn"
-                >
+              <Input type="text" value={deleteConfirmText} onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())} placeholder="Type DELETE" style={{ marginBottom: '12px' }} data-testid="delete-confirm-input" />
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <Button onClick={handleDeleteAccount} disabled={saving || deleteConfirmText !== 'DELETE'} style={confirmDeleteButtonStyle} data-testid="confirm-delete-btn">
                   {saving ? 'Deleting...' : 'Permanently Delete'}
                 </Button>
-                <Button
-                  onClick={() => {
-                    setShowDeleteConfirm(false);
-                    setDeleteConfirmText('');
-                  }}
-                  className="btn-outline"
-                >
+                <Button onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(''); }} className="btn-outline">
                   Cancel
                 </Button>
               </div>
             </div>
           )}
-        </div>
-
+        </section>
       </div>
     </div>
   );
 }
+
+function SectionHeader({ icon: Icon, title, danger = false }) {
+  return (
+    <div style={sectionHeaderStyle}>
+      <Icon size={24} color={danger ? 'var(--rq-danger, #C1121F)' : 'var(--rq-accent-primary, #C1121F)'} />
+      <h2 style={{ ...sectionTitleStyle, color: danger ? 'var(--rq-danger, #C1121F)' : 'var(--rq-text-primary, #FFFFFF)' }}>{title}</h2>
+    </div>
+  );
+}
+
+function FieldLabel({ icon: Icon, text }) {
+  return (
+    <label style={labelStyle}>
+      <Icon size={14} />
+      {text}
+    </label>
+  );
+}
+
+function PasswordInput({ value, setValue, show, setShow, placeholder, testId }) {
+  return (
+    <div style={{ position: 'relative' }}>
+      <Input type={show ? 'text' : 'password'} value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} data-testid={testId} />
+      <button type="button" onClick={() => setShow(!show)} style={eyeButtonStyle} aria-label={show ? 'Hide password' : 'Show password'}>
+        {show ? <EyeOff size={18} /> : <Eye size={18} />}
+      </button>
+    </div>
+  );
+}
+
+const pageStyle = { minHeight: '100vh', background: 'var(--rq-bg-main, #1A1A1A)', padding: '20px' };
+const containerStyle = { maxWidth: '800px', margin: '0 auto' };
+const headerStyle = { display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' };
+const backButtonStyle = { padding: '8px 16px', borderRadius: 'var(--rq-radius-sm, 4px)' };
+const pageTitleStyle = { fontSize: '28px', fontWeight: 900, color: 'var(--rq-text-primary, #FFFFFF)', fontFamily: "'Montserrat', sans-serif", margin: 0 };
+const pageSubtitleStyle = { color: 'var(--rq-text-muted, #A0A0A0)', fontSize: '14px', margin: '6px 0 0' };
+const panelStyle = { background: 'var(--rq-bg-panel, #242424)', border: '1px solid var(--rq-accent-border, rgba(193,18,31,0.35))', borderRadius: 'var(--rq-radius-md, 6px)', padding: '24px', marginBottom: '24px', boxShadow: 'var(--rq-shadow-panel, 0 4px 14px rgba(0,0,0,0.22))' };
+const sectionHeaderStyle = { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' };
+const sectionTitleStyle = { fontSize: '20px', fontWeight: 900, fontFamily: "'Montserrat', sans-serif", margin: 0 };
+const labelStyle = { color: 'var(--rq-text-secondary, #D6D6D6)', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontWeight: 800 };
+const buttonFitStyle = { width: 'fit-content', borderRadius: 'var(--rq-radius-sm, 4px)' };
+const eyeButtonStyle = { position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--rq-text-muted, #A0A0A0)', cursor: 'pointer' };
+const dangerPanelStyle = { ...panelStyle, background: 'var(--rq-accent-soft, rgba(193,18,31,0.12))', border: '1px solid var(--rq-accent-border, rgba(193,18,31,0.35))' };
+const dangerTextStyle = { color: 'var(--rq-text-secondary, #D6D6D6)', marginBottom: '16px', fontSize: '14px', lineHeight: 1.55 };
+const dangerButtonStyle = { background: 'transparent', border: '1px solid var(--rq-danger, #C1121F)', color: 'var(--rq-danger, #C1121F)', borderRadius: 'var(--rq-radius-sm, 4px)' };
+const confirmBoxStyle = { background: 'rgba(0, 0, 0, 0.3)', padding: '20px', borderRadius: 'var(--rq-radius-sm, 4px)', border: '1px solid var(--rq-accent-border, rgba(193,18,31,0.35))' };
+const confirmDeleteButtonStyle = { background: 'var(--rq-danger, #C1121F)', border: 'none', color: 'white', borderRadius: 'var(--rq-radius-sm, 4px)' };
 
 export default AccountSettings;
