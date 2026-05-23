@@ -196,16 +196,16 @@ function App() {
 
   return (
     <div className="App">
-      {siteSettings.announcement_enabled && siteSettings.announcement_text ? (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1200, background: '#D4A017', color: '#0B0F19', padding: '8px 14px', textAlign: 'center', fontWeight: 800, fontSize: 13 }}>
+      {showAnnouncement ? (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1200, background: 'var(--rq-accent-primary, #C1121F)', color: 'var(--rq-text-primary, #FFFFFF)', padding: '8px 14px', textAlign: 'center', fontWeight: 800, fontSize: 13, borderBottom: '1px solid var(--rq-accent-strong-border, rgba(193,18,31,0.62))' }}>
           {siteSettings.announcement_text}
         </div>
       ) : null}
       {siteSettings.maintenance_mode && !isAdmin ? (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1300, background: 'rgba(11,15,25,0.96)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <div style={{ maxWidth: 520, textAlign: 'center', border: '1px solid rgba(212,160,23,0.45)', background: '#0F2440', padding: 24 }}>
-            <h2 style={{ color: '#D4A017', marginTop: 0 }}>We're performing maintenance</h2>
-            <p style={{ color: '#F8FAFC' }}>Rookie Quest Keeper is temporarily unavailable while we deploy improvements. Please check back shortly.</p>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1300, background: 'rgba(24,24,24,0.96)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ maxWidth: 520, textAlign: 'center', border: '1px solid var(--rq-accent-border, rgba(193,18,31,0.35))', background: 'var(--rq-bg-panel, #242424)', padding: 24, borderRadius: 'var(--rq-radius-md, 6px)', boxShadow: 'var(--rq-shadow-heavy, 0 10px 28px rgba(0,0,0,0.32))' }}>
+            <h2 style={{ color: 'var(--rq-text-primary, #FFFFFF)', marginTop: 0 }}>We're performing maintenance</h2>
+            <p style={{ color: 'var(--rq-text-secondary, #D6D6D6)' }}>Rookie Quest Keeper is temporarily unavailable while we deploy improvements. Please check back shortly.</p>
           </div>
         </div>
       ) : null}
