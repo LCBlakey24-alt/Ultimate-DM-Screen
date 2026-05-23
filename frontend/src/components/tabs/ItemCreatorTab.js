@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
+import {
   Package, Plus, Trash2, Edit2, Save, X, Sparkles, Loader,
   Sword, Shield, FlaskConical, ScrollText, Gem, Wand2, Search
 } from 'lucide-react';
 import ImageUploadPanel from '@/components/ImageUploadPanel';
-import { API_BASE } from '@/lib/api';
-
-const API = API_BASE;
+import apiClient from '@/lib/apiClient';
 
 const ITEM_TYPES = [
   { id: 'weapon', label: 'Weapon', icon: Sword, color: '#ef4444' },
@@ -40,7 +37,7 @@ function ItemCreatorTab({ campaignId }) {
   const [filterType, setFilterType] = useState('all');
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-  
+
   const [newItem, setNewItem] = useState({
     name: '',
     item_type: 'weapon',
@@ -59,10 +56,9 @@ function ItemCreatorTab({ campaignId }) {
 
   const fetchItems = async () => {
     try {
-      const res = await axios.get(`${API}/campaigns/${campaignId}/custom-items`);
+      const res = await apiClient.get(`/campaigns/${campaignId}/custom-items`);
       setItems(res.data);
     } catch (error) {
-      // If endpoint doesn't exist yet, start with empty
       setItems([]);
     } finally {
       setLoading(false);
@@ -77,17 +73,17 @@ function ItemCreatorTab({ campaignId }) {
     setSaving(true);
     try {
       if (editingItem) {
-        const res = await axios.put(`${API}/campaigns/${campaignId}/custom-items/${editingItem.id}`, newItem);
+        const res = await apiClient.put(`/campaigns/${campaignId}/custom-items/${editingItem.id}`, newItem);
         setItems(items.map(i => i.id === editingItem.id ? res.data : i));
         toast.success('Item updated!');
       } else {
-        const res = await axios.post(`${API}/campaigns/${campaignId}/custom-items`, newItem);
+        const res = await apiClient.post(`/campaigns/${campaignId}/custom-items`, newItem);
         setItems([res.data, ...items]);
         toast.success('Item created!');
       }
       resetForm();
     } catch (error) {
-      toast.error('Failed to save item');
+      toast.error(error?.response?.data?.detail || 'Failed to save item');
     } finally {
       setSaving(false);
     }
@@ -96,11 +92,11 @@ function ItemCreatorTab({ campaignId }) {
   const handleDeleteItem = async (itemId) => {
     if (!window.confirm('Delete this item?')) return;
     try {
-      await axios.delete(`${API}/campaigns/${campaignId}/custom-items/${itemId}`);
+      await apiClient.delete(`/campaigns/${campaignId}/custom-items/${itemId}`);
       setItems(items.filter(i => i.id !== itemId));
       toast.success('Item deleted');
     } catch (error) {
-      toast.error('Failed to delete item');
+      toast.error(error?.response?.data?.detail || 'Failed to delete item');
     }
   };
 
@@ -129,9 +125,9 @@ function ItemCreatorTab({ campaignId }) {
     setShowForm(false);
   };
 
-  const generateItemWithAI = async () => {
+  const askRookForItemDetails = async () => {
     setGenerating(true);
-    const prompt = `Generate a unique fantasy ${newItem.rarity} ${ITEM_TYPES.find(t => t.id === newItem.item_type)?.label || 'item'} for a tabletop RPG campaign.
+    const prompt = `Draft original text for a unique fantasy ${newItem.rarity} ${ITEM_TYPES.find(t => t.id === newItem.item_type)?.label || 'item'} for a tabletop RPG campaign.
 
 Respond with JSON only:
 {
@@ -143,7 +139,7 @@ Respond with JSON only:
 }`;
 
     try {
-      const res = await axios.post(`${API}/ai/generate`, { prompt, generation_type: 'item' });
+      const res = await apiClient.post('/ai/generate', { prompt, generation_type: 'item_text' });
       const jsonMatch = res.data.content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const generated = JSON.parse(jsonMatch[0]);
@@ -155,10 +151,10 @@ Respond with JSON only:
           value: generated.value || '',
           attunement: generated.attunement || false
         }));
-        toast.success('Item generated!');
+        toast.success('Rook drafted item details');
       }
     } catch (error) {
-      toast.error('Failed to generate item');
+      toast.error(error?.response?.data?.detail || 'Rook could not draft item details');
     } finally {
       setGenerating(false);
     }
@@ -166,7 +162,7 @@ Respond with JSON only:
 
   const addToInventory = async (item) => {
     try {
-      await axios.post(`${API}/campaigns/${campaignId}/inventory`, {
+      await apiClient.post(`/campaigns/${campaignId}/inventory`, {
         name: item.name,
         quantity: 1,
         item_type: item.item_type,
@@ -180,7 +176,7 @@ Respond with JSON only:
       });
       toast.success(`${item.name} added to party inventory!`);
     } catch (error) {
-      toast.error('Failed to add to inventory');
+      toast.error(error?.response?.data?.detail || 'Failed to add to inventory');
     }
   };
 
@@ -210,7 +206,6 @@ Respond with JSON only:
         </Button>
       </div>
 
-      {/* Create/Edit Form */}
       {showForm && (
         <div className="glow-panel" style={{ marginBottom: '24px', borderColor: '#EF4444' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -282,16 +277,15 @@ Respond with JSON only:
               {saving ? <Loader size={16} className="animate-spin" /> : <Save size={16} />}
               {editingItem ? 'Update Item' : 'Save Item'}
             </Button>
-            <Button onClick={generateItemWithAI} disabled={generating} className="btn-outline" style={{ display: 'flex', gap: '8px', borderColor: '#EF4444', color: '#FFFFFF' }}>
+            <Button onClick={askRookForItemDetails} disabled={generating} className="btn-outline" style={{ display: 'flex', gap: '8px', borderColor: '#EF4444', color: '#FFFFFF' }}>
               {generating ? <Loader size={16} className="animate-spin" /> : <Sparkles size={16} />}
-              Generate with AI
+              Ask Rook for Item Details
             </Button>
             <Button onClick={resetForm} className="btn-outline">Cancel</Button>
           </div>
         </div>
       )}
 
-      {/* Search & Filter */}
       <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
@@ -307,7 +301,6 @@ Respond with JSON only:
         </div>
       </div>
 
-      {/* Items Grid */}
       {filteredItems.length === 0 ? (
         <div className="glow-panel" style={{ padding: '60px', textAlign: 'center' }}>
           <Wand2 size={48} style={{ color: '#EF4444', margin: '0 auto 16px' }} />
@@ -324,7 +317,7 @@ Respond with JSON only:
             const typeInfo = getTypeInfo(item.item_type);
             const rarityInfo = getRarityInfo(item.rarity);
             const TypeIcon = typeInfo.icon;
-            
+
             return (
               <div key={item.id} className="card-glow" style={{ padding: '16px', borderColor: rarityInfo.color }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
