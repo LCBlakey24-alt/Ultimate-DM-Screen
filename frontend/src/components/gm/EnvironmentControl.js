@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { toast } from 'sonner';
 import { CloudRain, Loader, MapPin, Save, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ImageUploadPanel from '@/components/ImageUploadPanel';
-import { API_BASE } from '@/lib/api';
-
-const API = API_BASE;
+import apiClient from '@/lib/apiClient';
 
 const DEFAULT_ENVIRONMENT = {
   weather: 'clear',
@@ -67,12 +64,12 @@ export default function EnvironmentControl({ campaignId, campaign, onEnvironment
   const saveEnvironment = async () => {
     setSaving(true);
     try {
-      const res = await axios.put(`${API}/campaigns/${campaignId}/environment`, draft);
+      const res = await apiClient.put(`/campaigns/${campaignId}/environment`, draft);
       setDraft({ ...DEFAULT_ENVIRONMENT, ...res.data });
       onEnvironmentChange?.(res.data);
       toast.success('Environment saved');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to save environment');
+      toast.error(error?.response?.data?.detail || 'Failed to save environment');
     } finally {
       setSaving(false);
     }
