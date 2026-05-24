@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map, ChevronDown, ChevronRight, Package, Dice6, Clock, Network, Compass, Building, Backpack, Upload } from 'lucide-react';
+import { ArrowLeft, Monitor, Users, UserCircle, Book, Church, MapPin, FileText, Swords, Calendar, Sparkles, Wand2, ScrollText, Globe, Menu, X, Map, ChevronDown, ChevronRight, Package, Dice6, Clock, Network, Compass, Building, Backpack, Upload, Grid3X3 } from 'lucide-react';
 import CampaignSettingTab from '@/components/tabs/CampaignSettingTab';
 import GodsTab from '@/components/tabs/GodsTab';
 import LocationsTab from '@/components/tabs/LocationsTab';
@@ -91,6 +91,10 @@ function CampaignDashboard({ username, onLogout }) {
 
   const handleOpenGMScreen = () => {
     window.open(`/gm-screen/${campaignId}`, '_blank');
+  };
+
+  const handleOpenLiveGrid = () => {
+    window.open(`/gm-screen/${campaignId}/live-grid`, '_blank');
   };
 
   const handleTabClick = (tabId) => {
@@ -355,7 +359,27 @@ function CampaignDashboard({ username, onLogout }) {
             </div>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <Button 
+              data-testid="open-live-grid-btn"
+              onClick={handleOpenLiveGrid}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                background: 'rgba(239, 68, 68, 0.12)',
+                border: `1px solid ${theme.border}`,
+                color: theme.text.white,
+                fontSize: 'clamp(12px, 2vw, 14px)',
+                padding: '10px 16px',
+                minHeight: '44px',
+                fontWeight: '800',
+                borderRadius: 0
+              }}
+            >
+              <Grid3X3 size={18} />
+              Live Grid
+            </Button>
             <Button 
               data-testid="open-dm-screen-btn"
               onClick={handleOpenGMScreen}
@@ -369,7 +393,8 @@ function CampaignDashboard({ username, onLogout }) {
                 fontSize: 'clamp(12px, 2vw, 14px)',
                 padding: '10px 16px',
                 minHeight: '44px',
-                fontWeight: '800'
+                fontWeight: '800',
+                borderRadius: 0
               }}
             >
               <Monitor size={18} />
