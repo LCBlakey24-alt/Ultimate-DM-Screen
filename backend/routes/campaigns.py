@@ -23,8 +23,18 @@ except ImportError:
 
 router = APIRouter()
 
+
+async def site_flag_enabled(flag_name: str, default: bool = True) -> bool:
+    """Read a global site feature flag. Defaults open when settings do not exist yet."""
+    doc = await db.site_settings.find_one({'id': 'global'}, {'_id': 0, flag_name: 1}) or {}
+    return bool(doc.get(flag_name, default))
+
+
 @router.post("/campaigns", response_model=Campaign, status_code=status.HTTP_201_CREATED)
 async def create_campaign(campaign_data: CampaignCreate, username: str = Depends(get_current_user)):
+    if not await site_flag_enabled('campaign_creation_enabled', True):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Campaign creation is currently disabled")
+
     campaign_dict = campaign_data.model_dump()
     campaign_obj = Campaign(dm_user_id=username, **campaign_dict)
     doc = campaign_obj.model_dump()
@@ -154,6 +164,9 @@ async def update_campaign_world_setting(campaign_id: str, data: CampaignWorldSet
 @router.post("/campaigns/{campaign_id}/custom-rules")
 async def upload_custom_rules(campaign_id: str, data: CustomRulesUpload, username: str = Depends(get_current_user)):
     """Upload custom rules/rulebook content for AI to reference - any campaign member can upload"""
+    if not await site_flag_enabled('uploads_enabled', True):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Uploads are currently disabled")
+
     await verify_campaign_membership(campaign_id, username)
     
     # Check content size (limit to ~500KB of text to avoid huge AI context)
@@ -235,6 +248,9 @@ async def delete_custom_rules(campaign_id: str, rule_id: str, username: str = De
 @router.post("/campaigns/{campaign_id}/custom-rules/upload-file")
 async def upload_rules_file(campaign_id: str, file: UploadFile, username: str = Depends(get_current_user)):
     """Upload a rules file (TXT, MD, or PDF) - any campaign member can upload"""
+    if not await site_flag_enabled('uploads_enabled', True):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Uploads are currently disabled")
+
     await verify_campaign_membership(campaign_id, username)
     
     # Check file type
@@ -547,7 +563,7 @@ async def share_rulesets_with_campaign(campaign_id: str, data: Dict[str, Any], u
     for ruleset_id in ruleset_ids:
         ruleset = await db.custom_rulesets.find_one({"id": ruleset_id})
         if not ruleset or ruleset.get("owner_id") != str(user.get("_id")):
-            raise HTTPException(status_code=403, detail=f"Cannot share ruleset {ruleset_id}")
+            raise HTTPException(status_code=403, detail=f"Cannot share rule set {ruleset_id}")
     
     # Get all campaign members
     members = await db.campaign_members.find({"campaign_id": campaign_id}).to_list(100)
@@ -578,11 +594,14 @@ async def share_rulesets_with_campaign(campaign_id: str, data: Dict[str, Any], u
         "from_gm": True
     })
     
-    return {"message": f"Shared {len(ruleset_ids)} rulesets with campaign members"}
+    return {"message": f"Shared {len(ruleset_ids)} rule sets with campaign members"}
 
 @router.post("/rulesets/upload-file")
 async def upload_ruleset_file(file: UploadFile = File(...), username: str = Depends(get_current_user)):
     """Upload a JSON file containing custom rules"""
+    if not await site_flag_enabled('uploads_enabled', True):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Uploads are currently disabled")
+
     user = await db.users.find_one({"email": username})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
