@@ -28,7 +28,6 @@ import AuthPage from '@/components/AuthPage';
 import UnifiedDashboard from '@/components/UnifiedDashboard';
 import PlayerDashboard from '@/components/PlayerDashboard';
 import CampaignDashboard from '@/components/CampaignDashboard';
-import DMScreen from '@/components/GMScreen';
 import LiveSessionGridPage from '@/components/gm/LiveSessionGridPage';
 import MobilePlayerCampaignView from '@/components/MobilePlayerCampaignView';
 import CombatPage from '@/components/CombatPage';
@@ -184,9 +183,9 @@ function CampaignAccessDenied() {
   );
 }
 
-function ResponsiveGMScreenRoute({ username }) {
-  // GM tools must remain accessible on mobile; do not force player-only fallback here.
-  return <DMScreen username={username} />;
+function LivePlayModeRoute() {
+  // Live Play Mode is the real session-running area. The configurable GM Screen grid is its default view.
+  return <LiveSessionGridPage />;
 }
 
 function App() {
@@ -298,8 +297,8 @@ function App() {
               <Route path="/characters/:characterId" element={isAuthenticated ? <CleanCharacterSheet /> : <Navigate to="/auth" replace />} />
               <Route path="/characters/:characterId/edit" element={isAuthenticated ? <CharacterBuilder editMode={true} /> : <Navigate to="/auth" replace />} />
               <Route path="/campaign/:campaignId" element={isAuthenticated ? <CampaignAccessRoute username={username} onLogout={handleLogout} /> : <Navigate to="/auth" replace />} />
-              <Route path="/gm-screen/:campaignId" element={isAuthenticated ? <ResponsiveGMScreenRoute username={username} /> : <Navigate to="/auth" replace />} />
-              <Route path="/gm-screen/:campaignId/live-grid" element={isAuthenticated ? <LiveSessionGridPage /> : <Navigate to="/auth" replace />} />
+              <Route path="/gm-screen/:campaignId" element={isAuthenticated ? <LivePlayModeRoute /> : <Navigate to="/auth" replace />} />
+              <Route path="/gm-screen/:campaignId/live-grid" element={isAuthenticated ? <LivePlayModeRoute /> : <Navigate to="/auth" replace />} />
               <Route path="/campaign/:campaignId/combat" element={isAuthenticated ? <CombatPage /> : <Navigate to="/auth" replace />} />
               <Route path="/admin" element={isAuthenticated ? (isAdmin ? <AdminPage username={username} /> : <Navigate to="/home" replace />) : <Navigate to="/auth" replace />} />
               <Route path="/account" element={isAuthenticated ? <AccountSettings username={username} onLogout={handleLogout} onUsernameChange={setUsername} /> : <Navigate to="/auth" replace />} />
