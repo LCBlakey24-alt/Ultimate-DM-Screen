@@ -37,18 +37,38 @@ async def verify_admin(username: str):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
 
 
+async def _build_admin_user_summary(user: dict) -> dict:
+    """Return safe user account information plus high-level usage counts."""
+    username = user.get('username') or ''
+    email = user.get('email') or ''
+
+    character_count = await db.player_characters.count_documents({'user_id': username})
+    owned_campaign_count = await db.campaigns.count_documents({'dm_user_id': username})
+    joined_campaign_count = await db.campaign_members.count_documents({'username': username})
+    feedback_count = await db.improvement_feedback.count_documents({'username': username})
+    review_count = await db.reviews.count_documents({'username': username})
+
+    return {
+        'username': username,
+        'email': email,
+        'created_at': user.get('created_at'),
+        'character_count': character_count,
+        'owned_campaign_count': owned_campaign_count,
+        'joined_campaign_count': joined_campaign_count,
+        'feedback_count': feedback_count,
+        'review_count': review_count,
+        'total_campaign_touchpoints': owned_campaign_count + joined_campaign_count,
+    }
+
+
 @router.get("/admin/users")
 async def admin_get_users(username: str = Depends(get_current_user)):
-    """Admin endpoint to list all users."""
+    """Admin endpoint to list all users with safe usage summaries."""
     await verify_admin(username)
     
     users = []
-    async for user in db.users.find({}, {'_id': 0, 'password_hash': 0}):
-        users.append({
-            'username': user.get('username'),
-            'email': user.get('email'),
-            'created_at': user.get('created_at')
-        })
+    async for user in db.users.find({}, {'_id': 0, 'password_hash': 0}).sort('created_at', -1):
+        users.append(await _build_admin_user_summary(user))
     
     return users
 
@@ -406,18 +426,27 @@ def _csv_escape(value) -> str:
 
 @router.get("/admin/export/users.csv")
 async def admin_export_users_csv(username: str = Depends(get_current_user)):
-    """Admin-only: stream a CSV of all users."""
+    """Admin-only: stream a CSV of all users with safe usage counts."""
     from fastapi.responses import StreamingResponse
     await verify_admin(username)
 
     async def gen():
-        header = ["username", "email", "created_at"]
+        header = [
+            "username", "email", "created_at", "character_count",
+            "owned_campaign_count", "joined_campaign_count", "feedback_count", "review_count"
+        ]
         yield ",".join(header) + "\n"
-        async for user in db.users.find({}, {'_id': 0, 'password_hash': 0}):
+        async for user in db.users.find({}, {'_id': 0, 'password_hash': 0}).sort('created_at', -1):
+            summary = await _build_admin_user_summary(user)
             row = [
-                _csv_escape(user.get('username')),
-                _csv_escape(user.get('email')),
-                _csv_escape(user.get('created_at')),
+                _csv_escape(summary.get('username')),
+                _csv_escape(summary.get('email')),
+                _csv_escape(summary.get('created_at')),
+                _csv_escape(summary.get('character_count')),
+                _csv_escape(summary.get('owned_campaign_count')),
+                _csv_escape(summary.get('joined_campaign_count')),
+                _csv_escape(summary.get('feedback_count')),
+                _csv_escape(summary.get('review_count')),
             ]
             yield ",".join(row) + "\n"
 
