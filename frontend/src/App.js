@@ -35,6 +35,7 @@ import AdminPage from '@/components/AdminPage';
 import LandingPage from '@/components/LandingPage';
 import AccountSettings from '@/components/AccountSettings';
 import ImpersonationBanner from '@/components/admin/ImpersonationBanner';
+import GlobalFeedbackButton from '@/components/GlobalFeedbackButton';
 import HomebrewWorkshop from '@/components/HomebrewWorkshop';
 import CharacterBuilder from '@/components/CharacterBuilder';
 import CharacterCreationModePicker from '@/components/CharacterCreationModePicker';
@@ -303,6 +304,7 @@ function App() {
               <Route path="/reset-password" element={<AuthPage onLogin={handleLogin} />} />
               <Route path="/" element={isAuthenticated ? <Navigate to="/home" replace /> : <LandingPage />} />
             </Routes>
+            <GlobalFeedbackButton isAuthenticated={isAuthenticated} />
           </KeyboardShortcutsProvider>
         </ThemeProvider>
       </BrowserRouter>
