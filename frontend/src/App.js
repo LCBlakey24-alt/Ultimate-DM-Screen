@@ -29,6 +29,7 @@ import UnifiedDashboard from '@/components/UnifiedDashboard';
 import PlayerDashboard from '@/components/PlayerDashboard';
 import CampaignDashboard from '@/components/CampaignDashboard';
 import DMScreen from '@/components/GMScreen';
+import LiveSessionGridPage from '@/components/gm/LiveSessionGridPage';
 import MobilePlayerCampaignView from '@/components/MobilePlayerCampaignView';
 import CombatPage from '@/components/CombatPage';
 import AdminPage from '@/components/AdminPage';
@@ -298,6 +299,7 @@ function App() {
               <Route path="/characters/:characterId/edit" element={isAuthenticated ? <CharacterBuilder editMode={true} /> : <Navigate to="/auth" replace />} />
               <Route path="/campaign/:campaignId" element={isAuthenticated ? <CampaignAccessRoute username={username} onLogout={handleLogout} /> : <Navigate to="/auth" replace />} />
               <Route path="/gm-screen/:campaignId" element={isAuthenticated ? <ResponsiveGMScreenRoute username={username} /> : <Navigate to="/auth" replace />} />
+              <Route path="/gm-screen/:campaignId/live-grid" element={isAuthenticated ? <LiveSessionGridPage /> : <Navigate to="/auth" replace />} />
               <Route path="/campaign/:campaignId/combat" element={isAuthenticated ? <CombatPage /> : <Navigate to="/auth" replace />} />
               <Route path="/admin" element={isAuthenticated ? (isAdmin ? <AdminPage username={username} /> : <Navigate to="/home" replace />) : <Navigate to="/auth" replace />} />
               <Route path="/account" element={isAuthenticated ? <AccountSettings username={username} onLogout={handleLogout} onUsernameChange={setUsername} /> : <Navigate to="/auth" replace />} />
