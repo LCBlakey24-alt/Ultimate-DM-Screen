@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,12 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { 
   Plus, Edit, Trash2, MapPin, Loader, Store, ChevronDown, ChevronRight, 
   Building, Beer, Church, Hammer, Home, BookOpen, Globe, Map, Castle, 
-  Trees, Mountain, Waves, Wand2, Check, X
+  Trees, Mountain, Waves, Wand2
 } from 'lucide-react';
 import QuickTips, { TIPS } from '@/components/QuickTips';
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import apiClient from '@/lib/apiClient';
 
 // Hierarchy: Continent -> Country/Region -> Settlement -> Place of Interest
 const CONTINENT_TYPES = [
@@ -71,7 +68,7 @@ function WorldBuilderTab({ campaignId }) {
     notes: ''
   });
 
-  // AI Generation
+  // Rook text generation
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiGenerating, setAiGenerating] = useState(false);
   const [lastGenerated, setLastGenerated] = useState(null);
@@ -82,7 +79,7 @@ function WorldBuilderTab({ campaignId }) {
 
   const fetchWorldData = async () => {
     try {
-      const response = await axios.get(`${API}/campaigns/${campaignId}/world`);
+      const response = await apiClient.get(`/campaigns/${campaignId}/world`);
       setWorldData(response.data || { continents: [] });
     } catch (error) {
       // If no world data yet, start fresh
@@ -128,13 +125,13 @@ function WorldBuilderTab({ campaignId }) {
       const payload = { ...formData };
       
       if (editingItem) {
-        await axios.put(`${API}/campaigns/${campaignId}/world/${dialogType}/${editingItem.id}`, {
+        await apiClient.put(`/campaigns/${campaignId}/world/${dialogType}/${editingItem.id}`, {
           ...payload,
           parent_id: parentId
         });
         toast.success(`${dialogType} updated!`);
       } else {
-        await axios.post(`${API}/campaigns/${campaignId}/world/${dialogType}`, {
+        await apiClient.post(`/campaigns/${campaignId}/world/${dialogType}`, {
           ...payload,
           parent_id: parentId
         });
@@ -144,7 +141,7 @@ function WorldBuilderTab({ campaignId }) {
       setShowDialog(false);
       fetchWorldData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Operation failed');
+      toast.error(error?.response?.data?.detail || 'Operation failed');
     }
   };
 
@@ -152,23 +149,23 @@ function WorldBuilderTab({ campaignId }) {
     if (!window.confirm(`Delete this ${type}? This will also delete all nested items.`)) return;
     
     try {
-      await axios.delete(`${API}/campaigns/${campaignId}/world/${type}/${id}`);
+      await apiClient.delete(`/campaigns/${campaignId}/world/${type}/${id}`);
       toast.success(`${type} deleted`);
       fetchWorldData();
     } catch (error) {
-      toast.error('Failed to delete');
+      toast.error(error?.response?.data?.detail || 'Failed to delete');
     }
   };
 
   const handleAIGenerate = async () => {
     if (!aiPrompt.trim()) {
-      toast.error('Please describe what you want to generate');
+      toast.error('Please describe what you want Rook to draft');
       return;
     }
 
     setAiGenerating(true);
     try {
-      const response = await axios.post(`${API}/rook/generate`, {
+      const response = await apiClient.post('/rook/generate', {
         prompt: aiPrompt,
         entity_type: `world_${dialogType}`,
         campaign_id: campaignId,
@@ -176,14 +173,14 @@ function WorldBuilderTab({ campaignId }) {
       });
 
       if (response.data.success) {
-        toast.success(`✨ ${response.data.entity_name} has been created!`);
+        toast.success(`Rook created ${response.data.entity_name}!`);
         setLastGenerated(response.data);
         setAiPrompt('');
         setShowDialog(false);
         fetchWorldData();
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.detail || 'The ROOK failed';
+      const errorMsg = error?.response?.data?.detail || 'Rook could not generate this entry';
       toast.error(errorMsg);
     } finally {
       setAiGenerating(false);
@@ -560,7 +557,7 @@ function WorldBuilderTab({ campaignId }) {
             </DialogTitle>
           </DialogHeader>
           
-          {/* AI Generation */}
+          {/* Rook text generation */}
           <div style={{
             background: 'rgba(34, 197, 94, 0.1)',
             border: '2px solid #F59E0B',
@@ -570,7 +567,7 @@ function WorldBuilderTab({ campaignId }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
               <Wand2 size={18} color="#F59E0B" />
-              <span style={{ color: '#F59E0B', fontWeight: '600' }}>ROOK</span>
+              <span style={{ color: '#F59E0B', fontWeight: '600' }}>Rook Text Helper</span>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               <Input
