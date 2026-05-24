@@ -9,10 +9,40 @@ from pydantic import BaseModel, Field
 from config import db, ADMIN_USERNAMES, logger
 from utils.auth import get_current_user
 from models import (
-    Review, ReviewCreate, CustomCreature, CustomCreatureCreate, SiteSettingsUpdate,
+    Review, ReviewCreate, CustomCreature, CustomCreatureCreate,
 )
 
 router = APIRouter()
+
+
+DEFAULT_SITE_SETTINGS = {
+    'id': 'global',
+    'announcement_enabled': False,
+    'announcement_text': '',
+    'maintenance_mode': False,
+    'signup_enabled': True,
+    'rook_text_enabled': True,
+    'feedback_enabled': True,
+    'reviews_enabled': True,
+    'uploads_enabled': True,
+    'campaign_creation_enabled': True,
+    'character_creation_enabled': True,
+    'beta_tools_enabled': True,
+}
+
+
+class SiteSettingsUpdate(BaseModel):
+    announcement_enabled: bool = False
+    announcement_text: str = Field(default='', max_length=240)
+    maintenance_mode: bool = False
+    signup_enabled: bool = True
+    rook_text_enabled: bool = True
+    feedback_enabled: bool = True
+    reviews_enabled: bool = True
+    uploads_enabled: bool = True
+    campaign_creation_enabled: bool = True
+    character_creation_enabled: bool = True
+    beta_tools_enabled: bool = True
 
 
 class ImprovementFeedbackCreate(BaseModel):
@@ -28,6 +58,13 @@ class ImprovementFeedbackUpdate(BaseModel):
     status: Optional[str] = Field(default=None, max_length=30)
     priority: Optional[str] = Field(default=None, max_length=20)
     admin_notes: Optional[str] = Field(default=None, max_length=2000)
+
+
+def merge_site_settings(doc: Optional[dict]) -> dict:
+    merged = {**DEFAULT_SITE_SETTINGS, **(doc or {})}
+    merged.pop('_id', None)
+    merged['announcement_text'] = str(merged.get('announcement_text', ''))[:240]
+    return merged
 
 
 async def verify_admin(username: str):
@@ -78,6 +115,10 @@ async def admin_get_users(username: str = Depends(get_current_user)):
 @router.post("/feedback")
 async def create_improvement_feedback(payload: ImprovementFeedbackCreate, username: str = Depends(get_current_user)):
     """Authenticated users can submit improvement suggestions and bug reports."""
+    site_settings = merge_site_settings(await db.site_settings.find_one({'id': 'global'}, {'_id': 0}))
+    if not site_settings.get('feedback_enabled', True):
+        raise HTTPException(status_code=403, detail="Feedback submissions are currently disabled")
+
     now = datetime.now(timezone.utc).isoformat()
     doc = {
         'id': str(uuid.uuid4()),
@@ -142,6 +183,10 @@ async def admin_delete_feedback(feedback_id: str, username: str = Depends(get_cu
 @router.post("/reviews")
 async def create_review(review_data: ReviewCreate, username: str = Depends(get_current_user)):
     """Submit a review (authenticated users only)"""
+    site_settings = merge_site_settings(await db.site_settings.find_one({'id': 'global'}, {'_id': 0}))
+    if not site_settings.get('reviews_enabled', True):
+        raise HTTPException(status_code=403, detail="Reviews are currently disabled")
+
     # Validate rating
     if review_data.rating < 1 or review_data.rating > 5:
         raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
@@ -169,6 +214,10 @@ async def create_review(review_data: ReviewCreate, username: str = Depends(get_c
 @router.put("/reviews")
 async def update_review(review_data: ReviewCreate, username: str = Depends(get_current_user)):
     """Update user's own review"""
+    site_settings = merge_site_settings(await db.site_settings.find_one({'id': 'global'}, {'_id': 0}))
+    if not site_settings.get('reviews_enabled', True):
+        raise HTTPException(status_code=403, detail="Reviews are currently disabled")
+
     if review_data.rating < 1 or review_data.rating > 5:
         raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
     
@@ -325,12 +374,21 @@ async def import_custom_creatures(campaign_id: str, creatures: list[CustomCreatu
 
 @router.get("/site-settings")
 async def get_public_site_settings():
-    """Public subset of site settings for runtime UX controls."""
-    doc = await db.site_settings.find_one({'id': 'global'}, {'_id': 0}) or {}
+    """Public subset of site settings for runtime UX controls and feature flags."""
+    doc = await db.site_settings.find_one({'id': 'global'}, {'_id': 0})
+    settings = merge_site_settings(doc)
     return {
-        'announcement_enabled': bool(doc.get('announcement_enabled', False)),
-        'announcement_text': str(doc.get('announcement_text', ''))[:240],
-        'maintenance_mode': bool(doc.get('maintenance_mode', False)),
+        'announcement_enabled': settings['announcement_enabled'],
+        'announcement_text': settings['announcement_text'],
+        'maintenance_mode': settings['maintenance_mode'],
+        'signup_enabled': settings['signup_enabled'],
+        'rook_text_enabled': settings['rook_text_enabled'],
+        'feedback_enabled': settings['feedback_enabled'],
+        'reviews_enabled': settings['reviews_enabled'],
+        'uploads_enabled': settings['uploads_enabled'],
+        'campaign_creation_enabled': settings['campaign_creation_enabled'],
+        'character_creation_enabled': settings['character_creation_enabled'],
+        'beta_tools_enabled': settings['beta_tools_enabled'],
     }
 
 @router.get("/admin/overview")
@@ -360,12 +418,7 @@ async def get_admin_site_settings(username: str = Depends(get_current_user)):
     """Admin-only site settings control panel."""
     await verify_admin(username)
     doc = await db.site_settings.find_one({'id': 'global'}, {'_id': 0})
-    return doc or {
-        'id': 'global',
-        'announcement_enabled': False,
-        'announcement_text': '',
-        'maintenance_mode': False,
-    }
+    return merge_site_settings(doc)
 
 
 @router.put("/admin/site-settings")
@@ -376,12 +429,20 @@ async def update_admin_site_settings(payload: SiteSettingsUpdate, username: str 
         'announcement_enabled': payload.announcement_enabled,
         'announcement_text': payload.announcement_text.strip()[:240],
         'maintenance_mode': payload.maintenance_mode,
+        'signup_enabled': payload.signup_enabled,
+        'rook_text_enabled': payload.rook_text_enabled,
+        'feedback_enabled': payload.feedback_enabled,
+        'reviews_enabled': payload.reviews_enabled,
+        'uploads_enabled': payload.uploads_enabled,
+        'campaign_creation_enabled': payload.campaign_creation_enabled,
+        'character_creation_enabled': payload.character_creation_enabled,
+        'beta_tools_enabled': payload.beta_tools_enabled,
         'updated_by': username,
         'updated_at': datetime.now(timezone.utc).isoformat(),
     }
     await db.site_settings.update_one({'id': 'global'}, {'$set': allowed, '$setOnInsert': {'id': 'global'}}, upsert=True)
     doc = await db.site_settings.find_one({'id': 'global'}, {'_id': 0})
-    return {'message': 'Site settings updated', 'settings': doc}
+    return {'message': 'Site settings updated', 'settings': merge_site_settings(doc)}
 
 @router.get("/admin/check")
 async def check_admin_status(username: str = Depends(get_current_user)):
