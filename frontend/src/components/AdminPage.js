@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, BookOpen, Check, Shield, Star, Trash2, User, Users, X } from 'lucide-react';
+import { ArrowLeft, BookOpen, Check, MessageSquare, Shield, Star, Trash2, User, Users, X } from 'lucide-react';
 import RuleSystemManager from './RuleSystemManager';
 import TemplateEditor from './TemplateEditor';
 import AdminUsersTab from './admin/AdminUsersTab';
 import AdminSiteControlTab from './admin/AdminSiteControlTab';
+import AdminFeedbackTab from './admin/AdminFeedbackTab';
 import apiClient from '@/lib/apiClient';
 
 const theme = {
@@ -21,6 +22,7 @@ function AdminPage() {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
   const [users, setUsers] = useState([]);
+  const [overview, setOverview] = useState({ feedback_count: 0, new_feedback_count: 0 });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('reviews');
   const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 768px)').matches);
@@ -54,12 +56,14 @@ function AdminPage() {
 
   const fetchData = async () => {
     try {
-      const [reviewsRes, usersRes] = await Promise.all([
+      const [reviewsRes, usersRes, overviewRes] = await Promise.all([
         apiClient.get('/reviews/all').catch(() => ({ data: [] })),
-        apiClient.get('/admin/users').catch(() => ({ data: [] }))
+        apiClient.get('/admin/users').catch(() => ({ data: [] })),
+        apiClient.get('/admin/overview').catch(() => ({ data: {} }))
       ]);
       setReviews(Array.isArray(reviewsRes.data) ? reviewsRes.data : []);
       setUsers(Array.isArray(usersRes.data) ? usersRes.data : []);
+      setOverview(overviewRes.data || {});
     } catch (error) {
       console.error('Failed to fetch admin data:', error);
     } finally {
@@ -68,10 +72,11 @@ function AdminPage() {
   };
 
   const stats = useMemo(() => ({
-    totalUsers: users.length,
-    totalReviews: reviews.length,
-    visibleReviews: reviews.filter(review => review.is_approved).length
-  }), [reviews, users]);
+    totalUsers: overview.users_count ?? users.length,
+    totalReviews: overview.reviews_count ?? reviews.length,
+    visibleReviews: overview.approved_reviews_count ?? reviews.filter(review => review.is_approved).length,
+    newFeedback: overview.new_feedback_count ?? 0
+  }), [reviews, users, overview]);
 
   const handleToggleReview = async (reviewId) => {
     try {
@@ -96,6 +101,7 @@ function AdminPage() {
 
   const tabs = [
     { id: 'reviews', label: `Reviews (${reviews.length})`, icon: Star },
+    { id: 'feedback', label: `Feedback (${overview.new_feedback_count || 0})`, icon: MessageSquare },
     { id: 'rules', label: 'Rule Systems', icon: BookOpen },
     { id: 'templates', label: 'Templates', icon: Users },
     { id: 'users', label: 'Users', icon: User },
@@ -148,15 +154,16 @@ function AdminPage() {
               Admin Panel
             </h1>
             <p style={{ color: theme.text.muted, marginTop: 4, fontSize: 14 }}>
-              Manage reviews, rule systems, templates, and support tools.
+              Manage reviews, feedback, rule systems, templates, users, and site controls.
             </p>
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(160px, 1fr))', gap: 16, marginBottom: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 24 }}>
           <StatCard label="Total Users" value={stats.totalUsers} icon={User} />
           <StatCard label="Reviews" value={stats.totalReviews} icon={Star} />
           <StatCard label="Visible Reviews" value={stats.visibleReviews} icon={Check} />
+          <StatCard label="New Feedback" value={stats.newFeedback} icon={MessageSquare} />
         </div>
 
         {isMobile ? (
@@ -186,9 +193,9 @@ function AdminPage() {
                 onClick={() => setActiveTab(tab.id)}
                 data-testid={`admin-tab-${tab.id}`}
                 style={{
-                  flex: '1 1 180px',
+                  flex: '1 1 160px',
                   padding: 16,
-                  background: isActive ? 'rgba(212, 160, 23, 0.10)' : theme.bg.tab,
+                  background: isActive ? 'rgba(239, 68, 68, 0.10)' : theme.bg.tab,
                   border: 'none',
                   borderBottom: isActive ? `2px solid ${theme.gold}` : `1px solid ${theme.border}`,
                   color: isActive ? theme.gold : theme.text.muted,
@@ -216,6 +223,8 @@ function AdminPage() {
             onDeleteReview={handleDeleteReview}
           />
         )}
+
+        {activeTab === 'feedback' && <AdminFeedbackTab />}
 
         {activeTab === 'rules' && <RuleSystemManager />}
 
@@ -306,7 +315,7 @@ function ReviewsPanel({ reviews, onToggleReview, onDeleteReview }) {
                     </div>
                     {review.is_approved && (
                       <span style={{
-                        background: 'rgba(212,160,23,0.12)',
+                        background: 'rgba(239,68,68,0.12)',
                         color: theme.gold,
                         padding: '2px 8px',
                         fontSize: 10,
@@ -331,7 +340,7 @@ function ReviewsPanel({ reviews, onToggleReview, onDeleteReview }) {
                       fontSize: 11,
                       background: review.is_approved ? 'transparent' : theme.gold,
                       border: review.is_approved ? `1px solid ${theme.border}` : 'none',
-                      color: review.is_approved ? theme.text.muted : '#111827',
+                      color: review.is_approved ? theme.text.muted : '#FFFFFF',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 4
